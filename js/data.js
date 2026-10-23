@@ -42,23 +42,24 @@ const GRUPOS = [
 // para la página de la actividad; si no hay, se usa el resumen) y organiza (id de GRUPOS).
 const ACTIVIDADES = [
   // Miércoles
-  { id: 'inaugural', dia: 'mie', inicio: '09:00', fin: '10:00', tipo: 'conferencia', titulo: 'Conferencia inaugural', ponente: 'eduardo' },
-  { id: 'feria', dia: 'mie', inicio: '09:00', fin: '12:00', tipo: 'social', titulo: 'Feria de stands' },
-  { id: 'datos', dia: 'mie', inicio: '11:00', fin: '12:00', tipo: 'conferencia', titulo: 'Conferencia: Ciencia de datos', ponente: 'mariano' },
-  { id: 'taller-aperture', dia: 'mie', inicio: '14:00', fin: '15:00', tipo: 'taller', titulo: 'Taller de agéntica', organiza: 'aperture' },
-  { id: 'taller-curriculum', dia: 'mie', inicio: '15:00', fin: '16:00', tipo: 'taller', titulo: 'Taller de currículum', ponente: 'curriculum' },
+  { id: 'inaugural', dia: 'mie', inicio: '09:00', fin: '10:00', tipo: 'conferencia', titulo: 'Conferencia inaugural', ponente: 'eduardo', lugar: 'Aula Máxima' },
+  { id: 'feria', dia: 'mie', inicio: '09:00', fin: '12:00', tipo: 'social', titulo: 'Feria de stands', lugar: 'Hall M10' },
+  { id: 'datos', dia: 'mie', inicio: '11:00', fin: '12:00', tipo: 'conferencia', titulo: 'Conferencia: Ciencia de datos', ponente: 'mariano', lugar: 'Aula Máxima' },
+  { id: 'taller-aperture', dia: 'mie', inicio: '14:00', fin: '15:00', tipo: 'taller', titulo: 'Taller de agéntica', organiza: 'aperture', lugar: 'Aula M3-224' },
+  { id: 'taller-curriculum', dia: 'mie', inicio: '15:00', fin: '16:00', tipo: 'taller', titulo: 'Taller de currículum', ponente: 'curriculum', lugar: 'Aula M3-224' },
 
   // Jueves
   { id: 'observacion', dia: 'jue', inicio: '07:00', fin: '10:00', tipo: 'competencia', titulo: 'Carrera de observación',
-    icono: 'lupa', color: '#e05a7a', resumen: 'Recorre el campus resolviendo pistas antes que los demás equipos.' },
+    icono: 'lupa', color: '#e05a7a', resumen: 'Recorre el campus resolviendo pistas antes que los demás equipos.', lugar: 'Hall M10' },
   { id: 'maraton', dia: 'jue', inicio: '14:00', fin: '18:00', tipo: 'competencia', titulo: 'Maratón de programación',
-    icono: 'codigo', color: '#2f9e5b', resumen: 'Cuatro horas de problemas algorítmicos contra el reloj.', organiza: 'unalgoritmo' },
+    icono: 'codigo', color: '#2f9e5b', resumen: 'Cuatro horas de problemas algorítmicos contra el reloj.', organiza: 'unalgoritmo', lugar: 'Sala de cómputo' },
 
   // Viernes
   { id: 'atletismo', dia: 'vie', inicio: '08:00', fin: '09:00', tipo: 'competencia', titulo: 'Carrera de atletismo 8‑bit',
     icono: 'pixel', color: '#f08a24', resumen: 'Una carrera con alma de videojuego retro.' },
   { id: 'futbol', dia: 'vie', inicio: '09:00', fin: '11:00', tipo: 'competencia', titulo: 'Torneo de fútbol',
-    icono: 'balon', color: '#1667c2', resumen: 'Arma tu equipo y sal a la cancha.' },
+    icono: 'balon', color: '#1667c2', resumen: 'Arma tu equipo y sal a la cancha.', lugar: 'Placa polideportiva',
+    descripcion: 'Arma tu equipo y sal a la cancha. Se prestan petos y balón.' },
   { id: 'videojuegos', dia: 'vie', inicio: '10:00', fin: '12:00', tipo: 'competencia', titulo: 'Torneo de videojuegos',
     icono: 'control', color: '#7b4fc9', resumen: 'Demuestra quién manda con el control en la mano.' },
   { id: 'karaoke', dia: 'vie', inicio: '14:00', fin: '15:00', tipo: 'social', titulo: 'Karaoke y Just Dance' },
