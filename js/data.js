@@ -26,7 +26,6 @@ const PONENTES = [
   { id: 'daniel', nombre: 'Daniel Arango Sohm', cargo: 'Conferencista internacional', credencial: 'Ponente', color: '#1667c2',
     foto: 'img/ponente-daniel-arango.jpg',
     bio: 'He ganado tres veces el premio al mejor proyecto en Ingeniería de Sistemas en la EAFIT. Soy conferencista internacional y he dado charlas en Medellín JS, Python Medellín (dos veces), Medellín AI, PyCon Colombia, Python Moscow, Perú y BarNLP. Soy mitad colombiano, también tengo ascendencia alemana y rusa, y hablo ruso y alemán.' },
-  { id: 'curriculum', nombre: null, cargo: 'Taller de currículum', credencial: 'Por anunciar', color: '#8a94a3' },
 ];
 
 // Grupos estudiantiles que participan en la Semana. Cada uno sale como un banderín de su color.
@@ -53,8 +52,9 @@ const ACTIVIDADES = [
   { id: 'inaugural', dia: 'mie', inicio: '09:00', fin: '10:00', tipo: 'conferencia', titulo: 'Conferencia inaugural', ponente: 'eduardo', lugar: 'Aula Máxima' },
   { id: 'feria', dia: 'mie', inicio: '09:00', fin: '12:00', tipo: 'social', titulo: 'Feria de stands', lugar: 'Hall M10' },
   { id: 'datos', dia: 'mie', inicio: '11:00', fin: '12:00', tipo: 'conferencia', titulo: 'Conferencia: Ciencia de datos', ponente: 'mariano', lugar: 'Aula Máxima' },
-  { id: 'taller-aperture', dia: 'mie', inicio: '14:00', fin: '15:00', tipo: 'taller', titulo: 'Taller de agéntica', organiza: 'aperture', lugar: 'Aula M3-224' },
-  { id: 'taller-curriculum', dia: 'mie', inicio: '15:00', fin: '16:00', tipo: 'taller', titulo: 'Taller de currículum', ponente: 'curriculum', lugar: 'Aula M3-224' },
+  { id: 'taller-aperture', dia: 'mie', inicio: '14:00', fin: '15:00', tipo: 'taller', titulo: 'De Prompts a Agentes: Inteligencia Artificial Agéntica con Python', organiza: 'aperture', lugar: 'Aula M3-224' },
+  { id: 'taller-llm', dia: 'mie', inicio: '15:00', fin: '16:00', tipo: 'taller', titulo: 'LLM, agentes, harness, skills y MCP', organiza: 'turing-box', lugar: 'Aula M3-224',
+    descripcion: 'Un recorrido general sobre qué es un LLM, un agente, un harness, skills y MCP.' },
 
   // Jueves
   { id: 'observacion', dia: 'jue', inicio: '07:00', fin: '10:00', tipo: 'competencia', titulo: 'Carrera de observación',

@@ -308,9 +308,8 @@ function pintarSemana(visibles) {
 
   const columnas = DIAS.map((dia) => {
     const delDia = ACTIVIDADES.filter((actividad) => actividad.dia === dia.id);
-    const { actividades, totalCarriles } = repartirEnCarriles(delDia);
 
-    const bloques = actividades.map((actividad) => {
+    const bloques = repartirEnCarriles(delDia).map((actividad) => {
       const tipo = TIPOS[actividad.tipo];
       const atenuado = idsVisibles.includes(actividad.id) ? '' : 'bloque--atenuado';
       // Las variables --desde, --dura, --carril y --carriles ubican el bloque (ver .bloque en el CSS)
@@ -318,7 +317,7 @@ function pintarSemana(visibles) {
         --desde: ${enHoras(actividad.inicio) - primeraHora};
         --dura: ${enHoras(actividad.fin) - enHoras(actividad.inicio)};
         --carril: ${actividad.carril};
-        --carriles: ${totalCarriles};`;
+        --carriles: ${actividad.carriles};`;
       return `
         <a class="bloque ${atenuado}" href="${enlaceActividad(actividad.id)}"
           style="--color: ${tipo.color}; --fondo: ${tipo.fondo}; ${posicion}">
@@ -341,18 +340,35 @@ function pintarSemana(visibles) {
   `;
 }
 
-// Si dos actividades se cruzan, se ponen lado a lado en "carriles" para que no se tapen
+// Si dos actividades se cruzan, se ponen lado a lado en "carriles" para que no se tapen.
+// Solo se dividen las que se cruzan: el día se parte en grupos de actividades encadenadas
+// por sus horas, y cada grupo tiene sus propios carriles. Una actividad sola ocupa todo el ancho.
 function repartirEnCarriles(actividades) {
-  const carrilLibreDesde = []; // hora en que queda libre cada carril
+  const resultado = [];
+  let grupo = [];
+  let carrilLibreDesde = []; // hora en que queda libre cada carril del grupo
+  let finDelGrupo = '';      // hora en que termina la última actividad del grupo
 
-  const conCarril = actividades.map((actividad) => {
+  // Cuando se cierra un grupo ya se sabe cuántos carriles usó: todas sus actividades se dividen igual
+  const cerrarGrupo = () => {
+    grupo.forEach((actividad) => resultado.push({ ...actividad, carriles: carrilLibreDesde.length }));
+    grupo = [];
+    carrilLibreDesde = [];
+  };
+
+  const enOrden = [...actividades].sort((a, b) => a.inicio.localeCompare(b.inicio));
+  for (const actividad of enOrden) {
+    if (actividad.inicio >= finDelGrupo) cerrarGrupo(); // no se cruza con nada del grupo: empieza otro
+
     let carril = carrilLibreDesde.findIndex((hora) => hora <= actividad.inicio);
     if (carril === -1) carril = carrilLibreDesde.length; // ninguno libre: se abre otro
     carrilLibreDesde[carril] = actividad.fin;
-    return { ...actividad, carril };
-  });
+    grupo.push({ ...actividad, carril });
+    if (actividad.fin > finDelGrupo) finDelGrupo = actividad.fin;
+  }
+  cerrarGrupo();
 
-  return { actividades: conCarril, totalCarriles: carrilLibreDesde.length };
+  return resultado;
 }
 
 
