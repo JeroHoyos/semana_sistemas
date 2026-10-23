@@ -33,6 +33,7 @@ const GRUPOS = [
   { id: 'unalgoritmo', nombre: 'UNAlgoritmo', tipo: 'Grupo estudiantil', color: '#9128d9', logo: 'img/grupo-unalgoritmo.jpg' },
   { id: 'aperture', nombre: 'Aperture', tipo: 'Semillero', color: '#1aa3b8', logo: 'img/grupo-aperture.png' },
   { id: 'turing-box', nombre: 'Turing Box', tipo: 'Grupo estudiantil', color: '#c4358c', logo: 'img/grupo-turing-box.jpg' },
+  { id: 'uneural', nombre: 'UNeural', tipo: 'Grupo estudiantil', color: '#4a4fd8', logo: 'img/grupo-uneural.jpg' },
 ];
 
 // Horas en formato 'HH:MM' (24 h). Mantén el orden por día y hora.
