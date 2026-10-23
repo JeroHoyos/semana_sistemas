@@ -70,7 +70,7 @@ function dibujarMonstruo(color, esMisterio) {
   </svg>`;
 }
 
-// Escudo de la Semana: laureles, cuernos, ojo, "SS" y una cinta
+// Escudo de la Semana: laureles, cuernos, la S con ojo y una cinta
 function dibujarEscudo() {
   // Hojas de laurel del lado izquierdo, repartidas sobre un arco.
   // El lado derecho es el mismo laurel reflejado (scale(-1 1)).
@@ -92,11 +92,13 @@ function dibujarEscudo() {
       <path d="M136 50c6-12 12-20 21-26-14 1-24 9-30 20z"/>
     </g>
     <path d="M100 34l50 12v54q0 40-50 58-50-18-50-58V46z" fill="#fff" stroke="#2a2f36" stroke-width="5"/>
-    <path d="M100 45l40 10v45q0 32-40 47-40-15-40-47V55z" fill="#1667c2"/>
-    <ellipse cx="100" cy="80" rx="23" ry="14.5" fill="#fff" stroke="#0a2c52" stroke-width="2.5"/>
-    <circle cx="100" cy="80" r="9" fill="#1f7fd1"/>
-    <circle cx="100" cy="80" r="4.2" fill="#05080c"/>
-    <text x="100" y="131" text-anchor="middle" font-family="Cinzel, serif" font-weight="700" font-size="32" fill="#fff">SS</text>
+    <path d="M100 45l40 10v45q0 32-40 47-40-15-40-47V55z" fill="none" stroke="#1667c2" stroke-width="2.5"/>
+    <g transform="translate(62 60) scale(.64)">
+      <!-- S con ojo: silueta azul, ojo blanco en almendra y pupila negra -->
+      <path d="M30 6C55-2 95-2 118 14L104 30 118 44C124 60 118 84 92 92 66 100 26 98 2 82L16 66 2 52C-4 36 4 14 30 6Z" fill="#1667c2"/>
+      <path d="M-48 0Q0-32 48 0 0 32-48 0Z" fill="#fff" transform="translate(60 48) rotate(-19)"/>
+      <circle cx="60" cy="48" r="12" fill="#000"/>
+    </g>
     <g stroke="#2a2f36" stroke-width="3" stroke-linejoin="round">
       <path d="M54 166l-22 2 8 10-8 11 24-2z" fill="#dfe2e6"/>
       <path d="M146 166l22 2-8 10 8 11-24-2z" fill="#dfe2e6"/>

@@ -833,6 +833,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   border-top: 1px solid #cfd0cd;
 }
 .pie__escudo { width: 44px; filter: grayscale(1); opacity: .5; }
+.pie__autores { font-size: 13px; }
+.pie__autores strong { font-weight: 600; color: var(--tinta-suave); white-space: nowrap; }
 
 
 /* ---------- 9. Tablet y móvil ---------- */
