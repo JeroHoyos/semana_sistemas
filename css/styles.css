@@ -256,6 +256,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   transition: transform .2s;
 }
 .miniatura svg { width: 100%; height: 100%; }
+.miniatura img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 25%; }
 .miniatura:hover { transform: translateY(-2px); }
 .miniatura[aria-pressed="true"] { border-color: #fff; }
 
@@ -308,7 +309,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.carnet__nombre { top: 59%; font-weight: 600; font-size: 4.4cqw; }
+/* --letras (lo pone main.js) achica los nombres largos para que no se corten */
+.carnet__nombre { top: 59%; font-weight: 600; font-size: min(4.4cqw, 68cqw / var(--letras, 1)); }
 .carnet__cargo {
   top: 69.5%;
   font-family: var(--letra-estrecha);
@@ -343,6 +345,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   overflow: hidden;
 }
 .carnet__foto svg { position: absolute; bottom: 0; width: 100%; height: 88%; }
+.carnet__foto img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
 .carnet__sello {
   position: absolute;
@@ -1437,6 +1440,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .evento__datos dd { margin: 4px 0 0; font-weight: 600; font-size: 17px; line-height: 1.3; color: var(--azul-marino); }
 
 .evento__descripcion { margin-top: 24px; font-size: 17px; color: var(--tinta-suave); }
+.evento__descripcion p + p { margin-top: 12px; }
 
 /* Ponente u organizador: monstruo o logo, nombre y cargo, y la credencial a la derecha */
 .evento__perfil {
@@ -1473,6 +1477,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
   color: var(--azul-marino);
 }
 .evento__perfil div span { color: var(--gris); }
+.evento__perfil > div { flex: 1 1 260px; }
+.evento__perfil:has(.evento__bio) { align-items: flex-start; }
+.evento__bio { margin-top: 8px; font-size: 15px; color: var(--tinta-suave); }
 .evento__credencial {
   margin-left: auto;
   padding: 4px 14px;

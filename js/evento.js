@@ -49,17 +49,20 @@ function pintarInformacion() {
         </div>
       `).join('')}
     </dl>
-    <p class="evento__descripcion">${descripcion}</p>
+    <div class="evento__descripcion">
+      ${descripcion.split('\n').map((parrafo) => `<p>${parrafo}</p>`).join('')}
+    </div>
   `;
 
   if (ponente) {
     html += `
       <h2 class="evento__subtitulo">Ponente</h2>
       <div class="evento__perfil">
-        <span class="evento__avatar">${dibujarMonstruo(ponente.color, !ponente.nombre)}</span>
+        <span class="evento__avatar">${retratoDePonente(ponente)}</span>
         <div>
           <strong>${ponente.nombre || 'Por anunciar'}</strong>
           <span>${ponente.cargo}</span>
+          ${ponente.bio ? `<p class="evento__bio">${ponente.bio}</p>` : ''}
         </div>
         ${ponente.nombre ? `<span class="evento__credencial">${ponente.credencial}</span>` : ''}
       </div>

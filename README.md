@@ -11,7 +11,7 @@ Abre `index.html` en el navegador. No hay que instalar nada.
 Todo está en `js/data.js`:
 
 - `DIAS`: días del evento y sus fechas.
-- `PONENTES`: nombre, cargo y credencial de cada ponente.
+- `PONENTES`: nombre, cargo y credencial de cada ponente. Opcionales: `foto` (cuadrada, en `img/`) y `bio`.
 - `GRUPOS`: grupos estudiantiles que participan (nombre, tipo, color de su banderín y logo en `img/`).
 - `ACTIVIDADES`: el horario (día, hora, tipo y título). Cada una puede llevar `lugar`, `descripcion` y `organiza` (el id del grupo que la organiza), que se muestran en su página.
 

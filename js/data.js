@@ -19,11 +19,14 @@ const TIPOS = {
 };
 
 // nombre: null significa "por anunciar"
+// Opcionales: foto (imagen cuadrada en img/; si no hay, sale su monstruo) y bio (se muestra en la página de su charla)
 const PONENTES = [
   { id: 'eduardo', nombre: 'Eduardo', cargo: 'CEO de Unergy', credencial: 'Invitado', color: '#f2a33a' },
   { id: 'mariano', nombre: 'Mariano Sosa', cargo: 'Ciencia de datos', credencial: 'Ponente', color: '#8b5fd6' },
   { id: 'aperture', nombre: 'Aperture', cargo: 'Taller de agéntica', credencial: 'Tallerista', color: '#35b6b4' },
-  { id: 'ia-cuantica', nombre: null, cargo: 'Charla: IA cuántica', credencial: 'Por anunciar', color: '#8a94a3' },
+  { id: 'daniel', nombre: 'Daniel Arango Sohm', cargo: 'Conferencista internacional', credencial: 'Ponente', color: '#1667c2',
+    foto: 'img/ponente-daniel-arango.jpg',
+    bio: 'He ganado tres veces el premio al mejor proyecto en Ingeniería de Sistemas en la EAFIT. Soy conferencista internacional y he dado charlas en Medellín JS, Python Medellín (dos veces), Medellín AI, PyCon Colombia, Python Moscow, Perú y BarNLP. Soy mitad colombiano, también tengo ascendencia alemana y rusa, y hablo ruso y alemán.' },
   { id: 'curriculum', nombre: null, cargo: 'Taller de currículum', credencial: 'Por anunciar', color: '#8a94a3' },
 ];
 
@@ -40,7 +43,7 @@ const GRUPOS = [
 // Las horas son provisionales: hay que confirmarlas con el horario oficial.
 // Las competencias llevan además icono, color y resumen para su tarjeta.
 // Opcionales: lugar (ej. 'Bloque M8, auditorio'), descripcion (texto largo
-// para la página de la actividad; si no hay, se usa el resumen) y organiza (id de GRUPOS).
+// para la página de la actividad, cada \n es un párrafo; si no hay, se usa el resumen) y organiza (id de GRUPOS).
 const ACTIVIDADES = [
   // Miércoles
   { id: 'inaugural', dia: 'mie', inicio: '09:00', fin: '10:00', tipo: 'conferencia', titulo: 'Conferencia inaugural', ponente: 'eduardo', lugar: 'Aula Máxima' },
@@ -65,5 +68,9 @@ const ACTIVIDADES = [
     icono: 'control', color: '#7b4fc9', resumen: 'Demuestra quién manda con el control en la mano.' },
   { id: 'karaoke', dia: 'vie', inicio: '14:00', fin: '15:00', tipo: 'social', titulo: 'Karaoke y Just Dance' },
   { id: 'premiacion', dia: 'vie', inicio: '15:00', fin: '16:00', tipo: 'social', titulo: 'Premiación' },
-  { id: 'ia-cuantica', dia: 'vie', inicio: '16:00', fin: '17:00', tipo: 'conferencia', titulo: 'Charla: IA cuántica', ponente: 'ia-cuantica' },
+  { id: 'ia-cuantica', dia: 'vie', inicio: '16:00', fin: '17:00', tipo: 'conferencia',
+    titulo: 'El futuro de los LLM está en la computación cuántica, fotónica y térmica', ponente: 'daniel',
+    descripcion: 'El problema de la IA es el consumo de energía, pero ¿qué pasa si no calculamos con energía?\n' +
+      'Durante esta charla veremos el proceso para llegar a hacer diferentes modelos de lenguaje estado del arte, autorregresivos y de difusión, y entender cómo llegar a la mejor configuración de capas entre los diferentes paradigmas de computación. ¿Dónde puedo usar la cuántica? ¿Dónde puedo poner la térmica? ¿Para qué sirve y qué es eso? ¿Y cómo multiplicar a la velocidad de la luz de forma paralelizada?\n' +
+      'Con demo en vivo y animaciones para que sea intuitivo.' },
 ];

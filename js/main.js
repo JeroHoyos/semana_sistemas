@@ -29,7 +29,7 @@ function pintarPortada() {
 function pintarPonentes() {
   $('#ponentes-miniaturas').innerHTML = PONENTES.map((ponente, indice) => `
     <button class="miniatura" data-indice="${indice}" aria-label="${ponente.nombre || ponente.cargo}">
-      ${dibujarMonstruo(ponente.color, !ponente.nombre)}
+      ${retratoDePonente(ponente)}
     </button>
   `).join('');
 
@@ -54,11 +54,11 @@ function mostrarCarnet(indice) {
         <span class="carnet__semana">Semana</span>
         <span class="carnet__sistemas">— de sistemas —</span>
       </div>
-      <div class="carnet__nombre">${ponente.nombre || '· · ·'}</div>
+      <div class="carnet__nombre" style="--letras: ${(ponente.nombre || '· · ·').length}">${ponente.nombre || '· · ·'}</div>
       <div class="carnet__cargo">${ponente.cargo}</div>
       <div class="carnet__franja">${ponente.credencial}</div>
       <div class="carnet__foto">
-        ${dibujarMonstruo(ponente.color, esMisterio)}
+        ${retratoDePonente(ponente)}
         ${esMisterio ? '<span class="carnet__sello">Clasificado</span>' : ''}
       </div>
     </article>
@@ -226,7 +226,7 @@ function tarjetaDeActividad(actividad) {
 
   const detalles = [];
   if (ponente) {
-    detalles.push(`<span><span class="avatar">${dibujarMonstruo(ponente.color, !ponente.nombre)}</span>${ponente.nombre || 'Por anunciar'}</span>`);
+    detalles.push(`<span><span class="avatar">${retratoDePonente(ponente)}</span>${ponente.nombre || 'Por anunciar'}</span>`);
   }
   if (grupo) {
     detalles.push(`<span>${logoDeGrupo(grupo)}Organiza ${grupo.nombre}</span>`);

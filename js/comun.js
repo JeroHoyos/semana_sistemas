@@ -11,6 +11,11 @@ const buscarPonente = (id) => PONENTES.find((ponente) => ponente.id === id);
 const buscarActividad = (id) => ACTIVIDADES.find((actividad) => actividad.id === id);
 const buscarGrupo = (id) => GRUPOS.find((grupo) => grupo.id === id);
 
+// Foto del ponente si tiene; si no, su monstruo (con "?" si aún no se ha anunciado)
+function retratoDePonente(ponente) {
+  return ponente.foto ? `<img src="${ponente.foto}" alt="">` : dibujarMonstruo(ponente.color, !ponente.nombre);
+}
+
 // Logo redondo pequeño de un grupo (vacío si el grupo no tiene logo)
 function logoDeGrupo(grupo) {
   return grupo.logo ? `<span class="avatar"><img src="${grupo.logo}" alt=""></span>` : '';
