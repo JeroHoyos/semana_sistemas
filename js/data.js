@@ -5,9 +5,9 @@
 
 // fecha: texto libre, por ejemplo '12 nov'. Si está vacía se muestra "Día 1", "Día 2"...
 const DIAS = [
-  { id: 'mie', nombre: 'Miércoles', corto: 'Mié', fecha: '' },
-  { id: 'jue', nombre: 'Jueves', corto: 'Jue', fecha: '' },
-  { id: 'vie', nombre: 'Viernes', corto: 'Vie', fecha: '' },
+  { id: 'mie', nombre: 'Miércoles', corto: 'Mié', fecha: '18 nov' },
+  { id: 'jue', nombre: 'Jueves', corto: 'Jue', fecha: '19 nov' },
+  { id: 'vie', nombre: 'Viernes', corto: 'Vie', fecha: '20 nov' },
 ];
 
 // Tipos de actividad: nombre en las pestañas, etiqueta en las tarjetas y colores
