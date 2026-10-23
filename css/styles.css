@@ -1500,6 +1500,24 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .evento__descripcion { margin-top: 24px; font-size: 17px; color: var(--tinta-suave); }
 .evento__descripcion p + p { margin-top: 12px; }
 
+/* Formato y reglas: una franja por regla con su título arriba */
+.evento__reglas { display: grid; gap: 10px; margin: 0; }
+.evento__reglas div {
+  padding: 14px 18px;
+  border-left: 4px solid var(--azul);
+  border-radius: 0 16px 16px 0;
+  background: #f7f8fa;
+}
+.evento__reglas dt {
+  font-family: var(--letra-estrecha);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--azul-marino);
+}
+.evento__reglas dd { margin: 4px 0 0; color: var(--tinta-suave); }
+
 /* Ponente u organizador: monstruo o logo, nombre y cargo, y la credencial a la derecha */
 .evento__perfil {
   display: flex;

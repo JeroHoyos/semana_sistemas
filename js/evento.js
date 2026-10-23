@@ -54,6 +54,20 @@ function pintarInformacion() {
     </div>
   `;
 
+  if (actividad.reglas) {
+    html += `
+      <h2 class="evento__subtitulo">Formato y reglas</h2>
+      <dl class="evento__reglas">
+        ${actividad.reglas.map((regla) => `
+          <div>
+            <dt>${regla.titulo}</dt>
+            <dd>${regla.texto}</dd>
+          </div>
+        `).join('')}
+      </dl>
+    `;
+  }
+
   if (ponente) {
     html += `
       <h2 class="evento__subtitulo">Ponente</h2>
