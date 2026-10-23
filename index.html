@@ -15,6 +15,16 @@
 
   <!-- PORTADA -->
   <header class="portada foto foto--entrada">
+    <!-- Barra de sesión arriba a la derecha -->
+    <div class="sesion-barra" id="sesion-barra">
+      <button class="portada__boton portada__boton--sesion" id="btn-abrir-auth" type="button">
+        <span id="sesion-texto">Iniciar sesión</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+      </button>
+    </div>
+
     <div class="contenedor portada__contenido">
       <p class="portada__lugar">Facultad de Minas · Medellín</p>
 
@@ -109,8 +119,148 @@
     <p>Semana de Sistemas · Facultad de Minas · Medellín</p>
   </footer>
 
+  <!-- MODAL DE INICIO DE SESIÓN / CARNET DE ASUSTADOR -->
+  <dialog class="auth-modal" id="auth-modal">
+    <div class="auth-modal__caja">
+      <button class="auth-modal__cerrar" id="btn-cerrar-auth" type="button" aria-label="Cerrar ventana">✕</button>
+
+      <div class="auth-modal__cabecera">
+        <div class="auth-modal__ojo" id="auth-icono-ojo"></div>
+        <p class="seccion-titulo__antetitulo">Facultad de Minas · UNAL</p>
+        <h2 class="auth-modal__titulo" id="auth-titulo">Acceso</h2>
+      </div>
+
+      <!-- Vista cuando NO ha iniciado sesión -->
+      <div id="auth-vista-formulario">
+        <div class="horario__dias auth-modal__tabs" role="tablist">
+          <button class="dia" id="tab-login" type="button" aria-pressed="true">
+            <strong>Ingresar</strong>
+          </button>
+          <button class="dia" id="tab-registro" type="button" aria-pressed="false">
+            <strong>Crear Carnet</strong>
+          </button>
+        </div>
+
+        <!-- Creador en vivo del Carnet de Asustador (estilo videojuego) -->
+        <div class="creador-carnet" id="creador-carnet" hidden>
+          <div class="ponentes__carnet creador-carnet__preview" id="preview-carnet-registro"></div>
+
+          <div class="creador-carnet__controles">
+            <div class="creador-carnet__barra-top">
+              <span class="creador-carnet__subtitulo">Personaliza tu monstruo</span>
+              <button type="button" class="btn-aleatorio" id="btn-monstruo-random">
+                🎲 Aleatorio
+              </button>
+            </div>
+
+            <div class="selector-arcade" data-prop="estilo">
+              <span class="selector-arcade__label">Rol</span>
+              <div class="selector-arcade__control">
+                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="selector-arcade__valor" id="val-estilo">Asustador</span>
+                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+
+            <div class="selector-arcade" data-prop="cuerpo">
+              <span class="selector-arcade__label">Cuerpo</span>
+              <div class="selector-arcade__control">
+                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="selector-arcade__valor" id="val-cuerpo">Peludo Manchas</span>
+                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+
+            <div class="selector-arcade" data-prop="color">
+              <span class="selector-arcade__label">Color</span>
+              <div class="selector-arcade__control">
+                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="selector-arcade__valor" id="val-color">
+                  <span class="selector-arcade__dot" id="dot-color"></span>
+                  <span id="txt-color">Azul Sulley</span>
+                </span>
+                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+
+            <div class="selector-arcade" data-prop="ojos">
+              <span class="selector-arcade__label">Ojos</span>
+              <div class="selector-arcade__control">
+                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="selector-arcade__valor" id="val-ojos">1 Ojo Cíclope</span>
+                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+
+            <div class="selector-arcade" data-prop="cuernos">
+              <span class="selector-arcade__label">Cabeza</span>
+              <div class="selector-arcade__control">
+                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="selector-arcade__valor" id="val-cuernos">Cuernos Toro</span>
+                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+
+            <div class="selector-arcade" data-prop="boca">
+              <span class="selector-arcade__label">Boca</span>
+              <div class="selector-arcade__control">
+                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="selector-arcade__valor" id="val-boca">Colmillos</span>
+                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+
+            <div class="selector-arcade" data-prop="accesorio">
+              <span class="selector-arcade__label">Detalle</span>
+              <div class="selector-arcade__control">
+                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="selector-arcade__valor" id="val-accesorio">Al Natural</span>
+                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <form class="auth-form" id="auth-form">
+          <label class="auth-campo" id="campo-nombre" hidden>
+            <span>Nombre en tu carnet</span>
+            <input type="text" id="auth-nombre" placeholder="Ej. Santiago Escobar" maxlength="28" autocomplete="name">
+          </label>
+
+          <label class="auth-campo">
+            <span>Correo institucional</span>
+            <input type="email" id="auth-correo" placeholder="usuario@unal.edu.co" required autocomplete="email">
+          </label>
+
+          <label class="auth-campo">
+            <span>Contraseña</span>
+            <input type="password" id="auth-clave" placeholder="Mínimo 6 caracteres" minlength="6" required autocomplete="current-password">
+          </label>
+
+          <p class="auth-mensaje" id="auth-mensaje" hidden></p>
+
+          <button class="portada__boton auth-form__submit" id="auth-submit" type="submit">
+            <span id="auth-submit-texto">Entrar</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </form>
+      </div>
+
+      <!-- Vista cuando YA inició sesión -->
+      <div class="auth-perfil" id="auth-vista-perfil" hidden>
+        <div class="ponentes__carnet creador-carnet__preview" id="perfil-carnet-final"></div>
+        <p class="auth-perfil__correo" id="perfil-correo"></p>
+        <button class="boton-semana auth-perfil__salir" id="btn-cerrar-sesion" type="button">
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/data.js"></script>
   <script src="js/iconos.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/auth.js"></script>
 </body>
 </html>
