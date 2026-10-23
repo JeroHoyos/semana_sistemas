@@ -22,36 +22,37 @@ const TIPOS = {
 const PONENTES = [
   { id: 'eduardo', nombre: 'Eduardo', cargo: 'CEO de Unergy', credencial: 'Invitado', color: '#f2a33a' },
   { id: 'mariano', nombre: 'Mariano Sosa', cargo: 'Ciencia de datos', credencial: 'Ponente', color: '#8b5fd6' },
-  { id: 'aperture', nombre: 'Aperture', cargo: 'Taller práctico', credencial: 'Tallerista', color: '#35b6b4' },
+  { id: 'aperture', nombre: 'Aperture', cargo: 'Taller de agéntica', credencial: 'Tallerista', color: '#35b6b4' },
   { id: 'ia-cuantica', nombre: null, cargo: 'Charla: IA cuántica', credencial: 'Por anunciar', color: '#8a94a3' },
   { id: 'curriculum', nombre: null, cargo: 'Taller de currículum', credencial: 'Por anunciar', color: '#8a94a3' },
 ];
 
-// Dónde es el evento: se muestra en el mapa de la página de cada actividad
-const SEDE = {
-  nombre: 'Facultad de Minas',
-  direccion: 'Carrera 80 # 65-223, Núcleo Robledo, Medellín',
-  busqueda: 'Facultad de Minas, Universidad Nacional de Colombia, Medellín', // lo que se busca en Google Maps
-};
+// Grupos estudiantiles que apoyan la Semana. Cada uno sale como un banderín de su color.
+// tipo: el texto pequeño debajo del banderín. logo (opcional): imagen cuadrada en img/.
+const GRUPOS = [
+  { id: 'unalgoritmo', nombre: 'UNAlgoritmo', tipo: 'Grupo estudiantil', color: '#9128d9', logo: 'img/grupo-unalgoritmo.jpg' },
+  { id: 'aperture', nombre: 'Aperture', tipo: 'Semillero', color: '#1aa3b8', logo: 'img/grupo-aperture.png' },
+  { id: 'turing-box', nombre: 'Turing Box', tipo: 'Grupo estudiantil', color: '#c4358c', logo: 'img/grupo-turing-box.jpg' },
+];
 
 // Horas en formato 'HH:MM' (24 h). Mantén el orden por día y hora.
 // Las horas son provisionales: hay que confirmarlas con el horario oficial.
 // Las competencias llevan además icono, color y resumen para su tarjeta.
-// Opcionales: lugar (ej. 'Bloque M8, auditorio') y descripcion (texto largo
-// para la página de la actividad; si no hay, se usa el resumen).
+// Opcionales: lugar (ej. 'Bloque M8, auditorio'), descripcion (texto largo
+// para la página de la actividad; si no hay, se usa el resumen) y organiza (id de GRUPOS).
 const ACTIVIDADES = [
   // Miércoles
   { id: 'inaugural', dia: 'mie', inicio: '09:00', fin: '10:00', tipo: 'conferencia', titulo: 'Conferencia inaugural', ponente: 'eduardo' },
   { id: 'feria', dia: 'mie', inicio: '09:00', fin: '12:00', tipo: 'social', titulo: 'Feria de stands' },
   { id: 'datos', dia: 'mie', inicio: '11:00', fin: '12:00', tipo: 'conferencia', titulo: 'Conferencia: Ciencia de datos', ponente: 'mariano' },
-  { id: 'taller-aperture', dia: 'mie', inicio: '14:00', fin: '15:00', tipo: 'taller', titulo: 'Taller Aperture', ponente: 'aperture' },
+  { id: 'taller-aperture', dia: 'mie', inicio: '14:00', fin: '15:00', tipo: 'taller', titulo: 'Taller de agéntica', organiza: 'aperture' },
   { id: 'taller-curriculum', dia: 'mie', inicio: '15:00', fin: '16:00', tipo: 'taller', titulo: 'Taller de currículum', ponente: 'curriculum' },
 
   // Jueves
   { id: 'observacion', dia: 'jue', inicio: '07:00', fin: '10:00', tipo: 'competencia', titulo: 'Carrera de observación',
     icono: 'lupa', color: '#e05a7a', resumen: 'Recorre el campus resolviendo pistas antes que los demás equipos.' },
   { id: 'maraton', dia: 'jue', inicio: '14:00', fin: '18:00', tipo: 'competencia', titulo: 'Maratón de programación',
-    icono: 'codigo', color: '#2f9e5b', resumen: 'Cuatro horas de problemas algorítmicos contra el reloj.' },
+    icono: 'codigo', color: '#2f9e5b', resumen: 'Cuatro horas de problemas algorítmicos contra el reloj.', organiza: 'unalgoritmo' },
 
   // Viernes
   { id: 'atletismo', dia: 'vie', inicio: '08:00', fin: '09:00', tipo: 'competencia', titulo: 'Carrera de atletismo 8‑bit',

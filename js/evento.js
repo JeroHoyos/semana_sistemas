@@ -30,13 +30,14 @@ function pintarPortada() {
 
 function pintarInformacion() {
   const ponente = buscarPonente(actividad.ponente);
+  const grupo = buscarGrupo(actividad.organiza);
   const simultaneas = buscarSimultaneas(actividad);
   const descripcion = actividad.descripcion || actividad.resumen || 'Pronto publicaremos más detalles de esta actividad.';
 
   const datos = [
     { icono: ICONOS.calendario, nombre: 'Día', valor: textoDelDia(buscarDia(actividad.dia)) },
     { icono: ICONOS.reloj, nombre: 'Hora', valor: `${actividad.inicio} – ${actividad.fin}` },
-    { icono: ICONOS.pin, nombre: 'Lugar', valor: actividad.lugar || `${SEDE.nombre} (salón por confirmar)` },
+    { icono: ICONOS.pin, nombre: 'Lugar', valor: actividad.lugar || 'Facultad de Minas (salón por confirmar)' },
   ];
 
   let html = `
@@ -54,13 +55,26 @@ function pintarInformacion() {
   if (ponente) {
     html += `
       <h2 class="evento__subtitulo">Ponente</h2>
-      <div class="evento__ponente">
+      <div class="evento__perfil">
         <span class="evento__avatar">${dibujarMonstruo(ponente.color, !ponente.nombre)}</span>
         <div>
           <strong>${ponente.nombre || 'Por anunciar'}</strong>
           <span>${ponente.cargo}</span>
         </div>
         ${ponente.nombre ? `<span class="evento__credencial">${ponente.credencial}</span>` : ''}
+      </div>
+    `;
+  }
+
+  if (grupo) {
+    html += `
+      <h2 class="evento__subtitulo">Organiza</h2>
+      <div class="evento__perfil">
+        ${grupo.logo ? `<span class="evento__avatar"><img src="${grupo.logo}" alt="Logo de ${grupo.nombre}"></span>` : ''}
+        <div>
+          <strong>${grupo.nombre}</strong>
+          <span>${grupo.tipo}</span>
+        </div>
       </div>
     `;
   }
@@ -94,17 +108,6 @@ function pintarNoEncontrada() {
 }
 
 
-/* ---------- Mapa de la Facultad de Minas ---------- */
-
-function pintarMapa() {
-  const busqueda = encodeURIComponent(SEDE.busqueda);
-
-  $('#mapa-direccion').innerHTML = `${ICONOS.pin}${SEDE.nombre} · ${SEDE.direccion}`;
-  $('#mapa-marco').src = `https://www.google.com/maps?q=${busqueda}&z=17&output=embed`;
-  $('#mapa-enlace').href = `https://www.google.com/maps/search/?api=1&query=${busqueda}`;
-}
-
-
 /* ---------- Arranque ---------- */
 
 if (actividad) {
@@ -113,5 +116,4 @@ if (actividad) {
 } else {
   pintarNoEncontrada();
 }
-pintarMapa();
 $('#pie-escudo').innerHTML = dibujarEscudo();

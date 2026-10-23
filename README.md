@@ -12,12 +12,12 @@ Todo está en `js/data.js`:
 
 - `DIAS`: días del evento y sus fechas.
 - `PONENTES`: nombre, cargo y credencial de cada ponente.
-- `SEDE`: nombre, dirección y búsqueda del mapa de la Facultad de Minas.
-- `ACTIVIDADES`: el horario (día, hora, tipo y título). Cada una puede llevar `lugar` y `descripcion`, que se muestran en su página.
+- `GRUPOS`: grupos estudiantiles que apoyan (nombre, tipo, color de su banderín y logo en `img/`).
+- `ACTIVIDADES`: el horario (día, hora, tipo y título). Cada una puede llevar `lugar`, `descripcion` y `organiza` (el id del grupo que la organiza), que se muestran en su página.
 
 > Las horas del horario son provisionales; hay que confirmarlas.
 
-Al tocar una actividad (en el horario, la vista de semana o las competencias) se abre `evento.html?id=...` con toda su información y el mapa de la Facultad de Minas.
+Al tocar una actividad (en el horario, la vista de semana o las competencias) se abre `evento.html?id=...` con toda su información.
 
 ## Archivos
 
@@ -30,6 +30,6 @@ js/iconos.js     dibujos SVG: íconos, monstruos y escudo
 js/comun.js      funciones que usan las dos páginas
 js/main.js       arma las secciones y hace funcionar el horario
 js/evento.js     arma la página de una actividad
-img/             fotos de la Facultad de Minas, favicon y textura
+img/             fotos de la Facultad de Minas, logos de los grupos, favicon y textura
 ```
 "# semana_sistemas" 

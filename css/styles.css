@@ -11,6 +11,7 @@
    9. Tablet y móvil
    10. Inicio de sesión y modal
    11. Página de una actividad (evento.html)
+   12. Grupos estudiantiles
    ========================================================= */
 
 
@@ -627,6 +628,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: linear-gradient(#e4effa, #a9cbee);
 }
 .actividad__detalles .avatar svg { width: 100%; height: 100%; }
+.avatar img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.avatar:has(img) { box-shadow: 0 0 0 1px var(--linea); }   /* logos de fondo blanco */
 
 .actividad__ver {
   display: inline-flex;
@@ -847,6 +850,22 @@ button { font: inherit; color: inherit; cursor: pointer; }
   color: var(--tinta-suave);
 }
 .competencia__resumen { margin-top: 4px; font-size: 14.5px; color: var(--gris); }
+
+/* "Organiza …" al pie de la tarjeta, alineado con las demás de la fila */
+.competencia__organiza {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding: 14px 0 0 50px;
+  font-family: var(--letra-estrecha);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+.competencia__organiza .avatar { flex: none; width: 26px; height: 26px; }
 
 
 /* ---------- 8. Pie ---------- */
@@ -1370,8 +1389,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
   max-width: 860px;
   margin-top: -36px;
   padding-bottom: 72px;
-  display: grid;
-  gap: 24px;
 }
 
 .evento__tarjeta {
@@ -1391,7 +1408,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
   letter-spacing: .04em;
   color: var(--azul-marino);
 }
-.evento__tarjeta > .evento__subtitulo:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
 
 /* Día, hora y lugar */
 .evento__datos {
@@ -1422,8 +1438,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .evento__descripcion { margin-top: 24px; font-size: 17px; color: var(--tinta-suave); }
 
-/* Ponente: monstruo, nombre y cargo, y su credencial a la derecha */
-.evento__ponente {
+/* Ponente u organizador: monstruo o logo, nombre y cargo, y la credencial a la derecha */
+.evento__perfil {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -1441,14 +1457,22 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: linear-gradient(#e4effa, #a9cbee);
 }
 .evento__avatar svg { width: 100%; height: 100%; }
-.evento__ponente strong {
+.evento__avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 1px solid var(--linea);   /* los logos de fondo blanco no se pierden en la tarjeta */
+  border-radius: inherit;
+}
+.evento__perfil strong {
   display: block;
   font-family: var(--letra-universidad);
   font-weight: 400;
   font-size: 19px;
   color: var(--azul-marino);
 }
-.evento__ponente div span { color: var(--gris); }
+.evento__perfil div span { color: var(--gris); }
 .evento__credencial {
   margin-left: auto;
   padding: 4px 14px;
@@ -1494,43 +1518,122 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .evento__simultaneas span { margin-left: auto; font-size: 14px; color: var(--gris); white-space: nowrap; }
 .evento__simultaneas svg { width: 16px; height: 16px; flex: none; color: var(--azul); }
 
-/* Mapa de la Facultad de Minas */
-.mapa__direccion { display: flex; align-items: center; gap: 8px; color: var(--tinta-suave); }
-.mapa__direccion svg { width: 18px; height: 18px; flex: none; color: var(--azul); }
-
-.mapa__marco {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  margin-top: 16px;
-  border: 0;
-  border-radius: 20px;
-  background: #eef1f4;
-}
-
-.mapa__enlace {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 14px;
-  color: var(--azul);
-  font-family: var(--letra-estrecha);
-  font-weight: 700;
-  font-size: 15px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  text-decoration: none;
-}
-.mapa__enlace:hover { text-decoration: underline; }
-.mapa__enlace svg { width: 16px; height: 16px; }
-
 @media (max-width: 640px) {
   .evento-portada .contenedor { padding: 16px 0 60px; }
   .evento-portada__contenido { margin-top: 28px; }
   .evento-portada__cuando { font-size: 16px; }
-  .evento { padding-bottom: 48px; gap: 18px; }
+  .evento { padding-bottom: 48px; }
   .evento__tarjeta { padding: 22px 18px 24px; border-radius: 24px; }
   .evento__datos { grid-template-columns: 1fr; }
   .evento__descripcion { font-size: 16px; }
-  .mapa__marco { aspect-ratio: 4 / 3; }
+}
+
+
+/* ---------- 12. Grupos estudiantiles ---------- */
+
+.grupos {
+  padding: 80px 0 96px;
+  background: linear-gradient(var(--azul-marino), #061d38);
+}
+.grupos .seccion-titulo__antetitulo { color: #a9d1ff; }
+.grupos .seccion-titulo__intro { color: #c9dcf0; }
+
+.grupos__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 48px 56px;
+}
+
+.grupo {
+  flex: 0 1 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Banderín: un palo de madera a la izquierda y la tela triangular.
+   La sombra va con filter para que siga la forma del triángulo (box-shadow se recortaría). */
+.banderin {
+  position: relative;
+  display: block;
+  padding-left: 9px;
+  filter: drop-shadow(0 14px 16px rgba(0, 0, 0, .45));
+  transform-origin: 0 50%;
+  transition: rotate .3s;
+}
+.banderin::before {                     /* palo */
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -12%;
+  bottom: -26%;
+  width: 9px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #d8b47a, #8a6a3a);
+}
+.grupo:nth-child(3n + 1) .banderin { rotate: -5deg; }
+.grupo:nth-child(3n + 2) .banderin { rotate: 3deg; }
+.grupo:nth-child(3n) .banderin { rotate: -2deg; }
+.grupo:hover .banderin { rotate: 0deg; }
+
+/* Tela: franja blanca cosida, puntitos de fieltro y el color del grupo */
+.banderin__tela {
+  container-type: inline-size;          /* el nombre se mide en cqw (% del ancho de la tela) */
+  display: flex;
+  align-items: center;
+  aspect-ratio: 290 / 110;
+  padding-left: 14%;
+  background:
+    repeating-linear-gradient(rgba(255, 255, 255, .75) 0 5px, transparent 5px 10px) 10% 0 / 2px 100% no-repeat,
+    linear-gradient(90deg, #f6f6f4 0 7%, transparent 7%),
+    radial-gradient(rgba(255, 255, 255, .14) 1px, transparent 1.4px) 0 0 / 6px 6px,
+    var(--color);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+/* El nombre se achica si tiene muchas letras para no salirse de la punta */
+.banderin__nombre {
+  font-family: var(--letra-titulo);
+  font-size: min(8.5cqw, 68cqw / var(--letras));
+  line-height: 1;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #fff;
+  text-shadow: 0 .08em 0 rgba(0, 0, 0, .28);
+}
+
+/* Logo del grupo: un parche redondo cosido sobre el palo. El nombre se corre a la derecha. */
+.banderin__logo {
+  position: absolute;
+  left: -8%;
+  top: 50%;
+  width: 30%;
+  aspect-ratio: 1;
+  translate: 0 -50%;
+  border: 4px solid #fff;
+  border-radius: 50%;
+  background: #fff;
+  object-fit: cover;
+}
+.banderin--con-logo .banderin__tela { padding-left: 24%; }
+.banderin--con-logo .banderin__nombre { font-size: min(8cqw, 62cqw / var(--letras)); }
+
+.grupo__tipo {
+  padding-left: 22px;
+  font-family: var(--letra-universidad);
+  font-size: 13px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: #a9d1ff;
+}
+
+@media (max-width: 640px) {
+  .grupos { padding: 56px 0 72px; }
+  .grupos__lista { gap: 40px; }
+  .grupo { flex-basis: min(100%, 300px); }
 }

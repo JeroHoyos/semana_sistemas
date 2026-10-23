@@ -154,6 +154,7 @@ function coincideConBusqueda(actividad) {
     buscarDia(actividad.dia).nombre,
     ponente?.nombre,
     ponente?.cargo,
+    buscarGrupo(actividad.organiza)?.nombre,
     actividad.lugar,
   ].filter(Boolean).join(' ');
 
@@ -217,6 +218,7 @@ function pintarLista(actividades) {
 function tarjetaDeActividad(actividad) {
   const tipo = TIPOS[actividad.tipo];
   const ponente = buscarPonente(actividad.ponente);
+  const grupo = buscarGrupo(actividad.organiza);
   const simultaneas = buscarSimultaneas(actividad);
 
   // Al buscar se mezclan los tres días, así que se muestra el día de cada actividad
@@ -225,6 +227,9 @@ function tarjetaDeActividad(actividad) {
   const detalles = [];
   if (ponente) {
     detalles.push(`<span><span class="avatar">${dibujarMonstruo(ponente.color, !ponente.nombre)}</span>${ponente.nombre || 'Por anunciar'}</span>`);
+  }
+  if (grupo) {
+    detalles.push(`<span>${logoDeGrupo(grupo)}Organiza ${grupo.nombre}</span>`);
   }
   if (actividad.lugar) {
     detalles.push(`<span>${ICONOS.pin}${actividad.lugar}</span>`);
@@ -316,6 +321,7 @@ function pintarCompetencias() {
 
   $('#competencias-lista').innerHTML = competencias.map((actividad) => {
     const dia = buscarDia(actividad.dia);
+    const grupo = buscarGrupo(actividad.organiza);
     return `
       <a class="competencia" href="${enlaceActividad(actividad.id)}" style="--color: ${actividad.color}">
         <span class="competencia__imagen">
@@ -325,9 +331,27 @@ function pintarCompetencias() {
         <span class="competencia__titulo">${ICONOS.ojo}${actividad.titulo}</span>
         <span class="competencia__hora">${dia.nombre} · ${actividad.inicio} – ${actividad.fin}</span>
         <span class="competencia__resumen">${actividad.resumen}</span>
+        ${grupo ? `<span class="competencia__organiza">${logoDeGrupo(grupo)}Organiza ${grupo.nombre}</span>` : ''}
       </a>
     `;
   }).join('');
+}
+
+
+/* ---------- Grupos estudiantiles ---------- */
+
+// --letras ajusta el tamaño del nombre para que quepa en el banderín.
+// Si el grupo tiene logo, va como un parche redondo sobre el palo.
+function pintarGrupos() {
+  $('#grupos-lista').innerHTML = GRUPOS.map((grupo) => `
+    <li class="grupo" style="--color: ${grupo.color}; --letras: ${grupo.nombre.length}">
+      <span class="banderin ${grupo.logo ? 'banderin--con-logo' : ''}">
+        <span class="banderin__tela"><span class="banderin__nombre">${grupo.nombre}</span></span>
+        ${grupo.logo ? `<img class="banderin__logo" src="${grupo.logo}" alt="Logo de ${grupo.nombre}">` : ''}
+      </span>
+      <span class="grupo__tipo">${grupo.tipo}</span>
+    </li>
+  `).join('');
 }
 
 
@@ -338,4 +362,5 @@ pintarPonentes();
 prepararHorario();
 pintarHorario();
 pintarCompetencias();
+pintarGrupos();
 $('#pie-escudo').innerHTML = dibujarEscudo();
