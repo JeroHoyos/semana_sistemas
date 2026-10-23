@@ -1557,6 +1557,23 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .evento__perfil > div { flex: 1 1 260px; }
 .evento__perfil:has(.evento__bio) { align-items: flex-start; }
 .evento__bio { margin-top: 8px; font-size: 15px; color: var(--tinta-suave); }
+.evento__mas {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  color: var(--azul);
+  font-family: var(--letra-estrecha);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.evento__mas:hover { text-decoration: underline; }
+.evento__mas svg { width: 15px; height: 15px; transition: transform .2s; }
+.evento__mas:hover svg { transform: translateX(3px); }
 .evento__credencial {
   margin-left: auto;
   padding: 4px 14px;

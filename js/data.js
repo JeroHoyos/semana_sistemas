@@ -19,19 +19,20 @@ const TIPOS = {
 };
 
 // nombre: null significa "por anunciar"
-// Opcionales: foto (imagen cuadrada en img/; si no hay, sale su monstruo) y bio (se muestra en la página de su charla)
+// Opcionales: foto (imagen cuadrada en img/; si no hay, sale su monstruo), bio y enlace
+// (LinkedIn o página: sale como "Saber más" en la página de su charla)
 const PONENTES = [
   { id: 'eduardo', nombre: 'Eduardo', cargo: 'CEO de Unergy', credencial: 'Invitado', color: '#f2a33a' },
   { id: 'mariano', nombre: 'Mariano Sosa', cargo: 'Ciencia de datos', credencial: 'Ponente', color: '#8b5fd6' },
   { id: 'daniel', nombre: 'Daniel Arango Sohm', cargo: 'Conferencista internacional', credencial: 'Ponente', color: '#1667c2',
-    foto: 'img/ponente-daniel-arango.jpg',
+    foto: 'img/ponente-daniel-arango.jpg', enlace: 'https://www.linkedin.com/in/daniel-arango-sohm-352b4822a/',
     bio: 'He ganado tres veces el premio al mejor proyecto en Ingeniería de Sistemas en la EAFIT. Soy conferencista internacional y he dado charlas en Medellín JS, Python Medellín (dos veces), Medellín AI, PyCon Colombia, Python Moscow, Perú y BarNLP. Soy mitad colombiano, también tengo ascendencia alemana y rusa, y hablo ruso y alemán.' },
 ];
 
 // Grupos estudiantiles que participan en la Semana. Cada uno sale como un banderín de su color.
 // tipo: el texto pequeño debajo del banderín.
 // Opcionales: logo (imagen cuadrada en img/), enlace (red social o página: el banderín lleva a ella)
-// y descripcion (sale en la página de las actividades que organiza).
+// y descripcion (sale en la página de las actividades que organiza, junto con el enlace como "Saber más").
 const GRUPOS = [
   { id: 'unalgoritmo', nombre: 'UNAlgoritmo', tipo: 'Grupo estudiantil', color: '#9128d9', logo: 'img/grupo-unalgoritmo.jpg',
     enlace: 'https://www.linkedin.com/company/unalgoritmo/',

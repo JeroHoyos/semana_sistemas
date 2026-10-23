@@ -28,6 +28,16 @@ function pintarPortada() {
 
 /* ---------- Información ---------- */
 
+// "Saber más →" debajo de un ponente o grupo; abre su LinkedIn, red social o página en otra pestaña
+function saberMas(enlace, nombre) {
+  if (!enlace) return '';
+  return `
+    <a class="evento__mas" href="${enlace}" target="_blank" rel="noopener" aria-label="Saber más sobre ${nombre}">
+      Saber más ${ICONOS.flecha}
+    </a>
+  `;
+}
+
 function pintarInformacion() {
   const ponente = buscarPonente(actividad.ponente);
   const grupo = buscarGrupo(actividad.organiza);
@@ -77,6 +87,7 @@ function pintarInformacion() {
           <strong>${ponente.nombre || 'Por anunciar'}</strong>
           <span>${ponente.cargo}</span>
           ${ponente.bio ? `<p class="evento__bio">${ponente.bio}</p>` : ''}
+          ${saberMas(ponente.enlace, ponente.nombre)}
         </div>
         ${ponente.nombre ? `<span class="evento__credencial">${ponente.credencial}</span>` : ''}
       </div>
@@ -92,6 +103,7 @@ function pintarInformacion() {
           <strong>${grupo.nombre}</strong>
           <span>${grupo.tipo}</span>
           ${grupo.descripcion ? `<p class="evento__bio">${grupo.descripcion}</p>` : ''}
+          ${saberMas(grupo.enlace, grupo.nombre)}
         </div>
       </div>
     `;
