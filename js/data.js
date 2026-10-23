@@ -57,7 +57,10 @@ const ACTIVIDADES = [
   { id: 'inaugural', dia: 'mie', inicio: '09:00', fin: '10:00', tipo: 'conferencia', titulo: 'Conferencia inaugural', ponente: 'eduardo', lugar: 'Aula Máxima' },
   { id: 'feria', dia: 'mie', inicio: '09:00', fin: '12:00', tipo: 'social', titulo: 'Feria de stands', lugar: 'Hall M10' },
   { id: 'datos', dia: 'mie', inicio: '11:00', fin: '12:00', tipo: 'conferencia', titulo: 'Conferencia: Ciencia de datos', ponente: 'mariano', lugar: 'Aula Máxima' },
-  { id: 'taller-aperture', dia: 'mie', inicio: '14:00', fin: '15:00', tipo: 'taller', titulo: 'De Prompts a Agentes: Inteligencia Artificial Agéntica con Python', organiza: 'aperture', lugar: 'Aula M3-224' },
+  { id: 'taller-aperture', dia: 'mie', inicio: '14:00', fin: '15:00', tipo: 'taller', titulo: 'De Prompts a Agentes: Inteligencia Artificial Agéntica con Python', organiza: 'aperture', lugar: 'Aula M3-224',
+    descripcion: '¿Qué pasa cuando un LLM deja de solo responder y empieza a actuar?\n' +
+      'En este taller veremos cómo crear un agente, hacerlo más capaz y llevarlo a producción. Lo haremos con LangChain, uno de los frameworks de Python más usados para construir aplicaciones y agentes con LLMs.\n' +
+      '¡Ven a descubrir cómo funciona un agente!' },
   { id: 'taller-llm', dia: 'mie', inicio: '15:00', fin: '16:00', tipo: 'taller', titulo: 'LLM, agentes, harness, skills y MCP', organiza: 'turing-box', lugar: 'Aula M3-224',
     descripcion: 'Un recorrido general sobre qué es un LLM, un agente, un harness, skills y MCP.' },
 
