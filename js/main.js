@@ -134,12 +134,37 @@ function cambiarCarnet(html) {
 
 /* ---------- Horario ---------- */
 
+// El horario se guarda en sessionStorage (dura mientras la pestaña esté abierta) para que,
+// al entrar a una actividad y volver, siga como estaba: mismo día, pestaña, búsqueda o vista de semana.
+const CLAVE_HORARIO = 'horario';
+
+function leerHorarioGuardado() {
+  try {
+    const guardado = JSON.parse(sessionStorage.getItem(CLAVE_HORARIO)) || {};
+    // Si cambiaron los datos y ese día o esa pestaña ya no existen, se usan los de siempre
+    if (!buscarDia(guardado.dia)) delete guardado.dia;
+    if (guardado.tipo !== 'todo' && !TIPOS[guardado.tipo]) delete guardado.tipo;
+    return guardado;
+  } catch {
+    return {};   // el navegador no deja usar sessionStorage: el horario arranca como siempre
+  }
+}
+
+function guardarHorario() {
+  try {
+    sessionStorage.setItem(CLAVE_HORARIO, JSON.stringify(estado));
+  } catch {
+    // sin sessionStorage el horario funciona igual, solo que no se recuerda
+  }
+}
+
 // Lo que la persona tiene elegido en el horario
 const estado = {
   dia: DIAS[0].id,   // día seleccionado
   tipo: 'todo',      // pestaña: 'todo' o una clave de TIPOS
   busqueda: '',      // texto del buscador
   verSemana: false,  // true = cuadrícula con toda la semana
+  ...leerHorarioGuardado(),
 };
 
 // Crea los botones del horario y les pone sus eventos (se llama una sola vez)
@@ -176,6 +201,7 @@ function prepararHorario() {
     pintarHorario();
   });
 
+  $('#buscador').value = estado.busqueda;   // la búsqueda guardada, si había una
   $('#buscador').addEventListener('input', (evento) => {
     estado.busqueda = evento.target.value.trim();
     pintarHorario();
@@ -187,8 +213,10 @@ function prepararHorario() {
   });
 }
 
-// Vuelve a dibujar el horario según el estado actual
+// Vuelve a dibujar el horario según el estado actual (y lo guarda para cuando vuelva)
 function pintarHorario() {
+  guardarHorario();
+
   // Paso 1: filtrar por día y búsqueda. Al buscar o ver la semana se usan los tres días.
   const usarTodosLosDias = estado.busqueda || estado.verSemana;
   const filtradas = ACTIVIDADES.filter((actividad) =>
