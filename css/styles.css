@@ -215,6 +215,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* ---------- 4. Ponentes ---------- */
 
+/* ---------- 4. Ponentes ---------- */
+
 .ponentes__barra {
   background: linear-gradient(var(--azul-brillante), var(--azul));
   box-shadow: inset 0 -3px 0 var(--azul-oscuro);
@@ -262,8 +264,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   padding: 64px 0;
 }
 
-/* Carnet: las medidas internas usan cqw (% del ancho del carnet), así escala como una imagen.
-   Orden: cabecera (escudo + "Semana de Sistemas"), cuerpo (foto + nombre y cargo) y franja abajo. */
+/* Carnet: distribución clásica (escudo y marca arriba, nombre y cargo a la izquierda, foto del monstruo a la derecha) */
 .ponentes__carnet {
   container-type: inline-size;
   width: min(100%, 540px);
@@ -282,93 +283,79 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .carnet > * { position: absolute; }
 
-/* Cabecera: escudo a la izquierda y "Semana de Sistemas" centrado a su lado */
-.carnet__escudo { left: 4%; top: 3%; width: 20%; }
+.carnet__escudo { left: 5%; top: 3%; width: 33%; }
 
 .carnet__marca {
-  left: 26%;
-  right: 4%;
-  top: 8%;
+  left: 42%;
+  right: 3%;
+  top: 7%;
   text-align: center;
   line-height: 1;
   font-weight: 700;
   text-transform: uppercase;
 }
-.carnet__semana { display: block; font-size: 9.6cqw; }
-.carnet__sistemas { display: block; margin-top: 1.4cqw; font-size: 3.6cqw; letter-spacing: .3em; }
-
-/* Línea que separa la cabecera del cuerpo */
-.carnet::after {
-  content: '';
-  position: absolute;
-  left: 4%;
-  right: 4%;
-  top: 40%;
-  height: .3cqw;
-  background: rgba(42, 47, 54, .15);
-}
-
-/* Cuerpo: foto a la izquierda; nombre y cargo a la derecha */
-.carnet__foto {
-  left: 5%;
-  top: 44%;
-  width: 21%;
-  height: 35%;
-  border: 1cqw solid var(--azul);
-  background: linear-gradient(#fff, #e9ecef);
-  overflow: hidden;
-}
-.carnet__foto svg { position: absolute; bottom: 0; width: 100%; height: 88%; }
+.carnet__semana { display: block; font-size: 10.6cqw; }
+.carnet__sistemas { display: block; margin-top: 1.6cqw; font-size: 3.9cqw; letter-spacing: .3em; }
 
 .carnet__nombre,
 .carnet__cargo {
-  left: 31%;
-  right: 5%;
+  left: 4%;
+  width: 52%;
+  text-align: center;
   text-transform: uppercase;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.carnet__nombre { top: 51%; font-weight: 600; font-size: 5cqw; }
+.carnet__nombre { top: 59%; font-weight: 600; font-size: 4.4cqw; }
 .carnet__cargo {
-  top: 63%;
+  top: 69.5%;
   font-family: var(--letra-estrecha);
   font-weight: 600;
-  font-size: 3.2cqw;
+  font-size: 3cqw;
   letter-spacing: .08em;
   color: #6b7480;
 }
 
-/* Franja inferior con la credencial */
 .carnet__franja {
   left: 0;
   right: 0;
-  bottom: 0;
-  height: 17%;
+  top: 79%;
+  height: 15%;
   display: flex;
   align-items: center;
-  padding-left: 5%;
+  padding-left: 9%;
   background: var(--azul);
   color: #fff;
   font-weight: 600;
   font-size: 5.2cqw;
-  letter-spacing: .04em;
   text-transform: uppercase;
 }
+
+.carnet__foto {
+  left: 61%;
+  top: 37%;
+  width: 34%;
+  height: 54%;
+  border: 1.3cqw solid var(--azul);
+  background: linear-gradient(#fff, #e9ecef);
+  overflow: hidden;
+}
+.carnet__foto svg { position: absolute; bottom: 0; width: 100%; height: 88%; }
 
 .carnet__sello {
   position: absolute;
   left: 50%;
-  top: 30%;
+  top: 32%;
   transform: translate(-50%, -50%) rotate(-14deg);
-  padding: .4cqw 1cqw;
-  border: .5cqw solid #d23c5a;
-  border-radius: .6cqw;
-  background: rgba(255, 255, 255, .8);
+  padding: .6cqw 1.6cqw;
+  border: .6cqw solid #d23c5a;
+  border-radius: .8cqw;
+  background: rgba(255, 255, 255, .75);
   color: #d23c5a;
   font-family: var(--letra-universidad);
-  font-size: 2cqw;
-  letter-spacing: .06em;
+  font-size: 2.9cqw;
+  letter-spacing: .1em;
   text-transform: uppercase;
   white-space: nowrap;
 }
