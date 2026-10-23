@@ -70,31 +70,43 @@ function dibujarMonstruo(color, esMisterio) {
   </svg>`;
 }
 
-// Escudo de la Semana: laureles, cuernos, la S con ojo y una cinta
+// Escudo de la Semana: laureles, escudo con estrellas, la S con ojo y una cinta
 function dibujarEscudo() {
-  // Hojas de laurel del lado izquierdo, repartidas sobre un arco.
-  // El lado derecho es el mismo laurel reflejado (scale(-1 1)).
-  let hojas = '';
-  for (let i = 0; i < 9; i++) {
-    const angulo = 116 + i * 14;
-    const x = (100 + 80 * Math.cos(angulo * Math.PI / 180)).toFixed(1);
-    const y = (104 + 80 * Math.sin(angulo * Math.PI / 180)).toFixed(1);
-    hojas += `<ellipse cx="${x}" cy="${y}" rx="11.5" ry="4.6" transform="rotate(${angulo + 128} ${x} ${y})"/>`;
+  const azulMarino = '#0a2c52';
+
+  // Laurel izquierdo: un tallo en arco con un par de hojas cada 12°.
+  // El derecho es el mismo laurel reflejado (scale(-1 1)).
+  const hoja = 'M0 0C4-4.5 12-4.5 17 0 12 4.5 4 4.5 0 0Z';
+  let laurel = '<path d="M93.2 177.7A78 78 0 0 1 40.2 49.9" fill="none" stroke-width="2.5" stroke-linecap="round"/>';
+  for (let angulo = 112; angulo <= 208; angulo += 12) {
+    const x = (100 + 78 * Math.cos(angulo * Math.PI / 180)).toFixed(1);
+    const y = (100 + 78 * Math.sin(angulo * Math.PI / 180)).toFixed(1);
+    laurel += `<path d="${hoja}" transform="translate(${x} ${y}) rotate(${angulo + 55})"/>`;  // hacia afuera
+    laurel += `<path d="${hoja}" transform="translate(${x} ${y}) rotate(${angulo + 125})"/>`; // hacia adentro
   }
+  laurel += `<path d="${hoja}" transform="translate(40.2 49.9) rotate(310)"/>`; // punta
+
+  const estrella = 'M0-4.5 1.1-1.5 4.3-1.4 1.8.6 2.6 3.6 0 1.9-2.6 3.6-1.8.6-4.3-1.4-1.1-1.5Z';
 
   return `<svg viewBox="0 0 200 200" aria-hidden="true">
-    <g fill="#2a2f36">
-      <g>${hojas}</g>
-      <g transform="translate(200 0) scale(-1 1)">${hojas}</g>
+    <g fill="${azulMarino}" stroke="${azulMarino}">
+      <g>${laurel}</g>
+      <g transform="translate(200 0) scale(-1 1)">${laurel}</g>
     </g>
-    <g fill="#efe3c4" stroke="#2a2f36" stroke-width="3" stroke-linejoin="round">
-      <path d="M64 50c-6-12-12-20-21-26 14 1 24 9 30 20z"/>
-      <path d="M136 50c6-12 12-20 21-26-14 1-24 9-30 20z"/>
+
+    <!-- Escudo: campo blanco, banda superior con estrellas y filete azul -->
+    <path d="M58 40H142V98C142 130 124 150 100 162 76 150 58 130 58 98Z" fill="#fff"/>
+    <path d="M58 40H142V60H58Z" fill="${azulMarino}"/>
+    <g fill="#fff">
+      <path d="${estrella}" transform="translate(84 50)"/>
+      <path d="${estrella}" transform="translate(100 50)"/>
+      <path d="${estrella}" transform="translate(116 50)"/>
     </g>
-    <path d="M100 34l50 12v54q0 40-50 58-50-18-50-58V46z" fill="#fff" stroke="#2a2f36" stroke-width="5"/>
-    <path d="M100 45l40 10v45q0 32-40 47-40-15-40-47V55z" fill="none" stroke="#1667c2" stroke-width="2.5"/>
-    <g transform="translate(63 61) scale(.62)">
-      <!-- S con ojo: S gruesa con dos ranuras, ojo en almendra y pupila -->
+    <path d="M65 66V98C65 125 80 142 100 153 120 142 135 125 135 98V66" fill="none" stroke="#1667c2" stroke-width="2"/>
+    <path d="M58 40H142V98C142 130 124 150 100 162 76 150 58 130 58 98Z" fill="none" stroke="${azulMarino}" stroke-width="5" stroke-linejoin="round"/>
+
+    <!-- S con ojo: S gruesa con dos ranuras, ojo en almendra y pupila -->
+    <g transform="translate(70 79) scale(.5)">
       <path fill="#1667c2" d="M113.6 11.6L100 32C90 26 70 22 58 23.5 52 24.5 53 30 59 30 72 30.5 88 33 97 37
         112 41 120 52 119.5 66 119 82 100 96 72 96.3 45 96.5 20 94 0 88.6L12.7 67.4
         C30 72.5 48 74 61 73.5 67 73.5 67 67.5 61 67.5 45 68 25 66.5 9.6 63.5
@@ -102,12 +114,14 @@ function dibujarEscudo() {
       <path fill="#fff" d="M23 51C38 34 78 34 93 51 78 68 38 68 23 51Z"/>
       <circle cx="58" cy="50.5" r="10.5" fill="#000"/>
     </g>
-    <g stroke="#2a2f36" stroke-width="3" stroke-linejoin="round">
-      <path d="M54 166l-22 2 8 10-8 11 24-2z" fill="#dfe2e6"/>
-      <path d="M146 166l22 2-8 10 8 11-24-2z" fill="#dfe2e6"/>
-      <path d="M52 160q48 12 96 0v26q-48 12-96 0z" fill="#f6f6f4"/>
+
+    <!-- Cinta con pliegues en las puntas -->
+    <g stroke="${azulMarino}" stroke-width="2.5" stroke-linejoin="round">
+      <path d="M56 166 34 168 42 178 34 188 56 186Z" fill="#d9d2bd"/>
+      <path d="M144 166 166 168 158 178 166 188 144 186Z" fill="#d9d2bd"/>
+      <path d="M52 160Q100 176 148 160V182Q100 198 52 182Z" fill="#f6f1e3"/>
     </g>
-    <text x="100" y="183" text-anchor="middle" font-family="Graduate, serif" font-size="17" fill="#2a2f36">&lt;/&gt;</text>
+    <text x="100" y="185" text-anchor="middle" font-family="Graduate, serif" font-size="14" fill="${azulMarino}">&lt;/&gt;</text>
   </svg>`;
 }
 
