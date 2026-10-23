@@ -323,6 +323,7 @@ function pintarSemana(visibles) {
           style="--color: ${tipo.color}; --fondo: ${tipo.fondo}; ${posicion}">
           <strong>${actividad.titulo}</strong>
           <span>${actividad.inicio} – ${actividad.fin}</span>
+          <span class="bloque__lugar">${ICONOS.pin}${actividad.lugar || 'Por confirmar'}</span>
         </a>
       `;
     }).join('');

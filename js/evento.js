@@ -77,6 +77,7 @@ function pintarInformacion() {
         <div>
           <strong>${grupo.nombre}</strong>
           <span>${grupo.tipo}</span>
+          ${grupo.descripcion ? `<p class="evento__bio">${grupo.descripcion}</p>` : ''}
         </div>
       </div>
     `;
