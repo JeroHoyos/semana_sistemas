@@ -27,7 +27,7 @@ const PONENTES = [
   { id: 'curriculum', nombre: null, cargo: 'Taller de currículum', credencial: 'Por anunciar', color: '#8a94a3' },
 ];
 
-// Grupos estudiantiles que apoyan la Semana. Cada uno sale como un banderín de su color.
+// Grupos estudiantiles que participan en la Semana. Cada uno sale como un banderín de su color.
 // tipo: el texto pequeño debajo del banderín. logo (opcional): imagen cuadrada en img/.
 const GRUPOS = [
   { id: 'unalgoritmo', nombre: 'UNAlgoritmo', tipo: 'Grupo estudiantil', color: '#9128d9', logo: 'img/grupo-unalgoritmo.jpg' },
