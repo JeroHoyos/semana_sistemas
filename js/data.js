@@ -66,7 +66,9 @@ const ACTIVIDADES = [
 
   // Jueves
   { id: 'observacion', dia: 'jue', inicio: '07:00', fin: '10:00', tipo: 'competencia', titulo: 'Carrera de observación',
-    icono: 'lupa', color: '#e05a7a', resumen: 'Recorre el campus resolviendo pistas antes que los demás equipos.', lugar: 'Hall M10' },
+    icono: 'lupa', color: '#e05a7a', resumen: 'Recorre el campus resolviendo pistas antes que los demás equipos.', lugar: 'Hall M10',
+    descripcion: 'Una verdadera prueba de velocidad, lógica y trabajo en equipo. Recorre las estaciones distribuidas alrededor del campus resolviendo acertijos y desafíos en el menor tiempo posible.\n' +
+      '¿Tiene tu equipo la destreza mental y la resistencia necesarias para llevarse la victoria?' },
   { id: 'maraton', dia: 'jue', inicio: '14:00', fin: '18:00', tipo: 'competencia', titulo: 'Maratón de programación',
     icono: 'codigo', color: '#2f9e5b', resumen: 'Cuatro horas de problemas algorítmicos contra el reloj.', organiza: 'unalgoritmo', lugar: 'Salón M7-501',
     descripcion: 'Llega la Maratón de Programación, el evento insignia en la sede Medellín para medir el pensamiento algorítmico, la lógica y el trabajo colaborativo en equipos de tres personas frente a retos de programación.',
@@ -96,7 +98,7 @@ const ACTIVIDADES = [
 
 // Fotos y videos de ediciones anteriores para la galería (los archivos van en img/galeria/).
 // Los .mp4 salen como videos cortos sin sonido; portada es la imagen que se ve mientras cargan.
-// texto: lo que se ve; sale debajo al ampliarla y lo leen los lectores de pantalla.
+// texto: lo que se ve. No sale en pantalla: lo leen los lectores de pantalla.
 const GALERIA = [
   { archivo: 'img/galeria/foto-grupal.jpg', texto: 'Foto grupal en las escaleras de la entrada de la Facultad de Minas' },
   { archivo: 'img/galeria/maraton.jpg', texto: 'Sala de computadores llena de globos durante la maratón de programación' },

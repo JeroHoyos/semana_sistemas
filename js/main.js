@@ -488,7 +488,8 @@ function pintarGaleria() {
 function fotoDeGaleria(indice, oculta) {
   const item = GALERIA[indice];
   const medio = esVideo(item)
-    ? `<video src="${item.archivo}" poster="${item.portada || ''}" muted loop playsinline preload="metadata"></video>`
+    ? `<video src="${item.archivo}" poster="${item.portada || ''}" muted loop playsinline preload="metadata"
+        disablepictureinpicture disableremoteplayback></video>`
     : `<img src="${item.archivo}" alt="" loading="lazy">`;
   return `
     <li>
@@ -523,10 +524,10 @@ function abrirVisor(indice) {
   const item = GALERIA[fotoEnVisor];
 
   $('#visor-medio').innerHTML = esVideo(item)
-    ? `<video src="${item.archivo}" poster="${item.portada || ''}" controls autoplay muted loop playsinline aria-label="${item.texto}"></video>`
+    ? `<video src="${item.archivo}" poster="${item.portada || ''}" controls autoplay muted loop playsinline
+        disablepictureinpicture disableremoteplayback aria-label="${item.texto}"></video>`
     : `<img src="${item.archivo}" alt="${item.texto}">`;
   $('#visor-cuenta').textContent = `${fotoEnVisor + 1} / ${GALERIA.length}`;
-  $('#visor-texto').textContent = item.texto;
 
   if (!$('#visor').open) $('#visor').showModal();
 }

@@ -1810,6 +1810,9 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
   height: 100%;
   object-fit: cover;
 }
+/* El mouse pasa "a través" del video: así el navegador no le pone encima sus botones
+   (imagen en imagen, etc.) y el clic llega a la ficha */
+.galeria__foto video { pointer-events: none; }
 
 /* "Ver todo": todas las fotos quietas en cuadrícula */
 .galeria__cuadricula {
@@ -1861,14 +1864,7 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
   background: var(--azul-marino);
 }
 
-.visor__pie {
-  max-width: 640px;
-  text-align: center;
-  font-size: 16px;
-  color: #c9dcf0;
-}
 .visor__cuenta {
-  display: block;
   font-family: var(--letra-universidad);
   font-size: 13px;
   letter-spacing: .2em;
@@ -1904,7 +1900,6 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
   /* En el celular la foto usa todo el ancho y las flechas bajan junto al texto */
   .visor__medio img,
   .visor__medio video { width: min(100vw - 32px, 100vh - 230px); border-radius: 22px; }
-  .visor__pie { padding-inline: 64px; }
   .visor__boton--anterior,
   .visor__boton--siguiente { top: auto; bottom: 24px; translate: none; width: 46px; height: 46px; }
   .visor__boton--anterior { left: 16px; }
