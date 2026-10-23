@@ -93,11 +93,14 @@ function dibujarEscudo() {
     </g>
     <path d="M100 34l50 12v54q0 40-50 58-50-18-50-58V46z" fill="#fff" stroke="#2a2f36" stroke-width="5"/>
     <path d="M100 45l40 10v45q0 32-40 47-40-15-40-47V55z" fill="none" stroke="#1667c2" stroke-width="2.5"/>
-    <g transform="translate(62 60) scale(.64)">
-      <!-- S con ojo: silueta azul, ojo blanco en almendra y pupila negra -->
-      <path d="M30 6C55-2 95-2 118 14L104 30 118 44C124 60 118 84 92 92 66 100 26 98 2 82L16 66 2 52C-4 36 4 14 30 6Z" fill="#1667c2"/>
-      <path d="M-48 0Q0-32 48 0 0 32-48 0Z" fill="#fff" transform="translate(60 48) rotate(-19)"/>
-      <circle cx="60" cy="48" r="12" fill="#000"/>
+    <g transform="translate(63 61) scale(.62)">
+      <!-- S con ojo: S gruesa con dos ranuras, ojo en almendra y pupila -->
+      <path fill="#1667c2" d="M113.6 11.6L100 32C90 26 70 22 58 23.5 52 24.5 53 30 59 30 72 30.5 88 33 97 37
+        112 41 120 52 119.5 66 119 82 100 96 72 96.3 45 96.5 20 94 0 88.6L12.7 67.4
+        C30 72.5 48 74 61 73.5 67 73.5 67 67.5 61 67.5 45 68 25 66.5 9.6 63.5
+        3 56 0 46 1 36 2 18 10 6 26 2.5 42-.5 58-.5 72 0 88 1 104 5 113.6 11.6Z"/>
+      <path fill="#fff" d="M23 51C38 34 78 34 93 51 78 68 38 68 23 51Z"/>
+      <circle cx="58" cy="50.5" r="10.5" fill="#000"/>
     </g>
     <g stroke="#2a2f36" stroke-width="3" stroke-linejoin="round">
       <path d="M54 166l-22 2 8 10-8 11 24-2z" fill="#dfe2e6"/>
