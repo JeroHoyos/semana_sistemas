@@ -21,7 +21,6 @@ function pintarPortada() {
   $('#evento-portada').innerHTML = `
     <span class="evento-portada__tipo" style="--color: ${tipo.color}; --fondo: ${tipo.fondo}">${ICONOS.ojo}${tipo.singular}</span>
     <h1 class="evento-portada__titulo">${actividad.titulo}</h1>
-    <p class="evento-portada__cuando">${textoDelDia(buscarDia(actividad.dia))} · ${actividad.inicio} – ${actividad.fin}</p>
   `;
 }
 

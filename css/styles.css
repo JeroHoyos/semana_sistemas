@@ -1442,7 +1442,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
   text-shadow: 0 2px 12px rgba(0, 0, 0, .35);
 }
 
-.evento-portada__cuando { margin-top: 12px; font-size: 18px; color: #a9d1ff; }
 
 /* Las tarjetas se montan un poco sobre la foto de la cabecera */
 .evento {
@@ -1622,7 +1621,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @media (max-width: 640px) {
   .evento-portada .contenedor { padding: 16px 0 60px; }
   .evento-portada__contenido { margin-top: 28px; }
-  .evento-portada__cuando { font-size: 16px; }
   .evento { padding-bottom: 48px; }
   .evento__tarjeta { padding: 22px 18px 24px; border-radius: 24px; }
   .evento__datos { grid-template-columns: 1fr; }
