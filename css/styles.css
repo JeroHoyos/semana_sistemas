@@ -1461,6 +1461,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: linear-gradient(#e4effa, #a9cbee);
 }
 .evento__avatar svg { width: 100%; height: 100%; }
+.evento__avatar--foto { width: 150px; height: 150px; border-radius: 22px; }   /* foto real del ponente */
 .evento__avatar img {
   display: block;
   width: 100%;
@@ -1533,6 +1534,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .evento__tarjeta { padding: 22px 18px 24px; border-radius: 24px; }
   .evento__datos { grid-template-columns: 1fr; }
   .evento__descripcion { font-size: 16px; }
+  .evento__avatar--foto { width: 120px; height: 120px; }
+  .evento__perfil > div { order: 1; }   /* el texto baja y la credencial queda junto a la foto */
 }
 
 

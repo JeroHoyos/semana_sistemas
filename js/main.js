@@ -38,12 +38,39 @@ function pintarPonentes() {
     if (boton) mostrarCarnet(Number(boton.dataset.indice));
   });
 
+  // La rotación se pausa mientras el mouse o el foco del teclado están sobre los ponentes.
+  // Al salir vuelve a contar desde cero, así el carnet elegido se ve el tiempo completo.
+  const seccion = $('#ponentes');
+  seccion.addEventListener('mouseenter', pausarCarnets);
+  seccion.addEventListener('mouseleave', rotarCarnets);
+  seccion.addEventListener('focusin', pausarCarnets);
+  seccion.addEventListener('focusout', rotarCarnets);
+
   mostrarCarnet(0);
+  rotarCarnets();
+}
+
+// Cada SEGUNDOS_POR_CARNET pasa solo al siguiente ponente (no rota si la persona pidió menos movimiento)
+const SEGUNDOS_POR_CARNET = 5;
+let carnetActual = 0;
+let temporizadorCarnets;
+
+function rotarCarnets() {
+  pausarCarnets();
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  temporizadorCarnets = setInterval(() => {
+    mostrarCarnet((carnetActual + 1) % PONENTES.length);
+  }, SEGUNDOS_POR_CARNET * 1000);
+}
+
+function pausarCarnets() {
+  clearInterval(temporizadorCarnets);
 }
 
 function mostrarCarnet(indice) {
   const ponente = PONENTES[indice];
   const esMisterio = !ponente.nombre;
+  carnetActual = indice;
 
   $$('.miniatura').forEach((boton, i) => boton.setAttribute('aria-pressed', i === indice));
 

@@ -58,7 +58,7 @@ function pintarInformacion() {
     html += `
       <h2 class="evento__subtitulo">Ponente</h2>
       <div class="evento__perfil">
-        <span class="evento__avatar">${retratoDePonente(ponente)}</span>
+        <span class="evento__avatar ${ponente.foto ? 'evento__avatar--foto' : ''}">${retratoDePonente(ponente)}</span>
         <div>
           <strong>${ponente.nombre || 'Por anunciar'}</strong>
           <span>${ponente.cargo}</span>
