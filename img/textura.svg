@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180">
+  <!-- Ruido suave que imita papel -->
+  <filter id="ruido">
+    <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" stitchTiles="stitch"/>
+    <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .09 0"/>
+  </filter>
+  <rect width="100%" height="100%" filter="url(#ruido)"/>
+</svg>

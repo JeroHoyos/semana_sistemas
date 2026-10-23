@@ -1,0 +1,891 @@
+/* =========================================================
+   SEMANA DE SISTEMAS — ESTILOS
+   1. Variables y base
+   2. Fondos con fotos
+   3. Portada
+   4. Ponentes
+   5. Horario
+   6. Horario: vista semanal
+   7. Competencias
+   8. Pie
+   9. Tablet y móvil
+   ========================================================= */
+
+
+/* ---------- 1. Variables y base ---------- */
+
+:root {
+  --azul-marino: #0a2c52;
+  --azul: #1667c2;
+  --azul-oscuro: #0f4f99;
+  --azul-brillante: #2580da;
+  --papel: #e9e9e7;
+  --tinta: #26303b;
+  --tinta-suave: #4d5866;
+  --gris: #6f7a87;
+  --linea: #e2e6eb;
+
+  --letra-titulo: 'Alfa Slab One', serif;      /* letras gruesas tipo uniforme */
+  --letra-universidad: 'Graduate', serif;       /* letras de universidad */
+  --letra-carnet: 'Cinzel', serif;              /* letras del carnet */
+  --letra-texto: 'Barlow', sans-serif;
+  --letra-estrecha: 'Barlow Condensed', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: var(--letra-texto);
+  line-height: 1.55;
+  color: var(--tinta);
+  background: url(../img/textura.svg), var(--papel);
+}
+
+h1, h2, h3, h4, p { margin: 0; }
+svg { display: block; }
+button { font: inherit; color: inherit; cursor: pointer; }
+
+.contenedor {
+  width: min(1180px, 100% - 32px);
+  margin-inline: auto;
+}
+
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+
+/* ---------- 2. Fondos con fotos de la Facultad de Minas ----------
+   Uso: class="foto foto--entrada". La foto va en ::before y un velo azul en ::after. */
+
+.foto {
+  position: relative;
+  isolation: isolate;               /* mantiene la foto detrás del contenido */
+  overflow: hidden;
+  background-color: var(--azul-marino);
+}
+.foto::before,
+.foto::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+}
+.foto::before {
+  inset: -14px;                     /* margen extra para que el desenfoque no deje bordes */
+  background-size: cover;
+  background-position: center;
+  filter: blur(2px);                /* las fotos son pequeñas: así no se ven pixeladas */
+}
+.foto::after {
+  inset: 0;
+  background: linear-gradient(rgba(10, 44, 82, .6), rgba(10, 44, 82, .8));
+}
+
+.foto--entrada::before   { background-image: url(../img/campus-entrada.png); }
+.foto--edificio::before  { background-image: url(../img/campus-edificio.png); }
+.foto--auditorio::before { background-image: url(../img/campus-auditorio.png); }
+
+.foto--suave::after { background: rgba(10, 44, 82, .35); }
+.foto--clara { background-color: var(--papel); }
+.foto--clara::after { background: rgba(236, 236, 234, .9); }
+
+
+/* ---------- 3. Portada ---------- */
+
+.portada__contenido {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 88px 0 96px;
+}
+
+.portada__lugar {
+  font-family: var(--letra-universidad);
+  font-size: 14px;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: #a9d1ff;
+}
+
+.portada__titulo { margin-top: 10px; }
+
+.portada__antetitulo {
+  display: block;
+  font-family: var(--letra-universidad);
+  font-size: clamp(22px, 3.2vw, 38px);
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+/* Letras tipo uniforme universitario: relleno azul, borde blanco y contorno azul oscuro.
+   El contorno exterior es una copia del texto (::before) con un trazo más grueso detrás. */
+.letras-varsity {
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+  font-family: var(--letra-titulo);
+  font-weight: 400;
+  font-size: clamp(54px, 10.6vw, 138px);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--azul);
+  -webkit-text-stroke: .1em #fff;
+  paint-order: stroke fill;
+}
+.letras-varsity::before {
+  content: attr(data-texto);
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  -webkit-text-stroke: .2em var(--azul-oscuro);
+  paint-order: stroke fill;
+  filter: drop-shadow(0 .06em 0 rgba(0, 0, 0, .3));
+}
+
+/* Días + botón, en una fila (en móvil se apilan solos) */
+.portada__acciones {
+  margin-top: 44px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+}
+
+.portada__dias {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 2px solid rgba(255, 255, 255, .4);
+  border-radius: 999px;
+  background: rgba(10, 44, 82, .5);
+}
+.portada__dias li {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 52px;
+  padding: 0 24px;
+  font-family: var(--letra-universidad);
+  font-size: 17px;
+  line-height: 1.1;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #fff;
+}
+.portada__dias li + li { border-left: 1px solid rgba(255, 255, 255, .25); }
+.portada__dias small {
+  font-family: var(--letra-texto);
+  font-size: 11px;
+  letter-spacing: .04em;
+  color: #a9d1ff;
+}
+
+.portada__boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: 56px;
+  padding: 0 26px 0 30px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--azul-marino);
+  font-family: var(--letra-universidad);
+  font-size: 15px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  /* doble borde: blanco por fuera y una línea azul por dentro */
+  box-shadow: inset 0 0 0 4px #fff, inset 0 0 0 6px var(--azul), 0 12px 26px -10px rgba(0, 0, 0, .6);
+  transition: transform .15s;
+}
+.portada__boton:hover { transform: translateY(-2px); }
+.portada__boton svg { width: 18px; height: 18px; color: var(--azul); }
+
+
+/* ---------- 4. Ponentes ---------- */
+
+.ponentes__barra {
+  background: linear-gradient(var(--azul-brillante), var(--azul));
+  box-shadow: inset 0 -3px 0 var(--azul-oscuro);
+}
+.ponentes__barra .contenedor {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 0 14px;
+}
+
+.ponentes__titulo {
+  position: absolute;      /* a la izquierda, sin empujar las miniaturas del centro */
+  left: 0;
+  font-family: var(--letra-universidad);
+  font-weight: 400;
+  font-size: 18px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.ponentes__miniaturas {
+  display: flex;
+  gap: 10px;
+}
+.miniatura {
+  flex: none;
+  width: 86px;
+  height: 60px;
+  padding: 0;
+  border: 4px solid var(--azul-oscuro);
+  background: linear-gradient(#e4effa, #a9cbee);
+  transition: transform .2s;
+}
+.miniatura svg { width: 100%; height: 100%; }
+.miniatura:hover { transform: translateY(-2px); }
+.miniatura[aria-pressed="true"] { border-color: #fff; }
+
+.ponentes__escena .contenedor {
+  display: flex;
+  justify-content: center;
+  padding: 64px 0;
+}
+
+/* Carnet: las medidas internas usan cqw (% del ancho del carnet), así escala como una imagen */
+.ponentes__carnet {
+  container-type: inline-size;
+  width: min(100%, 540px);
+}
+
+.carnet {
+  position: relative;
+  aspect-ratio: 484 / 288;
+  border-radius: 4.2cqw;
+  overflow: hidden;
+  background: linear-gradient(160deg, #fbfbfa, #e6e7e9);
+  box-shadow: 0 26px 46px -10px rgba(0, 0, 0, .55);
+  font-family: var(--letra-carnet);
+  color: #2a2f36;
+  animation: aparecer .4s ease;
+}
+.carnet > * { position: absolute; }
+
+.carnet__escudo { left: 5%; top: 3%; width: 33%; }
+
+.carnet__marca {
+  left: 42%;
+  right: 3%;
+  top: 7%;
+  text-align: center;
+  line-height: 1;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.carnet__semana { display: block; font-size: 10.6cqw; }
+.carnet__sistemas { display: block; margin-top: 1.6cqw; font-size: 3.9cqw; letter-spacing: .3em; }
+
+.carnet__nombre,
+.carnet__cargo {
+  left: 4%;
+  width: 52%;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.carnet__nombre { top: 59%; font-weight: 600; font-size: 4.4cqw; }
+.carnet__cargo {
+  top: 69.5%;
+  font-family: var(--letra-estrecha);
+  font-weight: 600;
+  font-size: 3cqw;
+  letter-spacing: .08em;
+  color: #6b7480;
+}
+
+.carnet__franja {
+  left: 0;
+  right: 0;
+  top: 79%;
+  height: 15%;
+  display: flex;
+  align-items: center;
+  padding-left: 9%;
+  background: var(--azul);
+  color: #fff;
+  font-weight: 600;
+  font-size: 5.2cqw;
+  text-transform: uppercase;
+}
+
+.carnet__foto {
+  left: 61%;
+  top: 37%;
+  width: 34%;
+  height: 54%;
+  border: 1.3cqw solid var(--azul);
+  background: linear-gradient(#fff, #e9ecef);
+  overflow: hidden;
+}
+.carnet__foto svg { position: absolute; bottom: 0; width: 100%; height: 88%; }
+
+.carnet__sello {
+  position: absolute;
+  left: 50%;
+  top: 32%;
+  transform: translate(-50%, -50%) rotate(-14deg);
+  padding: .6cqw 1.6cqw;
+  border: .6cqw solid #d23c5a;
+  border-radius: .8cqw;
+  background: rgba(255, 255, 255, .75);
+  color: #d23c5a;
+  font-family: var(--letra-universidad);
+  font-size: 2.9cqw;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.carnet--misterio .carnet__franja { background: #75808e; }
+.carnet--misterio .carnet__foto { border-color: #75808e; }
+
+
+/* ---------- 5. Horario ---------- */
+
+.horario { padding: 80px 0 88px; }
+
+.horario__tarjeta {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 28px 28px 34px;
+  background: #fff;
+  border-radius: 30px;
+  box-shadow: 0 34px 70px -28px rgba(0, 0, 0, .5);
+}
+
+.horario__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.horario__icono { width: 30px; height: 30px; color: var(--azul-marino); }
+.horario__cabecera h2 {
+  font-family: var(--letra-universidad);
+  font-weight: 400;
+  font-size: 30px;
+  letter-spacing: .04em;
+  color: var(--azul-marino);
+}
+.horario__rango {
+  margin-left: auto;
+  padding: 4px 14px;
+  border: 1px solid #d5dbe2;
+  border-radius: 999px;
+  font-size: 14px;
+  color: var(--tinta-suave);
+}
+
+.horario__banda {
+  margin: 22px 0 18px;
+  padding: 15px 20px;
+  border-radius: 999px;
+  background: var(--azul-marino);
+  box-shadow: inset 0 0 0 4px var(--azul-marino), inset 0 0 0 6px var(--azul-brillante);
+  color: #fff;
+  text-align: center;
+  font-family: var(--letra-universidad);
+  font-size: 17px;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+}
+
+/* Botones de día */
+.horario__dias {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.dia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 13px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--gris);
+  transition: background .2s;
+}
+.dia:hover { background: #f1f4f8; }
+.dia strong {
+  font-family: var(--letra-universidad);
+  font-weight: 400;
+  font-size: 17px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.dia span { font-size: 14px; font-weight: 600; color: var(--tinta); }
+.dia[aria-pressed="true"] {
+  background: linear-gradient(var(--azul-brillante), var(--azul));
+  color: #fff;
+  box-shadow: inset 0 0 0 3px var(--azul), inset 0 0 0 5px rgba(255, 255, 255, .55);
+}
+.dia[aria-pressed="true"] span { color: #fff; }
+
+.horario__encabezado { margin: 20px 0 16px; text-align: center; }
+.horario__encabezado h3 { font-weight: 500; font-size: 22px; }
+.horario__encabezado p { font-size: 14px; color: var(--gris); }
+
+/* Buscador + botón "Semana" */
+.horario__herramientas { display: flex; gap: 10px; }
+
+.buscador {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 18px;
+  border: 1px solid #e2e6ec;
+  border-radius: 999px;
+  background: #f3f5f8;
+  color: var(--gris);
+}
+.buscador:focus-within { border-color: var(--azul); }
+.buscador svg { width: 18px; height: 18px; flex: none; }
+.buscador input {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 15px;
+  color: var(--tinta);
+  outline: none;
+}
+
+.boton-semana {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 18px;
+  border: 1px solid #e2e6ec;
+  border-radius: 999px;
+  background: #f3f5f8;
+  color: var(--tinta-suave);
+  font-family: var(--letra-estrecha);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.boton-semana svg { width: 18px; height: 18px; }
+.boton-semana[aria-pressed="true"] {
+  background: var(--azul-marino);
+  border-color: var(--azul-marino);
+  color: #fff;
+}
+
+/* Pestañas por tipo de actividad */
+.horario__pestanas {
+  display: flex;
+  margin-top: 18px;
+  border-bottom: 1px solid var(--linea);
+}
+.pestana {
+  flex: 1 0 auto;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 12px 14px;
+  border: 0;
+  background: none;
+  color: #7b8591;
+  font-family: var(--letra-estrecha);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.pestana::before {                      /* puntito de color del tipo */
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color);
+}
+.pestana[aria-pressed="true"] { color: var(--azul-marino); }
+.pestana[aria-pressed="true"]::after {  /* subrayado de la pestaña activa */
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: -1px;
+  height: 3px;
+  background: var(--azul-marino);
+}
+.pestana--vacia { opacity: .5; }
+
+/* Tarjetas de actividad */
+.horario__lista {
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.actividad {
+  padding: 18px 26px 20px;
+  text-align: center;
+  background: #fff;
+  border: 1px solid var(--linea);
+  border-left: 6px solid var(--color);
+  border-radius: 26px;
+  box-shadow: 0 8px 22px -12px rgba(10, 44, 82, .25);
+  animation: aparecer .35s ease;
+}
+.actividad--resaltada { animation: resaltar 1.8s ease; }
+@keyframes resaltar {
+  15%, 60% { box-shadow: 0 0 0 4px var(--color); }
+}
+
+.actividad__tipo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color);
+  font-family: var(--letra-estrecha);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.actividad__tipo svg { width: 16px; height: 16px; }
+
+.actividad__titulo {
+  margin: 6px 0 4px;
+  font-family: var(--letra-universidad);
+  font-weight: 400;
+  font-size: 21px;
+  line-height: 1.25;
+  color: var(--azul-marino);
+}
+
+.actividad__hora { font-size: 15px; color: var(--gris); }
+
+.actividad__detalles {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 18px;
+  margin-top: 10px;
+  color: var(--tinta-suave);
+  font-family: var(--letra-estrecha);
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.actividad__detalles:empty { display: none; }
+.actividad__detalles > span { display: inline-flex; align-items: center; gap: 7px; }
+.actividad__detalles svg { width: 15px; height: 15px; flex: none; }
+
+/* "A la vez que…" puede ocupar dos renglones: el ícono va en línea con el texto */
+.actividad__detalles > .actividad__simultanea { display: block; color: var(--gris); }
+.actividad__simultanea svg { display: inline-block; vertical-align: -2px; margin-right: 6px; }
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(#e4effa, #a9cbee);
+}
+.actividad__detalles .avatar svg { width: 100%; height: 100%; }
+
+.horario__vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 34px 20px;
+  text-align: center;
+  color: var(--gris);
+  border: 2px dashed var(--linea);
+  border-radius: 26px;
+}
+.horario__vacio svg { width: 48px; height: 48px; }
+
+
+/* ---------- 6. Horario: vista semanal ---------- */
+
+.semana {
+  margin-top: 20px;
+  overflow-x: auto;                    /* en pantallas pequeñas se desliza de lado */
+  border: 1px solid var(--linea);
+  border-radius: 22px;
+}
+
+.semana__rejilla {
+  --hora: 62px;                        /* alto de cada hora */
+  display: grid;
+  grid-template-columns: 58px repeat(3, minmax(170px, 1fr));
+  min-width: 620px;
+}
+
+.semana__cabecera {
+  padding: 12px 8px;
+  background: var(--azul-marino);
+  color: #fff;
+  text-align: center;
+  font-family: var(--letra-universidad);
+  font-size: 14px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.semana__horas {
+  display: grid;
+  grid-auto-rows: var(--hora);
+  background: #f7f8fa;
+  border-right: 1px solid var(--linea);
+}
+.semana__horas span {
+  padding: 4px 8px 0 0;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gris);
+}
+
+.semana__columna {
+  position: relative;
+  border-right: 1px solid var(--linea);
+  /* una línea gris por cada hora */
+  background: repeating-linear-gradient(#fff 0 calc(var(--hora) - 1px), #eef1f4 0 var(--hora));
+}
+.semana__columna:last-child { border-right: 0; }
+
+/* main.js pone en cada bloque: --desde (horas desde la primera), --dura (horas),
+   --carril (columna dentro del día) y --carriles (cuántas columnas tiene ese día) */
+.bloque {
+  position: absolute;
+  top: calc(var(--desde) * var(--hora) + 3px);
+  height: calc(var(--dura) * var(--hora) - 6px);
+  left: calc(100% / var(--carriles) * var(--carril) + 4px);
+  width: calc(100% / var(--carriles) - 8px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 6px 8px;
+  overflow: hidden;
+  text-align: left;
+  border: 0;
+  border-left: 4px solid var(--color);
+  border-radius: 10px;
+  background: var(--fondo);
+}
+.bloque strong {
+  font-family: var(--letra-estrecha);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.15;
+  text-transform: uppercase;
+  color: var(--azul-marino);
+}
+.bloque span { font-size: 12px; color: var(--tinta-suave); }
+.bloque--atenuado { opacity: .22; }
+
+
+/* ---------- 7. Competencias ---------- */
+
+.competencias { padding: 80px 0 90px; }
+
+.seccion-titulo {
+  max-width: 640px;
+  margin: 0 auto 40px;
+  text-align: center;
+}
+.seccion-titulo__antetitulo {
+  font-family: var(--letra-universidad);
+  font-size: 13px;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: var(--azul);
+}
+.seccion-titulo h2 {
+  margin-top: 6px;
+  font-family: var(--letra-titulo);
+  font-weight: 400;
+  font-size: clamp(36px, 5vw, 54px);
+  line-height: 1.05;
+  color: var(--azul);
+  -webkit-text-stroke: 6px #fff;
+  paint-order: stroke fill;
+  filter: drop-shadow(0 0 1px var(--azul-oscuro)) drop-shadow(0 2px 0 rgba(10, 44, 82, .25));
+}
+.seccion-titulo__intro { margin-top: 12px; font-size: 17px; color: var(--tinta-suave); }
+
+/* 3 tarjetas por fila; las de la última fila quedan centradas */
+.competencias__lista {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 26px;
+}
+
+.competencia {
+  flex: 0 1 calc((100% - 52px) / 3);
+  display: flex;
+  flex-direction: column;
+  padding: 13px 13px 20px;
+  border: 0;
+  text-align: left;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .08), 0 14px 26px -16px rgba(0, 0, 0, .35);
+  transition: transform .2s;
+}
+.competencia:hover { transform: translateY(-5px); }
+
+.competencia__imagen {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 300 / 122;
+  color: #fff;
+  background:
+    radial-gradient(rgba(255, 255, 255, .22) 1.3px, transparent 1.6px) 0 0 / 11px 11px,                         /* puntos */
+    repeating-conic-gradient(from 0deg at 50% 125%, rgba(255, 255, 255, .13) 0 5deg, transparent 5deg 10deg),   /* rayos */
+    var(--color);
+}
+.competencia__imagen svg { width: 68px; height: 68px; }
+
+.competencia__dia {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--color);
+  font-family: var(--letra-universidad);
+  font-size: 12px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.competencia__titulo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 8px 4px;
+  font-family: var(--letra-titulo);
+  font-size: 18px;
+  line-height: 1.15;
+  text-transform: uppercase;
+  color: #a5a9ae;
+  transition: color .2s;
+}
+.competencia__titulo svg { width: 28px; height: 28px; flex: none; }
+.competencia:hover .competencia__titulo { color: var(--color); }
+
+.competencia__hora,
+.competencia__resumen { padding-left: 50px; }
+.competencia__hora {
+  font-family: var(--letra-estrecha);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+.competencia__resumen { margin-top: 4px; font-size: 14.5px; color: var(--gris); }
+
+
+/* ---------- 8. Pie ---------- */
+
+.pie {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 32px 16px;
+  text-align: center;
+  font-size: 14px;
+  color: #8a9099;
+  border-top: 1px solid #cfd0cd;
+}
+.pie__escudo { width: 44px; filter: grayscale(1); opacity: .5; }
+
+
+/* ---------- 9. Tablet y móvil ---------- */
+
+/* Tablet: título de ponentes encima de las miniaturas y 2 competencias por fila */
+@media (max-width: 980px) {
+  .ponentes__barra .contenedor { flex-direction: column; }
+  .ponentes__titulo { position: static; font-size: 15px; }
+  .competencia { flex-basis: calc((100% - 26px) / 2); }
+}
+
+/* Móvil */
+@media (max-width: 640px) {
+  /* Portada */
+  .portada__contenido { padding: 56px 0 64px; }
+  .portada__lugar { font-size: 12px; letter-spacing: .16em; }
+  .letras-varsity { font-size: 15.2vw; }
+  .portada__acciones { margin-top: 32px; }
+  .portada__dias li { height: 48px; padding: 0 16px; font-size: 15px; }
+  .portada__boton { height: 52px; }
+
+  /* Ponentes: miniaturas más pequeñas para que quepan las 5 */
+  .ponentes__miniaturas { gap: 8px; }
+  .miniatura { width: 62px; height: 46px; border-width: 3px; }
+  .ponentes__escena .contenedor { padding: 36px 0; }
+
+  /* Horario */
+  .horario { padding: 48px 0 56px; }
+  .horario__tarjeta { padding: 20px 14px 22px; border-radius: 24px; }
+  .horario__cabecera h2 { font-size: 24px; }
+  .horario__rango { margin-left: 0; }
+  .horario__banda { padding: 12px 14px; font-size: 13px; letter-spacing: .16em; }
+  .dia { padding: 10px 4px; }
+  .dia strong { font-size: 14px; }
+  .boton-semana { padding: 0 14px; }
+  .boton-semana span { display: none; }   /* solo el ícono */
+
+  /* Pestañas: pasan a ser fichas que bajan de renglón en vez de salirse de la pantalla */
+  .horario__pestanas { flex-wrap: wrap; gap: 6px; border-bottom: 0; }
+  .pestana { flex: 0 1 auto; padding: 7px 12px; border: 1px solid var(--linea); border-radius: 999px; font-size: 13px; }
+  .pestana[aria-pressed="true"] { background: var(--azul-marino); border-color: var(--azul-marino); color: #fff; }
+  .pestana[aria-pressed="true"]::after { display: none; }
+
+  .actividad { padding: 16px 18px 18px; border-radius: 22px; }
+  .actividad__titulo { font-size: 18px; }
+
+  /* Competencias: una por fila */
+  .competencias { padding: 56px 0 64px; }
+  .competencia { flex-basis: 100%; }
+}
+
+/* Si la persona pidió menos movimiento en su sistema */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation: none !important; transition: none !important; }
+}

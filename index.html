@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Semana de Sistemas · Facultad de Minas</title>
+  <meta name="description" content="Tres días de conferencias, talleres y competencias en la Facultad de Minas.">
+  <link rel="icon" href="img/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Cinzel:wght@600;700&family=Graduate&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- PORTADA -->
+  <header class="portada foto foto--entrada">
+    <div class="contenedor portada__contenido">
+      <p class="portada__lugar">Facultad de Minas · Medellín</p>
+
+      <h1 class="portada__titulo">
+        <span class="portada__antetitulo">Semana de</span>
+        <span class="letras-varsity" data-texto="Sistemas">Sistemas</span>
+      </h1>
+
+      <div class="portada__acciones">
+        <ul class="portada__dias" id="portada-dias" aria-label="Días del evento"></ul>
+        <a class="portada__boton" href="#horario">
+          Ver horario
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- PONENTES: miniaturas arriba y el carnet del ponente elegido -->
+    <section id="ponentes">
+      <div class="ponentes__barra">
+        <div class="contenedor">
+          <h2 class="ponentes__titulo">Ponentes</h2>
+          <div class="ponentes__miniaturas" id="ponentes-miniaturas"></div>
+        </div>
+      </div>
+      <div class="ponentes__escena foto foto--edificio foto--suave">
+        <div class="contenedor">
+          <div class="ponentes__carnet" id="ponentes-carnet"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HORARIO: días, buscador, pestañas y la lista (o la cuadrícula de la semana) -->
+    <section class="horario foto foto--auditorio" id="horario">
+      <div class="contenedor">
+        <div class="horario__tarjeta">
+
+          <div class="horario__cabecera">
+            <svg class="horario__icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4M16 2v4M3 10h11M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"/><circle cx="17.5" cy="17.5" r="4.5"/><path d="M17.5 15.5v2l1.3 1.3"/></svg>
+            <h2>Horario</h2>
+            <span class="horario__rango">Miércoles, jueves y viernes</span>
+          </div>
+
+          <div class="horario__banda">Programa de la semana</div>
+
+          <div class="horario__dias" id="horario-dias"></div>
+
+          <div class="horario__encabezado">
+            <h3 id="horario-titulo"></h3>
+            <p id="horario-subtitulo"></p>
+          </div>
+
+          <div class="horario__herramientas">
+            <label class="buscador">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input type="search" id="buscador" placeholder="Buscar actividad o ponente…" aria-label="Buscar en el horario">
+            </label>
+            <button class="boton-semana" id="ver-semana" aria-pressed="false" aria-label="Ver toda la semana">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M9 9v12M15 9v12"/></svg>
+              <span>Semana</span>
+            </button>
+          </div>
+
+          <div class="horario__pestanas" id="horario-pestanas"></div>
+
+          <ol class="horario__lista" id="horario-lista"></ol>
+          <div class="semana" id="horario-semana" hidden></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPETENCIAS -->
+    <section class="competencias foto foto--edificio foto--clara" id="competencias">
+      <div class="contenedor">
+        <div class="seccion-titulo">
+          <p class="seccion-titulo__antetitulo">Programa de sustos</p>
+          <h2>Competencias</h2>
+          <p class="seccion-titulo__intro">Cinco retos para medirte con el resto de la facultad. Toca una tarjeta para verla en el horario.</p>
+        </div>
+        <div class="competencias__lista" id="competencias-lista"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- PIE -->
+  <footer class="pie">
+    <div class="pie__escudo" id="pie-escudo"></div>
+    <p>Semana de Sistemas · Facultad de Minas · Medellín</p>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/iconos.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
