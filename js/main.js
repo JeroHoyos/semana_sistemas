@@ -369,16 +369,21 @@ function pintarCompetencias() {
 
 // --letras ajusta el tamaño del nombre para que quepa en el banderín.
 // Si el grupo tiene logo, va como un parche redondo sobre el palo.
+// Si tiene enlace, el banderín es un link que abre su página en otra pestaña.
 function pintarGrupos() {
-  $('#grupos-lista').innerHTML = GRUPOS.map((grupo) => `
-    <li class="grupo" style="--color: ${grupo.color}; --letras: ${grupo.nombre.length}">
-      <span class="banderin ${grupo.logo ? 'banderin--con-logo' : ''}">
-        <span class="banderin__tela"><span class="banderin__nombre">${grupo.nombre}</span></span>
-        ${grupo.logo ? `<img class="banderin__logo" src="${grupo.logo}" alt="Logo de ${grupo.nombre}">` : ''}
-      </span>
-      <span class="grupo__tipo">${grupo.tipo}</span>
-    </li>
-  `).join('');
+  $('#grupos-lista').innerHTML = GRUPOS.map((grupo) => {
+    const etiqueta = grupo.enlace ? 'a' : 'span';
+    const destino = grupo.enlace ? `href="${grupo.enlace}" target="_blank" rel="noopener"` : '';
+    return `
+      <li class="grupo" style="--color: ${grupo.color}; --letras: ${grupo.nombre.length}">
+        <${etiqueta} class="banderin ${grupo.logo ? 'banderin--con-logo' : ''}" ${destino}>
+          <span class="banderin__tela"><span class="banderin__nombre">${grupo.nombre}</span></span>
+          ${grupo.logo ? `<img class="banderin__logo" src="${grupo.logo}" alt="Logo de ${grupo.nombre}">` : ''}
+        </${etiqueta}>
+        <span class="grupo__tipo">${grupo.tipo}</span>
+      </li>
+    `;
+  }).join('');
 }
 
 

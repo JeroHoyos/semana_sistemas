@@ -1591,6 +1591,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .grupo:nth-child(3n) .banderin { rotate: -2deg; }
 .grupo:hover .banderin { rotate: 0deg; }
 
+/* Banderín con enlace (a): sin subrayado y con el anillo de foco al usar el teclado */
+a.banderin { text-decoration: none; }
+a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; border-radius: 12px; }
+
 /* Tela: franja blanca cosida, puntitos de fieltro y el color del grupo */
 .banderin__tela {
   container-type: inline-size;          /* el nombre se mide en cqw (% del ancho de la tela) */

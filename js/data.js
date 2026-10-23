@@ -30,12 +30,17 @@ const PONENTES = [
 ];
 
 // Grupos estudiantiles que participan en la Semana. Cada uno sale como un banderín de su color.
-// tipo: el texto pequeño debajo del banderín. logo (opcional): imagen cuadrada en img/.
+// tipo: el texto pequeño debajo del banderín.
+// Opcionales: logo (imagen cuadrada en img/) y enlace (red social o página: el banderín lleva a ella).
 const GRUPOS = [
-  { id: 'unalgoritmo', nombre: 'UNAlgoritmo', tipo: 'Grupo estudiantil', color: '#9128d9', logo: 'img/grupo-unalgoritmo.jpg' },
-  { id: 'aperture', nombre: 'Aperture', tipo: 'Semillero', color: '#1aa3b8', logo: 'img/grupo-aperture.png' },
-  { id: 'turing-box', nombre: 'Turing Box', tipo: 'Grupo estudiantil', color: '#c4358c', logo: 'img/grupo-turing-box.jpg' },
-  { id: 'uneural', nombre: 'UNeural', tipo: 'Grupo estudiantil', color: '#4a4fd8', logo: 'img/grupo-uneural.jpg' },
+  { id: 'unalgoritmo', nombre: 'UNAlgoritmo', tipo: 'Grupo estudiantil', color: '#9128d9', logo: 'img/grupo-unalgoritmo.jpg',
+    enlace: 'https://www.linkedin.com/company/unalgoritmo/' },
+  { id: 'aperture', nombre: 'Aperture', tipo: 'Semillero', color: '#1aa3b8', logo: 'img/grupo-aperture.png',
+    enlace: 'https://aperture-systems-lab.github.io' },
+  { id: 'turing-box', nombre: 'Turing Box', tipo: 'Grupo estudiantil', color: '#c4358c', logo: 'img/grupo-turing-box.jpg',
+    enlace: 'https://www.instagram.com/turingbox/' },
+  { id: 'uneural', nombre: 'UNeural', tipo: 'Grupo estudiantil', color: '#4a4fd8', logo: 'img/grupo-uneural.jpg',
+    enlace: 'https://www.instagram.com/uneuralgroup' },
 ];
 
 // Horas en formato 'HH:MM' (24 h). Mantén el orden por día y hora.
