@@ -93,3 +93,19 @@ const ACTIVIDADES = [
       'Durante esta charla veremos el proceso para llegar a hacer diferentes modelos de lenguaje estado del arte, autorregresivos y de difusión, y entender cómo llegar a la mejor configuración de capas entre los diferentes paradigmas de computación. ¿Dónde puedo usar la cuántica? ¿Dónde puedo poner la térmica? ¿Para qué sirve y qué es eso? ¿Y cómo multiplicar a la velocidad de la luz de forma paralelizada?\n' +
       'Con demo en vivo y animaciones para que sea intuitivo.' },
 ];
+
+// Fotos y videos de ediciones anteriores para la galería (los archivos van en img/galeria/).
+// Los .mp4 salen como videos cortos sin sonido; portada es la imagen que se ve mientras cargan.
+// texto: lo que se ve; sale debajo al ampliarla y lo leen los lectores de pantalla.
+const GALERIA = [
+  { archivo: 'img/galeria/foto-grupal.jpg', texto: 'Foto grupal en las escaleras de la entrada de la Facultad de Minas' },
+  { archivo: 'img/galeria/maraton.jpg', texto: 'Sala de computadores llena de globos durante la maratón de programación' },
+  { archivo: 'img/galeria/globos.mp4', portada: 'img/galeria/globos-portada.jpg', texto: 'Carrera con globos en la placa polideportiva' },
+  { archivo: 'img/galeria/futbol.jpg', texto: 'Partido de fútbol con petos en la placa polideportiva' },
+  { archivo: 'img/galeria/conferencia.jpg', texto: 'Conferencia sobre agentes de inteligencia artificial en el auditorio' },
+  { archivo: 'img/galeria/feria.mp4', portada: 'img/galeria/feria-portada.jpg', texto: 'Recorrido por la feria de stands' },
+  { archivo: 'img/galeria/maraton-equipo.jpg', texto: 'Un equipo concentrado frente al computador en la maratón' },
+  { archivo: 'img/galeria/carrera.jpg', texto: 'Estudiantes sentados en fila durante un juego en la placa' },
+  { archivo: 'img/galeria/auditorio.mp4', portada: 'img/galeria/auditorio-portada.jpg', texto: 'Público en el auditorio durante una charla' },
+  { archivo: 'img/galeria/globos.jpg', texto: 'Estudiantes jugando con un globo en la placa polideportiva' },
+];

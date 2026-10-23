@@ -12,6 +12,7 @@
    10. Inicio de sesión y modal
    11. Página de una actividad (evento.html)
    12. Grupos estudiantiles
+   13. Galería
    ========================================================= */
 
 
@@ -1742,4 +1743,178 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
   .grupos { padding: 56px 0 72px; }
   .grupos__lista { gap: 40px; }
   .grupo { flex-basis: min(100%, 300px); }
+}
+
+
+/* ---------- 13. Galería ---------- */
+
+.galeria { padding: 80px 0 90px; }
+
+.galeria__boton { margin-top: 26px; border: 0; }
+
+/* Carrusel: ocupa todo el ancho y se desvanece en los bordes */
+.galeria__carrusel {
+  display: grid;
+  gap: 14px;
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+.galeria__fila {
+  overflow: hidden;
+  padding-block: 12px;                  /* espacio para la sombra y el salto al pasar el mouse */
+}
+
+/* La pista lleva las fotos dos veces seguidas (lo arma main.js). Al moverse -50% queda
+   la segunda copia justo donde empezó la primera, y la animación vuelve a empezar sin salto.
+   Se detiene mientras el mouse o el foco del teclado están sobre la fila. */
+.galeria__pista {
+  display: flex;
+  width: max-content;
+  animation: deslizar 80s linear infinite;
+}
+.galeria__fila + .galeria__fila .galeria__pista { animation-direction: reverse; }
+.galeria__fila:hover .galeria__pista,
+.galeria__fila:focus-within .galeria__pista { animation-play-state: paused; }
+
+@keyframes deslizar {
+  to { transform: translateX(-50%); }
+}
+
+/* El padding de la derecha es el mismo hueco que hay entre fotos: así la unión entre copias no se nota */
+.galeria__grupo {
+  display: flex;
+  gap: 26px;
+  margin: 0;
+  padding: 0 26px 0 0;
+  list-style: none;
+}
+
+/* Cada foto o video: cuadrado, con marco blanco como las tarjetas de competencias */
+.galeria__foto {
+  display: block;
+  width: 280px;
+  aspect-ratio: 1;
+  padding: 0;
+  overflow: hidden;
+  border: 6px solid #fff;
+  border-radius: 28px;
+  background: var(--azul-marino);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .08), 0 14px 26px -16px rgba(0, 0, 0, .45);
+  transition: transform .2s;
+}
+.galeria__foto:hover { transform: translateY(-5px) rotate(-1.5deg); }
+.galeria__foto:focus-visible { outline: 3px solid var(--azul); outline-offset: 3px; }
+.galeria__foto img,
+.galeria__foto video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* "Ver todo": todas las fotos quietas en cuadrícula */
+.galeria__cuadricula {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.galeria__cuadricula .galeria__foto { width: 100%; }
+
+
+/* Visor: cubre toda la pantalla con la foto en el centro y las flechas a los lados */
+.visor {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 24px 16px;
+  border: 0;
+  background: transparent;
+  color: #fff;
+}
+.visor[open] { display: grid; place-items: center; }
+.visor::backdrop {
+  background: rgba(6, 29, 56, .9);
+  backdrop-filter: blur(4px);
+}
+
+.visor__figura {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  margin: 0;
+  animation: aparecer .25s ease;
+}
+
+/* Las fotos son cuadradas: el lado es el menor entre el ancho y el alto que quedan libres */
+.visor__medio img,
+.visor__medio video {
+  display: block;
+  width: min(720px, 100vw - 180px, 100vh - 150px);
+  aspect-ratio: 1;
+  object-fit: cover;
+  border: 6px solid #fff;
+  border-radius: 28px;
+  background: var(--azul-marino);
+}
+
+.visor__pie {
+  max-width: 640px;
+  text-align: center;
+  font-size: 16px;
+  color: #c9dcf0;
+}
+.visor__cuenta {
+  display: block;
+  font-family: var(--letra-universidad);
+  font-size: 13px;
+  letter-spacing: .2em;
+  color: #a9d1ff;
+}
+
+.visor__boton {
+  position: fixed;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--azul-marino);
+  font-size: 18px;
+  box-shadow: 0 10px 22px -8px rgba(0, 0, 0, .6);
+  transition: background .2s, color .2s;
+}
+.visor__boton:hover { background: var(--azul); color: #fff; }
+.visor__boton svg { width: 22px; height: 22px; }
+.visor__boton--anterior { left: 24px; top: 50%; translate: 0 -50%; }
+.visor__boton--siguiente { right: 24px; top: 50%; translate: 0 -50%; }
+.visor__cerrar { top: 20px; right: 24px; width: 44px; height: 44px; }
+
+@media (max-width: 640px) {
+  .galeria { padding: 56px 0 64px; }
+  .galeria__grupo { gap: 16px; padding-right: 16px; }
+  .galeria__foto { width: 200px; border-width: 5px; border-radius: 22px; }
+  .galeria__cuadricula { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+  /* En el celular la foto usa todo el ancho y las flechas bajan junto al texto */
+  .visor__medio img,
+  .visor__medio video { width: min(100vw - 32px, 100vh - 230px); border-radius: 22px; }
+  .visor__pie { padding-inline: 64px; }
+  .visor__boton--anterior,
+  .visor__boton--siguiente { top: auto; bottom: 24px; translate: none; width: 46px; height: 46px; }
+  .visor__boton--anterior { left: 16px; }
+  .visor__boton--siguiente { right: 16px; }
+  .visor__cerrar { top: 14px; right: 14px; }
+}
+
+/* Con menos movimiento el carrusel no pasa solo: queda una fila que se desliza con el dedo o la rueda */
+@media (prefers-reduced-motion: reduce) {
+  .galeria__fila { overflow-x: auto; }
+  .galeria__fila + .galeria__fila,
+  .galeria__grupo + .galeria__grupo { display: none; }
 }

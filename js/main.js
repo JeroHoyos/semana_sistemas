@@ -443,6 +443,116 @@ function pintarGrupos() {
 }
 
 
+/* ---------- Galería ---------- */
+
+const esVideo = (item) => item.archivo.endsWith('.mp4');
+
+// Dos filas que pasan solas en sentidos contrarios; la segunda empieza por la mitad de la lista.
+// Cada fila lleva sus fotos dos veces seguidas: la animación llega a la mitad y vuelve al inicio
+// sin que se note el salto (ver .galeria__pista en el CSS). Las copias y la segunda fila se ocultan
+// a lectores de pantalla y al teclado, para que cada foto se anuncie una sola vez.
+function pintarGaleria() {
+  const indices = GALERIA.map((_, i) => i);
+  const mitad = Math.ceil(GALERIA.length / 2);
+  const filas = [indices, [...indices.slice(mitad), ...indices.slice(0, mitad)]];
+
+  const fotos = (orden, oculta) => orden.map((i) => fotoDeGaleria(i, oculta)).join('');
+
+  $('#galeria-carrusel').innerHTML = filas.map((orden, f) => `
+    <div class="galeria__fila">
+      <div class="galeria__pista">
+        <ul class="galeria__grupo" ${f > 0 ? 'aria-hidden="true"' : ''}>${fotos(orden, f > 0)}</ul>
+        <ul class="galeria__grupo" aria-hidden="true">${fotos(orden, true)}</ul>
+      </div>
+    </div>
+  `).join('');
+
+  $('#galeria-cuadricula').innerHTML = fotos(indices, false);
+
+  $('#galeria').addEventListener('click', (evento) => {
+    const foto = evento.target.closest('.galeria__foto');
+    if (foto) abrirVisor(Number(foto.dataset.indice));
+  });
+
+  $('#galeria-ver-todo').addEventListener('click', () => {
+    const verTodo = $('#galeria-cuadricula').hidden;
+    $('#galeria-cuadricula').hidden = !verTodo;
+    $('#galeria-carrusel').hidden = verTodo;
+    $('#galeria-ver-todo').setAttribute('aria-pressed', verTodo);
+    $('#galeria-ver-todo-texto').textContent = verTodo ? 'Ver carrusel' : 'Ver todo';
+  });
+
+  vigilarVideos();
+}
+
+function fotoDeGaleria(indice, oculta) {
+  const item = GALERIA[indice];
+  const medio = esVideo(item)
+    ? `<video src="${item.archivo}" poster="${item.portada || ''}" muted loop playsinline preload="metadata"></video>`
+    : `<img src="${item.archivo}" alt="" loading="lazy">`;
+  return `
+    <li>
+      <button class="galeria__foto" data-indice="${indice}" aria-label="Ampliar: ${item.texto}" ${oculta ? 'tabindex="-1"' : ''}>
+        ${medio}
+      </button>
+    </li>
+  `;
+}
+
+// Los videos de la galería solo se reproducen mientras se ven en pantalla
+// (y nunca solos si la persona pidió menos movimiento: se ven al ampliarlos).
+function vigilarVideos() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const vigilante = new IntersectionObserver((entradas) => {
+    entradas.forEach(({ target: video, isIntersecting }) => {
+      if (isIntersecting) video.play().catch(() => {});
+      else video.pause();
+    });
+  });
+  $$('.galeria video').forEach((video) => vigilante.observe(video));
+}
+
+
+/* ---------- Galería: visor ---------- */
+
+let fotoEnVisor = 0;
+
+function abrirVisor(indice) {
+  fotoEnVisor = (indice + GALERIA.length) % GALERIA.length;   // de la última pasa a la primera y al revés
+  const item = GALERIA[fotoEnVisor];
+
+  $('#visor-medio').innerHTML = esVideo(item)
+    ? `<video src="${item.archivo}" poster="${item.portada || ''}" controls autoplay muted loop playsinline aria-label="${item.texto}"></video>`
+    : `<img src="${item.archivo}" alt="${item.texto}">`;
+  $('#visor-cuenta').textContent = `${fotoEnVisor + 1} / ${GALERIA.length}`;
+  $('#visor-texto').textContent = item.texto;
+
+  if (!$('#visor').open) $('#visor').showModal();
+}
+
+$('#visor-anterior').addEventListener('click', () => abrirVisor(fotoEnVisor - 1));
+$('#visor-siguiente').addEventListener('click', () => abrirVisor(fotoEnVisor + 1));
+$('#visor-cerrar').addEventListener('click', () => $('#visor').close());
+
+// El visor ocupa toda la pantalla: si el clic no cayó en la foto ni en un botón, se cierra
+$('#visor').addEventListener('click', (evento) => {
+  if (evento.target === $('#visor')) $('#visor').close();
+});
+
+// Flechas del teclado para pasar (salvo en la barra del video, donde adelantan o atrasan)
+$('#visor').addEventListener('keydown', (evento) => {
+  if (evento.target.tagName === 'VIDEO') return;
+  if (evento.key === 'ArrowLeft') abrirVisor(fotoEnVisor - 1);
+  if (evento.key === 'ArrowRight') abrirVisor(fotoEnVisor + 1);
+});
+
+// Al cerrar se quita el medio para que un video no siga sonando
+$('#visor').addEventListener('close', () => {
+  $('#visor-medio').innerHTML = '';
+});
+
+
 /* ---------- Arranque ---------- */
 
 pintarPortada();
@@ -451,4 +561,5 @@ prepararHorario();
 pintarHorario();
 pintarCompetencias();
 pintarGrupos();
+pintarGaleria();
 $('#pie-escudo').innerHTML = dibujarEscudo();
