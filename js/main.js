@@ -74,7 +74,7 @@ function mostrarCarnet(indice) {
 
   $$('.miniatura').forEach((boton, i) => boton.setAttribute('aria-pressed', i === indice));
 
-  $('#ponentes-carnet').innerHTML = `
+  const carnet = `
     <article class="carnet ${esMisterio ? 'carnet--misterio' : ''}">
       <div class="carnet__escudo">${dibujarEscudo()}</div>
       <div class="carnet__marca">
@@ -89,6 +89,21 @@ function mostrarCarnet(indice) {
         ${esMisterio ? '<span class="carnet__sello">Clasificado</span>' : ''}
       </div>
     </article>
+  `;
+
+  // Si el ponente tiene una actividad, el carnet lleva a la página de esa actividad
+  const actividad = ACTIVIDADES.find((a) => a.ponente === ponente.id);
+  if (!actividad) {
+    $('#ponentes-carnet').innerHTML = carnet;
+    return;
+  }
+
+  const tipo = TIPOS[actividad.tipo].singular.toLowerCase();
+  $('#ponentes-carnet').innerHTML = `
+    <a class="carnet-enlace" href="${enlaceActividad(actividad.id)}" aria-label="Ver ${tipo}: ${actividad.titulo}">
+      ${carnet}
+      <span class="carnet-enlace__texto">Ver su ${tipo} ${ICONOS.flecha}</span>
+    </a>
   `;
 }
 

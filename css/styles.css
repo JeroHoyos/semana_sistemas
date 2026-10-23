@@ -367,6 +367,38 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .carnet--misterio .carnet__franja { background: #75808e; }
 .carnet--misterio .carnet__foto { border-color: #75808e; }
 
+/* Carnet con enlace a la actividad del ponente, y el aviso "Ver su …" debajo */
+.carnet-enlace {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+}
+.carnet-enlace .carnet { justify-self: stretch; transition: transform .2s; }
+.carnet-enlace:hover .carnet { transform: translateY(-4px); }
+.carnet-enlace:focus-visible .carnet { outline: 3px solid #a9d1ff; outline-offset: 4px; }
+
+.carnet-enlace__texto {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border: 1px solid rgba(255, 255, 255, .4);
+  border-radius: 999px;
+  background: rgba(10, 44, 82, .6);
+  color: #fff;
+  font-family: var(--letra-estrecha);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  transition: background .2s;
+}
+.carnet-enlace__texto svg { width: 16px; height: 16px; }
+.carnet-enlace:hover .carnet-enlace__texto { background: var(--azul-marino); }
+
 
 /* ---------- 5. Horario ---------- */
 
