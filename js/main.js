@@ -3,12 +3,6 @@
    Toma los datos de data.js y arma cada sección.
    ============================================= */
 
-const $ = (selector) => document.querySelector(selector);
-const $$ = (selector) => document.querySelectorAll(selector);
-
-const buscarDia = (id) => DIAS.find((dia) => dia.id === id);
-const buscarPonente = (id) => PONENTES.find((ponente) => ponente.id === id);
-
 // '09:30' → 9.5
 function enHoras(hora) {
   const [horas, minutos] = hora.split(':').map(Number);
@@ -18,12 +12,6 @@ function enHoras(hora) {
 // Quita tildes y mayúsculas para que "futbol" encuentre "Fútbol"
 function normalizar(texto) {
   return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-}
-
-// Dos actividades se cruzan si son el mismo día y sus horas se solapan.
-// Las horas 'HH:MM' se pueden comparar directamente como texto.
-function seCruzan(a, b) {
-  return a.dia === b.dia && a.inicio < b.fin && b.inicio < a.fin;
 }
 
 
@@ -229,7 +217,7 @@ function pintarLista(actividades) {
 function tarjetaDeActividad(actividad) {
   const tipo = TIPOS[actividad.tipo];
   const ponente = buscarPonente(actividad.ponente);
-  const simultaneas = ACTIVIDADES.filter((otra) => otra !== actividad && seCruzan(otra, actividad));
+  const simultaneas = buscarSimultaneas(actividad);
 
   // Al buscar se mezclan los tres días, así que se muestra el día de cada actividad
   const dia = estado.busqueda ? `${buscarDia(actividad.dia).nombre} · ` : '';
@@ -246,12 +234,14 @@ function tarjetaDeActividad(actividad) {
     detalles.push(`<span class="actividad__simultanea">${ICONOS.simultanea}A la vez que ${nombres}</span>`);
   }
 
+  // El enlace del título cubre toda la tarjeta (ver .actividad__titulo a::after en el CSS)
   return `
-    <li class="actividad" id="actividad-${actividad.id}" style="--color: ${tipo.color}">
+    <li class="actividad" style="--color: ${tipo.color}">
       <span class="actividad__tipo">${ICONOS.ojo}${tipo.singular}</span>
-      <h4 class="actividad__titulo">${actividad.titulo}</h4>
+      <h4 class="actividad__titulo"><a href="${enlaceActividad(actividad.id)}">${actividad.titulo}</a></h4>
       <p class="actividad__hora">${dia}${actividad.inicio} – ${actividad.fin}</p>
       <div class="actividad__detalles">${detalles.join('')}</div>
+      <span class="actividad__ver">Ver detalles ${ICONOS.flecha}</span>
     </li>
   `;
 }
@@ -283,11 +273,11 @@ function pintarSemana(visibles) {
         --carril: ${actividad.carril};
         --carriles: ${totalCarriles};`;
       return `
-        <button class="bloque ${atenuado}" data-ir="${actividad.id}"
+        <a class="bloque ${atenuado}" href="${enlaceActividad(actividad.id)}"
           style="--color: ${tipo.color}; --fondo: ${tipo.fondo}; ${posicion}">
           <strong>${actividad.titulo}</strong>
           <span>${actividad.inicio} – ${actividad.fin}</span>
-        </button>
+        </a>
       `;
     }).join('');
 
@@ -319,32 +309,6 @@ function repartirEnCarriles(actividades) {
 }
 
 
-/* ---------- Ir a una actividad del horario ---------- */
-
-// Muestra la actividad en la lista del horario y la resalta un momento
-function irAActividad(id) {
-  const actividad = ACTIVIDADES.find((a) => a.id === id);
-
-  estado.dia = actividad.dia;
-  estado.tipo = 'todo';
-  estado.busqueda = '';
-  estado.verSemana = false;
-  $('#buscador').value = '';
-  pintarHorario();
-
-  const tarjeta = document.getElementById(`actividad-${id}`);
-  tarjeta.scrollIntoView({ block: 'center' });
-  tarjeta.classList.add('actividad--resaltada');
-  setTimeout(() => tarjeta.classList.remove('actividad--resaltada'), 1800);
-}
-
-// Cualquier elemento con data-ir="id" lleva a esa actividad (tarjetas de competencias y bloques de la semana)
-document.addEventListener('click', (evento) => {
-  const enlace = evento.target.closest('[data-ir]');
-  if (enlace) irAActividad(enlace.dataset.ir);
-});
-
-
 /* ---------- Competencias ---------- */
 
 function pintarCompetencias() {
@@ -353,7 +317,7 @@ function pintarCompetencias() {
   $('#competencias-lista').innerHTML = competencias.map((actividad) => {
     const dia = buscarDia(actividad.dia);
     return `
-      <button class="competencia" data-ir="${actividad.id}" style="--color: ${actividad.color}">
+      <a class="competencia" href="${enlaceActividad(actividad.id)}" style="--color: ${actividad.color}">
         <span class="competencia__imagen">
           <span class="competencia__dia">${dia.corto}</span>
           ${ICONOS[actividad.icono]}
@@ -361,7 +325,7 @@ function pintarCompetencias() {
         <span class="competencia__titulo">${ICONOS.ojo}${actividad.titulo}</span>
         <span class="competencia__hora">${dia.nombre} · ${actividad.inicio} – ${actividad.fin}</span>
         <span class="competencia__resumen">${actividad.resumen}</span>
-      </button>
+      </a>
     `;
   }).join('');
 }

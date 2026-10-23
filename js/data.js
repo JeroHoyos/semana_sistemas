@@ -27,9 +27,18 @@ const PONENTES = [
   { id: 'curriculum', nombre: null, cargo: 'Taller de currículum', credencial: 'Por anunciar', color: '#8a94a3' },
 ];
 
+// Dónde es el evento: se muestra en el mapa de la página de cada actividad
+const SEDE = {
+  nombre: 'Facultad de Minas',
+  direccion: 'Carrera 80 # 65-223, Núcleo Robledo, Medellín',
+  busqueda: 'Facultad de Minas, Universidad Nacional de Colombia, Medellín', // lo que se busca en Google Maps
+};
+
 // Horas en formato 'HH:MM' (24 h). Mantén el orden por día y hora.
 // Las horas son provisionales: hay que confirmarlas con el horario oficial.
 // Las competencias llevan además icono, color y resumen para su tarjeta.
+// Opcionales: lugar (ej. 'Bloque M8, auditorio') y descripcion (texto largo
+// para la página de la actividad; si no hay, se usa el resumen).
 const ACTIVIDADES = [
   // Miércoles
   { id: 'inaugural', dia: 'mie', inicio: '09:00', fin: '10:00', tipo: 'conferencia', titulo: 'Conferencia inaugural', ponente: 'eduardo' },

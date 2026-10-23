@@ -20,6 +20,18 @@ const ICONOS = {
     <path d="M7 4 3 8l4 4M3 8h14M17 12l4 4-4 4M21 16H7"/>
   </svg>`,
 
+  flecha: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M5 12h14M13 6l6 6-6 6"/>
+  </svg>`,
+
+  calendario: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/>
+  </svg>`,
+
+  reloj: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+  </svg>`,
+
   // Íconos grandes de las tarjetas de competencias
   lupa: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
     <circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6"/>
@@ -139,7 +151,7 @@ function dibujarMonstruoPersonalizado(cfg = {}) {
       <path d="M46 28 L60 15 L74 28" fill="#ffcf4b"/>`;
   } else if (cuernos === 'serpientes') {
     svgCabezaDetras = `
-      <g fill="#9b51e0" stroke="#2a2f36" stroke-width="2.2" stroke-linecap="round">
+      <g fill="${color}" stroke="#2a2f36" stroke-width="2.2" stroke-linecap="round">
         <path d="M36 36 C20 24 18 8 30 10 C38 11 34 22 44 30"/>
         <path d="M50 30 C44 14 52 2 62 8 C68 12 60 22 62 30"/>
         <path d="M84 36 C100 24 102 8 90 10 C82 11 86 22 76 30"/>

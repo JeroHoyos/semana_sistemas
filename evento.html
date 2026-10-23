@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Actividad · Semana de Sistemas</title>
+  <meta name="description" content="Información de una actividad de la Semana de Sistemas en la Facultad de Minas.">
+  <link rel="icon" href="img/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Cinzel:wght@600;700&family=Graduate&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- CABECERA: tipo, título, día y hora (evento.js la llena según el ?id= de la dirección) -->
+  <header class="evento-portada foto foto--auditorio">
+    <div class="contenedor">
+      <a class="volver" href="index.html#horario">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        Volver al horario
+      </a>
+      <div class="evento-portada__contenido" id="evento-portada"></div>
+    </div>
+  </header>
+
+  <main class="evento contenedor">
+
+    <!-- INFORMACIÓN: datos, descripción, ponente y actividades a la misma hora -->
+    <article class="evento__tarjeta" id="evento-info"></article>
+
+    <!-- MAPA DE LA FACULTAD DE MINAS -->
+    <section class="evento__tarjeta mapa">
+      <h2 class="evento__subtitulo">Cómo llegar</h2>
+      <p class="mapa__direccion" id="mapa-direccion"></p>
+      <iframe class="mapa__marco" id="mapa-marco" title="Mapa de la Facultad de Minas" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <a class="mapa__enlace" id="mapa-enlace" target="_blank" rel="noopener">
+        Abrir en Google Maps
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </section>
+
+  </main>
+
+  <!-- PIE -->
+  <footer class="pie">
+    <div class="pie__escudo" id="pie-escudo"></div>
+    <p>Semana de Sistemas · Facultad de Minas · Medellín</p>
+    <p class="pie__autores">Web hecha por <strong>Santiago Escobar Arias</strong> y <strong>Jerónimo Hoyos Botero</strong></p>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/iconos.js"></script>
+  <script src="js/comun.js"></script>
+  <script src="js/evento.js"></script>
+</body>
+</html>
