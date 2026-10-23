@@ -51,7 +51,7 @@ function pintarPonentes() {
 }
 
 // Cada SEGUNDOS_POR_CARNET pasa solo al siguiente ponente (no rota si la persona pidió menos movimiento)
-const SEGUNDOS_POR_CARNET = 5;
+const SEGUNDOS_POR_CARNET = 7;
 let carnetActual = 0;
 let temporizadorCarnets;
 
@@ -93,18 +93,42 @@ function mostrarCarnet(indice) {
 
   // Si el ponente tiene una actividad, el carnet lleva a la página de esa actividad
   const actividad = ACTIVIDADES.find((a) => a.ponente === ponente.id);
-  if (!actividad) {
-    $('#ponentes-carnet').innerHTML = carnet;
-    return;
-  }
-
-  const tipo = TIPOS[actividad.tipo].singular.toLowerCase();
-  $('#ponentes-carnet').innerHTML = `
+  const tipo = actividad && TIPOS[actividad.tipo].singular.toLowerCase();
+  cambiarCarnet(actividad ? `
     <a class="carnet-enlace" href="${enlaceActividad(actividad.id)}" aria-label="Ver ${tipo}: ${actividad.titulo}">
       ${carnet}
       <span class="carnet-enlace__texto">Ver su ${tipo} ${ICONOS.flecha}</span>
     </a>
-  `;
+  ` : carnet);
+}
+
+// El carnet que está sale despacio hacia la izquierda y el nuevo entra desde la derecha.
+// turnoCarnet evita que un cambio viejo pise a uno más nuevo si se hace clic muy seguido.
+let turnoCarnet = 0;
+
+function cambiarCarnet(html) {
+  const contenedor = $('#ponentes-carnet');
+  const anterior = contenedor.firstElementChild;
+  const turno = ++turnoCarnet;
+
+  if (!anterior || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    contenedor.innerHTML = html;
+    return;
+  }
+
+  anterior.getAnimations().forEach((animacion) => animacion.cancel());
+  anterior.animate(
+    [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateX(-40px)' }],
+    { duration: 600, easing: 'ease-in', fill: 'forwards' },
+  );
+  setTimeout(() => {
+    if (turno !== turnoCarnet) return;
+    contenedor.innerHTML = html;
+    contenedor.firstElementChild.animate(
+      [{ opacity: 0, transform: 'translateX(40px)' }, { opacity: 1, transform: 'none' }],
+      { duration: 900, easing: 'ease-out' },
+    );
+  }, 600);
 }
 
 
