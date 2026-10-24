@@ -246,7 +246,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   justify-items: center;
   gap: 6px;
   width: 104px;
-  padding: 6px 4px 4px;
+  padding: 12px 4px 8px;           /* margen para el anillo azul de la foto elegida, que se agranda */
   border: 0;
   border-radius: 18px;
   background: none;
