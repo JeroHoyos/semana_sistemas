@@ -1433,6 +1433,30 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .evento-portada__tipo svg { width: 18px; height: 18px; }
 
+/* Adornos en pixel art (pixeles.js): tres dibujos en fila con el del medio más alto, como un podio.
+   --px es lo que mide cada pixel del dibujo; es igual en los tres para que parezcan del mismo juego. */
+.evento-portada__adornos {
+  --px: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 28px;
+  margin-bottom: 24px;
+}
+.pixeles {
+  width: calc(var(--ancho) * var(--px));
+  height: calc(var(--alto) * var(--px));
+  filter: drop-shadow(0 var(--px) 0 rgba(0, 0, 0, .35));   /* sombra dura, de videojuego */
+  animation: rebotar 1.2s steps(1) infinite;
+}
+.pixeles:nth-child(2) { margin-bottom: calc(var(--px) * 5); animation-delay: .4s; }
+.pixeles:nth-child(3) { animation-delay: .8s; }
+
+/* Sube un pixel y baja de golpe, sin pasos intermedios */
+@keyframes rebotar {
+  50% { translate: 0 calc(var(--px) * -1); }
+}
+
 .evento-portada__titulo {
   margin-top: 16px;
   font-family: var(--letra-universidad);
@@ -1622,6 +1646,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @media (max-width: 640px) {
   .evento-portada .contenedor { padding: 16px 0 60px; }
   .evento-portada__contenido { margin-top: 28px; }
+  .evento-portada__adornos { --px: 4px; gap: 18px; margin-bottom: 18px; }
   .evento { padding-bottom: 48px; }
   .evento__tarjeta { padding: 22px 18px 24px; border-radius: 24px; }
   .evento__datos { grid-template-columns: 1fr; }

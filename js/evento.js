@@ -18,7 +18,13 @@ function pintarPortada() {
 
   document.title = `${actividad.titulo} · Semana de Sistemas`;
 
+  // Dibujos pixel art sobre el tipo, si la actividad tiene (ver pixeles.js)
+  const adornos = actividad.adornos
+    ? `<div class="evento-portada__adornos">${actividad.adornos.map((nombre) => dibujarPixeles(PIXELES[nombre])).join('')}</div>`
+    : '';
+
   $('#evento-portada').innerHTML = `
+    ${adornos}
     <span class="evento-portada__tipo" style="--color: ${tipo.color}; --fondo: ${tipo.fondo}">${ICONOS.ojo}${tipo.singular}</span>
     <h1 class="evento-portada__titulo">${actividad.titulo}</h1>
   `;

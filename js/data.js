@@ -50,8 +50,9 @@ const GRUPOS = [
 // Las horas son provisionales: hay que confirmarlas con el horario oficial.
 // Las competencias llevan además icono, color y resumen para su tarjeta.
 // Opcionales: lugar (ej. 'Bloque M8, auditorio'), descripcion (texto largo
-// para la página de la actividad, cada \n es un párrafo; si no hay, se usa el resumen), organiza (id de GRUPOS)
-// y reglas (lista de { titulo, texto } que sale como "Formato y reglas" en su página).
+// para la página de la actividad, cada \n es un párrafo; si no hay, se usa el resumen), organiza (id de GRUPOS),
+// reglas (lista de { titulo, texto } que sale como "Formato y reglas" en su página)
+// y adornos (tres dibujos pixel art de js/pixeles.js que salen en la cabecera de su página; el del medio va más alto).
 const ACTIVIDADES = [
   // Miércoles
   { id: 'inaugural', dia: 'mie', inicio: '09:00', fin: '10:00', tipo: 'conferencia', titulo: 'Conferencia inaugural', ponente: 'eduardo', lugar: 'Aula Máxima' },
@@ -82,14 +83,24 @@ const ACTIVIDADES = [
 
   // Viernes
   { id: 'atletismo', dia: 'vie', inicio: '08:00', fin: '09:00', tipo: 'competencia', titulo: 'Carrera de atletismo 8‑bit',
-    icono: 'pixel', color: '#f08a24', resumen: 'Una carrera con alma de videojuego retro.' },
+    icono: 'pixel', color: '#f08a24', resumen: 'Una carrera con alma de videojuego retro.',
+    descripcion: 'Pon a prueba tu velocidad y resistencia en un circuito a lo largo de todo el campus. Prepárate para enfrentar los cambios de inclinación del terreno, superar cada nivel y retarte a ti mismo en una carrera con pura alma de videojuego retro.',
+    adornos: ['medalla10', 'medalla01', 'medalla11'] },
   { id: 'futbol', dia: 'vie', inicio: '09:00', fin: '11:00', tipo: 'competencia', titulo: 'Torneo de fútbol',
     icono: 'balon', color: '#1667c2', resumen: 'Arma tu equipo y sal a la cancha.', lugar: 'Placa polideportiva',
-    descripcion: 'Arma tu equipo y sal a la cancha. Se prestan petos y balón.' },
+    descripcion: 'Reúne a tu equipo y demuestra tu nivel en la cancha en un torneo de eliminación directa por brackets. Avanza llave a llave, supera a tus rivales en cada partido y compite hasta alcanzar la gran final.\n' +
+      'Se prestan los petos y el balón.',
+    adornos: ['camiseta', 'copa', 'balon'] },
   { id: 'videojuegos', dia: 'vie', inicio: '10:00', fin: '12:00', tipo: 'competencia', titulo: 'Torneo de videojuegos',
-    icono: 'control', color: '#7b4fc9', resumen: 'Demuestra quién manda con el control en la mano.' },
-  { id: 'karaoke', dia: 'vie', inicio: '14:00', fin: '15:00', tipo: 'social', titulo: 'Karaoke y Just Dance' },
-  { id: 'premiacion', dia: 'vie', inicio: '15:00', fin: '16:00', tipo: 'social', titulo: 'Premiación' },
+    icono: 'control', color: '#7b4fc9', resumen: 'Demuestra quién manda con el control en la mano.',
+    descripcion: 'Toma el control, demuestra tu talento en la pantalla y compite codo a codo con otros jugadores para coronarte como el campeón del torneo.',
+    adornos: ['invasor', 'control', 'corona'] },
+  { id: 'karaoke', dia: 'vie', inicio: '14:00', fin: '15:00', tipo: 'social', titulo: 'Karaoke y Just Dance',
+    descripcion: 'El espacio perfecto para soltar la voz, sacar los mejores pasos y pasar un buen rato. Canta tus canciones favoritas en el karaoke o acepta el reto en la pantalla de Just Dance para demostrar quién domina la pista.',
+    adornos: ['nota', 'microfono', 'bolaDisco'] },
+  { id: 'premiacion', dia: 'vie', inicio: '15:00', fin: '16:00', tipo: 'social', titulo: 'Premiación',
+    descripcion: '¡Llegó el momento de la verdad! Acompaña a tus equipos y competidores favoritos en la entrega oficial de premios y la clausura del evento.',
+    adornos: ['estrella', 'copa', 'estrella'] },
   { id: 'ia-cuantica', dia: 'vie', inicio: '16:00', fin: '17:00', tipo: 'conferencia',
     titulo: 'El futuro de los LLM está en la computación cuántica, fotónica y térmica', ponente: 'daniel',
     descripcion: 'El problema de la IA es el consumo de energía, pero ¿qué pasa si no calculamos con energía?\n' +
