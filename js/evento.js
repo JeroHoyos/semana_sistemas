@@ -116,7 +116,6 @@ function pintarInformacion() {
           ${ponente.bio ? ponente.bio.split('\n').map((parrafo) => `<p class="evento__bio">${parrafo}</p>`).join('') : ''}
           ${saberMas(ponente.enlace, ponente.nombre)}
         </div>
-        ${ponente.nombre ? `<span class="evento__credencial">${ponente.credencial}</span>` : ''}
       </div>
     `;
   }

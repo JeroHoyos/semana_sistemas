@@ -424,42 +424,26 @@ button { font: inherit; color: inherit; cursor: pointer; }
   box-shadow: 0 34px 70px -28px rgba(0, 0, 0, .5);
 }
 
-.horario__cabecera {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-}
-.horario__icono { width: 30px; height: 30px; color: var(--azul-marino); }
-.horario__cabecera h2 {
-  font-family: var(--letra-universidad);
-  font-weight: 400;
-  font-size: 30px;
-  letter-spacing: .04em;
-  color: var(--azul-marino);
-}
-.horario__rango {
-  margin-left: auto;
-  padding: 4px 14px;
-  border: 1px solid #d5dbe2;
-  border-radius: 999px;
-  font-size: 14px;
-  color: var(--tinta-suave);
-}
-
+/* Franja azul con el ícono del calendario y el título "Horario" */
 .horario__banda {
-  margin: 22px 0 18px;
-  padding: 15px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 18px;
+  padding: 14px 20px;
   border-radius: 999px;
   background: var(--azul-marino);
   box-shadow: inset 0 0 0 4px var(--azul-marino), inset 0 0 0 6px var(--azul-brillante);
   color: #fff;
-  text-align: center;
   font-family: var(--letra-universidad);
-  font-size: 17px;
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.2;
   letter-spacing: .24em;
   text-transform: uppercase;
 }
+.horario__icono { flex: none; width: 26px; height: 26px; color: #a9d1ff; }
 
 /* Botones de día */
 .horario__dias {
@@ -987,9 +971,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .horario { padding: 48px 0 56px; }
   .horario.foto::before { height: 1900px; }   /* alto inicial del horario en el celular */
   .horario__tarjeta { padding: 20px 14px 22px; border-radius: 24px; }
-  .horario__cabecera h2 { font-size: 24px; }
-  .horario__rango { margin-left: 0; }
-  .horario__banda { padding: 12px 14px; font-size: 13px; letter-spacing: .16em; }
+  .horario__banda { gap: 10px; padding: 12px 14px; font-size: 18px; letter-spacing: .16em; }
+  .horario__icono { width: 22px; height: 22px; }
   .dia { padding: 10px 4px; }
   .dia strong { font-size: 14px; }
   .boton-semana { padding: 0 14px; }
@@ -1626,7 +1609,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .evento__reglas dd { margin: 4px 0 0; color: var(--tinta-suave); }
 
-/* Ponente u organizador: monstruo o logo, nombre y cargo, y la credencial a la derecha */
+/* Ponente u organizador: monstruo o logo, y al lado nombre y cargo */
 .evento__perfil {
   display: flex;
   flex-wrap: wrap;
@@ -1682,18 +1665,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .evento__mas:hover { text-decoration: underline; }
 .evento__mas svg { width: 15px; height: 15px; transition: transform .2s; }
 .evento__mas:hover svg { transform: translateX(3px); }
-.evento__credencial {
-  margin-left: auto;
-  padding: 4px 14px;
-  border-radius: 999px;
-  background: var(--azul);
-  color: #fff;
-  font-family: var(--letra-estrecha);
-  font-weight: 600;
-  font-size: 13px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
 
 /* Enlaces a las actividades que pasan a la misma hora */
 .evento__simultaneas {
@@ -1740,7 +1711,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .evento__presentacion--ancha .evento__imagen { max-width: none; }   /* la ancha usa todo el ancho */
   .evento__cifras strong { font-size: 30px; }
   .evento__avatar--foto { width: 120px; height: 120px; }
-  .evento__perfil > div { order: 1; }   /* el texto baja y la credencial queda junto a la foto */
 }
 
 
