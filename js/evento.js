@@ -65,6 +65,7 @@ function pintarInformacion() {
       `).join('')}
     </dl>
     <div class="evento__descripcion">
+      ${actividad.imagen ? `<img class="evento__imagen" src="${actividad.imagen}" alt="Imagen de ${actividad.titulo}">` : ''}
       ${descripcion.split('\n').map((parrafo) => `<p>${parrafo}</p>`).join('')}
     </div>
   `;

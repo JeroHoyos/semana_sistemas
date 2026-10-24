@@ -37,7 +37,7 @@ const GRUPOS = [
   { id: 'unalgoritmo', nombre: 'UNAlgoritmo', tipo: 'Grupo estudiantil', color: '#9128d9', logo: 'img/grupo-unalgoritmo.jpg',
     enlace: 'https://www.linkedin.com/company/unalgoritmo/',
     descripcion: 'UN Algoritmo es un grupo estudiantil adscrito a la Facultad de Minas de la Universidad Nacional de Colombia (Sede Medellín) dedicado a impulsar la programación competitiva, el pensamiento algorítmico y las estructuras de datos. Mediante entrenamientos semanales estructurados tanto para principiantes como para niveles avanzados, el grupo prepara equipos para competir en la Maratón Nacional de Programación, en las rondas clasificatorias del ICPC (International Collegiate Programming Contest) y en la Maratona Feminina de Programação (MFP), fortaleciendo la comunicación, la resolución rápida de problemas y el trabajo en equipo bajo el formato de un computador por terna.' },
-  { id: 'aperture', nombre: 'Aperture', tipo: 'Semillero', color: '#1aa3b8', logo: 'img/grupo-aperture.png',
+  { id: 'aperture', nombre: 'Aperture', tipo: 'Semillero', color: '#1aa3b8', logo: 'img/grupo-aperture.jpg',
     enlace: 'https://aperture-systems-lab.github.io',
     descripcion: 'Aperture es un Semillero de Investigación estudiantil donde se explora la ciencia de datos, el machine learning y la IA. Es un espacio para aprender haciendo: desarrollamos proyectos, compartimos conocimientos y conectamos esa teoría con problemas de la vida real, impulsando una comunidad colaborativa en la universidad.' },
   { id: 'turing-box', nombre: 'Turing Box', tipo: 'Grupo estudiantil', color: '#c4358c', logo: 'img/grupo-turing-box.jpg',
@@ -51,7 +51,8 @@ const GRUPOS = [
 // Las competencias llevan además icono, color y resumen para su tarjeta.
 // Opcionales: lugar (ej. 'Bloque M8, auditorio'), descripcion (texto largo
 // para la página de la actividad, cada \n es un párrafo; si no hay, se usa el resumen), organiza (id de GRUPOS),
-// reglas (lista de { titulo, texto } que sale como "Formato y reglas" en su página)
+// reglas (lista de { titulo, texto } que sale como "Formato y reglas" en su página),
+// imagen (en img/: sale en su tarjeta de competencia en vez del ícono y junto al texto de su página)
 // y adornos (tres dibujos pixel art de js/pixeles.js que salen en la cabecera de su página; el del medio va más alto).
 const ACTIVIDADES = [
   // Miércoles
@@ -98,10 +99,11 @@ const ACTIVIDADES = [
     descripcion: 'Reúne a tu equipo y demuestra tu nivel en la cancha en un torneo de eliminación directa por brackets. Avanza llave a llave, supera a tus rivales en cada partido y compite hasta alcanzar la gran final.\n' +
       'Se prestan los petos y el balón.',
     adornos: ['camiseta', 'copa', 'balon'] },
-  { id: 'videojuegos', dia: 'vie', inicio: '10:00', fin: '12:00', tipo: 'competencia', titulo: 'Torneo de videojuegos',
-    icono: 'control', color: '#7b4fc9', resumen: 'Demuestra quién manda con el control en la mano.',
+  { id: 'videojuegos', dia: 'vie', inicio: '10:00', fin: '12:00', tipo: 'competencia', titulo: 'Torneo de Overcooked',
+    icono: 'control', color: '#7b4fc9', resumen: 'Arma tu equipo de chefs y cocina contra el reloj en Overcooked.',
     descripcion: 'Toma el control, demuestra tu talento en la pantalla y compite codo a codo con otros jugadores para coronarte como el campeón del torneo.',
-    adornos: ['invasor', 'control', 'corona'] },
+    imagen: 'img/competencia-overcooked2.jpg',
+    adornos: ['gorroChef', 'control', 'reyCebolla'] },
   { id: 'karaoke', dia: 'vie', inicio: '14:00', fin: '15:00', tipo: 'social', titulo: 'Karaoke y Just Dance',
     descripcion: 'El espacio perfecto para soltar la voz, sacar los mejores pasos y pasar un buen rato. Canta tus canciones favoritas en el karaoke o acepta el reto en la pantalla de Just Dance para demostrar quién domina la pista.',
     adornos: ['nota', 'microfono', 'bolaDisco'] },
