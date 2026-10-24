@@ -81,6 +81,16 @@ function pintarInformacion() {
     </div>
   ` : texto;
 
+  // Video de YouTube (campo video). Se usa youtube-nocookie para no dejar cookies hasta que le den play.
+  if (actividad.video) {
+    html += `
+      <h2 class="evento__subtitulo">Para entrar en calor</h2>
+      <iframe class="evento__video" src="https://www.youtube-nocookie.com/embed/${actividad.video.id}"
+        title="${actividad.video.titulo}" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
+    `;
+  }
+
   if (actividad.reglas) {
     html += `
       <h2 class="evento__subtitulo">Formato y reglas</h2>
@@ -103,7 +113,7 @@ function pintarInformacion() {
         <div>
           <strong>${ponente.nombre || 'Por anunciar'}</strong>
           <span>${ponente.cargo}</span>
-          ${ponente.bio ? `<p class="evento__bio">${ponente.bio}</p>` : ''}
+          ${ponente.bio ? ponente.bio.split('\n').map((parrafo) => `<p class="evento__bio">${parrafo}</p>`).join('') : ''}
           ${saberMas(ponente.enlace, ponente.nombre)}
         </div>
         ${ponente.nombre ? `<span class="evento__credencial">${ponente.credencial}</span>` : ''}

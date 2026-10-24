@@ -23,7 +23,10 @@ const TIPOS = {
 // (LinkedIn o página: sale como "Saber más" en la página de su charla)
 const PONENTES = [
   { id: 'eduardo', nombre: 'Eduardo', cargo: 'CEO de Unergy', credencial: 'Invitado', color: '#f2a33a' },
-  { id: 'mariano', nombre: 'Mariano Sosa', cargo: 'Ciencia de datos', credencial: 'Ponente', color: '#8b5fd6' },
+  { id: 'mariano', nombre: 'Mariano Sosa', cargo: 'Ingeniero de datos y docente', credencial: 'Ponente', color: '#8b5fd6',
+    foto: 'img/ponente-mariano-sosa.jpg',
+    bio: 'Soy ingeniero de datos en Lovelytics, donde he participado en proyectos de arquitectura y gobierno de plataformas de datos, migración de información y desarrollo de pipelines en Azure y Databricks para empresas de los sectores de seguros, salud y servicios financieros. Paralelamente, me dedico a la formación en análisis de datos donde acompaño a estudiantes en el desarrollo de sus habilidades técnicas.\n' +
+      'Desde mi experiencia en la industria tecnológica y en la educación, promuevo una visión integral de la ingeniería que combina fundamentos sólidos, pensamiento crítico, comunicación, aprendizaje continuo y habilidades humanas para resolver problemas reales. Me interesa conectar el conocimiento técnico con su aplicación práctica y ayudar a otros a desarrollar las competencias que necesitan para crecer profesionalmente en un entorno tecnológico en constante evolución.' },
   { id: 'daniel', nombre: 'Daniel Arango Sohm', cargo: 'Conferencista internacional', credencial: 'Ponente', color: '#1667c2',
     foto: 'img/ponente-daniel-arango.jpg', enlace: 'https://www.linkedin.com/in/daniel-arango-sohm-352b4822a/',
     bio: 'He ganado tres veces el premio al mejor proyecto en Ingeniería de Sistemas en la EAFIT. Soy conferencista internacional y he dado charlas en Medellín JS, Python Medellín (dos veces), Medellín AI, PyCon Colombia, Python Moscow, Perú y BarNLP. Soy mitad colombiano, también tengo ascendencia alemana y rusa, y hablo ruso y alemán.' },
@@ -53,6 +56,7 @@ const GRUPOS = [
 // para la página de la actividad, cada \n es un párrafo; si no hay, se usa el resumen), organiza (id de GRUPOS),
 // reglas (lista de { titulo, texto } que sale como "Formato y reglas" en su página),
 // imagen (en img/: sale junto al texto de su página),
+// video ({ id, titulo } de un video de YouTube: el id es lo que va después de youtu.be/ en el enlace),
 // cifras (lista de { valor, nombre } que salen como recuadros grandes debajo del texto, ej. { valor: 16, nombre: 'jugadores' })
 // y adornos (tres dibujos pixel art de js/pixeles.js que salen en la cabecera de su página; el del medio va más alto).
 const ACTIVIDADES = [
@@ -62,8 +66,12 @@ const ACTIVIDADES = [
   { id: 'feria', dia: 'mie', inicio: '09:00', fin: '12:00', tipo: 'social', titulo: 'Feria de stands', lugar: 'Hall M10',
     descripcion: 'Descubre la innovación desde adentro y amplía tus horizontes. Conecta con el talento universitario recorriendo los stands de nuestros grupos estudiantiles y semilleros de investigación, e interactúa directamente con empresas invitadas para resolver dudas, intercambiar experiencias y construir tu red profesional.',
     adornos: ['maletin', 'carpa', 'gafete'] },
-  { id: 'datos', dia: 'mie', inicio: '11:00', fin: '12:00', tipo: 'conferencia', titulo: 'Conferencia: Ciencia de datos', ponente: 'mariano', lugar: 'Aula Máxima',
-    adornos: ['baseDatos', 'grafica', 'pastel'] },
+  { id: 'datos', dia: 'mie', inicio: '11:00', fin: '12:00', tipo: 'conferencia', titulo: 'Más allá del código: de estudiante a ingeniero en la era de la inteligencia artificial', ponente: 'mariano', lugar: 'Aula Máxima',
+    descripcion: '¿Qué significa realmente ser un buen ingeniero de sistemas en un mundo donde la inteligencia artificial puede generar código, las tecnologías cambian constantemente y los problemas reales exigen mucho más que conocimientos técnicos?\n' +
+      'Durante esta charla exploraremos cómo pasar de aprender herramientas a desarrollar un perfil profesional integral, capaz de comprender problemas, tomar decisiones técnicas y construir soluciones que generen valor. Abordaremos la importancia de los fundamentos de la ingeniería, el pensamiento crítico y el uso responsable de la inteligencia artificial, así como el papel de las habilidades humanas, la comunicación, el trabajo en equipo y el aprendizaje continuo.\n' +
+      'A través de ejemplos prácticos y situaciones del mundo tecnológico, reflexionaremos sobre cómo se conectan los conocimientos adquiridos en la universidad con los desafíos de la industria y qué pueden hacer los estudiantes, desde cualquier semestre, para prepararse para su futuro profesional.\n' +
+      'Una invitación a mirar más allá del código y descubrir cómo construir una carrera en la que la tecnología, el criterio y las habilidades humanas trabajen juntos.',
+    adornos: ['birrete', 'casco', 'baseDatos'] },
   { id: 'taller-aperture', dia: 'mie', inicio: '14:00', fin: '15:00', tipo: 'taller', titulo: 'De Prompts a Agentes: Inteligencia Artificial Agéntica con Python', organiza: 'aperture', lugar: 'Aula M3-224',
     descripcion: '¿Qué pasa cuando un LLM deja de solo responder y empieza a actuar?\n' +
       'En este taller veremos cómo crear un agente, hacerlo más capaz y llevarlo a producción. Lo haremos con LangChain, uno de los frameworks de Python más usados para construir aplicaciones y agentes con LLMs.\n' +
@@ -101,6 +109,7 @@ const ACTIVIDADES = [
     descripcion: 'Reúne a tu equipo y demuestra tu nivel en la cancha en un torneo de eliminación directa por brackets. Avanza llave a llave, supera a tus rivales en cada partido y compite hasta alcanzar la gran final.\n' +
       'Se prestan los petos y el balón.',
     imagen: 'img/actividad-futbol.jpg',
+    video: { id: '_2zoIHTWd00', titulo: 'Comercial de Nike Football: Arriésgalo todo (2014)' },
     adornos: ['camiseta', 'copa', 'balon'] },
   { id: 'videojuegos', dia: 'vie', inicio: '10:00', fin: '12:00', tipo: 'competencia', titulo: 'Torneo de videojuegos', lugar: 'Sala Lovelace Turing',
     icono: 'control', color: '#7b4fc9', resumen: '16 jugadores se enfrentan en Overcooked hasta que solo quede un campeón.',

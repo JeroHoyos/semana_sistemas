@@ -1564,6 +1564,17 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .evento__presentacion--ancha { grid-template-columns: 1.15fr 1fr; }
 .evento__presentacion--ancha .evento__imagen { rotate: -2deg; }
 
+/* Video de YouTube de la actividad (campo video) */
+.evento__video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: 18px;
+  background: var(--azul-marino);
+  box-shadow: 0 18px 30px -18px rgba(10, 44, 82, .55);
+}
+
 /* Cifras de la actividad (campo cifras): un recuadro por dato, en el color de la actividad */
 .evento__cifras {
   display: grid;
