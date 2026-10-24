@@ -55,22 +55,28 @@ const GRUPOS = [
 // y adornos (tres dibujos pixel art de js/pixeles.js que salen en la cabecera de su página; el del medio va más alto).
 const ACTIVIDADES = [
   // Miércoles
-  { id: 'inaugural', dia: 'mie', inicio: '09:00', fin: '10:00', tipo: 'conferencia', titulo: 'Conferencia inaugural', ponente: 'eduardo', lugar: 'Aula Máxima' },
+  { id: 'inaugural', dia: 'mie', inicio: '09:00', fin: '10:00', tipo: 'conferencia', titulo: 'Conferencia inaugural', ponente: 'eduardo', lugar: 'Aula Máxima',
+    adornos: ['bandera', 'microfono', 'cohete'] },
   { id: 'feria', dia: 'mie', inicio: '09:00', fin: '12:00', tipo: 'social', titulo: 'Feria de stands', lugar: 'Hall M10',
-    descripcion: 'Descubre la innovación desde adentro y amplía tus horizontes. Conecta con el talento universitario recorriendo los stands de nuestros grupos estudiantiles y semilleros de investigación, e interactúa directamente con empresas invitadas para resolver dudas, intercambiar experiencias y construir tu red profesional.' },
-  { id: 'datos', dia: 'mie', inicio: '11:00', fin: '12:00', tipo: 'conferencia', titulo: 'Conferencia: Ciencia de datos', ponente: 'mariano', lugar: 'Aula Máxima' },
+    descripcion: 'Descubre la innovación desde adentro y amplía tus horizontes. Conecta con el talento universitario recorriendo los stands de nuestros grupos estudiantiles y semilleros de investigación, e interactúa directamente con empresas invitadas para resolver dudas, intercambiar experiencias y construir tu red profesional.',
+    adornos: ['maletin', 'carpa', 'gafete'] },
+  { id: 'datos', dia: 'mie', inicio: '11:00', fin: '12:00', tipo: 'conferencia', titulo: 'Conferencia: Ciencia de datos', ponente: 'mariano', lugar: 'Aula Máxima',
+    adornos: ['baseDatos', 'grafica', 'pastel'] },
   { id: 'taller-aperture', dia: 'mie', inicio: '14:00', fin: '15:00', tipo: 'taller', titulo: 'De Prompts a Agentes: Inteligencia Artificial Agéntica con Python', organiza: 'aperture', lugar: 'Aula M3-224',
     descripcion: '¿Qué pasa cuando un LLM deja de solo responder y empieza a actuar?\n' +
       'En este taller veremos cómo crear un agente, hacerlo más capaz y llevarlo a producción. Lo haremos con LangChain, uno de los frameworks de Python más usados para construir aplicaciones y agentes con LLMs.\n' +
-      '¡Ven a descubrir cómo funciona un agente!' },
+      '¡Ven a descubrir cómo funciona un agente!',
+    adornos: ['terminal', 'robot', 'rayo'] },
   { id: 'taller-llm', dia: 'mie', inicio: '15:00', fin: '16:00', tipo: 'taller', titulo: 'LLM, agentes, harness, skills y MCP', organiza: 'turing-box', lugar: 'Aula M3-224',
-    descripcion: 'Un recorrido general sobre qué es un LLM, un agente, un harness, skills y MCP.' },
+    descripcion: 'Un recorrido general sobre qué es un LLM, un agente, un harness, skills y MCP.',
+    adornos: ['chat', 'chip', 'enchufe'] },
 
   // Jueves
   { id: 'observacion', dia: 'jue', inicio: '07:00', fin: '10:00', tipo: 'competencia', titulo: 'Carrera de observación',
     icono: 'lupa', color: '#e05a7a', resumen: 'Recorre el campus resolviendo pistas antes que los demás equipos.', lugar: 'Hall M10',
     descripcion: 'Una verdadera prueba de velocidad, lógica y trabajo en equipo. Recorre las estaciones distribuidas alrededor del campus resolviendo acertijos y desafíos en el menor tiempo posible.\n' +
-      '¿Tiene tu equipo la destreza mental y la resistencia necesarias para llevarse la victoria?' },
+      '¿Tiene tu equipo la destreza mental y la resistencia necesarias para llevarse la victoria?',
+    adornos: ['interrogacion', 'lupa', 'mapa'] },
   { id: 'maraton', dia: 'jue', inicio: '14:00', fin: '18:00', tipo: 'competencia', titulo: 'Maratón de programación',
     icono: 'codigo', color: '#2f9e5b', resumen: 'Cuatro horas de problemas algorítmicos contra el reloj.', organiza: 'unalgoritmo', lugar: 'Salón M7-501',
     descripcion: 'Llega la Maratón de Programación, el evento insignia en la sede Medellín para medir el pensamiento algorítmico, la lógica y el trabajo colaborativo en equipos de tres personas frente a retos de programación.',
@@ -79,7 +85,8 @@ const ACTIVIDADES = [
       { titulo: 'Lenguajes permitidos', texto: 'Los problemas se pueden resolver en cualquier lenguaje de programación, principalmente C++, Python y Java.' },
       { titulo: 'Material de consulta', texto: 'Se permite llevar material impreso o escrito (libros, apuntes, notas o código en papel). No se admiten memorias USB ni dispositivos de almacenamiento externos.' },
       { titulo: 'Entorno cerrado e integridad', texto: 'Queda estrictamente prohibido el acceso a internet y el uso de herramientas de inteligencia artificial (Google, ChatGPT, Copilot, Stack Overflow, entre otros); el incumplimiento implicará la expulsión inmediata del equipo. Sí se permitirá consultar la documentación de los lenguajes de programación.' },
-    ] },
+    ],
+    adornos: ['globo', 'computador', 'relojArena'] },
 
   // Viernes
   { id: 'atletismo', dia: 'vie', inicio: '08:00', fin: '09:00', tipo: 'competencia', titulo: 'Carrera de atletismo 8‑bit',
@@ -105,7 +112,8 @@ const ACTIVIDADES = [
     titulo: 'El futuro de los LLM está en la computación cuántica, fotónica y térmica', ponente: 'daniel',
     descripcion: 'El problema de la IA es el consumo de energía, pero ¿qué pasa si no calculamos con energía?\n' +
       'Durante esta charla veremos el proceso para llegar a hacer diferentes modelos de lenguaje estado del arte, autorregresivos y de difusión, y entender cómo llegar a la mejor configuración de capas entre los diferentes paradigmas de computación. ¿Dónde puedo usar la cuántica? ¿Dónde puedo poner la térmica? ¿Para qué sirve y qué es eso? ¿Y cómo multiplicar a la velocidad de la luz de forma paralelizada?\n' +
-      'Con demo en vivo y animaciones para que sea intuitivo.' },
+      'Con demo en vivo y animaciones para que sea intuitivo.',
+    adornos: ['termometro', 'atomo', 'bombillo'] },
 ];
 
 // Fotos y videos de ediciones anteriores para la galería (los archivos van en img/galeria/).

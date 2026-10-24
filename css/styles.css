@@ -94,7 +94,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .foto--edificio::before  { background-image: url(../img/campus-edificio.png); }
 .foto--auditorio::before { background-image: url(../img/campus-auditorio.png); }
 
-.foto--suave::after { background: rgba(10, 44, 82, .35); }
+.foto--suave::after { background: rgba(150, 155, 220, .3); }   /* velo lila claro: la foto se ve casi natural */
 .foto--clara { background-color: var(--papel); }
 .foto--clara::after { background: rgba(236, 236, 234, .9); }
 
