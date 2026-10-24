@@ -1,16 +1,27 @@
 /* =============================================
-   AUTENTICACIÓN Y CARNET DE ASUSTADOR (SUPABASE)
+   SESIÓN Y CARNET DE ASUSTADOR (SUPABASE)
+   Ventana para ingresar o crear una cuenta con el correo de la UNAL.
+   Al crear la cuenta, la persona arma su monstruo y se le emite un carnet.
    ============================================= */
 
+// Esta es la clave pública (anon) de Supabase: está hecha para ir en el navegador.
+// Lo que protege los datos son las reglas configuradas en Supabase. Nunca pongas aquí la clave service_role.
 const SUPABASE_URL = 'https://uwcdgpxdiigllqhhmyss.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3Y2RncHhkaWlnbGxxaGhteXNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MDc4ODUsImV4cCI6MjEwODI4Mzg4NX0.NuHGfN7un_7Qxg_uosrxtYcUouK593WdmQLrg9mjHjs';
 
 const clienteSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let modoRegistro = false;
-let usuarioActual = null;
+// Solo se aceptan correos institucionales
+const DOMINIO_UNAL = '@unal.edu.co';
 
-// Catálogo completo de opciones tipo videojuego para el monstruo
+// true = pestaña "Crear Carnet", false = pestaña "Ingresar"
+let modoRegistro = false;
+
+
+/* ---------- Creador del monstruo ---------- */
+
+// Opciones de cada parte del monstruo, en el orden en que pasan con las flechas.
+// valor: la opción que dibuja dibujarMonstruoPersonalizado (iconos.js); texto: lo que se ve en el selector.
 const CATALOGO_MONSTRUO = {
   estilo: [
     { valor: 'masculino', texto: 'Asustador' },
@@ -66,34 +77,27 @@ const CATALOGO_MONSTRUO = {
   ],
 };
 
-// Índices activos del carrusel
-const indicesMonstruo = {
-  estilo: 0,
-  cuerpo: 0,
-  color: 0,
-  ojos: 0,
-  cuernos: 0,
-  boca: 0,
-  accesorio: 0,
-};
+const PARTES = Object.keys(CATALOGO_MONSTRUO);
 
-function obtenerConfigActual() {
-  const cfg = {};
-  for (const prop of Object.keys(CATALOGO_MONSTRUO)) {
-    cfg[prop] = CATALOGO_MONSTRUO[prop][indicesMonstruo[prop]].valor;
+// Posición de la opción elegida en cada parte (todas arrancan en la primera)
+const indicesMonstruo = Object.fromEntries(PARTES.map((parte) => [parte, 0]));
+
+const opcionElegida = (parte) => CATALOGO_MONSTRUO[parte][indicesMonstruo[parte]];
+
+// El monstruo elegido, por ejemplo { estilo: 'masculino', cuerpo: 'manchas', color: '#1667c2', ... }
+function monstruoElegido() {
+  const monstruo = {};
+  for (const parte of PARTES) {
+    monstruo[parte] = opcionElegida(parte).valor;
   }
-  return cfg;
+  return monstruo;
 }
 
-if ($('#auth-icono-ojo') && typeof ICONOS !== 'undefined') {
-  $('#auth-icono-ojo').innerHTML = ICONOS.ojo;
-}
-
-// Genera el HTML del Carnet de Asustador
-function armarHTMLCarnet(nombre, correo, cfg) {
-  const nombreMostrar = (nombre && nombre.trim()) ? nombre.trim() : 'Tu Nombre Aquí';
-  const usuarioCorreo = (correo && correo.includes('@')) ? correo.split('@')[0] : 'estudiante';
-  const rolCredencial = cfg.estilo === 'femenino' ? 'Asustadora' : 'Asustador';
+// Carnet con el nombre, el usuario del correo (lo que va antes de la @) y el monstruo
+function carnetDeAsustador(nombre, correo, monstruo) {
+  const nombreVisible = nombre?.trim() || 'Tu Nombre Aquí';
+  const usuario = correo?.includes('@') ? correo.split('@')[0] : 'estudiante';
+  const rol = monstruo.estilo === 'femenino' ? 'Asustadora' : 'Asustador';
 
   return `
     <article class="carnet">
@@ -102,82 +106,61 @@ function armarHTMLCarnet(nombre, correo, cfg) {
         <span class="carnet__semana">Semana</span>
         <span class="carnet__sistemas">— de sistemas —</span>
       </div>
-      <div class="carnet__nombre">${nombreMostrar}</div>
-      <div class="carnet__cargo">@${usuarioCorreo} · UNAL</div>
-      <div class="carnet__franja" style="background: ${cfg.color}">${rolCredencial}</div>
-      <div class="carnet__foto" style="border-color: ${cfg.color}">
-        ${dibujarMonstruoPersonalizado(cfg)}
+      <div class="carnet__nombre">${nombreVisible}</div>
+      <div class="carnet__cargo">@${usuario} · UNAL</div>
+      <div class="carnet__franja" style="background: ${monstruo.color}">${rol}</div>
+      <div class="carnet__foto" style="border-color: ${monstruo.color}">
+        ${dibujarMonstruoPersonalizado(monstruo)}
       </div>
     </article>
   `;
 }
 
-// Actualiza los textos y redibuja la vista previa del carnet en vivo
-function actualizarPreviewCarnet() {
-  const cfg = obtenerConfigActual();
-
-  for (const prop of Object.keys(CATALOGO_MONSTRUO)) {
-    const item = CATALOGO_MONSTRUO[prop][indicesMonstruo[prop]];
-    if (prop === 'color') {
-      const dot = $('#dot-color');
-      const txt = $('#txt-color');
-      if (dot) dot.style.background = item.valor;
-      if (txt) txt.textContent = item.texto;
-    } else {
-      const el = $(`#val-${prop}`);
-      if (el) el.textContent = item.texto;
-    }
+// Muestra en cada selector la opción elegida y vuelve a dibujar el carnet de muestra
+function actualizarVistaPrevia() {
+  for (const parte of PARTES) {
+    $(`#val-${parte}`).textContent = opcionElegida(parte).texto;
   }
+  $('#dot-color').style.background = opcionElegida('color').valor;
 
-  const contenedor = $('#preview-carnet-registro');
-  if (!contenedor) return;
-  const nombre = $('#auth-nombre').value;
-  const correo = $('#auth-correo').value;
-  contenedor.innerHTML = armarHTMLCarnet(nombre, correo, cfg);
+  $('#preview-carnet-registro').innerHTML =
+    carnetDeAsustador($('#auth-nombre').value, $('#auth-correo').value, monstruoElegido());
 }
 
-// Escuchar los clics en las flechas del selector tipo videojuego
-if ($('#creador-carnet')) {
-  $('#creador-carnet').addEventListener('click', (evento) => {
-    const flecha = evento.target.closest('.selector-arcade__flecha');
-    if (!flecha) return;
+// Flechas ‹ › de cada selector: pasan a la opción anterior o a la siguiente (de la última vuelve a la primera)
+$('#creador-carnet').addEventListener('click', (evento) => {
+  const flecha = evento.target.closest('.selector-arcade__flecha');
+  if (!flecha) return;
 
-    const fila = flecha.closest('.selector-arcade');
-    if (!fila) return;
+  const parte = flecha.closest('.selector-arcade').dataset.prop;
+  const total = CATALOGO_MONSTRUO[parte].length;
+  indicesMonstruo[parte] = (indicesMonstruo[parte] + Number(flecha.dataset.dir) + total) % total;
+  actualizarVistaPrevia();
+});
 
-    const prop = fila.dataset.prop;
-    const dir = Number(flecha.dataset.dir);
-    const total = CATALOGO_MONSTRUO[prop].length;
+$('#btn-monstruo-random').addEventListener('click', () => {
+  for (const parte of PARTES) {
+    indicesMonstruo[parte] = Math.floor(Math.random() * CATALOGO_MONSTRUO[parte].length);
+  }
+  actualizarVistaPrevia();
+});
 
-    indicesMonstruo[prop] = (indicesMonstruo[prop] + dir + total) % total;
-    actualizarPreviewCarnet();
-  });
-}
+$('#auth-nombre').addEventListener('input', actualizarVistaPrevia);
+$('#auth-correo').addEventListener('input', actualizarVistaPrevia);
 
-// Botón "🎲 Aleatorio"
-if ($('#btn-monstruo-random')) {
-  $('#btn-monstruo-random').addEventListener('click', () => {
-    for (const prop of Object.keys(CATALOGO_MONSTRUO)) {
-      const total = CATALOGO_MONSTRUO[prop].length;
-      indicesMonstruo[prop] = Math.floor(Math.random() * total);
-    }
-    actualizarPreviewCarnet();
-  });
-}
 
-$('#auth-nombre').addEventListener('input', actualizarPreviewCarnet);
-$('#auth-correo').addEventListener('input', actualizarPreviewCarnet);
+/* ---------- Ventana de sesión ---------- */
 
-// Cambiar entre pestaña "Ingresar" y "Crear Carnet"
+$('#auth-icono-ojo').innerHTML = ICONOS.ojo;
+
+// Cambia entre la pestaña "Ingresar" y "Crear Carnet"
 function cambiarModoAuth(esRegistro) {
   modoRegistro = esRegistro;
   $('#tab-login').setAttribute('aria-pressed', !esRegistro);
   $('#tab-registro').setAttribute('aria-pressed', esRegistro);
 
   $('#auth-modal').classList.toggle('auth-modal--registro', esRegistro);
-  if ($('#creador-carnet')) {
-    $('#creador-carnet').hidden = !esRegistro;
-  }
+  $('#creador-carnet').hidden = !esRegistro;
   $('#campo-nombre').hidden = !esRegistro;
   $('#auth-nombre').required = esRegistro;
 
@@ -185,51 +168,51 @@ function cambiarModoAuth(esRegistro) {
   $('#auth-submit-texto').textContent = esRegistro ? 'Emitir mi Carnet' : 'Entrar';
   ocultarMensajeAuth();
 
-  if (esRegistro) {
-    actualizarPreviewCarnet();
-  }
+  if (esRegistro) actualizarVistaPrevia();
 }
 
+// Mensaje debajo del formulario: de error (rojo) o de éxito (verde)
 function mostrarMensajeAuth(texto, esError = true) {
-  const el = $('#auth-mensaje');
-  el.textContent = texto;
-  el.className = `auth-mensaje ${esError ? 'auth-mensaje--error' : 'auth-mensaje--exito'}`;
-  el.hidden = false;
+  const mensaje = $('#auth-mensaje');
+  mensaje.textContent = texto;
+  mensaje.className = `auth-mensaje ${esError ? 'auth-mensaje--error' : 'auth-mensaje--exito'}`;
+  mensaje.hidden = false;
 }
 
 function ocultarMensajeAuth() {
-  const el = $('#auth-mensaje');
-  el.hidden = true;
-  el.textContent = '';
+  const mensaje = $('#auth-mensaje');
+  mensaje.hidden = true;
+  mensaje.textContent = '';
 }
 
-function actualizarInterfazSesion(user) {
-  usuarioActual = user;
-  const boton = $('#btn-abrir-auth');
-  const textoBoton = $('#sesion-texto');
-
-  if (user) {
-    const nombreCompleto = user.user_metadata?.full_name || user.email.split('@')[0];
-    const primerNombre = nombreCompleto.trim().split(' ')[0];
-    const monstruoGuardado = user.user_metadata?.monstruo || obtenerConfigActual();
-
-    textoBoton.textContent = primerNombre;
-    boton.classList.add('portada__boton--conectado');
-
-    $('#auth-modal').classList.add('auth-modal--registro');
-    $('#auth-vista-formulario').hidden = true;
-    $('#auth-vista-perfil').hidden = false;
-    $('#auth-titulo').textContent = 'Carnet de Asustador';
-    $('#perfil-carnet-final').innerHTML = armarHTMLCarnet(nombreCompleto, user.email, monstruoGuardado);
-    $('#perfil-correo').textContent = user.email;
+// Con sesión, la ventana muestra el carnet de la persona; sin sesión, el formulario
+function actualizarInterfazSesion(usuario) {
+  $('#btn-abrir-auth').classList.toggle('portada__boton--conectado', Boolean(usuario));
+  if (usuario) {
+    mostrarPerfil(usuario);
   } else {
-    textoBoton.textContent = 'Iniciar sesión';
-    boton.classList.remove('portada__boton--conectado');
-
-    $('#auth-vista-formulario').hidden = false;
-    $('#auth-vista-perfil').hidden = true;
-    cambiarModoAuth(modoRegistro);
+    mostrarFormulario();
   }
+}
+
+function mostrarPerfil(usuario) {
+  const nombreCompleto = usuario.user_metadata?.full_name || usuario.email.split('@')[0];
+  const monstruo = usuario.user_metadata?.monstruo || monstruoElegido();
+
+  $('#sesion-texto').textContent = nombreCompleto.trim().split(' ')[0];   // el botón de la portada muestra el primer nombre
+  $('#auth-modal').classList.add('auth-modal--registro');
+  $('#auth-vista-formulario').hidden = true;
+  $('#auth-vista-perfil').hidden = false;
+  $('#auth-titulo').textContent = 'Carnet de Asustador';
+  $('#perfil-carnet-final').innerHTML = carnetDeAsustador(nombreCompleto, usuario.email, monstruo);
+  $('#perfil-correo').textContent = usuario.email;
+}
+
+function mostrarFormulario() {
+  $('#sesion-texto').textContent = 'Iniciar sesión';
+  $('#auth-vista-formulario').hidden = false;
+  $('#auth-vista-perfil').hidden = true;
+  cambiarModoAuth(modoRegistro);
 }
 
 $('#btn-abrir-auth').addEventListener('click', () => {
@@ -237,83 +220,87 @@ $('#btn-abrir-auth').addEventListener('click', () => {
   $('#auth-modal').showModal();
 });
 
-$('#btn-cerrar-auth').addEventListener('click', () => {
-  $('#auth-modal').close();
-});
+$('#btn-cerrar-auth').addEventListener('click', () => $('#auth-modal').close());
 
+// Un clic en el fondo oscuro (fuera de la caja) cierra la ventana
 $('#auth-modal').addEventListener('click', (evento) => {
-  if (evento.target === $('#auth-modal')) {
-    $('#auth-modal').close();
-  }
+  if (evento.target === $('#auth-modal')) $('#auth-modal').close();
 });
 
 $('#tab-login').addEventListener('click', () => cambiarModoAuth(false));
 $('#tab-registro').addEventListener('click', () => cambiarModoAuth(true));
 
-// Envío del formulario de registro o login
+
+/* ---------- Crear carnet, ingresar y salir ---------- */
+
+// Errores de Supabase (vienen en inglés) que se le explican a la persona en español
+const ERRORES_SUPABASE = {
+  'Invalid login credentials': 'Correo o contraseña incorrectos.',
+  'User already registered': 'Este correo ya tiene un carnet. Ve a la pestaña Ingresar.',
+};
+
+function traducirError(error) {
+  const mensaje = error.message || 'No se pudo completar la operación.';
+  const conocido = Object.keys(ERRORES_SUPABASE).find((texto) => mensaje.includes(texto));
+  return conocido ? ERRORES_SUPABASE[conocido] : mensaje;
+}
+
+// Crea la cuenta y guarda en ella el nombre y el monstruo elegido
+async function crearCarnet({ nombre, correo, clave }) {
+  if (!nombre) throw new Error('Escribe tu nombre para imprimirlo en el carnet.');
+
+  const { data, error } = await clienteSupabase.auth.signUp({
+    email: correo,
+    password: clave,
+    options: { data: { full_name: nombre, monstruo: monstruoElegido() } },
+  });
+  if (error) throw error;
+
+  // Si Supabase pide confirmar el correo, todavía no hay sesión
+  if (!data.session) {
+    mostrarMensajeAuth(`¡Carnet creado! Revisa tu correo ${DOMINIO_UNAL} para activarlo.`, false);
+    return;
+  }
+  mostrarMensajeAuth('¡Carnet de Asustador emitido con éxito!', false);
+  setTimeout(() => $('#auth-modal').close(), 1000);
+}
+
+async function ingresar({ correo, clave }) {
+  const { error } = await clienteSupabase.auth.signInWithPassword({ email: correo, password: clave });
+  if (error) throw error;
+  $('#auth-modal').close();
+}
+
+// Envío del formulario: crea el carnet o ingresa, según la pestaña elegida
 $('#auth-form').addEventListener('submit', async (evento) => {
   evento.preventDefault();
   ocultarMensajeAuth();
 
-  const nombre = $('#auth-nombre').value.trim();
-  const correo = $('#auth-correo').value.trim().toLowerCase();
-  const clave = $('#auth-clave').value;
+  const datos = {
+    nombre: $('#auth-nombre').value.trim(),
+    correo: $('#auth-correo').value.trim().toLowerCase(),
+    clave: $('#auth-clave').value,
+  };
 
-  if (!correo.endsWith('@unal.edu.co')) {
-    mostrarMensajeAuth('Usa tu correo institucional terminado en @unal.edu.co');
+  if (!datos.correo.endsWith(DOMINIO_UNAL)) {
+    mostrarMensajeAuth(`Usa tu correo institucional terminado en ${DOMINIO_UNAL}`);
     return;
   }
 
-  const btnSubmit = $('#auth-submit');
-  const textoOriginal = $('#auth-submit-texto').textContent;
-  btnSubmit.disabled = true;
-  $('#auth-submit-texto').textContent = 'Cargando…';
+  // Mientras Supabase responde, el botón queda deshabilitado y dice "Cargando…"
+  const boton = $('#auth-submit');
+  const textoBoton = $('#auth-submit-texto');
+  const textoOriginal = textoBoton.textContent;
+  boton.disabled = true;
+  textoBoton.textContent = 'Cargando…';
 
   try {
-    if (modoRegistro) {
-      if (!nombre) {
-        throw new Error('Escribe tu nombre para imprimirlo en el carnet.');
-      }
-
-      const { data, error } = await clienteSupabase.auth.signUp({
-        email: correo,
-        password: clave,
-        options: {
-          data: {
-            full_name: nombre,
-            monstruo: obtenerConfigActual(),
-          },
-        },
-      });
-
-      if (error) throw error;
-
-      if (data.session) {
-        mostrarMensajeAuth('¡Carnet de Asustador emitido con éxito!', false);
-        setTimeout(() => $('#auth-modal').close(), 1000);
-      } else {
-        mostrarMensajeAuth('¡Carnet creado! Revisa tu correo @unal.edu.co para activarlo.', false);
-      }
-    } else {
-      const { error } = await clienteSupabase.auth.signInWithPassword({
-        email: correo,
-        password: clave,
-      });
-
-      if (error) throw error;
-      $('#auth-modal').close();
-    }
-  } catch (err) {
-    let mensaje = err.message || 'No se pudo completar la operación.';
-    if (mensaje.includes('Invalid login credentials')) {
-      mensaje = 'Correo o contraseña incorrectos.';
-    } else if (mensaje.includes('User already registered')) {
-      mensaje = 'Este correo ya tiene un carnet. Ve a la pestaña Ingresar.';
-    }
-    mostrarMensajeAuth(mensaje);
+    await (modoRegistro ? crearCarnet(datos) : ingresar(datos));
+  } catch (error) {
+    mostrarMensajeAuth(traducirError(error));
   } finally {
-    btnSubmit.disabled = false;
-    $('#auth-submit-texto').textContent = textoOriginal;
+    boton.disabled = false;
+    textoBoton.textContent = textoOriginal;
   }
 });
 
@@ -323,10 +310,14 @@ $('#btn-cerrar-sesion').addEventListener('click', async () => {
   $('#auth-modal').close();
 });
 
+
+/* ---------- Arranque ---------- */
+
+// Al cargar la página, y cada vez que alguien entra o sale, se actualiza la interfaz
 clienteSupabase.auth.getSession().then(({ data: { session } }) => {
   actualizarInterfazSesion(session?.user ?? null);
 });
 
-clienteSupabase.auth.onAuthStateChange((_event, session) => {
+clienteSupabase.auth.onAuthStateChange((_evento, session) => {
   actualizarInterfazSesion(session?.user ?? null);
 });

@@ -70,19 +70,40 @@ function pausarCarnets() {
 
 function mostrarCarnet(indice) {
   const ponente = PONENTES[indice];
-  const esMisterio = !ponente.nombre;
   carnetActual = indice;
 
   $$('.miniatura').forEach((boton, i) => boton.setAttribute('aria-pressed', i === indice));
 
-  const carnet = `
+  // Si el ponente tiene una actividad, el carnet lleva a la página de esa actividad
+  const actividad = ACTIVIDADES.find((a) => a.ponente === ponente.id);
+  if (!actividad) {
+    cambiarCarnet(carnetDePonente(ponente));
+    return;
+  }
+
+  const tipo = TIPOS[actividad.tipo].singular.toLowerCase();
+  cambiarCarnet(`
+    <a class="carnet-enlace" href="${enlaceActividad(actividad.id)}" aria-label="Ver ${tipo}: ${actividad.titulo}">
+      ${carnetDePonente(ponente)}
+      <span class="carnet-enlace__texto">Ver su ${tipo} ${ICONOS.flecha}</span>
+    </a>
+  `);
+}
+
+// Carnet tipo credencial universitaria. Si el ponente aún no se ha anunciado, sale "Clasificado".
+// --letras ajusta el tamaño del nombre para que quepa en el carnet.
+function carnetDePonente(ponente) {
+  const esMisterio = !ponente.nombre;
+  const nombre = ponente.nombre || '· · ·';
+
+  return `
     <article class="carnet ${esMisterio ? 'carnet--misterio' : ''}">
       <div class="carnet__escudo">${dibujarEscudo()}</div>
       <div class="carnet__marca">
         <span class="carnet__semana">Semana</span>
         <span class="carnet__sistemas">— de sistemas —</span>
       </div>
-      <div class="carnet__nombre" style="--letras: ${(ponente.nombre || '· · ·').length}">${ponente.nombre || '· · ·'}</div>
+      <div class="carnet__nombre" style="--letras: ${nombre.length}">${nombre}</div>
       <div class="carnet__cargo">${ponente.cargo}</div>
       <div class="carnet__franja">${ponente.credencial}</div>
       <div class="carnet__foto">
@@ -91,16 +112,6 @@ function mostrarCarnet(indice) {
       </div>
     </article>
   `;
-
-  // Si el ponente tiene una actividad, el carnet lleva a la página de esa actividad
-  const actividad = ACTIVIDADES.find((a) => a.ponente === ponente.id);
-  const tipo = actividad && TIPOS[actividad.tipo].singular.toLowerCase();
-  cambiarCarnet(actividad ? `
-    <a class="carnet-enlace" href="${enlaceActividad(actividad.id)}" aria-label="Ver ${tipo}: ${actividad.titulo}">
-      ${carnet}
-      <span class="carnet-enlace__texto">Ver su ${tipo} ${ICONOS.flecha}</span>
-    </a>
-  ` : carnet);
 }
 
 // El carnet que está sale despacio hacia la izquierda y el nuevo entra desde la derecha.
@@ -359,29 +370,12 @@ function pintarSemana(visibles) {
     horas += `<span>${hora}:00</span>`;
   }
 
+  // Una columna por día, con sus actividades repartidas en carriles
   const columnas = DIAS.map((dia) => {
     const delDia = ACTIVIDADES.filter((actividad) => actividad.dia === dia.id);
-
-    const bloques = repartirEnCarriles(delDia).map((actividad) => {
-      const tipo = TIPOS[actividad.tipo];
-      const atenuado = idsVisibles.includes(actividad.id) ? '' : 'bloque--atenuado';
-      const angosto = actividad.carriles > 1 ? 'bloque--angosto' : '';   // comparte la hora con otra
-      // Las variables --desde, --dura, --carril y --carriles ubican el bloque (ver .bloque en el CSS)
-      const posicion = `
-        --desde: ${enHoras(actividad.inicio) - primeraHora};
-        --dura: ${enHoras(actividad.fin) - enHoras(actividad.inicio)};
-        --carril: ${actividad.carril};
-        --carriles: ${actividad.carriles};`;
-      return `
-        <a class="bloque ${atenuado} ${angosto}" href="${enlaceActividad(actividad.id)}" title="${actividad.titulo}"
-          style="--color: ${tipo.color}; --fondo: ${tipo.fondo}; ${posicion}">
-          <strong>${actividad.titulo}</strong>
-          <span class="bloque__lugar">${ICONOS.pin}${actividad.lugar || 'Por confirmar'}</span>
-          <span>${actividad.inicio} – ${actividad.fin}</span>
-        </a>
-      `;
-    }).join('');
-
+    const bloques = repartirEnCarriles(delDia)
+      .map((actividad) => bloqueDeActividad(actividad, primeraHora, idsVisibles.includes(actividad.id)))
+      .join('');
     return `<div class="semana__columna">${bloques}</div>`;
   }).join('');
 
@@ -392,6 +386,28 @@ function pintarSemana(visibles) {
       <div class="semana__horas">${horas}</div>
       ${columnas}
     </div>
+  `;
+}
+
+// Bloque de una actividad en la cuadrícula. Las que no pasan los filtros salen atenuadas.
+// Las variables --desde, --dura, --carril y --carriles ubican el bloque (ver .bloque en el CSS).
+function bloqueDeActividad(actividad, primeraHora, esVisible) {
+  const tipo = TIPOS[actividad.tipo];
+  const atenuado = esVisible ? '' : 'bloque--atenuado';
+  const angosto = actividad.carriles > 1 ? 'bloque--angosto' : '';   // comparte la hora con otra
+  const posicion = `
+    --desde: ${enHoras(actividad.inicio) - primeraHora};
+    --dura: ${enHoras(actividad.fin) - enHoras(actividad.inicio)};
+    --carril: ${actividad.carril};
+    --carriles: ${actividad.carriles};`;
+
+  return `
+    <a class="bloque ${atenuado} ${angosto}" href="${enlaceActividad(actividad.id)}" title="${actividad.titulo}"
+      style="--color: ${tipo.color}; --fondo: ${tipo.fondo}; ${posicion}">
+      <strong>${actividad.titulo}</strong>
+      <span class="bloque__lugar">${ICONOS.pin}${actividad.lugar || 'Por confirmar'}</span>
+      <span>${actividad.inicio} – ${actividad.fin}</span>
+    </a>
   `;
 }
 

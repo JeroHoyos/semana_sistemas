@@ -33,29 +33,32 @@ function pintarPortada() {
 
 /* ---------- Información ---------- */
 
-// "Saber más →" debajo de un ponente o grupo; abre su LinkedIn, red social o página en otra pestaña
-function saberMas(enlace, nombre) {
-  if (!enlace) return '';
-  return `
-    <a class="evento__mas" href="${enlace}" target="_blank" rel="noopener" aria-label="Saber más sobre ${nombre}">
-      Saber más ${ICONOS.flecha}
-    </a>
-  `;
+// La tarjeta se arma por secciones, en este orden. Cada sección devuelve su HTML,
+// o '' si la actividad no tiene ese dato, así que solo aparecen las que aplican.
+function pintarInformacion() {
+  $('#evento-info').innerHTML = [
+    seccionDeDatos(),
+    seccionDeDescripcion(),
+    seccionDelVideo(actividad.video),
+    seccionDeReglas(actividad.reglas),
+    seccionDelPonente(buscarPonente(actividad.ponente)),
+    seccionDelGrupo(buscarGrupo(actividad.organiza)),
+    seccionDeSimultaneas(buscarSimultaneas(actividad)),
+  ].join('');
+  $('#evento-info').style.setProperty('--color', actividad.color || TIPOS[actividad.tipo].color);
+
+  ajustarImagenAncha();
 }
 
-function pintarInformacion() {
-  const ponente = buscarPonente(actividad.ponente);
-  const grupo = buscarGrupo(actividad.organiza);
-  const simultaneas = buscarSimultaneas(actividad);
-  const descripcion = actividad.descripcion || actividad.resumen || 'Pronto publicaremos más detalles de esta actividad.';
-
+// Día, hora y lugar
+function seccionDeDatos() {
   const datos = [
     { icono: ICONOS.calendario, nombre: 'Día', valor: textoDelDia(buscarDia(actividad.dia)) },
     { icono: ICONOS.reloj, nombre: 'Hora', valor: `${actividad.inicio} – ${actividad.fin}` },
     { icono: ICONOS.pin, nombre: 'Lugar', valor: actividad.lugar || 'Facultad de Minas (salón por confirmar)' },
   ];
 
-  let html = `
+  return `
     <dl class="evento__datos">
       ${datos.map((dato) => `
         <div>
@@ -65,117 +68,150 @@ function pintarInformacion() {
       `).join('')}
     </dl>
   `;
+}
 
-  // Texto de la actividad, con sus cifras debajo si tiene.
-  // Si hay imagen, va al lado del texto (en el celular, encima).
+// Texto de la actividad (cada \n es un párrafo), con sus cifras debajo si tiene.
+// Si hay imagen, va al lado del texto (en el celular, encima).
+function seccionDeDescripcion() {
+  const descripcion = actividad.descripcion || actividad.resumen || 'Pronto publicaremos más detalles de esta actividad.';
   const texto = `
     <div class="evento__descripcion">
       ${descripcion.split('\n').map((parrafo) => `<p>${parrafo}</p>`).join('')}
     </div>
-    ${actividad.cifras ? pintarCifras(actividad.cifras) : ''}
+    ${actividad.cifras ? recuadrosDeCifras(actividad.cifras) : ''}
   `;
-  html += actividad.imagen ? `
+
+  if (!actividad.imagen) return texto;
+
+  return `
     <div class="evento__presentacion">
       <img class="evento__imagen" src="${actividad.imagen}" alt="Imagen de ${actividad.titulo}">
       <div>${texto}</div>
     </div>
-  ` : texto;
-
-  // Video de YouTube (campo video). Se usa youtube-nocookie para no dejar cookies hasta que le den play.
-  if (actividad.video) {
-    html += `
-      <h2 class="evento__subtitulo">Para entrar en calor</h2>
-      <iframe class="evento__video" src="https://www.youtube-nocookie.com/embed/${actividad.video.id}"
-        title="${actividad.video.titulo}" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
-    `;
-  }
-
-  if (actividad.reglas) {
-    html += `
-      <h2 class="evento__subtitulo">Formato y reglas</h2>
-      <dl class="evento__reglas">
-        ${actividad.reglas.map((regla) => `
-          <div>
-            <dt>${regla.titulo}</dt>
-            <dd>${regla.texto}</dd>
-          </div>
-        `).join('')}
-      </dl>
-    `;
-  }
-
-  if (ponente) {
-    html += `
-      <h2 class="evento__subtitulo">Ponente</h2>
-      <div class="evento__perfil">
-        <span class="evento__avatar ${ponente.foto ? 'evento__avatar--foto' : ''}">${retratoDePonente(ponente)}</span>
-        <div>
-          <strong>${ponente.nombre || 'Por anunciar'}</strong>
-          <span>${ponente.cargo}</span>
-          ${ponente.bio ? ponente.bio.split('\n').map((parrafo) => `<p class="evento__bio">${parrafo}</p>`).join('') : ''}
-          ${saberMas(ponente.enlace, ponente.nombre)}
-        </div>
-      </div>
-    `;
-  }
-
-  if (grupo) {
-    html += `
-      <h2 class="evento__subtitulo">Organiza</h2>
-      <div class="evento__perfil">
-        ${grupo.logo ? `<span class="evento__avatar"><img src="${grupo.logo}" alt="Logo de ${grupo.nombre}"></span>` : ''}
-        <div>
-          <strong>${grupo.nombre}</strong>
-          <span>${grupo.tipo}</span>
-          ${grupo.descripcion ? `<p class="evento__bio">${grupo.descripcion}</p>` : ''}
-          ${saberMas(grupo.enlace, grupo.nombre)}
-        </div>
-      </div>
-    `;
-  }
-
-  if (simultaneas.length > 0) {
-    html += `
-      <h2 class="evento__subtitulo">A la misma hora</h2>
-      <ul class="evento__simultaneas">
-        ${simultaneas.map((otra) => `
-          <li>
-            <a href="${enlaceActividad(otra.id)}" style="--color: ${TIPOS[otra.tipo].color}">
-              <strong>${otra.titulo}</strong>
-              <span>${otra.inicio} – ${otra.fin}</span>
-              ${ICONOS.flecha}
-            </a>
-          </li>
-        `).join('')}
-      </ul>
-    `;
-  }
-
-  $('#evento-info').innerHTML = html;
-  $('#evento-info').style.setProperty('--color', actividad.color || TIPOS[actividad.tipo].color);
-
-  // Si la imagen es ancha (como la de Just Dance), se le da más espacio que a una cuadrada
-  const imagen = $('.evento__imagen');
-  if (imagen) {
-    const medir = () => imagen.parentElement.classList.toggle(
-      'evento__presentacion--ancha', imagen.naturalWidth > imagen.naturalHeight * 1.2);
-    if (imagen.complete) medir();
-    else imagen.addEventListener('load', medir);
-  }
+  `;
 }
 
-
-/* ---------- Cifras (campo cifras) ---------- */
-
-// Recuadros con un dato grande y su nombre debajo, por ejemplo "16 / jugadores"
-function pintarCifras(cifras) {
+// Recuadros con un dato grande y su nombre debajo, por ejemplo "16 / jugadores" (campo cifras)
+function recuadrosDeCifras(cifras) {
   return `
     <ul class="evento__cifras">
       ${cifras.map((cifra) => `<li><strong>${cifra.valor}</strong>${cifra.nombre}</li>`).join('')}
     </ul>
   `;
 }
+
+// Video de YouTube (campo video). Se usa youtube-nocookie para no dejar cookies hasta que le den play.
+function seccionDelVideo(video) {
+  if (!video) return '';
+
+  return `
+    <h2 class="evento__subtitulo">Para entrar en calor</h2>
+    <iframe class="evento__video" src="https://www.youtube-nocookie.com/embed/${video.id}"
+      title="${video.titulo}" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
+  `;
+}
+
+function seccionDeReglas(reglas) {
+  if (!reglas) return '';
+
+  return `
+    <h2 class="evento__subtitulo">Formato y reglas</h2>
+    <dl class="evento__reglas">
+      ${reglas.map((regla) => `
+        <div>
+          <dt>${regla.titulo}</dt>
+          <dd>${regla.texto}</dd>
+        </div>
+      `).join('')}
+    </dl>
+  `;
+}
+
+function seccionDelPonente(ponente) {
+  if (!ponente) return '';
+
+  const bio = ponente.bio
+    ? ponente.bio.split('\n').map((parrafo) => `<p class="evento__bio">${parrafo}</p>`).join('')
+    : '';
+
+  return `
+    <h2 class="evento__subtitulo">Ponente</h2>
+    <div class="evento__perfil">
+      <span class="evento__avatar ${ponente.foto ? 'evento__avatar--foto' : ''}">${retratoDePonente(ponente)}</span>
+      <div>
+        <strong>${ponente.nombre || 'Por anunciar'}</strong>
+        <span>${ponente.cargo}</span>
+        ${bio}
+        ${saberMas(ponente.enlace, ponente.nombre)}
+      </div>
+    </div>
+  `;
+}
+
+function seccionDelGrupo(grupo) {
+  if (!grupo) return '';
+
+  return `
+    <h2 class="evento__subtitulo">Organiza</h2>
+    <div class="evento__perfil">
+      ${grupo.logo ? `<span class="evento__avatar"><img src="${grupo.logo}" alt="Logo de ${grupo.nombre}"></span>` : ''}
+      <div>
+        <strong>${grupo.nombre}</strong>
+        <span>${grupo.tipo}</span>
+        ${grupo.descripcion ? `<p class="evento__bio">${grupo.descripcion}</p>` : ''}
+        ${saberMas(grupo.enlace, grupo.nombre)}
+      </div>
+    </div>
+  `;
+}
+
+// "Saber más →" debajo de un ponente o grupo; abre su LinkedIn, red social o página en otra pestaña
+function saberMas(enlace, nombre) {
+  if (!enlace) return '';
+
+  return `
+    <a class="evento__mas" href="${enlace}" target="_blank" rel="noopener" aria-label="Saber más sobre ${nombre}">
+      Saber más ${ICONOS.flecha}
+    </a>
+  `;
+}
+
+// Las demás actividades que pasan a la misma hora, con enlace a cada una
+function seccionDeSimultaneas(simultaneas) {
+  if (simultaneas.length === 0) return '';
+
+  return `
+    <h2 class="evento__subtitulo">A la misma hora</h2>
+    <ul class="evento__simultaneas">
+      ${simultaneas.map((otra) => `
+        <li>
+          <a href="${enlaceActividad(otra.id)}" style="--color: ${TIPOS[otra.tipo].color}">
+            <strong>${otra.titulo}</strong>
+            <span>${otra.inicio} – ${otra.fin}</span>
+            ${ICONOS.flecha}
+          </a>
+        </li>
+      `).join('')}
+    </ul>
+  `;
+}
+
+// Si la imagen es ancha (como la de Just Dance), se le da más espacio que a una cuadrada.
+// Su tamaño solo se conoce cuando termina de cargar.
+function ajustarImagenAncha() {
+  const imagen = $('.evento__imagen');
+  if (!imagen) return;
+
+  const medir = () => imagen.parentElement.classList.toggle(
+    'evento__presentacion--ancha', imagen.naturalWidth > imagen.naturalHeight * 1.2);
+
+  if (imagen.complete) medir();
+  else imagen.addEventListener('load', medir);
+}
+
+
+/* ---------- Actividad que no existe ---------- */
 
 // Si el id de la dirección no corresponde a ninguna actividad
 function pintarNoEncontrada() {
