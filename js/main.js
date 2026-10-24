@@ -436,8 +436,8 @@ function pintarCompetencias() {
     return `
       <a class="competencia" href="${enlaceActividad(actividad.id)}" style="--color: ${actividad.color}">
         <span class="competencia__imagen">
-          ${actividad.imagen ? `<img class="competencia__foto" src="${actividad.imagen}" alt="">` : ICONOS[actividad.icono]}
           <span class="competencia__dia">${dia.corto}</span>
+          ${ICONOS[actividad.icono]}
         </span>
         <span class="competencia__titulo">${ICONOS.ojo}${actividad.titulo}</span>
         <span class="competencia__hora">${dia.nombre} · ${actividad.inicio} – ${actividad.fin}</span>

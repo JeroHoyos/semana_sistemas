@@ -858,16 +858,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .competencia__imagen svg { width: 68px; height: 68px; }
 
-/* Si la competencia tiene imagen (campo imagen en data.js), la ocupa toda en vez del ícono */
-.competencia__foto {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 22%;   /* las portadas cuadradas se recortan dejando ver la parte de arriba */
-}
-
 .competencia__dia {
   position: absolute;
   top: 10px;
@@ -1531,17 +1521,167 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .evento__datos dt svg { width: 16px; height: 16px; color: var(--azul); }
 .evento__datos dd { margin: 4px 0 0; font-weight: 600; font-size: 17px; line-height: 1.3; color: var(--azul-marino); }
 
-.evento__descripcion { display: flow-root; margin-top: 24px; font-size: 17px; color: var(--tinta-suave); }
+.evento__descripcion { margin-top: 24px; font-size: 17px; color: var(--tinta-suave); }
 .evento__descripcion p + p { margin-top: 12px; }
+.evento__nota { margin-bottom: 18px; font-size: 15px; color: var(--gris); }
 
-/* Imagen de la actividad (campo imagen en data.js): a la derecha y el texto la rodea */
-.evento__imagen {
-  float: right;
-  width: 220px;
-  margin: 4px 0 12px 24px;
-  border-radius: 20px;
-  box-shadow: 0 14px 26px -16px rgba(10, 44, 82, .6);
+/* Actividad con imagen (campo imagen en data.js): la imagen a la izquierda, un poco ladeada
+   como un cartucho de juego, y el texto al lado. La imagen conserva su forma (cuadrada o ancha). */
+.evento__presentacion {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  align-items: center;
+  gap: 32px;
+  margin-top: 28px;
 }
+.evento__presentacion .evento__descripcion { margin-top: 0; }
+.evento__imagen {
+  display: block;
+  width: 100%;
+  border: 5px solid #fff;
+  border-radius: 22px;
+  box-shadow: 0 0 0 2px var(--linea), 0 18px 30px -16px rgba(10, 44, 82, .55);
+  rotate: -3deg;
+  transition: rotate .3s;
+}
+.evento__imagen:hover { rotate: 0deg; }
+
+/* Cifras del torneo (campo bracket): jugadores, rondas y campeón, en el color de la actividad */
+.evento__cifras {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.evento__cifras li {
+  display: grid;
+  justify-items: center;
+  padding: 10px 6px 12px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--color) 9%, #fff);
+  box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--color) 22%, #fff);
+  font-family: var(--letra-estrecha);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+.evento__cifras strong {
+  font-family: var(--letra-titulo);
+  font-weight: 400;
+  font-size: 36px;
+  line-height: 1.1;
+  letter-spacing: 0;
+  color: var(--color);
+}
+
+/* Cuadro del torneo: una columna por ronda. Todas miden lo mismo de alto y las partidas se
+   reparten parejo, así cada partida queda a la altura del medio de las dos que la alimentan. */
+.cuadro {
+  --raya: color-mix(in srgb, var(--color) 40%, #fff);
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(118px, 1fr);
+  column-gap: 28px;
+  overflow-x: auto;
+  padding: 4px 2px 10px;
+}
+.cuadro__ronda { display: flex; flex-direction: column; }
+.cuadro__nombre {
+  margin-bottom: 10px;
+  font-family: var(--letra-estrecha);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: .12em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--color);
+}
+.cuadro__partidas {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Un par de partidas; su ] une las dos y una raya sigue hasta la partida de la ronda siguiente */
+.cuadro__par {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+.cuadro__par::before {
+  content: '';
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+  right: -14px;
+  width: 14px;
+  border: 2px solid var(--raya);
+  border-left: 0;
+  border-radius: 0 8px 8px 0;
+}
+.cuadro__par::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -28px;
+  width: 14px;
+  border-top: 2px solid var(--raya);
+}
+.cuadro__par--final::before { display: none; }
+.cuadro__par--final::after { width: 28px; }
+
+.cuadro__partida {
+  display: grid;
+  margin: 6px 0;
+  overflow: hidden;
+  border: 2px solid var(--linea);
+  border-radius: 12px;
+  background: #fff;
+}
+.cuadro__cupo {
+  padding: 5px 10px;
+  font-family: var(--letra-estrecha);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--tinta-suave);
+  background: #f5f7fa;
+}
+.cuadro__cupo + .cuadro__cupo { border-top: 1px solid var(--linea); }
+.cuadro__cupo--vacio { text-align: center; color: #b3bac4; background: #fff; }
+
+/* Campeón: el cupo a la altura de la final y la copa 8 bits encima */
+.cuadro__campeon {
+  --px: 4px;
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+.cuadro__copa { position: absolute; bottom: calc(50% + 26px); left: 50%; translate: -50% 0; }
+.cuadro__cupo--campeon {
+  width: 100%;
+  border: 2px solid #f5c518;
+  border-radius: 12px;
+  text-align: center;
+  font-family: var(--letra-titulo);
+  font-size: 16px;
+  color: #d29a0a;
+  background: #fff8d6;
+}
+
+.cuadro__pista { display: none; }
 
 /* Formato y reglas: una franja por regla con su título arriba */
 .evento__reglas { display: grid; gap: 10px; margin: 0; }
@@ -1670,7 +1810,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .evento__tarjeta { padding: 22px 18px 24px; border-radius: 24px; }
   .evento__datos { grid-template-columns: 1fr; }
   .evento__descripcion { font-size: 16px; }
-  .evento__imagen { float: none; display: block; width: 100%; max-width: 320px; margin: 0 auto 18px; }
+  .evento__presentacion { grid-template-columns: 1fr; gap: 22px; }
+  .evento__imagen { max-width: 300px; margin-inline: auto; }
+  .evento__cifras strong { font-size: 30px; }
+  .cuadro__pista { display: block; margin-bottom: 8px; font-size: 13px; color: var(--gris); }
   .evento__avatar--foto { width: 120px; height: 120px; }
   .evento__perfil > div { order: 1; }   /* el texto baja y la credencial queda junto a la foto */
 }
