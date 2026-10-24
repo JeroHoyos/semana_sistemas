@@ -28,8 +28,9 @@ function pintarPortada() {
 
 function pintarPonentes() {
   $('#ponentes-miniaturas').innerHTML = PONENTES.map((ponente, indice) => `
-    <button class="miniatura" data-indice="${indice}" aria-label="${ponente.nombre || ponente.cargo}">
-      ${retratoDePonente(ponente)}
+    <button class="miniatura" data-indice="${indice}">
+      <span class="miniatura__foto">${retratoDePonente(ponente)}</span>
+      <span class="miniatura__nombre">${ponente.nombre || 'Por anunciar'}</span>
     </button>
   `).join('');
 

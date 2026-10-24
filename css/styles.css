@@ -217,55 +217,74 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* ---------- 4. Ponentes ---------- */
 
-/* ---------- 4. Ponentes ---------- */
-
-.ponentes__barra {
-  background: linear-gradient(var(--azul-brillante), var(--azul));
-  box-shadow: inset 0 -3px 0 var(--azul-oscuro);
-}
-.ponentes__barra .contenedor {
-  position: relative;
+.ponentes .contenedor {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 12px 0 14px;
+  padding: 72px 0 80px;
 }
+.ponentes .seccion-titulo { margin-bottom: 26px; }
+.ponentes .seccion-titulo__antetitulo { color: var(--azul-marino); }   /* sobre el cielo claro de la foto */
 
-.ponentes__titulo {
-  position: absolute;      /* a la izquierda, sin empujar las miniaturas del centro */
-  left: 0;
-  font-family: var(--letra-universidad);
-  font-weight: 400;
-  font-size: 18px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: #fff;
-}
-
+/* Selector de ponentes: fotos redondas con el nombre debajo, en una cápsula de vidrio esmerilado.
+   El elegido se ve completo y con anillo azul; los demás, un poco apagados. */
 .ponentes__miniaturas {
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 34px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, .7);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, .62);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 18px 36px -20px rgba(10, 44, 82, .6);
 }
 .miniatura {
-  flex: none;
-  width: 86px;
-  height: 60px;
-  padding: 0;
-  border: 4px solid var(--azul-oscuro);
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  width: 104px;
+  padding: 6px 4px 4px;
+  border: 0;
+  border-radius: 18px;
+  background: none;
+  transition: background .2s;
+}
+.miniatura:hover { background: rgba(255, 255, 255, .6); }
+.miniatura:focus-visible { outline: 3px solid var(--azul); outline-offset: 2px; }
+.miniatura__foto {
+  width: 62px;
+  height: 62px;
+  overflow: hidden;
+  border-radius: 50%;
   background: linear-gradient(#e4effa, #a9cbee);
-  transition: transform .2s;
+  box-shadow: 0 0 0 3px #fff;
+  filter: grayscale(.5);
+  opacity: .7;
+  transition: filter .2s, opacity .2s, box-shadow .2s, transform .2s;
 }
-.miniatura svg { width: 100%; height: 100%; }
-.miniatura img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 25%; }
-.miniatura:hover { transform: translateY(-2px); }
-.miniatura[aria-pressed="true"] { border-color: #fff; }
-
-.ponentes__escena .contenedor {
-  display: flex;
-  justify-content: center;
-  padding: 64px 0;
+.miniatura__foto svg { width: 100%; height: 100%; }
+.miniatura__foto img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 25%; }
+.miniatura__nombre {
+  font-family: var(--letra-estrecha);
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.2;
+  letter-spacing: .06em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
 }
+.miniatura:hover .miniatura__foto { filter: none; opacity: 1; }
+.miniatura[aria-pressed="true"] .miniatura__foto {
+  filter: none;
+  opacity: 1;
+  box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--azul);
+  transform: scale(1.06);
+}
+.miniatura[aria-pressed="true"] .miniatura__nombre { font-weight: 700; color: var(--azul-marino); }
 
 /* Carnet: distribución clásica (escudo y marca arriba, nombre y cargo a la izquierda, foto del monstruo a la derecha) */
 .ponentes__carnet {
@@ -284,7 +303,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   color: #2a2f36;
   animation: aparecer .4s ease;
 }
-.ponentes__escena .carnet { animation: none; }   /* ahí el cambio lo anima main.js (cambiarCarnet) */
+.ponentes .carnet { animation: none; }   /* ahí el cambio lo anima main.js (cambiarCarnet) */
 .carnet > * { position: absolute; }
 
 .carnet__escudo { left: 5%; top: 3%; width: 33%; }
@@ -945,10 +964,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* ---------- 9. Tablet y móvil ---------- */
 
-/* Tablet: título de ponentes encima de las miniaturas y 2 competencias por fila */
+/* Tablet: 2 competencias por fila */
 @media (max-width: 980px) {
-  .ponentes__barra .contenedor { flex-direction: column; }
-  .ponentes__titulo { position: static; font-size: 15px; }
   .competencia { flex-basis: calc((100% - 26px) / 2); }
 }
 
@@ -962,10 +979,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .portada__dias li { height: 48px; padding: 0 16px; font-size: 15px; }
   .portada__boton { height: 52px; }
 
-  /* Ponentes: miniaturas más pequeñas para que quepan las 5 */
-  .ponentes__miniaturas { gap: 8px; }
-  .miniatura { width: 62px; height: 46px; border-width: 3px; }
-  .ponentes__escena .contenedor { padding: 36px 0; }
+  /* Ponentes: fotos más pequeñas para que quepan varias en una fila */
+  .ponentes .contenedor { padding: 48px 0 56px; }
+  .ponentes__miniaturas { gap: 2px; margin-bottom: 26px; padding: 8px; }
+  .miniatura { width: 88px; }
+  .miniatura__foto { width: 52px; height: 52px; }
+  .miniatura__nombre { font-size: 12px; }
 
   /* Horario */
   .horario { padding: 48px 0 56px; }
