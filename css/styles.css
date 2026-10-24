@@ -779,7 +779,15 @@ button { font: inherit; color: inherit; cursor: pointer; }
   transition: filter .2s;
 }
 .bloque:hover { filter: brightness(.95); }
+/* El título se corta en 3 renglones (con "…") para que el lugar, que va justo debajo, siempre se vea.
+   La hora va al final: si no cabe, igual se lee en la columna de horas. */
 .bloque strong {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  flex: none;
   font-family: var(--letra-estrecha);
   font-weight: 700;
   font-size: 14px;
@@ -787,9 +795,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
   text-transform: uppercase;
   color: var(--azul-marino);
 }
+.bloque--angosto strong { -webkit-line-clamp: 2; line-clamp: 2; }   /* comparte la hora: queda la mitad de ancho */
+.bloque strong,
+.bloque span { overflow-wrap: anywhere; hyphens: auto; }             /* las palabras largas se parten en vez de salirse */
 .bloque span { font-size: 12px; line-height: 1.35; color: var(--tinta-suave); }
-.bloque__lugar { display: flex; align-items: center; gap: 4px; }
-.bloque__lugar svg { width: 12px; height: 12px; flex: none; }
+.bloque__lugar { display: flex; align-items: flex-start; gap: 4px; font-weight: 600; }
+.bloque .bloque__lugar { color: var(--azul-marino); }
+.bloque__lugar svg { width: 12px; height: 12px; flex: none; margin-top: 2px; }
 .bloque--atenuado { opacity: .22; }
 
 
@@ -982,6 +994,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .dia strong { font-size: 14px; }
   .boton-semana { padding: 0 14px; }
   .boton-semana span { display: none; }   /* solo el ícono */
+  /* Horas más altas y días más anchos (la semana se desliza de lado): así cabe el lugar en cada bloque */
+  .semana__rejilla { --hora: 104px; grid-template-columns: 50px repeat(3, 215px); min-width: 0; }
 
   /* Pestañas: pasan a ser fichas que bajan de renglón en vez de salirse de la pantalla */
   .horario__pestanas { flex-wrap: wrap; gap: 6px; border-bottom: 0; }

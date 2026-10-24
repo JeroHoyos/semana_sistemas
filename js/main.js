@@ -364,6 +364,7 @@ function pintarSemana(visibles) {
     const bloques = repartirEnCarriles(delDia).map((actividad) => {
       const tipo = TIPOS[actividad.tipo];
       const atenuado = idsVisibles.includes(actividad.id) ? '' : 'bloque--atenuado';
+      const angosto = actividad.carriles > 1 ? 'bloque--angosto' : '';   // comparte la hora con otra
       // Las variables --desde, --dura, --carril y --carriles ubican el bloque (ver .bloque en el CSS)
       const posicion = `
         --desde: ${enHoras(actividad.inicio) - primeraHora};
@@ -371,11 +372,11 @@ function pintarSemana(visibles) {
         --carril: ${actividad.carril};
         --carriles: ${actividad.carriles};`;
       return `
-        <a class="bloque ${atenuado}" href="${enlaceActividad(actividad.id)}"
+        <a class="bloque ${atenuado} ${angosto}" href="${enlaceActividad(actividad.id)}" title="${actividad.titulo}"
           style="--color: ${tipo.color}; --fondo: ${tipo.fondo}; ${posicion}">
           <strong>${actividad.titulo}</strong>
-          <span>${actividad.inicio} – ${actividad.fin}</span>
           <span class="bloque__lugar">${ICONOS.pin}${actividad.lugar || 'Por confirmar'}</span>
+          <span>${actividad.inicio} – ${actividad.fin}</span>
         </a>
       `;
     }).join('');
