@@ -66,13 +66,13 @@ function pintarInformacion() {
     </dl>
   `;
 
-  // Texto de la actividad, con las cifras del torneo si tiene cuadro.
+  // Texto de la actividad, con las cifras del torneo si tiene jugadores.
   // Si hay imagen, va al lado del texto (en el celular, encima).
   const texto = `
     <div class="evento__descripcion">
       ${descripcion.split('\n').map((parrafo) => `<p>${parrafo}</p>`).join('')}
     </div>
-    ${actividad.bracket ? cifrasDelTorneo(actividad.bracket) : ''}
+    ${actividad.jugadores ? cifrasDelTorneo(actividad.jugadores) : ''}
   `;
   html += actividad.imagen ? `
     <div class="evento__presentacion">
@@ -80,14 +80,6 @@ function pintarInformacion() {
       <div>${texto}</div>
     </div>
   ` : texto;
-
-  if (actividad.bracket) {
-    html += `
-      <h2 class="evento__subtitulo">Cuadro del torneo</h2>
-      <p class="evento__nota">Eliminación directa: quien gana su partida pasa a la siguiente ronda y quien pierde queda por fuera.</p>
-      ${cuadroDelTorneo(actividad.bracket)}
-    `;
-  }
 
   if (actividad.reglas) {
     html += `
@@ -153,66 +145,27 @@ function pintarInformacion() {
 
   $('#evento-info').innerHTML = html;
   $('#evento-info').style.setProperty('--color', actividad.color || TIPOS[actividad.tipo].color);
+
+  // Si la imagen es ancha (como la de Just Dance), se le da más espacio que a una cuadrada
+  const imagen = $('.evento__imagen');
+  if (imagen) {
+    const medir = () => imagen.parentElement.classList.toggle(
+      'evento__presentacion--ancha', imagen.naturalWidth > imagen.naturalHeight * 1.2);
+    if (imagen.complete) medir();
+    else imagen.addEventListener('load', medir);
+  }
 }
 
 
-/* ---------- Torneo (campo bracket) ---------- */
+/* ---------- Torneo (campo jugadores) ---------- */
 
-// En cada ronda queda la mitad de jugadores: con 16 hay 4 rondas y al final un campeón
+// Eliminación directa: en cada ronda queda la mitad de jugadores, así que con 16 hay 4 rondas y un campeón
 function cifrasDelTorneo(jugadores) {
   const cifras = [[jugadores, 'jugadores'], [Math.log2(jugadores), 'rondas'], [1, 'campeón']];
   return `
     <ul class="evento__cifras">
       ${cifras.map(([numero, texto]) => `<li><strong>${numero}</strong>${texto}</li>`).join('')}
     </ul>
-  `;
-}
-
-// Las rondas se nombran contando desde la final hacia atrás
-const NOMBRES_DE_RONDA = ['Final', 'Semifinal', 'Cuartos', 'Octavos', 'Dieciseisavos'];
-
-// Cuadro de eliminación directa. Cada ronda tiene la mitad de partidas que la anterior y van
-// de a dos ("par"): los ganadores de un par se enfrentan en la ronda siguiente, y la línea en
-// forma de ] que dibuja el CSS los lleva hasta allá. En la primera ronda salen "Jugador 1",
-// "Jugador 2"...; en las demás, "?" hasta que se sepa quién ganó.
-function cuadroDelTorneo(jugadores) {
-  let siguienteJugador = 1;
-  const partida = (esPrimeraRonda) => {
-    const cupos = esPrimeraRonda ? [`Jugador ${siguienteJugador++}`, `Jugador ${siguienteJugador++}`] : ['?', '?'];
-    return `
-      <div class="cuadro__partida">
-        ${cupos.map((cupo) => `<span class="cuadro__cupo ${esPrimeraRonda ? '' : 'cuadro__cupo--vacio'}">${cupo}</span>`).join('')}
-      </div>
-    `;
-  };
-
-  const partidasPorRonda = [];
-  for (let partidas = jugadores / 2; partidas >= 1; partidas /= 2) partidasPorRonda.push(partidas);
-
-  const rondas = partidasPorRonda.map((partidas, r) => {
-    const pares = partidas === 1
-      ? `<li class="cuadro__par cuadro__par--final">${partida(r === 0)}</li>`
-      : Array.from({ length: partidas / 2 }, () => `<li class="cuadro__par">${partida(r === 0)}${partida(r === 0)}</li>`).join('');
-    return `
-      <div class="cuadro__ronda">
-        <h3 class="cuadro__nombre">${NOMBRES_DE_RONDA[partidasPorRonda.length - 1 - r]}</h3>
-        <ol class="cuadro__partidas">${pares}</ol>
-      </div>
-    `;
-  }).join('');
-
-  return `
-    <p class="cuadro__pista">Desliza para ver todo el cuadro →</p>
-    <div class="cuadro">
-      ${rondas}
-      <div class="cuadro__ronda">
-        <h3 class="cuadro__nombre">Campeón</h3>
-        <div class="cuadro__campeon">
-          <span class="cuadro__copa">${dibujarPixeles(PIXELES.copa)}</span>
-          <span class="cuadro__cupo cuadro__cupo--campeon">?</span>
-        </div>
-      </div>
-    </div>
   `;
 }
 

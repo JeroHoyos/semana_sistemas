@@ -53,7 +53,7 @@ const GRUPOS = [
 // para la página de la actividad, cada \n es un párrafo; si no hay, se usa el resumen), organiza (id de GRUPOS),
 // reglas (lista de { titulo, texto } que sale como "Formato y reglas" en su página),
 // imagen (en img/: sale junto al texto de su página),
-// bracket (cuántos jugadores tiene un torneo de eliminación directa: 4, 8, 16 o 32; su página muestra el cuadro)
+// jugadores (cuántos tiene un torneo de eliminación directa: 4, 8, 16 o 32; su página muestra jugadores, rondas y campeón)
 // y adornos (tres dibujos pixel art de js/pixeles.js que salen en la cabecera de su página; el del medio va más alto).
 const ACTIVIDADES = [
   // Miércoles
@@ -99,12 +99,13 @@ const ACTIVIDADES = [
     icono: 'balon', color: '#1667c2', resumen: 'Arma tu equipo y sal a la cancha.', lugar: 'Placa polideportiva',
     descripcion: 'Reúne a tu equipo y demuestra tu nivel en la cancha en un torneo de eliminación directa por brackets. Avanza llave a llave, supera a tus rivales en cada partido y compite hasta alcanzar la gran final.\n' +
       'Se prestan los petos y el balón.',
+    imagen: 'img/actividad-futbol.jpg',
     adornos: ['camiseta', 'copa', 'balon'] },
   { id: 'videojuegos', dia: 'vie', inicio: '10:00', fin: '12:00', tipo: 'competencia', titulo: 'Torneo de videojuegos',
     icono: 'control', color: '#7b4fc9', resumen: '16 jugadores se enfrentan en Overcooked hasta que solo quede un campeón.',
     descripcion: 'Toma el control, demuestra tu talento en la pantalla y compite codo a codo con otros jugadores para coronarte como el campeón del torneo.',
     imagen: 'img/actividad-overcooked2.jpg',
-    bracket: 16,
+    jugadores: 16,
     adornos: ['gorroChef', 'control', 'reyCebolla'] },
   { id: 'karaoke', dia: 'vie', inicio: '14:00', fin: '15:00', tipo: 'social', titulo: 'Karaoke y Just Dance',
     descripcion: 'El espacio perfecto para soltar la voz, sacar los mejores pasos y pasar un buen rato. Canta tus canciones favoritas en el karaoke o acepta el reto en la pantalla de Just Dance para demostrar quién domina la pista.',

@@ -1523,7 +1523,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .evento__descripcion { margin-top: 24px; font-size: 17px; color: var(--tinta-suave); }
 .evento__descripcion p + p { margin-top: 12px; }
-.evento__nota { margin-bottom: 18px; font-size: 15px; color: var(--gris); }
 
 /* Actividad con imagen (campo imagen en data.js): la imagen a la izquierda, un poco ladeada
    como un cartucho de juego, y el texto al lado. La imagen conserva su forma (cuadrada o ancha). */
@@ -1546,7 +1545,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .evento__imagen:hover { rotate: 0deg; }
 
-/* Cifras del torneo (campo bracket): jugadores, rondas y campeón, en el color de la actividad */
+/* Imagen ancha (más ancha que alta, la marca evento.js): ocupa la mitad de la tarjeta
+   y se ladea menos para que no se salga del borde */
+.evento__presentacion--ancha { grid-template-columns: 1.15fr 1fr; }
+.evento__presentacion--ancha .evento__imagen { rotate: -2deg; }
+
+/* Cifras del torneo (campo jugadores): jugadores, rondas y campeón, en el color de la actividad */
 .evento__cifras {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1577,111 +1581,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
   letter-spacing: 0;
   color: var(--color);
 }
-
-/* Cuadro del torneo: una columna por ronda. Todas miden lo mismo de alto y las partidas se
-   reparten parejo, así cada partida queda a la altura del medio de las dos que la alimentan. */
-.cuadro {
-  --raya: color-mix(in srgb, var(--color) 40%, #fff);
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(118px, 1fr);
-  column-gap: 28px;
-  overflow-x: auto;
-  padding: 4px 2px 10px;
-}
-.cuadro__ronda { display: flex; flex-direction: column; }
-.cuadro__nombre {
-  margin-bottom: 10px;
-  font-family: var(--letra-estrecha);
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: .12em;
-  text-align: center;
-  text-transform: uppercase;
-  color: var(--color);
-}
-.cuadro__partidas {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* Un par de partidas; su ] une las dos y una raya sigue hasta la partida de la ronda siguiente */
-.cuadro__par {
-  position: relative;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-}
-.cuadro__par::before {
-  content: '';
-  position: absolute;
-  top: 25%;
-  bottom: 25%;
-  right: -14px;
-  width: 14px;
-  border: 2px solid var(--raya);
-  border-left: 0;
-  border-radius: 0 8px 8px 0;
-}
-.cuadro__par::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  right: -28px;
-  width: 14px;
-  border-top: 2px solid var(--raya);
-}
-.cuadro__par--final::before { display: none; }
-.cuadro__par--final::after { width: 28px; }
-
-.cuadro__partida {
-  display: grid;
-  margin: 6px 0;
-  overflow: hidden;
-  border: 2px solid var(--linea);
-  border-radius: 12px;
-  background: #fff;
-}
-.cuadro__cupo {
-  padding: 5px 10px;
-  font-family: var(--letra-estrecha);
-  font-weight: 600;
-  font-size: 13px;
-  letter-spacing: .05em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: var(--tinta-suave);
-  background: #f5f7fa;
-}
-.cuadro__cupo + .cuadro__cupo { border-top: 1px solid var(--linea); }
-.cuadro__cupo--vacio { text-align: center; color: #b3bac4; background: #fff; }
-
-/* Campeón: el cupo a la altura de la final y la copa 8 bits encima */
-.cuadro__campeon {
-  --px: 4px;
-  position: relative;
-  flex: 1;
-  display: flex;
-  align-items: center;
-}
-.cuadro__copa { position: absolute; bottom: calc(50% + 26px); left: 50%; translate: -50% 0; }
-.cuadro__cupo--campeon {
-  width: 100%;
-  border: 2px solid #f5c518;
-  border-radius: 12px;
-  text-align: center;
-  font-family: var(--letra-titulo);
-  font-size: 16px;
-  color: #d29a0a;
-  background: #fff8d6;
-}
-
-.cuadro__pista { display: none; }
 
 /* Formato y reglas: una franja por regla con su título arriba */
 .evento__reglas { display: grid; gap: 10px; margin: 0; }
@@ -1812,8 +1711,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .evento__descripcion { font-size: 16px; }
   .evento__presentacion { grid-template-columns: 1fr; gap: 22px; }
   .evento__imagen { max-width: 300px; margin-inline: auto; }
+  .evento__presentacion--ancha .evento__imagen { max-width: none; }   /* la ancha usa todo el ancho */
   .evento__cifras strong { font-size: 30px; }
-  .cuadro__pista { display: block; margin-bottom: 8px; font-size: 13px; color: var(--gris); }
   .evento__avatar--foto { width: 120px; height: 120px; }
   .evento__perfil > div { order: 1; }   /* el texto baja y la credencial queda junto a la foto */
 }
