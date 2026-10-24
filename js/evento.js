@@ -66,13 +66,13 @@ function pintarInformacion() {
     </dl>
   `;
 
-  // Texto de la actividad, con las cifras del torneo si tiene jugadores.
+  // Texto de la actividad, con sus cifras debajo si tiene.
   // Si hay imagen, va al lado del texto (en el celular, encima).
   const texto = `
     <div class="evento__descripcion">
       ${descripcion.split('\n').map((parrafo) => `<p>${parrafo}</p>`).join('')}
     </div>
-    ${actividad.jugadores ? cifrasDelTorneo(actividad.jugadores) : ''}
+    ${actividad.cifras ? pintarCifras(actividad.cifras) : ''}
   `;
   html += actividad.imagen ? `
     <div class="evento__presentacion">
@@ -157,14 +157,13 @@ function pintarInformacion() {
 }
 
 
-/* ---------- Torneo (campo jugadores) ---------- */
+/* ---------- Cifras (campo cifras) ---------- */
 
-// Eliminación directa: en cada ronda queda la mitad de jugadores, así que con 16 hay 4 rondas y un campeón
-function cifrasDelTorneo(jugadores) {
-  const cifras = [[jugadores, 'jugadores'], [Math.log2(jugadores), 'rondas'], [1, 'campeón']];
+// Recuadros con un dato grande y su nombre debajo, por ejemplo "16 / jugadores"
+function pintarCifras(cifras) {
   return `
     <ul class="evento__cifras">
-      ${cifras.map(([numero, texto]) => `<li><strong>${numero}</strong>${texto}</li>`).join('')}
+      ${cifras.map((cifra) => `<li><strong>${cifra.valor}</strong>${cifra.nombre}</li>`).join('')}
     </ul>
   `;
 }
