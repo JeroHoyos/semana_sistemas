@@ -1214,6 +1214,21 @@ button { font: inherit; color: inherit; cursor: pointer; }
   font-size: 15px;
   color: var(--gris);
 }
+/* Botón para bajar el carnet como imagen (en el creador y en el perfil) */
+.boton-descargar {
+  justify-self: center;
+  height: 40px;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.boton-descargar:hover {
+  background: #eef5fc;
+  border-color: var(--azul);
+  color: var(--azul-marino);
+}
+.boton-descargar span { display: inline; }   /* en el celular .boton-semana esconde el texto; aquí se deja */
+.boton-descargar:disabled { opacity: .6; cursor: wait; }
+.auth-perfil .boton-descargar { margin-top: 16px; }
+
 .auth-perfil__salir {
   margin-top: 22px;
   width: 100%;

@@ -311,6 +311,63 @@ $('#btn-cerrar-sesion').addEventListener('click', async () => {
 });
 
 
+/* ---------- Descargar el carnet como imagen ---------- */
+
+// Ancho en píxeles de la imagen, sin importar el tamaño de la pantalla
+const ANCHO_IMAGEN_CARNET = 1080;
+
+// Nombre del archivo a partir del nombre del carnet: "Ana María" → carnet-asustador-ana-maria.png
+function nombreDeArchivo(nombre) {
+  const limpio = nombre
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')   // quita las tildes
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+  return `carnet-asustador-${limpio || 'unal'}.png`;
+}
+
+// htmlToImage (librería html-to-image) copia el carnet con sus letras y lo pinta en un lienzo.
+// La primera vez suele salir en blanco porque el navegador aún no ha preparado las letras,
+// así que se vuelve a pintar hasta que el centro del carnet tenga color (máximo 3 intentos).
+async function pintarCarnet(carnet) {
+  for (let intento = 0; intento < 3; intento++) {
+    const lienzo = await htmlToImage.toCanvas(carnet, {
+      pixelRatio: ANCHO_IMAGEN_CARNET / carnet.offsetWidth,   // se mide en cada intento por si la ventana cambió de tamaño
+      style: { boxShadow: 'none', animation: 'none' },        // sin la sombra ni la animación de entrada
+    });
+    const centro = lienzo.getContext('2d').getImageData(lienzo.width / 2, lienzo.height / 2, 1, 1).data;
+    if (centro[3] > 0) return lienzo.toDataURL('image/png');
+  }
+  throw new Error('El carnet salió en blanco');
+}
+
+// Convierte el carnet en una imagen PNG y la descarga. No necesita sesión: también sirve con el carnet de muestra.
+async function descargarCarnet(boton) {
+  const carnet = $(`${boton.dataset.carnet} .carnet`);
+  const texto = boton.querySelector('span');
+  boton.disabled = true;
+  texto.textContent = 'Preparando…';
+
+  try {
+    const imagen = await pintarCarnet(carnet);
+    const enlace = document.createElement('a');
+    enlace.href = imagen;
+    enlace.download = nombreDeArchivo(carnet.querySelector('.carnet__nombre').textContent);
+    enlace.click();
+    texto.textContent = 'Descargar carnet';
+  } catch (error) {
+    console.error(error);
+    texto.textContent = 'No se pudo, intenta de nuevo';
+  } finally {
+    boton.disabled = false;
+  }
+}
+
+$$('.boton-descargar').forEach((boton) => {
+  boton.addEventListener('click', () => descargarCarnet(boton));
+});
+
+
 /* ---------- Arranque ---------- */
 
 // Al cargar la página, y cada vez que alguien entra o sale, se actualiza la interfaz

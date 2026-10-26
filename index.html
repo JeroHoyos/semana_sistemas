@@ -8,7 +8,7 @@
   <link rel="icon" href="img/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Cinzel:wght@600;700&family=Graduate&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Cinzel:wght@600;700&family=Graduate&display=swap" crossorigin>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -177,6 +177,10 @@
         <!-- Creador en vivo del Carnet de Asustador (estilo videojuego) -->
         <div class="creador-carnet" id="creador-carnet" hidden>
           <div class="ponentes__carnet creador-carnet__preview" id="preview-carnet-registro"></div>
+          <button class="boton-semana boton-descargar" data-carnet="#preview-carnet-registro" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+            <span>Descargar carnet</span>
+          </button>
 
           <div class="creador-carnet__controles">
             <div class="creador-carnet__barra-top">
@@ -282,6 +286,10 @@
       <!-- Vista cuando YA inició sesión -->
       <div class="auth-perfil" id="auth-vista-perfil" hidden>
         <div class="ponentes__carnet creador-carnet__preview" id="perfil-carnet-final"></div>
+        <button class="boton-semana boton-descargar" data-carnet="#perfil-carnet-final" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+          <span>Descargar carnet</span>
+        </button>
         <p class="auth-perfil__correo" id="perfil-correo"></p>
         <button class="boton-semana auth-perfil__salir" id="btn-cerrar-sesion" type="button">
           Cerrar sesión
@@ -306,6 +314,7 @@
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
   <script src="js/data.js"></script>
   <script src="js/iconos.js"></script>
   <script src="js/comun.js"></script>
