@@ -100,7 +100,7 @@ const ACTIVIDADES = [
 
   // Viernes
   { id: 'atletismo', dia: 'vie', inicio: '08:00', fin: '09:00', tipo: 'competencia', titulo: 'Carrera de atletismo 8‑bit',
-    icono: 'pixel', color: '#f08a24', resumen: 'Una carrera con alma de videojuego retro.',
+    icono: 'pixel', color: '#f08a24', resumen: 'Una carrera con alma de videojuego retro.', lugar: 'Hall M10',
     descripcion: 'Pon a prueba tu velocidad y resistencia en un circuito a lo largo de todo el campus. Prepárate para enfrentar los cambios de inclinación del terreno, superar cada nivel y retarte a ti mismo en una carrera con pura alma de videojuego retro.',
     imagen: 'img/actividad-atletismo.jpg',
     adornos: ['medalla10', 'medalla01', 'medalla11'] },
