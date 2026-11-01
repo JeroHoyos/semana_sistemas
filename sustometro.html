@@ -39,7 +39,7 @@
       <span class="evento-portada__tipo" id="sustometro-tipo" style="--color: #d23c5a; --fondo: #fde3e8">Clasificación oficial</span>
       <h1 class="evento-portada__titulo">Sustómetro</h1>
       <p class="sustometro-portada__intro">
-        Aquí no hay puestos, hay sustos. Quien va de líder deja el tanque lleno hasta arriba y, a medida que bajas en la tabla, el nivel desciende. Toca o pasa el mouse por una persona para activar su telemetría en el tanque.
+        Aquí no hay puestos, hay sustos. Quien va de líder deja el tanque lleno hasta arriba y, a medida que bajas en la tabla, el nivel desciende. Toca a una persona para ver sus puntos en el tanque, o el botón del carnet para ver su carnet.
       </p>
     </div>
   </header>
@@ -214,19 +214,10 @@
                   </div>
                 </div>
 
-                <!-- PANTALLA HUD DIGITAL DE SISTEMAS -->
+                <!-- PANTALLA: nombre y puntos de la persona seleccionada -->
                 <div class="tanque__hud">
-                  <div class="hud__fila-header">
-                    <span class="hud__led hud__led--amber"></span>
-                    <span class="hud__led hud__led--cyan"></span>
-                    <span class="hud__titulo">SYS.TELEMETRÍA</span>
-                    <span class="hud__porcentaje" id="hud-porcentaje">0%</span>
-                  </div>
-                  <div class="hud__nombre" id="hud-nombre">CARGANDO...</div>
-                  <div class="hud__fila-footer">
-                    <span class="hud__puntos" id="hud-puntos">0 PTS</span>
-                    <span class="hud__estado" id="hud-estado">CALIBRANDO</span>
-                  </div>
+                  <span class="hud__nombre" id="hud-nombre">Cargando…</span>
+                  <span class="hud__puntos" id="hud-puntos">0 <small>pts</small></span>
                 </div>
               </div>
 
@@ -426,6 +417,25 @@
         <p class="auth-perfil__correo" id="perfil-correo"></p>
         <button class="boton-semana auth-perfil__salir" id="btn-cerrar-sesion" type="button">
           Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- VENTANA CON EL CARNET DE UNA PERSONA DE LA TABLA (sustometro.js la llena) -->
+  <dialog class="auth-modal auth-modal--registro" id="carnet-modal" aria-labelledby="carnet-modal-titulo">
+    <div class="auth-modal__caja">
+      <button class="auth-modal__cerrar" id="btn-cerrar-carnet" type="button" aria-label="Cerrar ventana">✕</button>
+
+      <div class="auth-modal__cabecera">
+        <h2 class="auth-modal__titulo" id="carnet-modal-titulo">Carnet</h2>
+      </div>
+
+      <div class="auth-perfil">
+        <div class="ponentes__carnet creador-carnet__preview" id="carnet-modal-carnet"></div>
+        <button class="boton-semana boton-descargar" data-carnet="#carnet-modal-carnet" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+          <span>Descargar carnet</span>
         </button>
       </div>
     </div>

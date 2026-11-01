@@ -1815,9 +1815,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* Contenedor de página del Sustómetro */
 .pagina-sustometro {
   color: #fff;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
   overflow-x: hidden;
   width: 100%;
   box-sizing: border-box;
@@ -1869,8 +1866,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* Layout principal de 2 columnas */
 .sustometro-main {
-  flex: 1;
-  padding: 40px 0 80px;
+  padding: 40px 0 48px;
   overflow-x: hidden;
 }
 
@@ -2277,84 +2273,48 @@ button { font: inherit; color: inherit; cursor: pointer; }
   box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.2);
 }
 
-/* Pantalla HUD Digital de Sistemas */
+/* Pantalla oscura con el nombre y los puntos de la persona seleccionada */
 .tanque__hud {
   position: relative;
   z-index: 2;
   width: 92%;
-  padding: 7px 9px;
-  border-radius: 8px;
-  background: #090e17;
-  border: 1px solid rgba(0, 240, 255, 0.4);
+  padding: 9px 12px 10px;
+  border-radius: 10px;
+  background: #0d1119;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8), 0 3px 6px rgba(0, 0, 0, 0.4);
-  font-family: 'Share Tech Mono', monospace, monospace;
   box-sizing: border-box;
-}
-
-.hud__fila-header,
-.hud__fila-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.hud__led {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: inline-block;
-  margin-right: 4px;
-}
-.hud__led--amber {
-  background: #f59e0b;
-  box-shadow: 0 0 6px #f59e0b;
-  animation: pulso-led 2s infinite;
-}
-.hud__led--cyan {
-  background: #00f0ff;
-  box-shadow: 0 0 6px #00f0ff;
-}
-
-@keyframes pulso-led {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-.hud__titulo {
-  font-size: 8.5px;
-  color: #718096;
-  letter-spacing: .08em;
-  margin-right: auto;
-  margin-left: 3px;
-}
-
-.hud__porcentaje {
-  font-size: 13px;
-  font-weight: 700;
-  color: #00f0ff;
-  text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+  text-align: center;
 }
 
 .hud__nombre {
-  font-size: 10px;
+  display: block;
+  font-family: var(--letra-estrecha);
   font-weight: 700;
-  color: #ffde59;
-  letter-spacing: .05em;
+  font-size: 16px;
+  line-height: 1.2;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: #fff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin: 3px 0;
 }
 
 .hud__puntos {
-  font-size: 10px;
-  color: #e2e8f0;
+  display: block;
+  margin-top: 2px;
+  font-family: var(--letra-titulo);
+  font-size: 24px;
+  line-height: 1.1;
+  color: #ffde59;
 }
-
-.hud__estado {
-  font-size: 8.5px;
-  color: #00f0ff;
-  letter-spacing: .05em;
+.hud__puntos small {
+  margin-left: 2px;
+  font-family: var(--letra-universidad);
+  font-size: 12px;
+  letter-spacing: .08em;
+  color: #c9b25a;
 }
 
 /* Base biselada del tanque */
@@ -2437,10 +2397,34 @@ button { font: inherit; color: inherit; cursor: pointer; }
   gap: 10px;
 }
 
+/* Cada fila: la tarjeta para elegir a la persona y, encima a la derecha, el botón de su carnet.
+   Son botones hermanos (un botón no puede ir dentro de otro), por eso la tarjeta deja espacio a la derecha. */
 .asustador-item {
+  position: relative;
   margin: 0;
   padding: 0;
 }
+.asustador-item .asustador-card { padding-right: 68px; }
+
+.asustador-item__carnet {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  translate: 0 -50%;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--linea);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--azul);
+  transition: background .15s, border-color .15s, color .15s;
+}
+.asustador-item__carnet:hover { background: var(--azul); border-color: var(--azul); color: #fff; }
+.asustador-item__carnet:focus-visible { outline: 3px solid var(--azul); outline-offset: 2px; }
+.asustador-item__carnet svg { width: 20px; height: 20px; }
 
 /* Cada persona, en un recuadro gris claro como los de día, hora y lugar */
 .asustador-card {
@@ -2463,7 +2447,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .asustador-card:hover {
   background: #f1f4f8;
   border-color: #c9dcf2;
-  transform: translateY(-2px);
 }
 
 .asustador-card:focus-visible {
@@ -2638,7 +2621,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
     padding: 18px 0 34px;
   }
   .sustometro-main {
-    padding: 24px 0 60px;
+    padding: 24px 0 36px;
   }
   .ranking-tarjeta {
     padding: 18px 14px;
@@ -2649,6 +2632,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
     gap: 10px;
     padding: 10px 12px;
   }
+  .asustador-item .asustador-card { padding-right: 54px; }
+  .asustador-item__carnet { right: 12px; width: 34px; height: 34px; }
+  .asustador-item__carnet svg { width: 17px; height: 17px; }
   .asustador-card__posicion {
     width: 32px;
     height: 32px;

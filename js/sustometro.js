@@ -5,16 +5,16 @@
    ============================================= */
 
 const tanqueLiquido = $('#tanque-liquido');
-const hudPorcentaje = $('#hud-porcentaje');
 const hudNombre = $('#hud-nombre');
 const hudPuntos = $('#hud-puntos');
-const hudEstado = $('#hud-estado');
 const rankingContador = $('#ranking-contador');
 const lista = $('#sustometro-lista');
 const lectura = $('#sustometro-lectura');
 
 let asustadores = [];
-let indiceActual = 0;
+// La persona elegida con clic. Se guarda su id (no su puesto) para que siga elegida
+// cuando la tabla se vuelve a dibujar porque alguien se registró o ganó puntos.
+let idElegido = null;
 
 // Calcula el porcentaje real según los puntos de la persona respecto a la meta o mayor puntaje
 function calcularPorcentajeReal(puntos, maxPuntos) {
@@ -26,10 +26,10 @@ function calcularPorcentajeReal(puntos, maxPuntos) {
 // Selecciona un asustador y llena/vacía el Tanque de Sustos con animación
 function seleccionarAsustador(indice) {
   if (!asustadores || !asustadores.length) return;
-  indiceActual = indice;
 
   const maxPuntos = Math.max(100, ...asustadores.map((p) => Number(p.puntos) || 0));
   const persona = asustadores[indice];
+  idElegido = persona.id;
   const puntos = Number(persona.puntos) || 0;
   const porcentaje = calcularPorcentajeReal(puntos, maxPuntos);
   const usuario = persona.correo?.includes('@') ? persona.correo.split('@')[0] : 'estudiante';
@@ -40,22 +40,9 @@ function seleccionarAsustador(indice) {
     tanqueLiquido.style.height = `${porcentaje}%`;
   }
 
-  // Actualizar pantalla HUD digital de Sistemas
-  if (hudPorcentaje) hudPorcentaje.textContent = `${porcentaje}%`;
-  if (hudNombre) hudNombre.textContent = `> ${nombreLimpio.toUpperCase()}`;
-  if (hudPuntos) hudPuntos.textContent = `${puntos} PTS`;
-  if (hudEstado) {
-    if (puntos === 0) {
-      hudEstado.textContent = 'STANDBY';
-      hudEstado.style.color = '#38bdf8';
-    } else if (indice === 0) {
-      hudEstado.textContent = 'MÁXIMO SUSTO';
-      hudEstado.style.color = '#ff3366';
-    } else {
-      hudEstado.textContent = 'ENERGÍA ACTIVA';
-      hudEstado.style.color = '#38bdf8';
-    }
-  }
+  // Pantalla del tanque: nombre y puntos
+  if (hudNombre) hudNombre.textContent = nombreLimpio;
+  if (hudPuntos) hudPuntos.innerHTML = `${puntos} <small>pts</small>`;
 
   // Marcar la tarjeta seleccionada en la lista
   $$('.asustador-card').forEach((card, i) => {
@@ -95,10 +82,8 @@ function renderizarRanking(personas) {
 
   if (total === 0) {
     if (tanqueLiquido) tanqueLiquido.style.height = '0%';
-    if (hudPorcentaje) hudPorcentaje.textContent = '0%';
-    if (hudNombre) hudNombre.textContent = '> ESPERANDO ASUSTADORES';
-    if (hudPuntos) hudPuntos.textContent = '0 PTS';
-    if (hudEstado) hudEstado.textContent = 'STANDBY';
+    if (hudNombre) hudNombre.textContent = 'Esperando asustadores';
+    if (hudPuntos) hudPuntos.innerHTML = '0 <small>pts</small>';
 
     lista.innerHTML = `
       <li class="ranking-vacio">
@@ -128,6 +113,8 @@ function renderizarRanking(personas) {
 
   const maxPuntos = Math.max(100, ...personas.map((p) => Number(p.puntos) || 0));
   const hayPuntosEnJuego = personas.some((p) => Number(p.puntos) > 0);
+  // La misma persona de antes (o el primer puesto si aún no se ha elegido a nadie)
+  const elegido = Math.max(0, personas.findIndex((p) => p.id === idElegido));
 
   // Crear tarjetas para cada estudiante
   lista.innerHTML = personas.map((persona, i) => {
@@ -147,7 +134,7 @@ function renderizarRanking(personas) {
 
     return `
       <li class="asustador-item">
-        <button type="button" class="asustador-card" data-indice="${i}" aria-pressed="${i === 0 ? 'true' : 'false'}">
+        <button type="button" class="asustador-card" data-indice="${i}" aria-pressed="${i === elegido ? 'true' : 'false'}">
           <div class="asustador-card__posicion asustador-card__posicion--${medallaClase}">
             <span>${i + 1}</span>
           </div>
@@ -166,14 +153,27 @@ function renderizarRanking(personas) {
             <span class="asustador-card__porcentaje">${porcentaje}%</span>
           </div>
         </button>
+        <button type="button" class="asustador-item__carnet" data-indice="${i}" aria-label="Ver carnet" title="Ver carnet">
+          ${ICONOS.carnet}
+        </button>
       </li>
     `;
   }).join('');
 
-  // Seleccionar el primero sin inflar el tanque artificialmente
+  // Pequeña espera para que el tanque se llene con animación
   setTimeout(() => {
-    seleccionarAsustador(0);
+    seleccionarAsustador(elegido);
   }, 100);
+}
+
+// Abre la ventana con el carnet de una persona de la tabla
+function mostrarCarnetDe(indice) {
+  const persona = asustadores[indice];
+  const contenedor = $('#carnet-modal-carnet');
+  contenedor.innerHTML = carnetDeAsustador('', persona.correo, persona.monstruo || {});
+  // El nombre lo escribe cada persona: se pone con textContent para que no se lea como HTML
+  contenedor.querySelector('.carnet__nombre').textContent = (persona.nombre || 'Estudiante UNAL').trim();
+  $('#carnet-modal').showModal();
 }
 
 // Consulta Supabase con fallback si 'puntos' aún no existe
@@ -211,7 +211,7 @@ async function cargarSustometro() {
 function mostrarErrorSustometro(mensaje) {
   if (tanqueLiquido) tanqueLiquido.style.height = '0%';
   if (rankingContador) rankingContador.textContent = 'Error de Conexión';
-  if (hudEstado) hudEstado.textContent = 'DESCONECTADO';
+  if (hudNombre) hudNombre.textContent = 'Sin conexión';
 
   lista.innerHTML = `
     <li class="ranking-error">
@@ -233,12 +233,14 @@ function mostrarErrorSustometro(mensaje) {
   if (lectura) lectura.textContent = 'Error al consultar los asustadores.';
 }
 
-// Eventos de interacción (click, hover y teclado)
+// Eventos de interacción (clic y teclado). La persona elegida se queda en el tanque hasta elegir otra.
+// El botón del carnet también la elige, además de abrir su carnet.
 lista.addEventListener('click', (evento) => {
-  const card = evento.target.closest('.asustador-card');
-  if (card) {
-    seleccionarAsustador(Number(card.dataset.indice));
-  }
+  const boton = evento.target.closest('.asustador-card, .asustador-item__carnet');
+  if (!boton) return;
+
+  seleccionarAsustador(Number(boton.dataset.indice));
+  if (boton.matches('.asustador-item__carnet')) mostrarCarnetDe(Number(boton.dataset.indice));
 });
 
 lista.addEventListener('focusin', (evento) => {
@@ -248,18 +250,11 @@ lista.addEventListener('focusin', (evento) => {
   }
 });
 
-lista.addEventListener('pointerover', (evento) => {
-  const card = evento.target.closest('.asustador-card');
-  if (card && evento.pointerType === 'mouse') {
-    seleccionarAsustador(Number(card.dataset.indice));
-  }
-});
+$('#btn-cerrar-carnet').addEventListener('click', () => $('#carnet-modal').close());
 
-// Al salir del área de tarjetas con el mouse, vuelve al primer puesto
-lista.addEventListener('pointerleave', (evento) => {
-  if (evento.pointerType === 'mouse') {
-    seleccionarAsustador(0);
-  }
+// Un clic en el fondo oscuro (fuera de la caja) cierra la ventana
+$('#carnet-modal').addEventListener('click', (evento) => {
+  if (evento.target === $('#carnet-modal')) $('#carnet-modal').close();
 });
 
 // Suscripción en tiempo real a Supabase

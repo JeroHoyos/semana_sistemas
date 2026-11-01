@@ -32,6 +32,11 @@ const ICONOS = {
     <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
   </svg>`,
 
+  // Carnet: tarjeta con una persona y dos renglones (botón "ver carnet" del Sustómetro)
+  carnet: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <rect x="2.5" y="5" width="19" height="14" rx="2.5"/><circle cx="8.5" cy="11" r="2"/><path d="M5.5 16c.7-1.4 1.8-2 3-2s2.3.6 3 2M14.5 10h4M14.5 13.5h3"/>
+  </svg>`,
+
   // Íconos grandes de las tarjetas de competencias
   lupa: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
     <circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6"/>
