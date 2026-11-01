@@ -224,7 +224,33 @@ button { font: inherit; color: inherit; cursor: pointer; }
   padding: 72px 0 80px;
 }
 .ponentes .seccion-titulo { margin-bottom: 26px; }
-.ponentes .seccion-titulo__antetitulo { color: var(--azul-marino); }   /* sobre el cielo claro de la foto */
+
+/* Antetítulo en una cápsula de vidrio esmerilado como la del selector de ponentes,
+   con una rayita a cada lado como el "— de sistemas —" del carnet */
+.ponentes .seccion-titulo__antetitulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+  padding: 7px 18px;
+  border: 1px solid rgba(255, 255, 255, .7);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .62);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 22px -14px rgba(10, 44, 82, .6);
+  font-size: 12px;
+  letter-spacing: .24em;
+  color: var(--azul);
+}
+.ponentes .seccion-titulo__antetitulo::before,
+.ponentes .seccion-titulo__antetitulo::after {
+  content: '';
+  width: 16px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: .45;
+}
 
 /* Selector de ponentes: fotos redondas con el nombre debajo, en una cápsula de vidrio esmerilado.
    El elegido se ve completo y con anillo azul; los demás, un poco apagados. */
@@ -607,27 +633,44 @@ button { font: inherit; color: inherit; cursor: pointer; }
   gap: 14px;
 }
 
+/* Fondo: un brillo suave del color del tipo desde la esquina de arriba a la izquierda y otro
+   más leve abajo a la derecha; el centro queda blanco para que el texto se lea bien.
+   overflow: hidden recorta la franja de color (::before) con la curva de las esquinas. */
 .actividad {
   position: relative;               /* el enlace del título cubre toda la tarjeta */
-  padding: 18px 26px 20px;
+  overflow: hidden;
+  padding: 18px 26px 20px 30px;
   text-align: center;
   background: #ffffff;
-  background: linear-gradient(125deg, #ffffff 15%, color-mix(in srgb, var(--color) 7%, #ffffff) 100%);
+  background:
+    radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--color) 12%, transparent), transparent 55%),
+    radial-gradient(90% 120% at 100% 100%, color-mix(in srgb, var(--color) 8%, transparent), transparent 60%),
+    #ffffff;
   border: 1px solid var(--linea);
-  border: 1px solid color-mix(in srgb, var(--color) 20%, var(--linea));
-  border-left: 6px solid var(--color);
+  border: 1px solid color-mix(in srgb, var(--color) 16%, var(--linea));
   border-radius: 26px;
   box-shadow: 0 8px 22px -12px rgba(10, 44, 82, .25);
-  box-shadow: 0 8px 24px -10px color-mix(in srgb, var(--color) 28%, rgba(10, 44, 82, 0.12)), 0 2px 6px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 10px 26px -14px color-mix(in srgb, var(--color) 35%, rgba(10, 44, 82, 0.15)), 0 2px 6px rgba(10, 44, 82, 0.04);
   animation: aparecer .35s ease;
-  transition: transform .2s, box-shadow .2s, background .2s, border-color .2s;
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+}
+/* Franja de color a la izquierda, del color fuerte arriba a uno más claro abajo */
+.actividad::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 6px;
+  background: var(--color);
+  background: linear-gradient(var(--color), color-mix(in srgb, var(--color) 55%, #ffffff));
 }
 .actividad:hover {
   transform: translateY(-3px);
-  background: linear-gradient(125deg, #ffffff 8%, color-mix(in srgb, var(--color) 11%, #ffffff) 100%);
-  border-color: color-mix(in srgb, var(--color) 34%, var(--linea));
-  border-left-color: var(--color);
-  box-shadow: 0 16px 30px -10px color-mix(in srgb, var(--color) 38%, rgba(10, 44, 82, 0.2)), 0 4px 10px rgba(0, 0, 0, 0.04);
+  background:
+    radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--color) 18%, transparent), transparent 60%),
+    radial-gradient(90% 120% at 100% 100%, color-mix(in srgb, var(--color) 12%, transparent), transparent 65%),
+    #ffffff;
+  border-color: color-mix(in srgb, var(--color) 30%, var(--linea));
+  box-shadow: 0 18px 32px -14px color-mix(in srgb, var(--color) 45%, rgba(10, 44, 82, 0.2)), 0 4px 10px rgba(10, 44, 82, 0.05);
 }
 .actividad:has(:focus-visible) { outline: 3px solid var(--azul); outline-offset: 3px; }
 
@@ -1023,7 +1066,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .pestana[aria-pressed="true"] { background: var(--azul-marino); border-color: var(--azul-marino); color: #fff; }
   .pestana[aria-pressed="true"]::after { display: none; }
 
-  .actividad { padding: 16px 18px 18px; border-radius: 22px; }
+  .actividad { padding: 16px 18px 18px 22px; border-radius: 22px; }
   .actividad__titulo { font-size: 18px; }
 
   /* Competencias: una por fila */
