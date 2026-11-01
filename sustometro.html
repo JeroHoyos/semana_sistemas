@@ -32,11 +32,10 @@
       </div>
     </div>
 
-    <!-- Mismo estilo que la cabecera de una actividad: dibujos pixel art, etiqueta y título.
-         sustometro.js pone los dibujos y el ojo de la etiqueta. -->
+    <!-- Mismo estilo que la cabecera de una actividad: dibujos pixel art y título.
+         sustometro.js pone los dibujos. -->
     <div class="contenedor sustometro-portada__contenido">
       <div class="evento-portada__adornos" id="sustometro-adornos"></div>
-      <span class="evento-portada__tipo" id="sustometro-tipo" style="--color: #d23c5a; --fondo: #fde3e8">Clasificación oficial</span>
       <h1 class="evento-portada__titulo">Sustómetro</h1>
       <p class="sustometro-portada__intro">
         Aquí no hay puestos, hay sustos. Quien va de líder deja el tanque lleno hasta arriba y, a medida que bajas en la tabla, el nivel desciende. Toca a una persona para ver sus puntos en el tanque, o el botón del carnet para ver su carnet.
@@ -100,7 +99,7 @@
                 <!-- STICKERS DE INGENIERÍA DE SISTEMAS: cada uno con su borde blanco de troquel -->
                 <div class="tanque__stickers" aria-hidden="true">
                   <!-- Sticker 1: Python (dos serpientes, una girada 180°) -->
-                  <div class="sticker sticker--python" title="Python">
+                  <div class="sticker sticker--python" data-sticker="python" title="Python">
                     <svg viewBox="0 0 100 100" class="sticker__svg">
                       <rect x="4" y="4" width="92" height="92" rx="24" fill="#ffffff" stroke="#dfe3e8" stroke-width="2"/>
                       <g transform="translate(50 50) scale(.82) translate(-50 -50)">
@@ -115,7 +114,7 @@
                   </div>
 
                   <!-- Sticker 2: Linux (Tux) -->
-                  <div class="sticker sticker--linux" title="Linux">
+                  <div class="sticker sticker--linux" data-sticker="linux" title="Linux">
                     <svg viewBox="0 0 100 100" class="sticker__svg">
                       <circle cx="50" cy="50" r="46" fill="#ffffff" stroke="#dfe3e8" stroke-width="2"/>
                       <ellipse cx="50" cy="58" rx="23" ry="27" fill="#1f2328"/>
@@ -132,7 +131,7 @@
                   </div>
 
                   <!-- Sticker 3: Git (rombo con una rama) -->
-                  <div class="sticker sticker--git" title="Git">
+                  <div class="sticker sticker--git" data-sticker="git" title="Git">
                     <svg viewBox="0 0 100 100" class="sticker__svg">
                       <rect x="17" y="17" width="66" height="66" rx="14" transform="rotate(45 50 50)" fill="#ffffff" stroke="#dfe3e8" stroke-width="2"/>
                       <rect x="23" y="23" width="54" height="54" rx="10" transform="rotate(45 50 50)" fill="#f05133"/>
@@ -147,7 +146,7 @@
                   </div>
 
                   <!-- Sticker 4: Ventana de terminal -->
-                  <div class="sticker sticker--terminal" title="Terminal">
+                  <div class="sticker sticker--terminal" data-sticker="terminal" title="Terminal">
                     <svg viewBox="0 0 110 84" class="sticker__svg">
                       <rect x="4" y="4" width="102" height="76" rx="14" fill="#ffffff" stroke="#dfe3e8" stroke-width="2"/>
                       <rect x="10" y="10" width="90" height="64" rx="9" fill="#1e2430"/>
@@ -162,7 +161,7 @@
                   </div>
 
                   <!-- Sticker 5: C++ -->
-                  <div class="sticker sticker--cpp" title="C++">
+                  <div class="sticker sticker--cpp" data-sticker="cpp" title="C++">
                     <svg viewBox="0 0 100 100" class="sticker__svg">
                       <polygon points="50,4 92,28 92,72 50,96 8,72 8,28" fill="#ffffff" stroke="#dfe3e8" stroke-width="2" stroke-linejoin="round"/>
                       <polygon points="50,12 85,32 85,68 50,88 15,68 15,32" fill="#00599c"/>
@@ -437,6 +436,19 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
           <span>Descargar carnet</span>
         </button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- VENTANA DEL EASTER EGG DE LOS STICKERS (sustometro.js la llena y le pone los stickers) -->
+  <dialog class="auth-modal easter-egg" id="easter-egg-modal" aria-labelledby="easter-egg-titulo">
+    <div class="auth-modal__caja easter-egg__caja">
+      <button class="auth-modal__cerrar" id="btn-cerrar-easter-egg" type="button" aria-label="Cerrar ventana">✕</button>
+      <div class="easter-egg__stickers" id="easter-egg-stickers" aria-hidden="true"></div>
+      <h2 class="auth-modal__titulo easter-egg__titulo" id="easter-egg-titulo"></h2>
+      <div id="easter-egg-premio">
+        <p class="easter-egg__texto">Fuiste la primera persona en encontrar el easter egg. Escríbele al representante y mándale este código:</p>
+        <strong class="easter-egg__codigo" id="easter-egg-codigo"></strong>
       </div>
     </div>
   </dialog>

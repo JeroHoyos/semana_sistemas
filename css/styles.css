@@ -1829,15 +1829,16 @@ button { font: inherit; color: inherit; cursor: pointer; }
   overflow-x: hidden;
 }
 
+/* Usa el ancho de .contenedor, limitado a 1100px para que los botones queden alineados
+   con el tanque y la tabla de abajo (.sustometro-layout) */
 .sustometro-nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  max-width: 1100px;
   margin-bottom: 24px;
   position: relative;
   z-index: 5;
-  width: 100%;
-  box-sizing: border-box;
 }
 
 .sesion-barra-nav {
@@ -2611,6 +2612,53 @@ button { font: inherit; color: inherit; cursor: pointer; }
   to { transform: rotate(360deg); }
 }
 
+/* Ventana del easter egg: los cinco stickers en fila (ladeados como pegados a mano),
+   el título y el código grande. Si alguien lo encontró antes, los stickers salen apagados. */
+.easter-egg__caja {
+  padding-top: 34px;
+  text-align: center;
+}
+
+.easter-egg__stickers {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.easter-egg__stickers svg {
+  width: auto;
+  height: 50px;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .25)) drop-shadow(0 4px 6px rgba(10, 44, 82, .2));
+  rotate: -8deg;
+}
+.easter-egg__stickers svg:nth-child(even) { rotate: 7deg; translate: 0 6px; }
+.easter-egg--tarde .easter-egg__stickers svg { filter: grayscale(1) opacity(.55); }
+
+.easter-egg__titulo { font-size: 28px; text-wrap: balance; }
+.easter-egg__huellas { -webkit-text-stroke: 0; }
+
+.easter-egg__texto {
+  margin-top: 14px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--tinta-suave);
+}
+
+.easter-egg__codigo {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 10px 26px;
+  border: 2px dashed var(--azul);
+  border-radius: 16px;
+  background: #e4effa;
+  font-family: var(--letra-titulo);
+  font-weight: 400;
+  font-size: 40px;
+  letter-spacing: .12em;
+  color: var(--azul-marino);
+}
+
 /* Ajustes Responsive para móvil y pantallas pequeñas */
 @media (max-width: 640px) {
   .sustometro-nav {
@@ -2632,6 +2680,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
     gap: 10px;
     padding: 10px 12px;
   }
+  .easter-egg__stickers svg { height: 40px; }
+  .easter-egg__codigo { font-size: 32px; }
   .asustador-item .asustador-card { padding-right: 54px; }
   .asustador-item__carnet { right: 12px; width: 34px; height: 34px; }
   .asustador-item__carnet svg { width: 17px; height: 17px; }

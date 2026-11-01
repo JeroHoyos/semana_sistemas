@@ -50,12 +50,13 @@ function seleccionarAsustador(indice) {
   });
 
   // Lectura debajo del tanque (también la anuncian los lectores de pantalla)
+  // Los puntos ya salen en la pantalla del tanque: aquí solo va un mensaje
   if (puntos === 0) {
-    escribirLectura('Tiene 0 puntos. ¡Participa en las competencias para llenar el tanque de sustos!', nombreLimpio, usuario);
+    escribirLectura('¡Participa en las competencias para llenar el tanque de sustos!', nombreLimpio, usuario);
   } else if (indice === 0) {
-    escribirLectura(`Lidera la tabla con ${puntos} pts: ¡tanque calibrado al ${porcentaje} %!`, nombreLimpio, usuario);
+    escribirLectura('¡Lidera la tabla del Sustómetro!', nombreLimpio, usuario);
   } else {
-    escribirLectura(`Tiene ${puntos} pts: tanque calibrado al ${porcentaje} %.`, nombreLimpio, usuario);
+    escribirLectura(`Va en el puesto ${indice + 1} de la tabla del Sustómetro.`, nombreLimpio, usuario);
   }
 }
 
@@ -257,6 +258,58 @@ $('#carnet-modal').addEventListener('click', (evento) => {
   if (evento.target === $('#carnet-modal')) $('#carnet-modal').close();
 });
 
+
+/* ---------- Easter egg de los stickers del tanque ---------- */
+
+// Al tocar los cinco stickers en cierto orden sale una ventana. El orden correcto y el código
+// NO están en la página (el repositorio es público): los guarda la función reclamar_easter_egg
+// de Supabase, que además recuerda quién lo encontró primero. La página solo le manda los
+// últimos cinco stickers tocados, separados por comas (por ejemplo 'python,git,cpp,linux,terminal').
+const TOTAL_STICKERS = 5;
+let stickersTocados = [];
+
+$('.tanque__stickers').addEventListener('click', async (evento) => {
+  const sticker = evento.target.closest('.sticker');
+  if (!sticker) return;
+
+  stickersTocados = [...stickersTocados, sticker.dataset.sticker].slice(-TOTAL_STICKERS);
+
+  // Solo se pregunta a Supabase cuando los últimos cinco son los cinco stickers distintos
+  if (new Set(stickersTocados).size < TOTAL_STICKERS) return;
+
+  const { data, error } = await clienteSupabase.rpc('reclamar_easter_egg', { secuencia: stickersTocados.join(',') });
+  if (error) {
+    console.error('Error al revisar el easter egg:', error);
+    return;
+  }
+  if (data.estado === 'incorrecto') return;
+
+  stickersTocados = [];
+  mostrarEasterEgg(data);
+});
+
+// data.estado es 'primero' (y trae data.codigo) o 'tarde' si alguien ya lo había encontrado
+function mostrarEasterEgg({ estado, codigo }) {
+  const esPrimero = estado === 'primero';
+  $('#easter-egg-modal').classList.toggle('easter-egg--tarde', !esPrimero);
+  // Las huellas van en su propio span para quitarles el contorno blanco del título
+  $('#easter-egg-titulo').innerHTML = esPrimero
+    ? 'Conocedor de la informática'
+    : 'Alguien más lo encontró primero...&nbsp;<span class="easter-egg__huellas">🐾</span>';
+  $('#easter-egg-premio').hidden = !esPrimero;
+  $('#easter-egg-codigo').textContent = codigo ?? '';
+  $('#easter-egg-modal').showModal();
+}
+
+// La ventana va decorada con copias de los cinco stickers del tanque
+$('#easter-egg-stickers').append(...[...$$('.tanque__stickers .sticker__svg')].map((svg) => svg.cloneNode(true)));
+
+$('#btn-cerrar-easter-egg').addEventListener('click', () => $('#easter-egg-modal').close());
+
+$('#easter-egg-modal').addEventListener('click', (evento) => {
+  if (evento.target === $('#easter-egg-modal')) $('#easter-egg-modal').close();
+});
+
 // Suscripción en tiempo real a Supabase
 try {
   clienteSupabase
@@ -273,9 +326,8 @@ try {
   console.log('Realtime no disponible en este cliente');
 }
 
-// Cabecera: tres dibujos pixel art y el ojo de la etiqueta, como en la página de una actividad
-$('#sustometro-adornos').innerHTML = ['termometro', 'copa', 'estrella'].map((nombre) => dibujarPixeles(PIXELES[nombre])).join('');
-$('#sustometro-tipo').insertAdjacentHTML('afterbegin', ICONOS.ojo);
+// Cabecera: tres dibujos pixel art, como en la página de una actividad
+$('#sustometro-adornos').innerHTML = ['monstruoSusto', 'tanqueSustos', 'fantasma'].map((nombre) => dibujarPixeles(PIXELES[nombre])).join('');
 
 // Escudo en el pie de página
 if ($('#pie-escudo')) {
