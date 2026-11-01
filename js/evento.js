@@ -37,6 +37,7 @@ function pintarPortada() {
 // o '' si la actividad no tiene ese dato, así que solo aparecen las que aplican.
 function pintarInformacion() {
   $('#evento-info').innerHTML = [
+    seccionDeAviso(),
     seccionDeDatos(),
     seccionDeDescripcion(),
     seccionDelVideo(actividad.video),
@@ -48,6 +49,13 @@ function pintarInformacion() {
   $('#evento-info').style.setProperty('--color', actividad.color || TIPOS[actividad.tipo].color);
 
   ajustarImagenAncha();
+}
+
+// Aviso si la actividad o su ponente están por confirmar (campo porConfirmar en data.js)
+function seccionDeAviso() {
+  if (!actividad.porConfirmar && !buscarPonente(actividad.ponente)?.porConfirmar) return '';
+
+  return `<p class="evento__aviso">${ICONOS.reloj}Información por confirmar: puede cambiar antes del evento.</p>`;
 }
 
 // Día, hora y lugar

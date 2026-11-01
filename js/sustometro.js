@@ -1,5 +1,5 @@
 /* =============================================
-   SUSTÓMETRO - TANQUE DE SUSTOS MONSTERS INC (ESTILO SISTEMAS)
+   SUSTÓMETRO - TANQUE DE SUSTOS
    Muestra en tiempo real a todas las personas registradas en Supabase (tabla 'perfiles')
    con su avatar personalizado, puntajes reales y el Tanque de Sustos interactivo.
    ============================================= */
@@ -8,7 +8,6 @@ const tanqueLiquido = $('#tanque-liquido');
 const hudPorcentaje = $('#hud-porcentaje');
 const hudNombre = $('#hud-nombre');
 const hudPuntos = $('#hud-puntos');
-const hudEstado = $('#hud-estado');
 const rankingContador = $('#ranking-contador');
 const lista = $('#sustometro-lista');
 const lectura = $('#sustometro-lectura');
@@ -40,22 +39,10 @@ function seleccionarAsustador(indice) {
     tanqueLiquido.style.height = `${porcentaje}%`;
   }
 
-  // Actualizar pantalla HUD digital de Sistemas
+  // Lectura debajo del tubo
   if (hudPorcentaje) hudPorcentaje.textContent = `${porcentaje}%`;
-  if (hudNombre) hudNombre.textContent = `> ${nombreLimpio.toUpperCase()}`;
-  if (hudPuntos) hudPuntos.textContent = `${puntos} PTS`;
-  if (hudEstado) {
-    if (puntos === 0) {
-      hudEstado.textContent = 'STANDBY';
-      hudEstado.style.color = '#38bdf8';
-    } else if (indice === 0) {
-      hudEstado.textContent = 'MÁXIMO SUSTO';
-      hudEstado.style.color = '#ff3366';
-    } else {
-      hudEstado.textContent = 'ENERGÍA ACTIVA';
-      hudEstado.style.color = '#38bdf8';
-    }
-  }
+  if (hudNombre) hudNombre.textContent = nombreLimpio;
+  if (hudPuntos) hudPuntos.textContent = `${puntos} pts`;
 
   // Marcar la tarjeta seleccionada en la lista
   $$('.asustador-card').forEach((card, i) => {
@@ -86,9 +73,8 @@ function renderizarRanking(personas) {
   if (total === 0) {
     if (tanqueLiquido) tanqueLiquido.style.height = '0%';
     if (hudPorcentaje) hudPorcentaje.textContent = '0%';
-    if (hudNombre) hudNombre.textContent = '> ESPERANDO ASUSTADORES';
-    if (hudPuntos) hudPuntos.textContent = '0 PTS';
-    if (hudEstado) hudEstado.textContent = 'STANDBY';
+    if (hudNombre) hudNombre.textContent = 'Esperando asustadores';
+    if (hudPuntos) hudPuntos.textContent = '0 pts';
 
     lista.innerHTML = `
       <li class="ranking-vacio">
@@ -201,7 +187,7 @@ async function cargarSustometro() {
 function mostrarErrorSustometro(mensaje) {
   if (tanqueLiquido) tanqueLiquido.style.height = '0%';
   if (rankingContador) rankingContador.textContent = 'Error de Conexión';
-  if (hudEstado) hudEstado.textContent = 'DESCONECTADO';
+  if (hudNombre) hudNombre.textContent = 'Sin conexión';
 
   lista.innerHTML = `
     <li class="ranking-error">

@@ -21,8 +21,9 @@ const TIPOS = {
 // nombre: null significa "por anunciar"
 // Opcionales: foto (imagen cuadrada en img/; si no hay, sale su monstruo), bio y enlace
 // (LinkedIn o página: sale como "Saber más" en la página de su charla)
+// y porConfirmar: true (su carnet sale con el sello "Por confirmar" y su charla con un aviso)
 const PONENTES = [
-  { id: 'eduardo', nombre: 'Eduardo', cargo: 'CEO de Unergy', credencial: 'Invitado', color: '#f2a33a' },
+  { id: 'eduardo', nombre: 'Eduardo', cargo: 'CEO de Unergy', credencial: 'Invitado', color: '#f2a33a', porConfirmar: true },
   { id: 'mariano', nombre: 'Mariano Sosa', cargo: 'Ingeniero de datos y docente', credencial: 'Ponente', color: '#8b5fd6',
     foto: 'img/ponente-mariano-sosa.jpg',
     bio: 'Soy ingeniero de datos en Lovelytics, donde he participado en proyectos de arquitectura y gobierno de plataformas de datos, migración de información y desarrollo de pipelines en Azure y Databricks para empresas de los sectores de seguros, salud y servicios financieros. Paralelamente, me dedico a la formación en análisis de datos donde acompaño a estudiantes en el desarrollo de sus habilidades técnicas.\n' +
@@ -57,7 +58,8 @@ const GRUPOS = [
 // reglas (lista de { titulo, texto } que sale como "Formato y reglas" en su página),
 // imagen (en img/: sale junto al texto de su página),
 // video ({ id, titulo } de un video de YouTube: el id es lo que va después de youtu.be/ en el enlace),
-// cifras (lista de { valor, nombre } que salen como recuadros grandes debajo del texto, ej. { valor: 16, nombre: 'jugadores' })
+// cifras (lista de { valor, nombre } que salen como recuadros grandes debajo del texto, ej. { valor: 16, nombre: 'jugadores' }),
+// porConfirmar: true (sale un aviso de "Información por confirmar" en su página)
 // y adornos (tres dibujos pixel art de js/pixeles.js que salen en la cabecera de su página; el del medio va más alto).
 const ACTIVIDADES = [
   // Miércoles
@@ -77,7 +79,7 @@ const ACTIVIDADES = [
       'En este taller veremos cómo crear un agente, hacerlo más capaz y llevarlo a producción. Lo haremos con LangChain, uno de los frameworks de Python más usados para construir aplicaciones y agentes con LLMs.\n' +
       '¡Ven a descubrir cómo funciona un agente!',
     adornos: ['terminal', 'robot', 'rayo'] },
-  { id: 'taller-llm', dia: 'mie', inicio: '15:00', fin: '16:00', tipo: 'taller', titulo: 'LLM, agentes, harness, skills y MCP', organiza: 'turing-box', lugar: 'Aula M3-224',
+  { id: 'taller-llm', dia: 'mie', inicio: '15:00', fin: '16:00', tipo: 'taller', titulo: 'LLM, agentes, harness, skills y MCP', organiza: 'turing-box', lugar: 'Aula M3-224', porConfirmar: true,
     descripcion: 'Un recorrido general sobre qué es un LLM, un agente, un harness, skills y MCP.',
     adornos: ['chat', 'chip', 'enchufe'] },
 
@@ -121,7 +123,7 @@ const ACTIVIDADES = [
     descripcion: 'El espacio perfecto para soltar la voz, sacar los mejores pasos y pasar un buen rato. Canta tus canciones favoritas en el karaoke o acepta el reto en la pantalla de Just Dance para demostrar quién domina la pista.',
     imagen: 'img/actividad-just-dance.jpg',
     adornos: ['nota', 'microfono', 'bolaDisco'] },
-  { id: 'premiacion', dia: 'vie', inicio: '15:00', fin: '16:00', tipo: 'social', titulo: 'Premiación',
+  { id: 'premiacion', dia: 'vie', inicio: '15:00', fin: '16:00', tipo: 'social', titulo: 'Premiación', lugar: 'Sala Lovelace Turing',
     descripcion: '¡Llegó el momento de la verdad! Acompaña a tus equipos y competidores favoritos en la entrega oficial de premios y la clausura del evento.',
     imagen: 'img/actividad-premiacion.jpg',
     adornos: ['estrella', 'copa', 'estrella'] },

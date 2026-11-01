@@ -90,11 +90,15 @@ function mostrarCarnet(indice) {
   `);
 }
 
-// Carnet tipo credencial universitaria. Si el ponente aún no se ha anunciado, sale "Clasificado".
+// Carnet tipo credencial universitaria. Si el ponente aún no se ha anunciado, sale "Clasificado",
+// y si su participación no está confirmada, "Por confirmar".
 // --letras ajusta el tamaño del nombre para que quepa en el carnet.
 function carnetDePonente(ponente) {
   const esMisterio = !ponente.nombre;
   const nombre = ponente.nombre || '· · ·';
+  let sello = '';
+  if (esMisterio) sello = '<span class="carnet__sello">Clasificado</span>';
+  else if (ponente.porConfirmar) sello = '<span class="carnet__sello carnet__sello--pendiente">Por confirmar</span>';
 
   return `
     <article class="carnet ${esMisterio ? 'carnet--misterio' : ''}">
@@ -108,7 +112,7 @@ function carnetDePonente(ponente) {
       <div class="carnet__franja">${ponente.credencial}</div>
       <div class="carnet__foto">
         ${retratoDePonente(ponente)}
-        ${esMisterio ? '<span class="carnet__sello">Clasificado</span>' : ''}
+        ${sello}
       </div>
     </article>
   `;

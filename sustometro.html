@@ -38,7 +38,7 @@
         <span class="letras-varsity letras-varsity--sustometro" data-texto="SUSTÓMETRO">SUSTÓMETRO</span>
       </h1>
       <p class="sustometro-portada__intro">
-        Aquí no hay puestos, hay sustos. Quien va de líder deja el tanque lleno hasta arriba y, a medida que bajas en la tabla, el nivel desciende. Toca o pasa el mouse por una persona para activar su telemetría en el tanque.
+        Aquí no hay puestos, hay sustos. Quien va de líder deja el tanque lleno hasta arriba y, a medida que bajas en la tabla, el nivel desciende. Toca o pasa el mouse por una persona para ver su nivel en el tanque.
       </p>
     </div>
   </header>
@@ -47,209 +47,36 @@
   <main class="sustometro-main">
     <div class="contenedor sustometro-layout">
 
-      <!-- COLUMNA IZQUIERDA: EL TANQUE DE SUSTOS MONSTERS INC ESTILO SISTEMAS -->
+      <!-- COLUMNA IZQUIERDA: EL TANQUE DE SUSTOS -->
       <section class="sustometro-col-tanque" aria-label="Visualizador del Tanque de Sustos">
         <div class="tanque-sticky-wrapper">
           <div class="estacion-tanque">
 
-            <!-- EL TANQUE DE SUSTOS -->
+            <!-- EL TANQUE DE SUSTOS: asa, tapa, cuerpo con el tubo de líquido y base -->
             <div class="tanque-sustos" id="tanque-sustos">
-              <!-- ASA Y VÁLVULA SUPERIOR -->
-              <div class="tanque__asa-bloque">
-                <div class="tanque__valvula">
-                  <span class="valvula__boquilla"></span>
-                  <span class="valvula__acople"></span>
-                </div>
-                <div class="tanque__asa">
-                  <div class="tanque__asa-hueco"></div>
-                </div>
-              </div>
+              <div class="tanque__asa"></div>
+              <div class="tanque__collar"></div>
 
-              <!-- CÚPULA AMARILLA -->
-              <div class="tanque__cupula"></div>
-
-              <!-- COLLAR NEGRO SUPERIOR -->
-              <div class="tanque__collar tanque__collar--superior">
-                <span class="collar__ranura"></span>
-                <span class="collar__ranura"></span>
-                <span class="collar__ranura"></span>
-              </div>
-
-              <!-- CUERPO AMARILLO INDUSTRIAL CON DETALLES DE SISTEMAS -->
               <div class="tanque__cuerpo">
-                <!-- PLACA INDUSTRIAL DE SISTEMAS -->
-                <div class="tanque__placa">
-                  <svg class="placa__icono-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <rect x="3" y="3" width="18" height="18" rx="3"/>
-                    <path d="M9 3v18M15 3v18M3 9h18M3 15h18"/>
-                  </svg>
-                  <div class="placa__textos">
-                    <strong>UNAL · SISTEMAS</strong>
-                    <small>TANQUE DE SUSTOS v2.0</small>
+                <span class="tanque__placa">Tanque de sustos</span>
+
+                <div class="tanque__tubo" id="tanque-tubo">
+                  <div class="tanque__liquido" id="tanque-liquido" style="height: 0%;"></div>
+                  <div class="tanque__marcas" aria-hidden="true">
+                    <span></span><span></span><span></span>
                   </div>
                 </div>
 
-                <!-- PISTAS DE CIRCUITOS DE SISTEMAS (ESTILO SISTEMAS) -->
-                <svg class="tanque__circuitos" viewBox="0 0 260 260" preserveAspectRatio="none" aria-hidden="true">
-                  <path d="M 25 25 H 70 L 90 45 V 90 L 70 110 H 15" stroke="rgba(0,0,0,0.22)" stroke-width="2.5" fill="none"/>
-                  <circle cx="25" cy="25" r="3.5" fill="rgba(0,0,0,0.35)"/>
-                  <circle cx="15" cy="110" r="3.5" fill="rgba(0,0,0,0.35)"/>
-
-                  <path d="M 235 25 H 190 L 170 45 V 85 L 190 105 H 245" stroke="rgba(0,0,0,0.22)" stroke-width="2.5" fill="none"/>
-                  <circle cx="235" cy="25" r="3.5" fill="rgba(0,0,0,0.35)"/>
-                  <circle cx="245" cy="105" r="3.5" fill="rgba(0,0,0,0.35)"/>
-
-                  <path d="M 25 235 H 75 L 95 215 V 170 L 75 150 H 15" stroke="rgba(0,0,0,0.22)" stroke-width="2.5" fill="none"/>
-                  <circle cx="25" cy="235" r="3.5" fill="rgba(0,0,0,0.35)"/>
-                  <circle cx="15" cy="150" r="3.5" fill="rgba(0,0,0,0.35)"/>
-
-                  <path d="M 235 235 H 185 L 165 215 V 175 L 185 155 H 245" stroke="rgba(0,0,0,0.22)" stroke-width="2.5" fill="none"/>
-                  <circle cx="235" cy="235" r="3.5" fill="rgba(0,0,0,0.35)"/>
-                  <circle cx="245" cy="155" r="3.5" fill="rgba(0,0,0,0.35)"/>
-                </svg>
-
-                <!-- STICKERS DE INGENIERÍA DE SISTEMAS -->
-                <div class="tanque__stickers" aria-hidden="true">
-                  <!-- Sticker 1: Python -->
-                  <div class="sticker sticker--python" title="Python">
-                    <svg viewBox="0 0 100 100" class="sticker__svg">
-                      <rect x="5" y="5" width="90" height="90" rx="22" fill="#ffffff" stroke="#e2e8f0" stroke-width="2.5"/>
-                      <g transform="translate(15, 15) scale(0.7)">
-                        <path d="M49.6 0c-13.8 0-23 6-23 17.5v13.2h23.5v3.3H17.4C6 34 0 40.5 0 54.3c0 14.5 10 23.3 23 23.3h7.6V66.8c0-13.8 11.7-23.7 25.5-23.7h23.2v-3.3H56V17.5C56 3.7 46.4 0 49.6 0zm-11.8 7.3c2.4 0 4.4 2 4.4 4.4 0 2.4-2 4.4-4.4 4.4-2.4 0-4.4-2-4.4-4.4 0-2.4 2-4.4 4.4-4.4z" fill="#366f9f"/>
-                        <path d="M50.4 100c13.8 0 23-6 23-17.5V69.3H49.9V66h32.7c11.4 0 17.4-6.5 17.4-20.3 0-14.5-10-23.3-23-23.3h-7.6v10.8c0 13.8-11.7 23.7-25.5 23.7H20.7v3.3H44v22.3c0 13.8 9.6 17.5 6.4 17.5zm11.8-7.3c-2.4 0-4.4-2-4.4-4.4 0-2.4 2-4.4 4.4-4.4 2.4 0 4.4 2 4.4 4.4 0 2.4-2 4.4-4.4 4.4z" fill="#ffd438"/>
-                      </g>
-                    </svg>
-                  </div>
-
-                  <!-- Sticker 2: Linux (Tux) -->
-                  <div class="sticker sticker--linux" title="Linux">
-                    <svg viewBox="0 0 100 110" class="sticker__svg">
-                      <ellipse cx="50" cy="55" rx="44" ry="48" fill="#ffffff" stroke="#e2e8f0" stroke-width="2.5"/>
-                      <g transform="translate(18, 12) scale(0.66)">
-                        <ellipse cx="18" cy="116" rx="20" ry="8" fill="#f59e0b"/>
-                        <ellipse cx="82" cy="116" rx="20" ry="8" fill="#f59e0b"/>
-                        <path d="M50 10 C25 10 18 35 18 75 C18 105 25 115 50 115 C75 115 82 105 82 75 C82 35 75 10 50 10 Z" fill="#111827"/>
-                        <ellipse cx="50" cy="78" rx="22" ry="30" fill="#ffffff"/>
-                        <path d="M18 55 C6 65 2 85 10 95 C14 85 18 75 22 68 Z" fill="#111827"/>
-                        <path d="M82 55 C94 65 98 85 90 95 C86 85 82 75 78 68 Z" fill="#111827"/>
-                        <ellipse cx="42" cy="38" rx="6" ry="9" fill="#ffffff"/>
-                        <ellipse cx="58" cy="38" rx="6" ry="9" fill="#ffffff"/>
-                        <circle cx="43" cy="38" r="3.5" fill="#111827"/>
-                        <circle cx="57" cy="38" r="3.5" fill="#111827"/>
-                        <path d="M36 50 Q50 64 64 50 Q50 44 36 50 Z" fill="#f59e0b"/>
-                      </g>
-                    </svg>
-                  </div>
-
-                  <!-- Sticker 3: Git -->
-                  <div class="sticker sticker--git" title="Git">
-                    <svg viewBox="0 0 100 100" class="sticker__svg">
-                      <rect x="12" y="12" width="76" height="76" rx="16" transform="rotate(45 50 50)" fill="#ffffff" stroke="#e2e8f0" stroke-width="2.5"/>
-                      <rect x="17" y="17" width="66" height="66" rx="12" transform="rotate(45 50 50)" fill="#f05032"/>
-                      <g stroke="#ffffff" stroke-width="7" stroke-linecap="round" fill="none">
-                        <line x1="36" y1="36" x2="64" y2="64"/>
-                        <path d="M64 64 L50 50 A14 14 0 0 1 50 30"/>
-                      </g>
-                      <circle cx="36" cy="36" r="6.5" fill="#ffffff"/>
-                      <circle cx="64" cy="64" r="6.5" fill="#ffffff"/>
-                      <circle cx="50" cy="30" r="6.5" fill="#ffffff"/>
-                    </svg>
-                  </div>
-
-                  <!-- Sticker 4: Terminal Window -->
-                  <div class="sticker sticker--terminal" title="Terminal">
-                    <svg viewBox="0 0 110 80" class="sticker__svg">
-                      <rect x="5" y="5" width="100" height="70" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="2.5"/>
-                      <rect x="9" y="9" width="92" height="62" rx="8" fill="#181e29"/>
-                      <circle cx="20" cy="20" r="3" fill="#ef4444"/>
-                      <circle cx="28" cy="20" r="3" fill="#f59e0b"/>
-                      <circle cx="36" cy="20" r="3" fill="#38bdf8"/>
-                      <text x="20" y="50" font-family="'Share Tech Mono', monospace" font-size="20" font-weight="700" fill="#38bdf8">&gt;_</text>
-                      <rect x="46" y="36" width="10" height="15" fill="#38bdf8">
-                        <animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/>
-                      </rect>
-                    </svg>
-                  </div>
-
-                  <!-- Sticker 5: C++ -->
-                  <div class="sticker sticker--cpp" title="C++">
-                    <svg viewBox="0 0 100 100" class="sticker__svg">
-                      <polygon points="50,6 90,28 90,72 50,94 10,72 10,28" fill="#ffffff" stroke="#e2e8f0" stroke-width="2.5"/>
-                      <polygon points="50,11 85,30 85,70 50,89 15,70 15,30" fill="#00599c"/>
-                      <text x="50" y="62" font-family="'Barlow', sans-serif" font-weight="900" font-size="28" fill="#ffffff" text-anchor="middle">C++</text>
-                    </svg>
-                  </div>
-                </div>
-
-                <!-- VISOR METÁLICO CENTRAL CON GRADUACIÓN Y LÍQUIDO -->
-                <div class="tanque__visor">
-                  <!-- Tornillos en esquinas del marco -->
-                  <span class="visor__tornillo visor__tornillo--tl"></span>
-                  <span class="visor__tornillo visor__tornillo--tr"></span>
-                  <span class="visor__tornillo visor__tornillo--bl"></span>
-                  <span class="visor__tornillo visor__tornillo--br"></span>
-
-                  <!-- Escala de graduación lateral -->
-                  <div class="visor__escala" aria-hidden="true">
-                    <span class="escala__signo escala__signo--mas">+</span>
-                    <span class="escala__marca" style="--p: 100%"></span>
-                    <span class="escala__marca" style="--p: 75%"></span>
-                    <span class="escala__marca" style="--p: 50%"></span>
-                    <span class="escala__marca" style="--p: 25%"></span>
-                    <span class="escala__marca" style="--p: 0%"></span>
-                    <span class="escala__signo escala__signo--menos">-</span>
-                  </div>
-
-                  <!-- Tubo de cristal y líquido rojo/ámbar de susto -->
-                  <div class="visor__tubo" id="tanque-tubo">
-                    <div class="visor__liquido" id="tanque-liquido" style="height: 0%;">
-                      <div class="visor__ola"></div>
-                      <div class="visor__luz"></div>
-                      <span class="visor__burbuja"></span>
-                      <span class="visor__burbuja"></span>
-                      <span class="visor__burbuja"></span>
-                    </div>
-
-                    <!-- Cápsulas / Segmentos de medición como en Monsters Inc -->
-                    <div class="visor__camaras" aria-hidden="true">
-                      <span class="camara__segmento"></span>
-                      <span class="camara__segmento"></span>
-                      <span class="camara__segmento"></span>
-                      <span class="camara__segmento"></span>
-                      <span class="camara__segmento"></span>
-                    </div>
-
-                    <div class="visor__vidrio-reflejo" aria-hidden="true"></div>
-                  </div>
-                </div>
-
-                <!-- PANTALLA HUD DIGITAL DE SISTEMAS -->
+                <!-- Lectura de la persona seleccionada -->
                 <div class="tanque__hud">
-                  <div class="hud__fila-header">
-                    <span class="hud__led hud__led--amber"></span>
-                    <span class="hud__led hud__led--cyan"></span>
-                    <span class="hud__titulo">SYS.TELEMETRÍA</span>
-                    <span class="hud__porcentaje" id="hud-porcentaje">0%</span>
-                  </div>
-                  <div class="hud__nombre" id="hud-nombre">CARGANDO...</div>
-                  <div class="hud__fila-footer">
-                    <span class="hud__puntos" id="hud-puntos">0 PTS</span>
-                    <span class="hud__estado" id="hud-estado">CALIBRANDO</span>
-                  </div>
+                  <span class="hud__porcentaje" id="hud-porcentaje">0%</span>
+                  <span class="hud__nombre" id="hud-nombre">Cargando…</span>
+                  <span class="hud__puntos" id="hud-puntos">0 pts</span>
                 </div>
               </div>
 
-              <!-- COLLAR NEGRO INFERIOR -->
-              <div class="tanque__collar tanque__collar--inferior">
-                <span class="collar__ranura"></span>
-                <span class="collar__ranura"></span>
-                <span class="collar__ranura"></span>
-              </div>
-
-              <!-- BASE AMARILLA BISELADA -->
-              <div class="tanque__base">
-                <div class="tanque__base-pie"></div>
-              </div>
+              <div class="tanque__collar"></div>
+              <div class="tanque__base"></div>
             </div>
 
             <!-- LECTURA DE TEXTO ACCESIBLE -->
