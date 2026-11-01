@@ -15,6 +15,16 @@
 
   <!-- PORTADA -->
   <header class="portada foto foto--entrada">
+    <!-- Barra de sustómetro arriba a la izquierda -->
+    <div class="sustometro-barra" id="sustometro-barra">
+      <a class="portada__boton portada__boton--sesion portada__boton--sustometro" href="sustometro.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 20V10M12 20V4M6 20v-6"/>
+        </svg>
+        <span>Sustómetro</span>
+      </a>
+    </div>
+
     <!-- Barra de sesión arriba a la derecha -->
     <div class="sesion-barra" id="sesion-barra">
       <button class="portada__boton portada__boton--sesion" id="btn-abrir-auth" type="button">
@@ -105,42 +115,6 @@
       </div>
     </section>
 
-    <!-- SUSTÓMETRO: tabla de clasificación. Un solo tubo: el primero lo deja lleno y el nivel baja con cada puesto -->
-    <section class="sustometro" id="sustometro">
-      <div class="contenedor">
-        <div class="seccion-titulo">
-          <p class="seccion-titulo__antetitulo">Tabla de clasificación</p>
-          <h2>Sustómetro</h2>
-          <p class="seccion-titulo__intro">Aquí no hay puestos, hay sustos. Quien va primero deja el tubo lleno hasta arriba y, a medida que bajas en la tabla, el nivel baja con él. Toca o pasa el mouse por un equipo para ver su nivel.</p>
-        </div>
-
-        <div class="sustometro__panel" id="sustometro-panel">
-          <!-- El tubo: es decoración, la información está en la lista y en la lectura -->
-          <div class="tubo" aria-hidden="true">
-            <div class="tubo__tapa"></div>
-            <div class="tubo__cristal" id="sustometro-tubo">
-              <div class="tubo__liquido">
-                <span class="tubo__ola"></span>
-                <span class="tubo__burbuja"></span>
-                <span class="tubo__burbuja"></span>
-                <span class="tubo__burbuja"></span>
-                <span class="tubo__burbuja"></span>
-              </div>
-              <div class="tubo__marcas" id="sustometro-marcas"></div>
-              <span class="tubo__brillo"></span>
-            </div>
-            <div class="tubo__base"></div>
-          </div>
-
-          <div class="sustometro__tabla">
-            <ol class="sustometro__lista" id="sustometro-lista"></ol>
-            <div class="sustometro__agua" aria-hidden="true"></div>
-          </div>
-        </div>
-
-        <p class="sustometro__lectura" id="sustometro-lectura" aria-live="polite"></p>
-      </div>
-    </section>
 
     <!-- GRUPOS ESTUDIANTILES QUE PARTICIPAN: un banderín por grupo -->
     <section class="grupos" id="grupos">

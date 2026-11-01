@@ -133,22 +133,8 @@ const ACTIVIDADES = [
     adornos: ['termometro', 'atomo', 'bombillo'] },
 ];
 
-// SUSTÓMETRO: la tabla de clasificación general de la Semana.
-// No muestra "puesto 1, 2, 3": es un solo tubo que se llena según el lugar. El primero está a la
-// altura del tubo lleno (100%) y, a medida que se baja en la tabla, el nivel va bajando.
-// Basta con escribir los puntos: la página los ordena sola de mayor a menor.
-// OJO: estos nombres y puntos son de ejemplo; hay que cambiarlos por los reales.
-// Opcional: detalle (texto pequeño debajo del nombre, ej. la competencia donde más puntos sumó).
-const SUSTOMETRO = [
-  { nombre: 'Equipo Colmillos', detalle: 'Maratón de programación', puntos: 120 },
-  { nombre: 'Equipo Cíclope', detalle: 'Carrera de observación', puntos: 105 },
-  { nombre: 'Equipo Peludo', detalle: 'Torneo de fútbol', puntos: 90 },
-  { nombre: 'Equipo Cuernos', detalle: 'Torneo de videojuegos', puntos: 75 },
-  { nombre: 'Equipo Gelatina', detalle: 'Carrera de atletismo 8‑bit', puntos: 60 },
-  { nombre: 'Equipo Tentáculos', puntos: 45 },
-  { nombre: 'Equipo Escamas', puntos: 30 },
-  { nombre: 'Equipo Pelusa', puntos: 15 },
-];
+// SUSTÓMETRO: Ahora se alimenta en tiempo real desde Supabase (tabla 'perfiles')
+// mostrando a las personas registradas con su monstruo y sus puntos en sustometro.html.
 
 // Fotos y videos de ediciones anteriores para la galería (los archivos van en img/galeria/).
 // Los .mp4 salen como videos cortos sin sonido; portada es la imagen que se ve mientras cargan.
