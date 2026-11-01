@@ -489,6 +489,85 @@ function pintarGrupos() {
 }
 
 
+/* ---------- Sustómetro ---------- */
+
+// Un solo tubo para toda la tabla. La fila de arriba deja el tubo lleno y cada fila de abajo lo baja
+// un escalón: la fila i (0 = primera) está al (n - i) / n. Así, la superficie del líquido queda
+// justo en el borde de arriba de la fila elegida.
+function pintarSustometro() {
+  const seccion = $('#sustometro');
+  if (!SUSTOMETRO.length) {
+    seccion.hidden = true;
+    return;
+  }
+
+  const equipos = [...SUSTOMETRO].sort((a, b) => b.puntos - a.puntos);
+  const total = equipos.length;
+  const panel = $('#sustometro-panel');
+  const nivelDe = (i) => (total - i) / total;
+
+  panel.style.setProperty('--filas', total);
+  panel.style.setProperty('--nivel', 0);   // el tubo arranca vacío y se llena al llegar a la sección
+
+  $('#sustometro-marcas').innerHTML = equipos
+    .map((_, i) => `<span class="tubo__marca" style="--i: ${i / total}"></span>`)
+    .join('');
+
+  $('#sustometro-lista').innerHTML = equipos.map((equipo, i) => `
+    <li>
+      <button class="sus-fila" type="button" data-indice="${i}" style="--nivel-fila: ${nivelDe(i)}">
+        <span class="sus-fila__nivel">${Math.round(nivelDe(i) * 100)}<small>%</small></span>
+        <span class="sus-fila__nombre">
+          ${equipo.nombre}
+          ${equipo.detalle ? `<small>${equipo.detalle}</small>` : ''}
+        </span>
+        <span class="sus-fila__puntos">${equipo.puntos}<small>pts</small></span>
+      </button>
+    </li>
+  `).join('');
+
+  function seleccionar(indice) {
+    const equipo = equipos[indice];
+    const porcentaje = Math.round(nivelDe(indice) * 100);
+    panel.style.setProperty('--nivel', nivelDe(indice));
+    $$('.sus-fila').forEach((fila, i) => fila.setAttribute('aria-pressed', i === indice));
+    $('#sustometro-lectura').textContent = indice === 0
+      ? `${equipo.nombre} va primero: el sustómetro está lleno (100 %).`
+      : `${equipo.nombre}: el sustómetro está al ${porcentaje} %.`;
+  }
+
+  const lista = $('#sustometro-lista');
+  lista.addEventListener('click', (evento) => {
+    const fila = evento.target.closest('.sus-fila');
+    if (fila) seleccionar(Number(fila.dataset.indice));
+  });
+  lista.addEventListener('focusin', (evento) => {
+    const fila = evento.target.closest('.sus-fila');
+    if (fila) seleccionar(Number(fila.dataset.indice));
+  });
+  // Con mouse basta pasar por encima; al salir vuelve a lo lleno. En pantallas táctiles queda lo último tocado.
+  lista.addEventListener('pointerover', (evento) => {
+    const fila = evento.target.closest('.sus-fila');
+    if (fila && evento.pointerType === 'mouse') seleccionar(Number(fila.dataset.indice));
+  });
+  panel.addEventListener('pointerleave', (evento) => {
+    if (evento.pointerType === 'mouse') seleccionar(0);
+  });
+
+  // El tubo se llena la primera vez que se ve la sección
+  if ('IntersectionObserver' in window) {
+    const vigilante = new IntersectionObserver((entradas) => {
+      if (!entradas.some((entrada) => entrada.isIntersecting)) return;
+      vigilante.disconnect();
+      seleccionar(0);
+    }, { threshold: 0.3 });
+    vigilante.observe(panel);
+  } else {
+    seleccionar(0);
+  }
+}
+
+
 /* ---------- Galería ---------- */
 
 const esVideo = (item) => item.archivo.endsWith('.mp4');
@@ -608,5 +687,6 @@ prepararHorario();
 pintarHorario();
 pintarCompetencias();
 pintarGrupos();
+pintarSustometro();
 pintarGaleria();
 $('#pie-escudo').innerHTML = dibujarEscudo();

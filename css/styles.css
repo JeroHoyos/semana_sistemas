@@ -1748,6 +1748,259 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 
 
+/* ---------- 12b. Sustómetro (tabla de clasificación) ----------
+   Un solo tubo para toda la tabla. --nivel (0 a 1) lo pone el JS: el líquido sube hasta ese nivel
+   y el "agua" (el tinte verde) cubre las filas que quedan por debajo de la superficie.
+   El alto del tubo y el de la lista son iguales (--filas × --fila), así la superficie del líquido
+   queda justo en el borde de arriba de la fila elegida. */
+
+.sustometro {
+  padding: 80px 0 96px;
+  color: #fff;
+  background:
+    radial-gradient(ellipse 70% 40% at 50% 0%, #3d1f73, transparent),
+    linear-gradient(#170b34, #0b0620);
+}
+.sustometro .seccion-titulo__antetitulo { color: #dfff5a; }
+.sustometro .seccion-titulo__intro { color: #d8cdf2; }
+
+.sustometro__panel {
+  --fila: 68px;
+  --tapa: 24px;
+  --nivel: 0;
+  --filas: 8;
+  --sube: 1.1s cubic-bezier(.3, .8, .3, 1);
+  max-width: 760px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* --- El tubo --- */
+.tubo { display: flex; flex-direction: column; align-items: center; }
+
+.tubo__tapa,
+.tubo__base {
+  width: 100%;
+  height: var(--tapa);
+  border-radius: 12px;
+  background: linear-gradient(#e3e9f1, #8793a3 55%, #4d5866);
+  box-shadow: 0 6px 14px -6px rgba(0, 0, 0, .7), inset 0 -3px 0 rgba(0, 0, 0, .25);
+}
+.tubo__tapa { border-radius: 12px 12px 4px 4px; }
+.tubo__base { border-radius: 4px 4px 12px 12px; }
+
+.tubo__cristal {
+  position: relative;
+  width: 72%;
+  height: calc(var(--filas) * var(--fila));
+  overflow: hidden;
+  background: linear-gradient(90deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, .02) 40%, rgba(255, 255, 255, .08));
+}
+
+.tubo__liquido {
+  position: absolute;
+  inset: auto 0 0;
+  height: calc(var(--nivel) * 100%);
+  overflow: hidden;
+  background: linear-gradient(90deg, #6cc41a, #c9f53a 35%, #e8ff5a 55%, #8fdc24 80%, #4fa516);
+  box-shadow: 0 0 28px 4px rgba(190, 255, 60, .55);
+  transition: height var(--sube);
+}
+
+/* Brillo que se mueve en la superficie del líquido */
+.tubo__ola {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 8px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .85), transparent) 0 0 / 200% 100%;
+  animation: sus-brillo 3.2s linear infinite;
+}
+@keyframes sus-brillo { to { background-position: -200% 0; } }
+
+/* Burbujas: suben dentro del líquido y se desvanecen arriba */
+.tubo__burbuja {
+  position: absolute;
+  top: 100%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .55);
+  animation: sus-subir 5s ease-in infinite;
+}
+.tubo__burbuja:nth-child(2) { left: 18%; animation-duration: 4.6s; }
+.tubo__burbuja:nth-child(3) { left: 52%; width: 6px; height: 6px; animation-duration: 6.2s; animation-delay: -2s; }
+.tubo__burbuja:nth-child(4) { left: 74%; width: 12px; height: 12px; animation-duration: 5.4s; animation-delay: -3.5s; }
+.tubo__burbuja:nth-child(5) { left: 36%; width: 7px; height: 7px; animation-duration: 7s; animation-delay: -1s; }
+@keyframes sus-subir {
+  from { top: 100%; opacity: .9; }
+  to { top: -10%; opacity: 0; }
+}
+
+/* Rayitas del tubo: una en el borde de arriba de cada fila */
+.tubo__marcas { position: absolute; inset: 0; }
+.tubo__marca { position: absolute; left: 0; right: 0; top: calc(var(--i) * 100%); height: 2px; }
+.tubo__marca::before,
+.tubo__marca::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 26%;
+  height: 100%;
+  background: rgba(255, 255, 255, .6);
+}
+.tubo__marca::before { left: 0; }
+.tubo__marca::after { right: 0; }
+
+/* Vidrio: marco y reflejo, por encima de todo lo demás */
+.tubo__brillo {
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, .38), inset 0 0 22px rgba(255, 255, 255, .12);
+  pointer-events: none;
+}
+.tubo__brillo::before {
+  content: '';
+  position: absolute;
+  top: 3%;
+  bottom: 3%;
+  left: 16%;
+  width: 7%;
+  border-radius: 8px;
+  background: linear-gradient(rgba(255, 255, 255, .55), rgba(255, 255, 255, .05));
+}
+
+/* --- La tabla --- */
+.sustometro__tabla {
+  position: relative;
+  margin-top: var(--tapa);               /* para que su borde de arriba coincida con el del tubo */
+  height: calc(var(--filas) * var(--fila));
+  overflow: hidden;
+  border-radius: 18px;
+  background: rgba(10, 5, 28, .6);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, .12), 0 24px 40px -20px rgba(0, 0, 0, .8);
+}
+.sustometro__lista { position: relative; z-index: 1; margin: 0; padding: 0; list-style: none; }
+.sustometro__lista li { height: var(--fila); }
+
+/* El "agua": tiñe de verde las filas que quedan por debajo de la superficie */
+.sustometro__agua {
+  position: absolute;
+  top: calc((1 - var(--nivel)) * 100%);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  background: linear-gradient(rgba(190, 255, 60, .20), rgba(190, 255, 60, .06));
+  border-top: 2px solid #dfff5a;
+  box-shadow: 0 -2px 14px rgba(190, 255, 60, .55);
+  pointer-events: none;
+  transition: top var(--sube);
+}
+
+.sus-fila {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 0 20px 0 14px;
+  border: 0;
+  border-top: 2px solid rgba(255, 255, 255, .10);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background .2s;
+}
+.sustometro__lista li:first-child .sus-fila { border-top-color: transparent; }
+.sus-fila:hover { background: rgba(255, 255, 255, .05); }
+.sus-fila:focus-visible { outline: 3px solid #dfff5a; outline-offset: -3px; }
+.sus-fila[aria-pressed='true'] { background: rgba(255, 255, 255, .08); }
+
+.sus-fila__nivel {
+  font-family: var(--letra-titulo);
+  font-size: 28px;
+  line-height: 1;
+  color: #dfff5a;
+  text-shadow: 0 0 14px rgba(190, 255, 60, .55);
+}
+.sus-fila__nivel small { margin-left: 1px; font-size: .55em; opacity: .8; }
+
+.sus-fila__nombre {
+  overflow: hidden;
+  font-family: var(--letra-estrecha);
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.15;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.sus-fila__nombre small {
+  display: block;
+  margin-top: 2px;
+  overflow: hidden;
+  font-family: var(--letra-texto);
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  text-overflow: ellipsis;
+  color: #cbbfe9;
+}
+
+.sus-fila__puntos {
+  font-family: var(--letra-titulo);
+  font-size: 20px;
+  color: #fff;
+}
+.sus-fila__puntos small {
+  margin-left: 4px;
+  font-family: var(--letra-universidad);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #cbbfe9;
+}
+
+.sustometro__lectura {
+  min-height: 1.5em;
+  margin-top: 24px;
+  text-align: center;
+  font-family: var(--letra-universidad);
+  font-size: 14px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #dfff5a;
+}
+
+@media (max-width: 640px) {
+  .sustometro { padding: 56px 0 72px; }
+  .sustometro__panel { --fila: 64px; grid-template-columns: 64px 1fr; gap: 12px; }
+  .sus-fila { grid-template-columns: 44px minmax(0, 1fr) auto; gap: 8px; padding: 0 12px 0 8px; }
+  .sus-fila__nivel { font-size: 17px; }
+  .sus-fila__nombre { font-size: 17px; letter-spacing: .01em; }
+  .sus-fila__nombre small { font-size: 12px; }
+  .sus-fila__puntos { font-size: 17px; }
+  .sus-fila__puntos small { display: none; }
+}
+
+/* Con menos movimiento el líquido cambia de nivel al instante y no hay burbujas ni brillo */
+@media (prefers-reduced-motion: reduce) {
+  .tubo__liquido,
+  .sustometro__agua { transition: none; }
+  .tubo__ola,
+  .tubo__burbuja { display: none; }
+}
+
+
 /* ---------- 12. Grupos estudiantiles ---------- */
 
 .grupos {
