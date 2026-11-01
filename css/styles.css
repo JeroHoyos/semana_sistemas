@@ -2403,22 +2403,37 @@ button { font: inherit; color: inherit; cursor: pointer; }
   white-space: nowrap;
 }
 
-/* Lista de tarjetas */
+/* Lista de tarjetas. Se ven máximo seis: con más personas sale una barra y la lista
+   avanza de una tarjeta en una (scroll-snap-stop hace que no se salte ninguna).
+   --fila es el alto de cada tarjeta: el avatar (48) + el relleno (24) + el borde (2).
+   --margen-scroll deja ver el anillo azul de la tarjeta elegida sin que la barra lo corte. */
 .ranking-lista {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  --fila: 74px;
+  --hueco: 10px;
+  --margen-scroll: 6px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--hueco);
+  max-height: calc(6 * var(--fila) + 5 * var(--hueco) + 2 * var(--margen-scroll));
+  margin: calc(-1 * var(--margen-scroll));
+  padding: var(--margen-scroll);
+  list-style: none;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scroll-padding: var(--margen-scroll);
+  scrollbar-width: thin;
+  scrollbar-color: #c9d2dc transparent;
 }
 
 /* Cada fila: la tarjeta para elegir a la persona y, encima a la derecha, el botón de su carnet.
    Son botones hermanos (un botón no puede ir dentro de otro), por eso la tarjeta deja espacio a la derecha. */
 .asustador-item {
   position: relative;
+  flex: none;
   margin: 0;
   padding: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 .asustador-item .asustador-card { padding-right: 68px; }
 
@@ -2709,6 +2724,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
     gap: 10px;
     padding: 10px 12px;
   }
+  .ranking-lista { --fila: 62px; }   /* avatar de 40 + relleno de 20 + borde */
   .easter-egg__stickers svg { height: 40px; }
   .easter-egg__codigo { font-size: 32px; }
   .asustador-item .asustador-card { padding-right: 54px; }
