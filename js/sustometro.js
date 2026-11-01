@@ -261,31 +261,44 @@ $('#carnet-modal').addEventListener('click', (evento) => {
 
 /* ---------- Easter egg de los stickers del tanque ---------- */
 
-// Al tocar los cinco stickers en cierto orden sale una ventana. El orden correcto y el código
-// NO están en la página (el repositorio es público): los guarda la función reclamar_easter_egg
-// de Supabase, que además recuerda quién lo encontró primero. La página solo le manda los
-// últimos cinco stickers tocados, separados por comas (por ejemplo 'python,git,cpp,linux,terminal').
-const TOTAL_STICKERS = 5;
-let stickersTocados = [];
+// Cada sticker tocado en el orden correcto se queda levantado; si uno se toca fuera de orden,
+// todos vuelven a su sitio con una sacudida. Al levantar los cinco sale una ventana.
+// El orden está aquí para poder levantar cada sticker, y también en la función reclamar_easter_egg
+// de Supabase (si se cambia, hay que cambiarlo en los dos). El código del premio solo está en
+// Supabase, que además recuerda quién lo encontró primero.
+const ORDEN_STICKERS = ['terminal', 'cpp', 'linux', 'python', 'git'];
+let stickersLevantados = 0;
+
+function bajarStickers() {
+  stickersLevantados = 0;
+  $$('.sticker--levantado').forEach((sticker) => sticker.classList.remove('sticker--levantado'));
+}
 
 $('.tanque__stickers').addEventListener('click', async (evento) => {
   const sticker = evento.target.closest('.sticker');
   if (!sticker) return;
 
-  stickersTocados = [...stickersTocados, sticker.dataset.sticker].slice(-TOTAL_STICKERS);
+  if (sticker.dataset.sticker !== ORDEN_STICKERS[stickersLevantados]) {
+    bajarStickers();
+    const stickers = $('.tanque__stickers');
+    stickers.classList.remove('tanque__stickers--error');
+    void stickers.offsetWidth;   // reinicia la animación si se falla dos veces seguidas
+    stickers.classList.add('tanque__stickers--error');
+    // Si el que falló es el primero del orden, cuenta como el inicio de un nuevo intento
+    if (sticker.dataset.sticker !== ORDEN_STICKERS[0]) return;
+  }
 
-  // Solo se pregunta a Supabase cuando los últimos cinco son los cinco stickers distintos
-  if (new Set(stickersTocados).size < TOTAL_STICKERS) return;
+  sticker.classList.add('sticker--levantado');
+  stickersLevantados++;
+  if (stickersLevantados < ORDEN_STICKERS.length) return;
 
-  const { data, error } = await clienteSupabase.rpc('reclamar_easter_egg', { secuencia: stickersTocados.join(',') });
+  const { data, error } = await clienteSupabase.rpc('reclamar_easter_egg', { secuencia: ORDEN_STICKERS.join(',') });
+  bajarStickers();
   if (error) {
     console.error('Error al revisar el easter egg:', error);
     return;
   }
-  if (data.estado === 'incorrecto') return;
-
-  stickersTocados = [];
-  mostrarEasterEgg(data);
+  if (data.estado !== 'incorrecto') mostrarEasterEgg(data);
 });
 
 // data.estado es 'primero' (y trae data.codigo) o 'tarde' si alguien ya lo había encontrado
