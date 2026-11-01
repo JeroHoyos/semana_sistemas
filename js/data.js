@@ -10,12 +10,13 @@ const DIAS = [
   { id: 'vie', nombre: 'Viernes', corto: 'Vie', fecha: '20 nov' },
 ];
 
-// Tipos de actividad: nombre en las pestañas, etiqueta en las tarjetas y colores
+// Tipos de actividad: nombre en las pestañas, etiqueta en las tarjetas, colores
+// e icono (uno de js/iconos.js) para reconocer el tipo de un vistazo
 const TIPOS = {
-  conferencia: { plural: 'Conferencias', singular: 'Conferencia', color: '#c98a00', fondo: '#fff3cf' },
-  taller: { plural: 'Talleres', singular: 'Taller', color: '#1667c2', fondo: '#dceafa' },
-  competencia: { plural: 'Competencias', singular: 'Competencia', color: '#d23c5a', fondo: '#fde3e8' },
-  social: { plural: 'Social', singular: 'Social', color: '#7b4fc9', fondo: '#ece4fa' },
+  conferencia: { plural: 'Conferencias', singular: 'Conferencia', color: '#c98a00', fondo: '#fff3cf', icono: 'microfono' },
+  taller: { plural: 'Talleres', singular: 'Taller', color: '#1667c2', fondo: '#dceafa', icono: 'taller' },
+  competencia: { plural: 'Competencias', singular: 'Competencia', color: '#d23c5a', fondo: '#fde3e8', icono: 'trofeo' },
+  social: { plural: 'Social', singular: 'Social', color: '#7b4fc9', fondo: '#ece4fa', icono: 'personas' },
 };
 
 // nombre: null significa "por anunciar"

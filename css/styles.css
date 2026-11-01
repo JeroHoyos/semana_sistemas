@@ -605,13 +605,15 @@ button { font: inherit; color: inherit; cursor: pointer; }
   text-transform: uppercase;
   white-space: nowrap;
 }
-.pestana::before {                      /* puntito de color del tipo */
+.pestana::before {                      /* puntito de color de "Todo" */
   content: '';
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: var(--color);
 }
+.pestana:has(svg)::before { content: none; }     /* los tipos llevan su icono en vez del puntito */
+.pestana svg { width: 16px; height: 16px; flex: none; color: var(--color); }
 .pestana[aria-pressed="true"] { color: var(--azul-marino); }
 .pestana[aria-pressed="true"]::after {  /* subrayado de la pestaña activa */
   content: '';
@@ -633,59 +635,52 @@ button { font: inherit; color: inherit; cursor: pointer; }
   gap: 14px;
 }
 
-/* Fondo: un brillo suave del color del tipo desde la esquina de arriba a la izquierda y otro
-   más leve abajo a la derecha; el centro queda blanco para que el texto se lea bien.
-   overflow: hidden recorta la franja de color (::before) con la curva de las esquinas. */
+/* Tarjeta blanca lisa. El tipo se reconoce por la franja de su color a la izquierda
+   y por la etiqueta de arriba (color sólido + icono). overflow: hidden recorta la franja
+   (::before) con la curva de las esquinas. */
 .actividad {
   position: relative;               /* el enlace del título cubre toda la tarjeta */
   overflow: hidden;
-  padding: 18px 26px 20px 30px;
+  padding: 18px 26px 20px 32px;
   text-align: center;
   background: #ffffff;
-  background:
-    radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--color) 12%, transparent), transparent 55%),
-    radial-gradient(90% 120% at 100% 100%, color-mix(in srgb, var(--color) 8%, transparent), transparent 60%),
-    #ffffff;
   border: 1px solid var(--linea);
-  border: 1px solid color-mix(in srgb, var(--color) 16%, var(--linea));
+  border: 1px solid color-mix(in srgb, var(--color) 22%, var(--linea));
   border-radius: 26px;
   box-shadow: 0 8px 22px -12px rgba(10, 44, 82, .25);
-  box-shadow: 0 10px 26px -14px color-mix(in srgb, var(--color) 35%, rgba(10, 44, 82, 0.15)), 0 2px 6px rgba(10, 44, 82, 0.04);
   animation: aparecer .35s ease;
   transition: transform .2s, box-shadow .2s, border-color .2s;
 }
-/* Franja de color a la izquierda, del color fuerte arriba a uno más claro abajo */
 .actividad::before {
   content: '';
   position: absolute;
   inset: 0 auto 0 0;
-  width: 6px;
+  width: 8px;
   background: var(--color);
-  background: linear-gradient(var(--color), color-mix(in srgb, var(--color) 55%, #ffffff));
 }
 .actividad:hover {
   transform: translateY(-3px);
-  background:
-    radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--color) 18%, transparent), transparent 60%),
-    radial-gradient(90% 120% at 100% 100%, color-mix(in srgb, var(--color) 12%, transparent), transparent 65%),
-    #ffffff;
-  border-color: color-mix(in srgb, var(--color) 30%, var(--linea));
-  box-shadow: 0 18px 32px -14px color-mix(in srgb, var(--color) 45%, rgba(10, 44, 82, 0.2)), 0 4px 10px rgba(10, 44, 82, 0.05);
+  border-color: color-mix(in srgb, var(--color) 45%, var(--linea));
+  box-shadow: 0 16px 30px -14px rgba(10, 44, 82, .35);
 }
 .actividad:has(:focus-visible) { outline: 3px solid var(--azul); outline-offset: 3px; }
 
+/* Etiqueta del tipo: píldora del color del tipo, con su icono */
 .actividad__tipo {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: var(--color);
+  padding: 4px 12px 4px 10px;
+  border-radius: 999px;
+  background: var(--color);
+  color: #fff;
   font-family: var(--letra-estrecha);
   font-weight: 700;
   font-size: 13px;
   letter-spacing: .1em;
   text-transform: uppercase;
 }
-.actividad__tipo svg { width: 16px; height: 16px; }
+.actividad__tipo svg { width: 15px; height: 15px; }
 
 .actividad__titulo {
   margin: 6px 0 4px;
@@ -2127,21 +2122,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
   transform: scale(1.15) rotate(0deg) !important;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3)) drop-shadow(0 10px 14px rgba(0, 0, 0, 0.35));
   z-index: 10;
-}
-
-/* Sticker tocado en el orden correcto del easter egg: se queda despegado, derecho y con brillo.
-   Va después de :hover para ganarle cuando el mouse está encima. */
-.sticker.sticker--levantado {
-  transform: translateY(-8px) scale(1.24) rotate(0deg) !important;
-  filter: drop-shadow(0 0 3px #fff) drop-shadow(0 0 9px rgba(255, 255, 255, 0.9)) drop-shadow(0 16px 14px rgba(0, 0, 0, 0.45));
-  z-index: 10;
-}
-
-/* Al fallar el orden, todos los stickers se sacuden mientras vuelven a su sitio */
-.tanque__stickers--error .sticker { animation: sacudir .4s ease; }
-@keyframes sacudir {
-  20%, 60% { translate: -4px 0; }
-  40%, 80% { translate: 4px 0; }
 }
 
 .sticker__svg {

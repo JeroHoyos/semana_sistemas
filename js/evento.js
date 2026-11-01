@@ -25,7 +25,7 @@ function pintarPortada() {
 
   $('#evento-portada').innerHTML = `
     ${adornos}
-    <span class="evento-portada__tipo" style="--color: ${tipo.color}; --fondo: ${tipo.fondo}">${ICONOS.ojo}${tipo.singular}</span>
+    <span class="evento-portada__tipo" style="--color: ${tipo.color}; --fondo: ${tipo.fondo}">${ICONOS[tipo.icono]}${tipo.singular}</span>
     <h1 class="evento-portada__titulo">${actividad.titulo}</h1>
   `;
 }

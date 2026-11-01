@@ -32,6 +32,20 @@ const ICONOS = {
     <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
   </svg>`,
 
+  // Un ícono por tipo de actividad (campo icono de TIPOS en data.js)
+  microfono: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/>
+  </svg>`,
+  taller: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <rect x="4" y="4.5" width="16" height="11" rx="1.5"/><path d="M2 19.5h20M10 8.5 8 10l2 1.5M14 8.5l2 1.5-2 1.5"/>
+  </svg>`,
+  trofeo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v3.5M8 20.5h8M9.5 17.5h5"/>
+  </svg>`,
+  personas: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="9" cy="8" r="3"/><path d="M3.5 19.5a5.5 5.5 0 0 1 11 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14a4.5 4.5 0 0 1 5 4.5"/>
+  </svg>`,
+
   // Carnet: tarjeta con una persona y dos renglones (botón "ver carnet" del Sustómetro)
   carnet: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <rect x="2.5" y="5" width="19" height="14" rx="2.5"/><circle cx="8.5" cy="11" r="2"/><path d="M5.5 16c.7-1.4 1.8-2 3-2s2.3.6 3 2M14.5 10h4M14.5 13.5h3"/>

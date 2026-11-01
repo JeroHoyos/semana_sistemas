@@ -194,11 +194,12 @@ function prepararHorario() {
 
   const pestanas = [{ id: 'todo', nombre: 'Todo', color: '#0a2c52' }];
   for (const [id, tipo] of Object.entries(TIPOS)) {
-    pestanas.push({ id, nombre: tipo.plural, color: tipo.color });
+    pestanas.push({ id, nombre: tipo.plural, color: tipo.color, icono: tipo.icono });
   }
+  // "Todo" lleva un puntito; cada tipo, su icono en su color
   $('#horario-pestanas').innerHTML = pestanas.map((pestana) => `
     <button class="pestana" data-tipo="${pestana.id}" style="--color: ${pestana.color}">
-      ${pestana.nombre} <span class="pestana__cuenta"></span>
+      ${pestana.icono ? ICONOS[pestana.icono] : ''}${pestana.nombre} <span class="pestana__cuenta"></span>
     </button>
   `).join('');
 
@@ -349,13 +350,11 @@ function tarjetaDeActividad(actividad) {
     detalles.push(`<span class="actividad__simultanea">${ICONOS.simultanea}A la vez que ${nombres}</span>`);
   }
 
-  const color = actividad.color || tipo.color;
-  const fondo = tipo.fondo;
-
+  // La tarjeta lleva el color de su tipo (no el propio de cada competencia) para que el tipo se reconozca.
   // El enlace del título cubre toda la tarjeta (ver .actividad__titulo a::after en el CSS)
   return `
-    <li class="actividad" style="--color: ${color}; --fondo: ${fondo}">
-      <span class="actividad__tipo">${ICONOS.ojo}${tipo.singular}</span>
+    <li class="actividad" style="--color: ${tipo.color}; --fondo: ${tipo.fondo}">
+      <span class="actividad__tipo">${ICONOS[tipo.icono]}${tipo.singular}</span>
       <h4 class="actividad__titulo"><a href="${enlaceActividad(actividad.id)}">${actividad.titulo}</a></h4>
       <p class="actividad__hora">${dia}${actividad.inicio} – ${actividad.fin}</p>
       <div class="actividad__detalles">${detalles.join('')}</div>
