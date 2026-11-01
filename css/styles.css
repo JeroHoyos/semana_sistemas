@@ -1814,7 +1814,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* Contenedor de página del Sustómetro */
 .pagina-sustometro {
-  background: #090616;
   color: #fff;
   min-height: 100vh;
   display: flex;
@@ -1893,10 +1892,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .sustometro-main {
   flex: 1;
   padding: 40px 0 80px;
-  background:
-    radial-gradient(ellipse 80% 50% at 20% 20%, rgba(61, 31, 115, 0.45), transparent 70%),
-    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(13, 71, 161, 0.25), transparent 70%),
-    linear-gradient(180deg, #100826 0%, #080414 100%);
   overflow-x: hidden;
 }
 
@@ -1933,88 +1928,351 @@ button { font: inherit; color: inherit; cursor: pointer; }
   width: 100%;
 }
 
+/* Tarjeta blanca debajo del tanque: nombre, @usuario y el mensaje */
 .tanque-lectura {
-  margin-top: 18px;
+  margin-top: 22px;
+  width: 100%;
+  max-width: 280px;
+  padding: 14px 18px;
+  border: 1px solid var(--linea);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 10px 24px -14px rgba(10, 44, 82, 0.45);
   text-align: center;
   font-family: var(--letra-texto);
-  font-weight: 500;
-  font-size: 13.5px;
-  color: #cbd5e1;
-  max-width: 290px;
-  min-height: 2.8em;
-  line-height: 1.45;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--tinta-suave);
+}
+.tanque-lectura strong {
+  display: block;
+  font-family: var(--letra-estrecha);
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.2;
+  color: var(--azul-marino);
+}
+.tanque-lectura small {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--azul);
 }
 
 /* ================================================================
-   EL TANQUE DE SUSTOS: colores planos, asa y tapas oscuras,
-   un tubo con el líquido y la lectura de la persona seleccionada
+   EL TANQUE DE SUSTOS (MONSTERS INC SCREAM CANISTER - ESTILO SISTEMAS)
    ================================================================ */
 
 .tanque-sustos {
-  width: 220px;
+  width: 268px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  filter: drop-shadow(0 16px 28px rgba(0, 0, 0, 0.55));
+  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.75));
   user-select: none;
 }
 
-.tanque__asa {
-  width: 116px;
-  height: 30px;
-  border: 11px solid #f6be00;
-  border-bottom: 0;
-  border-radius: 30px 30px 0 0;
-  box-sizing: border-box;
+/* Asa superior con válvula */
+.tanque__asa-bloque {
+  width: 172px;
+  height: 48px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
 }
 
-.tanque__collar {
-  width: 100%;
-  height: 14px;
-  border-radius: 6px;
-  background: #1b1f26;
-}
-
-/* El cuerpo lleva una franja más oscura a cada lado para que se lea como cilindro */
-.tanque__cuerpo {
-  width: 92%;
-  padding: 16px 16px 18px;
-  box-sizing: border-box;
-  background: linear-gradient(90deg, #dda800 0 9%, #f6be00 9% 88%, #dda800 88%);
+.tanque__valvula {
+  position: absolute;
+  top: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  z-index: 1;
 }
 
-.tanque__placa {
-  font-family: var(--letra-universidad);
-  font-size: 11px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: #6b4d00;
+.valvula__boquilla {
+  width: 28px;
+  height: 14px;
+  border-radius: 4px 4px 2px 2px;
+  background: linear-gradient(90deg, #6c757d, #adb5bd 40%, #dee2e6 60%, #495057);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.8), 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.tanque__tubo {
+.valvula__acople {
+  width: 38px;
+  height: 8px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #b08d24, #f5c31e 40%, #ffde59 60%, #8c6e14);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.4);
+}
+
+.tanque__asa {
+  width: 100%;
+  height: 42px;
+  border-radius: 24px 24px 0 0;
+  background: linear-gradient(90deg, #b07d00 0%, #ebb400 20%, #ffde59 50%, #ebb400 80%, #8f6000 100%);
   position: relative;
-  width: 52px;
-  height: 190px;
-  border-radius: 26px;
-  border: 4px solid #1b1f26;
-  background: #10141b;
+  box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.65), 0 3px 6px rgba(0, 0, 0, 0.4);
+}
+
+.tanque__asa-hueco {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 96px;
+  height: 24px;
+  border-radius: 14px 14px 0 0;
+  background: #090616;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.8);
+}
+
+/* Cúpula amarilla biselada */
+.tanque__cupula {
+  width: 236px;
+  height: 20px;
+  border-radius: 18px 18px 3px 3px;
+  background: linear-gradient(90deg, #ad7600 0%, #f6be00 18%, #ffdb4d 50%, #f6be00 82%, #855500 100%);
+  box-shadow: inset 0 2px 2px rgba(255, 255, 255, 0.6);
+}
+
+/* Collares negros / Juntas industriales */
+.tanque__collar {
+  width: 252px;
+  height: 22px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #121417 0%, #282d34 25%, #444b56 50%, #282d34 75%, #0f1114 100%);
+  box-shadow: inset 0 2px 1px rgba(255, 255, 255, 0.2), 0 4px 8px rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 22px;
+  box-sizing: border-box;
+}
+
+.collar__ranura {
+  width: 14px;
+  height: 5px;
+  border-radius: 2px;
+  background: #08090b;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.9), 0 1px 1px rgba(255,255,255,0.15);
+}
+
+/* Cuerpo cilíndrico amarillo con detalles de sistemas */
+.tanque__cuerpo {
+  position: relative;
+  width: 244px;
+  height: 350px;
+  background: linear-gradient(90deg, #a87200 0%, #ebb400 15%, #ffde59 45%, #ffd438 60%, #e0a700 85%, #8c5d00 100%);
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.28);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 10px 8px;
+  box-sizing: border-box;
   overflow: hidden;
 }
 
-.tanque__liquido {
+/* Circuitos grabados de Sistemas en el cuerpo del tanque */
+.tanque__circuitos {
   position: absolute;
-  inset: auto 0 0;
-  height: 0%;
-  background: #ff3355;
-  transition: height 0.85s cubic-bezier(.25, .8, .25, 1);
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
 }
 
-/* Tres rayas que dividen el tubo en cuartos */
-.tanque__marcas {
+/* Stickers de Sistemas en el tanque */
+.tanque__stickers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Dos sombras: una corta y nítida que despega el borde blanco del metal, y otra suave debajo */
+.sticker {
+  position: absolute;
+  pointer-events: auto;
+  cursor: pointer;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3)) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.22s ease;
+  user-select: none;
+}
+
+.sticker:hover {
+  transform: scale(1.15) rotate(0deg) !important;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3)) drop-shadow(0 10px 14px rgba(0, 0, 0, 0.35));
+  z-index: 10;
+}
+
+.sticker__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Tres a la izquierda del visor y dos a la derecha, todos del mismo tamaño */
+.sticker--python {
+  top: 40px;
+  left: 12px;
+  width: 50px;
+  height: 50px;
+  transform: rotate(-8deg);
+}
+
+.sticker--linux {
+  top: 66px;
+  right: 12px;
+  width: 50px;
+  height: 50px;
+  transform: rotate(9deg);
+}
+
+.sticker--git {
+  top: 114px;
+  left: 10px;
+  width: 55px;
+  height: 55px;
+  transform: rotate(6deg);
+}
+
+.sticker--terminal {
+  top: 158px;
+  right: 9px;
+  width: 56px;
+  height: 43px;
+  transform: rotate(-6deg);
+}
+
+.sticker--cpp {
+  top: 192px;
+  left: 13px;
+  width: 48px;
+  height: 48px;
+  transform: rotate(-5deg);
+}
+
+/* Visor central plateado con tubo de cristal */
+.tanque__visor {
+  position: relative;
+  z-index: 2;
+  width: 96px;
+  height: 206px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #dce2e9 0%, #9aa3af 45%, #6a7482 100%);
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.9),
+    inset 0 -3px 4px rgba(0, 0, 0, 0.65),
+    0 6px 16px rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 12px;
+  box-sizing: border-box;
+}
+
+/* Tornillos hexagonales en esquinas */
+.visor__tornillo {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #474f5a;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 1px 2px rgba(0,0,0,0.5);
+}
+.visor__tornillo--tl { top: 6px; left: 6px; }
+.visor__tornillo--tr { top: 6px; right: 6px; }
+.visor__tornillo--bl { bottom: 6px; left: 6px; }
+.visor__tornillo--br { bottom: 6px; right: 6px; }
+
+/* Escala de graduación lateral con + y - */
+.visor__escala {
+  position: absolute;
+  left: 3px;
+  top: 18px;
+  bottom: 18px;
+  width: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  color: #3b424c;
+  font-family: var(--letra-universidad);
+  font-weight: 700;
+  font-size: 10px;
+  user-select: none;
+}
+
+.escala__marca {
+  width: 5px;
+  height: 1.5px;
+  background: #4a5360;
+  border-radius: 1px;
+}
+
+/* Tubo de cristal interior */
+.visor__tubo {
+  position: relative;
+  width: 36px;
+  height: 180px;
+  border-radius: 18px;
+  background: #090d14;
+  overflow: hidden;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.95), 0 0 0 1.5px rgba(0, 0, 0, 0.4);
+}
+
+/* Líquido de susto (Rojo/Ámbar Neón de Monsters Inc) */
+.visor__liquido {
+  position: absolute;
+  inset: auto 0 0;
+  width: 100%;
+  height: 0%;
+  background: linear-gradient(180deg, #ff7a8a 0%, #ff2a4b 30%, #e00b2e 75%, #a6001a 100%);
+  box-shadow:
+    0 0 20px 4px rgba(255, 42, 75, 0.85),
+    inset 0 0 8px rgba(255, 255, 255, 0.6);
+  transition: height 0.85s cubic-bezier(.25, .8, .25, 1);
+  overflow: hidden;
+}
+
+.visor__ola {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent) 0 0 / 200% 100%;
+  animation: sus-brillo 2.8s linear infinite;
+}
+
+.visor__luz {
+  position: absolute;
+  top: 0;
+  left: 20%;
+  width: 25%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.35), transparent);
+}
+
+.visor__burbuja {
+  position: absolute;
+  bottom: -10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+  animation: sus-subir 4.2s ease-in infinite;
+}
+.visor__burbuja:nth-child(2) { left: 20%; animation-duration: 3.8s; }
+.visor__burbuja:nth-child(3) { left: 60%; width: 4px; height: 4px; animation-duration: 5s; animation-delay: -1.8s; }
+
+/* Cápsulas / Cámaras segmentadas en el cristal */
+.visor__camaras {
   position: absolute;
   inset: 0;
   display: flex;
@@ -2022,49 +2280,124 @@ button { font: inherit; color: inherit; cursor: pointer; }
   justify-content: space-evenly;
   pointer-events: none;
 }
-.tanque__marcas span {
+
+.camara__segmento {
+  width: 100%;
   height: 2px;
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.45);
+  box-shadow: 0 1px 1px rgba(255, 255, 255, 0.15);
 }
 
+/* Reflejo del vidrio */
+.visor__vidrio-reflejo {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  background: linear-gradient(105deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.05) 30%, transparent 60%);
+  pointer-events: none;
+  box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.2);
+}
+
+/* Pantalla HUD Digital de Sistemas */
 .tanque__hud {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 10px;
-  background: #1b1f26;
+  position: relative;
+  z-index: 2;
+  width: 92%;
+  padding: 7px 9px;
+  border-radius: 8px;
+  background: #090e17;
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8), 0 3px 6px rgba(0, 0, 0, 0.4);
+  font-family: 'Share Tech Mono', monospace, monospace;
   box-sizing: border-box;
-  text-align: center;
+}
+
+.hud__fila-header,
+.hud__fila-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hud__led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 4px;
+}
+.hud__led--amber {
+  background: #f59e0b;
+  box-shadow: 0 0 6px #f59e0b;
+  animation: pulso-led 2s infinite;
+}
+.hud__led--cyan {
+  background: #00f0ff;
+  box-shadow: 0 0 6px #00f0ff;
+}
+
+@keyframes pulso-led {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.hud__titulo {
+  font-size: 8.5px;
+  color: #718096;
+  letter-spacing: .08em;
+  margin-right: auto;
+  margin-left: 3px;
 }
 
 .hud__porcentaje {
-  display: block;
-  font-family: var(--letra-universidad);
-  font-size: 24px;
-  line-height: 1.1;
-  color: #ff5c78;
+  font-size: 13px;
+  font-weight: 700;
+  color: #00f0ff;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
 }
 
 .hud__nombre {
-  display: block;
-  margin-top: 2px;
-  font-weight: 600;
-  font-size: 14px;
-  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffde59;
+  letter-spacing: .05em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin: 3px 0;
 }
 
 .hud__puntos {
-  font-size: 12px;
-  color: #9aa3af;
+  font-size: 10px;
+  color: #e2e8f0;
 }
 
+.hud__estado {
+  font-size: 8.5px;
+  color: #00f0ff;
+  letter-spacing: .05em;
+}
+
+/* Base biselada del tanque */
 .tanque__base {
-  width: 100%;
-  height: 16px;
-  border-radius: 3px 3px 14px 14px;
-  background: #f6be00;
+  width: 252px;
+  height: 24px;
+  border-radius: 3px 3px 18px 18px;
+  background: linear-gradient(90deg, #ad7600 0%, #f6be00 18%, #ffdb4d 50%, #f6be00 82%, #855500 100%);
+  box-shadow: inset 0 -2px 3px rgba(0, 0, 0, 0.5), 0 6px 12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 3px;
+  box-sizing: border-box;
+}
+
+.tanque__base-pie {
+  width: 140px;
+  height: 5px;
+  border-radius: 3px;
+  background: #181b20;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.8);
 }
 
 /* ================================================================
@@ -2075,13 +2408,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
   min-width: 0;
 }
 
+/* Panel oscuro y opaco: sobre el fondo de papel claro no hace falta transparencia */
 .ranking-tarjeta {
-  background: rgba(18, 11, 38, 0.72);
+  background: #140c2b;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 24px;
   padding: 26px 24px 28px;
-  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(12px);
+  box-shadow: 0 20px 40px -18px rgba(10, 6, 30, 0.7);
 }
 
 .ranking-tarjeta__cabecera {
@@ -2386,6 +2719,27 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .asustador-card__porcentaje {
     font-size: 11px;
   }
+  .tanque-sustos {
+    width: 240px;
+  }
+  .tanque__cuerpo {
+    width: 220px;
+    height: 320px;
+  }
+  .tanque__collar {
+    width: 228px;
+  }
+  .tanque__cupula {
+    width: 212px;
+  }
+  .tanque__base {
+    width: 228px;
+  }
+  .sticker--python { width: 44px; height: 44px; left: 9px; top: 30px; }
+  .sticker--linux { width: 44px; height: 44px; right: 9px; top: 56px; }
+  .sticker--git { width: 48px; height: 48px; left: 7px; top: 102px; }
+  .sticker--terminal { width: 48px; height: 37px; right: 7px; top: 142px; }
+  .sticker--cpp { width: 42px; height: 42px; left: 10px; top: 176px; }
 }
 
 
