@@ -266,7 +266,8 @@ $('#carnet-modal').addEventListener('click', (evento) => {
 // El orden está aquí para poder levantar cada sticker, y también en la función reclamar_easter_egg
 // de Supabase (si se cambia, hay que cambiarlo en los dos). El código del premio solo está en
 // Supabase, que además recuerda quién lo encontró primero.
-const ORDEN_STICKERS = ['terminal', 'cpp', 'linux', 'python', 'git'];
+// El orden es el año en que nació cada uno: Terminal de Unix 1971, C++ 1979, Python 1989, Linux 1991 y Git 2005
+const ORDEN_STICKERS = ['terminal', 'cpp', 'python', 'linux', 'git'];
 let stickersLevantados = 0;
 
 function bajarStickers() {
@@ -305,10 +306,9 @@ $('.tanque__stickers').addEventListener('click', async (evento) => {
 function mostrarEasterEgg({ estado, codigo }) {
   const esPrimero = estado === 'primero';
   $('#easter-egg-modal').classList.toggle('easter-egg--tarde', !esPrimero);
-  // Las huellas van en su propio span para quitarles el contorno blanco del título
-  $('#easter-egg-titulo').innerHTML = esPrimero
-    ? 'Conocedor de la informática'
-    : 'Alguien más lo encontró primero...&nbsp;<span class="easter-egg__huellas">🐾</span>';
+  $('#easter-egg-titulo').textContent = esPrimero ? 'Conocedor de la informática' : 'Alguien más lo encontró primero...';
+  $('#easter-egg-gif').src = esPrimero ? 'img/gato-programador.gif' : 'img/gato-programador-enojado.gif';
+  $('#easter-egg-gif').alt = esPrimero ? 'Gato programando en un portátil' : 'Gato programador con gafas, enojado frente al portátil';
   $('#easter-egg-premio').hidden = !esPrimero;
   $('#easter-egg-codigo').textContent = codigo ?? '';
   $('#easter-egg-modal').showModal();

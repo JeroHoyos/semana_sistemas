@@ -2627,31 +2627,45 @@ button { font: inherit; color: inherit; cursor: pointer; }
   to { transform: rotate(360deg); }
 }
 
-/* Ventana del easter egg: los cinco stickers en fila (ladeados como pegados a mano),
-   el título y el código grande. Si alguien lo encontró antes, los stickers salen apagados. */
+/* Ventana del easter egg: el GIF del gato como una foto con los cinco stickers pegados
+   alrededor, el título y el código grande. Si alguien lo encontró antes, los stickers salen apagados. */
 .easter-egg__caja {
-  padding-top: 34px;
+  padding-top: 40px;
   text-align: center;
 }
 
-.easter-egg__stickers {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 18px;
+.easter-egg__foto {
+  position: relative;
+  width: 210px;
+  margin: 0 auto 26px;
 }
+.easter-egg__gif {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;               /* guarda el espacio mientras carga el GIF */
+  object-fit: cover;
+  border: 6px solid #fff;
+  border-radius: 20px;
+  background: #e9ecef;
+  box-shadow: 0 0 0 1px var(--linea), 0 14px 26px -14px rgba(10, 44, 82, .55);
+  rotate: -2deg;
+}
+
+/* Las copias de los stickers vienen en el orden del tanque: Python, Linux, Git, Terminal y C++ */
 .easter-egg__stickers svg {
+  position: absolute;
   width: auto;
   height: 50px;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .25)) drop-shadow(0 4px 6px rgba(10, 44, 82, .2));
-  rotate: -8deg;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .25)) drop-shadow(0 4px 6px rgba(10, 44, 82, .25));
 }
-.easter-egg__stickers svg:nth-child(even) { rotate: 7deg; translate: 0 6px; }
-.easter-egg--tarde .easter-egg__stickers svg { filter: grayscale(1) opacity(.55); }
+.easter-egg__stickers svg:nth-child(1) { top: -20px; left: -28px; rotate: -12deg; }
+.easter-egg__stickers svg:nth-child(2) { top: -22px; right: -26px; rotate: 10deg; }
+.easter-egg__stickers svg:nth-child(3) { bottom: -20px; left: -30px; rotate: 8deg; }
+.easter-egg__stickers svg:nth-child(4) { bottom: -16px; right: -36px; rotate: -8deg; }
+.easter-egg__stickers svg:nth-child(5) { top: 42%; left: -40px; rotate: -6deg; }
+.easter-egg--tarde .easter-egg__stickers svg { filter: grayscale(1) opacity(.6); }
 
 .easter-egg__titulo { font-size: 28px; text-wrap: balance; }
-.easter-egg__huellas { -webkit-text-stroke: 0; }
 
 .easter-egg__texto {
   margin-top: 14px;

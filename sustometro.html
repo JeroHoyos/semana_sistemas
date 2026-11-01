@@ -444,7 +444,11 @@
   <dialog class="auth-modal easter-egg" id="easter-egg-modal" aria-labelledby="easter-egg-titulo">
     <div class="auth-modal__caja easter-egg__caja">
       <button class="auth-modal__cerrar" id="btn-cerrar-easter-egg" type="button" aria-label="Cerrar ventana">✕</button>
-      <div class="easter-egg__stickers" id="easter-egg-stickers" aria-hidden="true"></div>
+      <!-- El GIF del gato con los stickers pegados en las esquinas. El GIF se carga al abrir la ventana. -->
+      <div class="easter-egg__foto">
+        <img class="easter-egg__gif" id="easter-egg-gif" alt="">
+        <div class="easter-egg__stickers" id="easter-egg-stickers" aria-hidden="true"></div>
+      </div>
       <h2 class="auth-modal__titulo easter-egg__titulo" id="easter-egg-titulo"></h2>
       <div id="easter-egg-premio">
         <p class="easter-egg__texto">Fuiste la primera persona en encontrar el easter egg. Escríbele al representante y mándale este código:</p>
