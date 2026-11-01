@@ -278,6 +278,10 @@ try {
   console.log('Realtime no disponible en este cliente');
 }
 
+// Cabecera: tres dibujos pixel art y el ojo de la etiqueta, como en la página de una actividad
+$('#sustometro-adornos').innerHTML = ['termometro', 'copa', 'estrella'].map((nombre) => dibujarPixeles(PIXELES[nombre])).join('');
+$('#sustometro-tipo').insertAdjacentHTML('afterbegin', ICONOS.ojo);
+
 // Escudo en el pie de página
 if ($('#pie-escudo')) {
   $('#pie-escudo').innerHTML = dibujarEscudo();

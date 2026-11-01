@@ -32,11 +32,12 @@
       </div>
     </div>
 
+    <!-- Mismo estilo que la cabecera de una actividad: dibujos pixel art, etiqueta y título.
+         sustometro.js pone los dibujos y el ojo de la etiqueta. -->
     <div class="contenedor sustometro-portada__contenido">
-      <p class="seccion-titulo__antetitulo">Facultad de Minas · Clasificación Oficial</p>
-      <h1 class="sustometro-portada__titulo">
-        <span class="letras-varsity letras-varsity--sustometro" data-texto="SUSTÓMETRO">SUSTÓMETRO</span>
-      </h1>
+      <div class="evento-portada__adornos" id="sustometro-adornos"></div>
+      <span class="evento-portada__tipo" id="sustometro-tipo" style="--color: #d23c5a; --fondo: #fde3e8">Clasificación oficial</span>
+      <h1 class="evento-portada__titulo">Sustómetro</h1>
       <p class="sustometro-portada__intro">
         Aquí no hay puestos, hay sustos. Quien va de líder deja el tanque lleno hasta arriba y, a medida que bajas en la tabla, el nivel desciende. Toca o pasa el mouse por una persona para activar su telemetría en el tanque.
       </p>
@@ -254,10 +255,7 @@
       <section class="sustometro-col-ranking" aria-label="Lista de Asustadores">
         <div class="ranking-tarjeta">
           <div class="ranking-tarjeta__cabecera">
-            <div>
-              <span class="ranking-tarjeta__antetitulo">Facultad de Minas</span>
-              <h2 class="ranking-tarjeta__titulo">Asustadores Registrados</h2>
-            </div>
+            <h2 class="ranking-tarjeta__titulo">Asustadores Registrados</h2>
             <span class="ranking-tarjeta__badge" id="ranking-contador">Cargando…</span>
           </div>
 
@@ -438,6 +436,7 @@
   <script src="js/data.js"></script>
   <script src="js/iconos.js"></script>
   <script src="js/comun.js"></script>
+  <script src="js/pixeles.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/sustometro.js"></script>
 </body>
