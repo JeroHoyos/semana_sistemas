@@ -635,43 +635,27 @@ button { font: inherit; color: inherit; cursor: pointer; }
   gap: 14px;
 }
 
-/* Fondo difuminado: un brillo del color del tipo que nace arriba al centro, detrás de la
-   etiqueta y el título, y un tinte muy leve abajo; el resto queda blanco para leer bien.
-   overflow: hidden recorta la franja de color (::before) con la curva de las esquinas. */
 .actividad {
   position: relative;               /* el enlace del título cubre toda la tarjeta */
-  overflow: hidden;
-  padding: 18px 26px 20px 30px;
+  padding: 18px 26px 20px;
   text-align: center;
   background: #ffffff;
-  background:
-    radial-gradient(ellipse 65% 85% at 50% 0%, color-mix(in srgb, var(--color) 15%, transparent), transparent 72%),
-    linear-gradient(transparent 55%, color-mix(in srgb, var(--color) 6%, transparent)),
-    #ffffff;
+  background: linear-gradient(125deg, #ffffff 15%, color-mix(in srgb, var(--color) 7%, #ffffff) 100%);
   border: 1px solid var(--linea);
   border: 1px solid color-mix(in srgb, var(--color) 20%, var(--linea));
+  border-left: 6px solid var(--color);
   border-radius: 26px;
   box-shadow: 0 8px 22px -12px rgba(10, 44, 82, .25);
-  box-shadow: 0 10px 26px -16px color-mix(in srgb, var(--color) 45%, rgba(10, 44, 82, .2));
+  box-shadow: 0 8px 24px -10px color-mix(in srgb, var(--color) 28%, rgba(10, 44, 82, 0.12)), 0 2px 6px rgba(0, 0, 0, 0.03);
   animation: aparecer .35s ease;
-  transition: transform .2s, box-shadow .2s, border-color .2s;
+  transition: transform .2s, box-shadow .2s, background .2s, border-color .2s;
 }
-.actividad::before {
-  content: '';
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 6px;
-  background: var(--color);
-}
-/* Al pasar el mouse el brillo se abre un poco más */
 .actividad:hover {
   transform: translateY(-3px);
-  background:
-    radial-gradient(ellipse 80% 100% at 50% 0%, color-mix(in srgb, var(--color) 22%, transparent), transparent 75%),
-    linear-gradient(transparent 50%, color-mix(in srgb, var(--color) 9%, transparent)),
-    #ffffff;
-  border-color: color-mix(in srgb, var(--color) 38%, var(--linea));
-  box-shadow: 0 18px 32px -16px color-mix(in srgb, var(--color) 55%, rgba(10, 44, 82, .25));
+  background: linear-gradient(125deg, #ffffff 8%, color-mix(in srgb, var(--color) 11%, #ffffff) 100%);
+  border-color: color-mix(in srgb, var(--color) 34%, var(--linea));
+  border-left-color: var(--color);
+  box-shadow: 0 16px 30px -10px color-mix(in srgb, var(--color) 38%, rgba(10, 44, 82, 0.2)), 0 4px 10px rgba(0, 0, 0, 0.04);
 }
 .actividad:has(:focus-visible) { outline: 3px solid var(--azul); outline-offset: 3px; }
 
@@ -1068,7 +1052,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .pestana[aria-pressed="true"] { background: var(--azul-marino); border-color: var(--azul-marino); color: #fff; }
   .pestana[aria-pressed="true"]::after { display: none; }
 
-  .actividad { padding: 16px 18px 18px 22px; border-radius: 22px; }
+  .actividad { padding: 16px 18px 18px; border-radius: 22px; }
   .actividad__titulo { font-size: 18px; }
 
   /* Competencias: una por fila */
