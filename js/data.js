@@ -3,6 +3,10 @@
    Todo el contenido de la página se cambia aquí.
    ============================================= */
 
+// Versión del proyecto: cada vez que cambia, los navegadores de los usuarios
+// cierran sesiones antiguas automáticamente para evitar problemas de JWT o datos desfasados.
+const VERSION_PROYECTO = 'v2026.11.02-011503';
+
 // fecha: texto libre, por ejemplo '12 nov'. Si está vacía se muestra "Día 1", "Día 2"...
 const DIAS = [
   { id: 'mie', nombre: 'Miércoles', corto: 'Mié', fecha: '18 nov' },

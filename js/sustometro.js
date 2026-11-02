@@ -16,6 +16,15 @@ let asustadores = [];
 // cuando la tabla se vuelve a dibujar porque alguien se registró o ganó puntos.
 let idElegido = null;
 
+// Revisa si el usuario con sesión activa tiene desbloqueado el título Supervisor de Sustos
+function esSupervisorActual() {
+  if (!usuarioActual) return false;
+  const titulos = typeof titulosDesbloqueados === 'function'
+    ? titulosDesbloqueados(usuarioActual)
+    : (usuarioActual.user_metadata?.titulos || []);
+  return titulos.some((t) => (t.id || t) === 'supervisor');
+}
+
 // Calcula el porcentaje real según los puntos de la persona respecto a la meta o mayor puntaje
 function calcularPorcentajeReal(puntos, maxPuntos) {
   if (!puntos || puntos <= 0) return 0;
@@ -43,6 +52,12 @@ function seleccionarAsustador(indice) {
   // Pantalla del tanque: nombre y puntos
   if (hudNombre) hudNombre.textContent = nombreLimpio;
   if (hudPuntos) hudPuntos.innerHTML = `${puntos} <small>pts</small>`;
+
+  // Botón de supervisor en el HUD
+  const btnHud = $('#btn-admin-modificar-puntos');
+  if (btnHud) {
+    btnHud.hidden = !esSupervisorActual();
+  }
 
   // Marcar la tarjeta seleccionada en la lista
   $$('.asustador-card').forEach((card, i) => {
@@ -119,6 +134,7 @@ function renderizarRanking(personas) {
   const tiersConPuntos = [...new Set(todosLosPuntos.filter((p) => p > 0))].sort((a, b) => b - a);
   // La misma persona de antes (o el primer puesto si aún no se ha elegido a nadie)
   const elegido = Math.max(0, personas.findIndex((p) => p.id === idElegido));
+  const esSuper = esSupervisorActual();
 
   // Crear tarjetas para cada estudiante
   lista.innerHTML = personas.map((persona, i) => {
@@ -169,8 +185,14 @@ function renderizarRanking(personas) {
     else if (medalla === 'plata') tituloBotonCarnet = 'Ver carnet plateado (2° puesto)';
     else if (medalla === 'bronce') tituloBotonCarnet = 'Ver carnet de bronce (3° puesto)';
 
+    const botonAdminHtml = esSuper
+      ? `<button type="button" class="asustador-item__admin-pts" data-indice="${i}" aria-label="Modificar puntos" title="Modificar puntos de ${persona.nombre || 'asustador'}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>`
+      : '';
+
     return `
-      <li class="asustador-item">
+      <li class="asustador-item ${esSuper ? 'asustador-item--supervisor' : ''}">
         <button type="button" class="asustador-card ${claseTarjetaPodio}" data-indice="${i}" aria-pressed="${i === elegido ? 'true' : 'false'}">
           <div class="asustador-card__posicion asustador-card__posicion--${medalla || 'normal'}">
             <span>${puestoNumero}</span>
@@ -193,9 +215,12 @@ function renderizarRanking(personas) {
             <span class="asustador-card__porcentaje">${porcentaje}%</span>
           </div>
         </button>
-        <button type="button" class="asustador-item__carnet ${claseBotonCarnet}" data-indice="${i}" aria-label="Ver carnet" title="${tituloBotonCarnet}">
-          ${ICONOS.carnet}
-        </button>
+        <div class="asustador-item__acciones">
+          ${botonAdminHtml}
+          <button type="button" class="asustador-item__carnet ${claseBotonCarnet}" data-indice="${i}" aria-label="Ver carnet" title="${tituloBotonCarnet}">
+            ${ICONOS.carnet}
+          </button>
+        </div>
       </li>
     `;
   }).join('');
@@ -297,13 +322,27 @@ function mostrarErrorSustometro(mensaje) {
 }
 
 // Eventos de interacción (clic y teclado). La persona elegida se queda en el tanque hasta elegir otra.
-// El botón del carnet también la elige, además de abrir su carnet.
 lista.addEventListener('click', (evento) => {
-  const boton = evento.target.closest('.asustador-card, .asustador-item__carnet');
-  if (!boton) return;
+  const botonAdmin = evento.target.closest('.asustador-item__admin-pts');
+  if (botonAdmin) {
+    const indice = Number(botonAdmin.dataset.indice);
+    seleccionarAsustador(indice);
+    abrirModalModificarPuntos(asustadores[indice]);
+    return;
+  }
 
-  seleccionarAsustador(Number(boton.dataset.indice));
-  if (boton.matches('.asustador-item__carnet')) mostrarCarnetDe(Number(boton.dataset.indice));
+  const botonCarnet = evento.target.closest('.asustador-item__carnet');
+  if (botonCarnet) {
+    const indice = Number(botonCarnet.dataset.indice);
+    seleccionarAsustador(indice);
+    mostrarCarnetDe(indice);
+    return;
+  }
+
+  const card = evento.target.closest('.asustador-card');
+  if (card) {
+    seleccionarAsustador(Number(card.dataset.indice));
+  }
 });
 
 lista.addEventListener('focusin', (evento) => {
@@ -393,6 +432,163 @@ $('#sustometro-adornos').innerHTML = ['monstruoSusto', 'tanqueSustos', 'fantasma
 if ($('#pie-escudo')) {
   $('#pie-escudo').innerHTML = dibujarEscudo();
 }
+
+/* ---------- Modal de Modificación de Puntos (Supervisor de Sustos) ---------- */
+
+let personaParaEditarPuntos = null;
+
+function abrirModalModificarPuntos(persona) {
+  if (!persona || !esSupervisorActual()) return;
+  personaParaEditarPuntos = persona;
+
+  const modal = $('#puntos-modal');
+  if (!modal) return;
+
+  const avatar = $('#puntos-modal-avatar');
+  const nombre = $('#puntos-modal-nombre');
+  const correo = $('#puntos-modal-correo');
+  const input = $('#puntos-modal-input');
+  const mensaje = $('#puntos-modal-mensaje');
+
+  if (avatar) {
+    avatar.style.borderColor = persona.monstruo?.color || '#1667c2';
+    avatar.innerHTML = typeof dibujarMonstruoPersonalizado === 'function'
+      ? dibujarMonstruoPersonalizado(persona.monstruo || {})
+      : '';
+  }
+  if (nombre) nombre.textContent = (persona.nombre || 'Estudiante UNAL').trim();
+  if (correo) {
+    const usuario = persona.correo?.includes('@') ? persona.correo.split('@')[0] : 'estudiante';
+    correo.textContent = `@${usuario} · UNAL`;
+  }
+  if (input) {
+    input.value = Number(persona.puntos) || 0;
+  }
+  if (mensaje) {
+    mensaje.hidden = true;
+    mensaje.textContent = '';
+  }
+
+  modal.showModal();
+}
+
+function cerrarModalModificarPuntos() {
+  $('#puntos-modal')?.close();
+  personaParaEditarPuntos = null;
+}
+
+$('#btn-cerrar-puntos-modal')?.addEventListener('click', cerrarModalModificarPuntos);
+$('#btn-cancelar-puntos-modal')?.addEventListener('click', cerrarModalModificarPuntos);
+
+$('#puntos-modal')?.addEventListener('click', (evento) => {
+  if (evento.target === $('#puntos-modal')) cerrarModalModificarPuntos();
+});
+
+// Atajos para sumar o restar puntos rápidamente
+$$('.puntos-modal__btn-atajo').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const input = $('#puntos-modal-input');
+    if (!input) return;
+    const actual = parseInt(input.value, 10) || 0;
+    const delta = parseInt(btn.dataset.sumar, 10) || 0;
+    input.value = Math.max(0, actual + delta);
+  });
+});
+
+// Guardar puntos en Supabase y actualizar ranking
+$('#btn-guardar-puntos-modal')?.addEventListener('click', async () => {
+  if (!personaParaEditarPuntos) return;
+
+  const input = $('#puntos-modal-input');
+  const nuevosPuntos = Math.max(0, parseInt(input.value, 10) || 0);
+  const boton = $('#btn-guardar-puntos-modal');
+  const textoBoton = boton.querySelector('span');
+  const mensaje = $('#puntos-modal-mensaje');
+
+  boton.disabled = true;
+  if (textoBoton) textoBoton.textContent = 'Guardando…';
+  if (mensaje) mensaje.hidden = true;
+
+  try {
+    let guardado = false;
+    let rpcError = null;
+
+    // 1. Intentar llamar a la función RPC segura en Supabase
+    try {
+      const { error } = await clienteSupabase.rpc('modificar_puntos', {
+        target_id: personaParaEditarPuntos.id,
+        nuevos_puntos: nuevosPuntos,
+      });
+      if (!error) {
+        guardado = true;
+      } else {
+        rpcError = error;
+      }
+    } catch (e) {
+      rpcError = e;
+    }
+
+    // 2. Fallback: intentar update directo a la tabla perfiles
+    if (!guardado) {
+      const { error } = await clienteSupabase
+        .from('perfiles')
+        .update({ puntos: nuevosPuntos })
+        .eq('id', personaParaEditarPuntos.id);
+
+      if (!error) {
+        guardado = true;
+      } else if (rpcError) {
+        throw rpcError;
+      } else {
+        throw error;
+      }
+    }
+
+    // Actualizar datos en memoria para respuesta instantánea
+    personaParaEditarPuntos.puntos = nuevosPuntos;
+    const idx = asustadores.findIndex((p) => p.id === personaParaEditarPuntos.id);
+    if (idx !== -1) {
+      asustadores[idx].puntos = nuevosPuntos;
+    }
+
+    await cargarSustometro();
+    cerrarModalModificarPuntos();
+  } catch (error) {
+    console.error('Error al modificar puntos:', error);
+    if (mensaje) {
+      mensaje.className = 'auth-mensaje auth-mensaje--error';
+      const msg = String(error?.message || '');
+      if (msg.includes('Acceso denegado') || msg.includes('supervisor')) {
+        mensaje.textContent = 'Acceso denegado: solo quienes tengan el título Supervisor de Sustos pueden modificar puntos.';
+      } else {
+        mensaje.textContent = 'No se pudo guardar en Supabase. Si aún no corriste el script SQL en Supabase, ejecuta supabase/modificar-puntos.sql en el SQL Editor.';
+      }
+      mensaje.hidden = false;
+    }
+  } finally {
+    boton.disabled = false;
+    if (textoBoton) textoBoton.textContent = 'Guardar puntos';
+  }
+});
+
+// Botón de admin en el HUD del tanque
+$('#btn-admin-modificar-puntos')?.addEventListener('click', () => {
+  const persona = asustadores.find((p) => p.id === idElegido) || asustadores[0];
+  if (persona) {
+    abrirModalModificarPuntos(persona);
+  }
+});
+
+// Re-evaluar rol de supervisor cuando la sesión cambia o se canjea un título
+document.addEventListener('carnet:sesion', () => {
+  if (asustadores && asustadores.length) {
+    renderizarRanking(asustadores);
+  }
+  const btnHud = $('#btn-admin-modificar-puntos');
+  if (btnHud) {
+    btnHud.hidden = !esSupervisorActual();
+  }
+});
 
 // Cargar datos
 cargarSustometro();

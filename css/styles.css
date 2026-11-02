@@ -2797,6 +2797,45 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .asustador-item .asustador-card { padding-right: 68px; }
 
+/* Grupo de acciones en el item del ranking */
+.asustador-item__acciones {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  translate: 0 -50%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 2;
+}
+
+.asustador-item--supervisor .asustador-card {
+  padding-right: 114px;
+}
+
+.asustador-item__admin-pts {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(22, 103, 194, 0.3);
+  background: #fff;
+  color: #1667c2;
+  display: grid;
+  place-items: center;
+  transition: all .15s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+.asustador-item__admin-pts:hover {
+  background: #1667c2;
+  border-color: #1667c2;
+  color: #fff;
+  transform: scale(1.06);
+}
+.asustador-item__admin-pts svg {
+  width: 18px;
+  height: 18px;
+}
+
 .asustador-item__carnet {
   position: absolute;
   top: 50%;
@@ -2813,9 +2852,204 @@ button { font: inherit; color: inherit; cursor: pointer; }
   color: var(--azul);
   transition: background .15s, border-color .15s, color .15s;
 }
+.asustador-item__acciones .asustador-item__carnet {
+  position: static;
+  translate: none;
+}
 .asustador-item__carnet:hover { background: var(--azul); border-color: var(--azul); color: #fff; }
 .asustador-item__carnet:focus-visible { outline: 3px solid var(--azul); outline-offset: 2px; }
 .asustador-item__carnet svg { width: 20px; height: 20px; }
+
+/* Botón de supervisor en el visor del tanque (HUD) */
+.hud__admin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(22, 103, 194, 0.15);
+  border: 1px solid rgba(22, 103, 194, 0.35);
+  font-family: var(--letra-estrecha);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: #1667c2;
+  transition: all .15s ease;
+  cursor: pointer;
+}
+.hud__admin-btn:hover {
+  background: #1667c2;
+  color: #fff;
+  transform: translateY(-1px);
+}
+.hud__admin-btn svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* Modal de Modificar Puntos (Supervisor de Sustos) */
+.modal-admin-puntos .auth-modal__caja {
+  max-width: 440px;
+}
+
+.puntos-modal__badge {
+  display: inline-block;
+  padding: 3px 10px;
+  margin-bottom: 6px;
+  border-radius: 999px;
+  background: #fff3cf;
+  border: 1px solid #e0b200;
+  font-family: var(--letra-estrecha);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #8a6400;
+}
+
+.puntos-modal__cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 8px;
+}
+
+.puntos-modal__usuario {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+}
+
+.puntos-modal__avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 2px solid #1667c2;
+  background: linear-gradient(#e4effa, #a9cbee);
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.puntos-modal__avatar svg {
+  width: 100%;
+  height: 100%;
+  transform: translateY(3px);
+}
+
+.puntos-modal__info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.puntos-modal__nombre {
+  font-family: var(--letra-estrecha);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--azul-marino);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.puntos-modal__correo {
+  font-size: 13px;
+  color: var(--gris);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.puntos-modal__editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.puntos-modal__label {
+  font-family: var(--letra-estrecha);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--azul-marino);
+}
+
+.puntos-modal__input-fila {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.puntos-modal__input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1.5px solid #cbd5e1;
+  font-family: var(--letra-titulo);
+  font-size: 26px;
+  color: var(--azul-marino);
+  text-align: right;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.puntos-modal__input:focus {
+  outline: none;
+  border-color: #1667c2;
+  box-shadow: 0 0 0 3px rgba(22, 103, 194, 0.18);
+}
+
+.puntos-modal__unidad {
+  font-family: var(--letra-universidad);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: .08em;
+  color: #1667c2;
+}
+
+.puntos-modal__atajos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.puntos-modal__btn-atajo {
+  flex: 1;
+  min-width: 50px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  font-family: var(--letra-estrecha);
+  font-weight: 700;
+  font-size: 13px;
+  color: #334155;
+  transition: all .15s ease;
+  cursor: pointer;
+}
+.puntos-modal__btn-atajo:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+.puntos-modal__btn-atajo:active {
+  transform: scale(0.96);
+}
+
+.puntos-modal__acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
 
 /* Cada persona, en un recuadro gris claro como los de día, hora y lugar */
 .asustador-card {
@@ -3188,6 +3422,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .easter-egg__stickers svg { height: 40px; }
   .easter-egg__codigo { font-size: 32px; }
   .asustador-item .asustador-card { padding-right: 54px; }
+  .asustador-item--supervisor .asustador-card { padding-right: 92px; }
+  .asustador-item__acciones { right: 10px; gap: 6px; }
+  .asustador-item__admin-pts { width: 34px; height: 34px; }
+  .asustador-item__admin-pts svg { width: 16px; height: 16px; }
   .asustador-item__carnet { right: 12px; width: 34px; height: 34px; }
   .asustador-item__carnet svg { width: 17px; height: 17px; }
   .asustador-card__posicion {

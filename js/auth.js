@@ -660,13 +660,39 @@ $$('.boton-descargar').forEach((boton) => {
 });
 
 
-/* ---------- Arranque ---------- */
+/* ---------- Arranque y control de versiones ---------- */
 
-// Al cargar la página, y cada vez que alguien entra o sale, se actualiza la interfaz
-clienteSupabase.auth.getSession().then(({ data: { session } }) => {
-  actualizarInterfazSesion(session?.user ?? null);
-});
+// Si la versión del proyecto cambió, cerramos sesiones viejas en el navegador
+// y limpiamos tokens almacenados para evitar problemas de JWT o versiones desfasadas.
+async function sincronizarVersionSesion() {
+  const versionActual = typeof VERSION_PROYECTO !== 'undefined' ? VERSION_PROYECTO : 'v1';
+  const versionGuardada = localStorage.getItem('semana_sistemas_version');
 
-clienteSupabase.auth.onAuthStateChange((_evento, session) => {
-  actualizarInterfazSesion(session?.user ?? null);
+  if (versionGuardada !== versionActual) {
+    const haySesionPrevia = Object.keys(localStorage).some((k) => k.startsWith('sb-') || k.includes('supabase'));
+    if (versionGuardada || haySesionPrevia) {
+      try {
+        await clienteSupabase.auth.signOut();
+      } catch {
+        // Ignorar si falla la conexión
+      }
+      for (const clave of Object.keys(localStorage)) {
+        if (clave.startsWith('sb-') || clave.includes('supabase')) {
+          localStorage.removeItem(clave);
+        }
+      }
+    }
+    localStorage.setItem('semana_sistemas_version', versionActual);
+  }
+}
+
+// Al cargar la página, primero aseguramos que la versión coincida; luego inicializamos la sesión
+sincronizarVersionSesion().finally(() => {
+  clienteSupabase.auth.getSession().then(({ data: { session } }) => {
+    actualizarInterfazSesion(session?.user ?? null);
+  });
+
+  clienteSupabase.auth.onAuthStateChange((_evento, session) => {
+    actualizarInterfazSesion(session?.user ?? null);
+  });
 });

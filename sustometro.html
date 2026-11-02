@@ -217,6 +217,10 @@
                 <div class="tanque__hud">
                   <span class="hud__nombre" id="hud-nombre">Cargando…</span>
                   <span class="hud__puntos" id="hud-puntos">0 <small>pts</small></span>
+                  <button type="button" class="hud__admin-btn" id="btn-admin-modificar-puntos" hidden title="Modificar puntos (Supervisor)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    <span>Editar puntos</span>
+                  </button>
                 </div>
               </div>
 
@@ -517,6 +521,53 @@
       <div id="easter-egg-premio">
         <p class="easter-egg__texto">Fuiste la primera persona en encontrar el easter egg. Escríbele al representante y mándale este código:</p>
         <strong class="easter-egg__codigo" id="easter-egg-codigo"></strong>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- VENTANA PARA MODIFICAR PUNTOS (SUPERVISOR DE SUSTOS) -->
+  <dialog class="auth-modal modal-admin-puntos" id="puntos-modal" aria-labelledby="puntos-modal-titulo">
+    <div class="auth-modal__caja">
+      <button class="auth-modal__cerrar" id="btn-cerrar-puntos-modal" type="button" aria-label="Cerrar ventana">✕</button>
+
+      <div class="auth-modal__cabecera">
+        <span class="puntos-modal__badge">Supervisor de Sustos</span>
+        <h2 class="auth-modal__titulo" id="puntos-modal-titulo">Ajustar Puntos</h2>
+      </div>
+
+      <div class="puntos-modal__cuerpo">
+        <div class="puntos-modal__usuario">
+          <div class="puntos-modal__avatar" id="puntos-modal-avatar"></div>
+          <div class="puntos-modal__info">
+            <strong class="puntos-modal__nombre" id="puntos-modal-nombre"></strong>
+            <span class="puntos-modal__correo" id="puntos-modal-correo"></span>
+          </div>
+        </div>
+
+        <div class="puntos-modal__editor">
+          <label for="puntos-modal-input" class="puntos-modal__label">Puntos de susto acumulados</label>
+          <div class="puntos-modal__input-fila">
+            <input type="number" id="puntos-modal-input" min="0" max="99999" step="1" class="puntos-modal__input" placeholder="0">
+            <span class="puntos-modal__unidad">PTS</span>
+          </div>
+
+          <div class="puntos-modal__atajos" aria-label="Ajuste rápido">
+            <button type="button" class="puntos-modal__btn-atajo" data-sumar="10">+10</button>
+            <button type="button" class="puntos-modal__btn-atajo" data-sumar="50">+50</button>
+            <button type="button" class="puntos-modal__btn-atajo" data-sumar="100">+100</button>
+            <button type="button" class="puntos-modal__btn-atajo" data-sumar="-10">-10</button>
+            <button type="button" class="puntos-modal__btn-atajo" data-sumar="-50">-50</button>
+          </div>
+        </div>
+
+        <p class="auth-mensaje" id="puntos-modal-mensaje" hidden></p>
+
+        <div class="puntos-modal__acciones">
+          <button type="button" class="boton-semana" id="btn-cancelar-puntos-modal">Cancelar</button>
+          <button type="button" class="portada__boton auth-form__submit" id="btn-guardar-puntos-modal">
+            <span>Guardar puntos</span>
+          </button>
+        </div>
       </div>
     </div>
   </dialog>
