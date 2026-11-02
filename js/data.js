@@ -158,6 +158,8 @@ const TITULOS = [
     codigo: '3bed572cb2f9c1a9f7e3d08a818f5b5463d499f3ef24938aaa4d796347dbadd8' },
   { id: 'debugger', nombre: 'Debugger',
     codigo: '30bc3d0b546272ae2dcbc55119bff7af556272354651bc674906fc2dd543f230' },
+  { id: 'terror-nocturno', nombre: 'Terror Nocturno', femenino: 'Terror Nocturno', limite: 5,
+    codigo: 'c58b28118256f74718a66d20def69ac43887b5dacbc7ffcac09389da6ba38d08' },
 ];
 
 // SUSTÓMETRO: Ahora se alimenta en tiempo real desde Supabase (tabla 'perfiles')

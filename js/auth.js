@@ -121,26 +121,59 @@ function tituloElegidoDe(usuario) {
   return titulosDesbloqueados(usuario).find((titulo) => titulo.id === id) || TITULO_BASE;
 }
 
-// Carnet con el nombre, el usuario del correo (lo que va antes de la @), el monstruo y el título
-function carnetDeAsustador(nombre, correo, monstruo, titulo = TITULO_BASE) {
+// Carnet con el nombre, el usuario del correo (lo que va antes de la @), el monstruo, el título y estado de medalla (oro, plata, bronce)
+function carnetDeAsustador(nombre, correo, monstruo, titulo = TITULO_BASE, medalla = null) {
   const nombreVisible = nombre?.trim() || 'Tu Nombre Aquí';
   const usuario = correo?.includes('@') ? correo.split('@')[0] : 'estudiante';
-  const rol = textoDeTitulo(titulo, monstruo.estilo);
+  const rol = textoDeTitulo(titulo, monstruo?.estilo);
+  const esDebugger = titulo?.id === 'debugger';
+  const esNocturno = titulo?.id === 'terror-nocturno';
+
   // Los títulos largos se parten en dos renglones para no chocar con la foto
-  const claseFranja = rol.length > 12 ? 'carnet__franja carnet__franja--larga' : 'carnet__franja';
+  let claseFranja = rol.length > 12 ? 'carnet__franja carnet__franja--larga' : 'carnet__franja';
+  if (esDebugger) claseFranja += ' carnet__franja--glitch';
+  if (esNocturno) claseFranja += ' carnet__franja--nocturno';
+
+  const textoRol = esDebugger
+    ? `<span class="glitch-text" data-text="${rol}">${rol}</span>`
+    : rol;
+
+  // Normalización del tipo de medalla (admite true para oro por retrocompatibilidad)
+  const tipoMedalla = (medalla === true || medalla === 'oro')
+    ? 'oro'
+    : (medalla === 'plata' || medalla === 'bronce' ? medalla : null);
+
+  let selloMedalla = '';
+  let claseCarnet = 'carnet';
+  let colorBordeFoto = monstruo?.color || '#1667c2';
+
+  if (tipoMedalla === 'oro') {
+    claseCarnet = 'carnet carnet--dorado';
+    selloMedalla = '<span class="carnet__sello carnet__sello--oro">1° PUESTO</span>';
+    colorBordeFoto = '#d4a017';
+  } else if (tipoMedalla === 'plata') {
+    claseCarnet = 'carnet carnet--plata';
+    selloMedalla = '<span class="carnet__sello carnet__sello--plata">2° PUESTO</span>';
+    colorBordeFoto = '#94a3b8';
+  } else if (tipoMedalla === 'bronce') {
+    claseCarnet = 'carnet carnet--bronce';
+    selloMedalla = '<span class="carnet__sello carnet__sello--bronce">3° PUESTO</span>';
+    colorBordeFoto = '#b45309';
+  }
 
   return `
-    <article class="carnet">
+    <article class="${claseCarnet}">
       <div class="carnet__escudo">${dibujarEscudo()}</div>
       <div class="carnet__marca">
         <span class="carnet__semana">Semana</span>
         <span class="carnet__sistemas">— de sistemas —</span>
       </div>
+      ${selloMedalla}
       <div class="carnet__nombre">${nombreVisible}</div>
       <div class="carnet__cargo">@${usuario} · UNAL</div>
-      <div class="${claseFranja}" style="background: ${monstruo.color}; --letras: ${rol.length}">${rol}</div>
-      <div class="carnet__foto" style="border-color: ${monstruo.color}">
-        ${dibujarMonstruoPersonalizado(monstruo)}
+      <div class="${claseFranja}" style="background: ${monstruo?.color || '#1667c2'}; --letras: ${rol.length}">${textoRol}</div>
+      <div class="carnet__foto" style="border-color: ${colorBordeFoto}">
+        ${dibujarMonstruoPersonalizado(monstruo || {})}
       </div>
     </article>
   `;
@@ -163,14 +196,19 @@ function actualizarVistaPrevia() {
 
   const titulos = titulosDesbloqueados(usuarioActual);
   const titulo = titulos.find((t) => t.id === tituloEnEdicion) || TITULO_BASE;
-  $('#val-titulo').textContent = textoDeTitulo(titulo, monstruo.estilo);
+  const textoTitulo = textoDeTitulo(titulo, monstruo.estilo);
+  if (titulo.id === 'debugger') {
+    $('#val-titulo').innerHTML = `<span class="glitch-text" data-text="${textoTitulo}">${textoTitulo}</span>`;
+  } else {
+    $('#val-titulo').textContent = textoTitulo;
+  }
   $$('#selector-titulo .selector-arcade__flecha').forEach((flecha) => { flecha.disabled = titulos.length < 2; });
   $('#edit-titulos-nota').textContent = titulos.length < 2
     ? 'Aún no tienes otros títulos. Canjea códigos en el Sustómetro para desbloquearlos.'
     : `Tienes ${titulos.length} de ${TITULOS.length} títulos. Canjea más códigos en el Sustómetro.`;
 
   $('#preview-carnet-registro').innerHTML =
-    carnetDeAsustador($('#edit-nombre').value, usuarioActual.email, monstruo, titulo);
+    carnetDeAsustador($('#edit-nombre').value, usuarioActual.email, monstruo, titulo, usuarioMedalla || (usuarioEsLider ? 'oro' : null));
 }
 
 // Flechas ‹ › de cada selector: pasan a la opción anterior o a la siguiente (de la última vuelve a la primera)
@@ -251,15 +289,28 @@ function abrirEdicionCarnet() {
 }
 
 // La tabla del Sustómetro lee de la tabla 'perfiles', no de la cuenta: hay que copiarle el nombre y el monstruo
-// nuevos. Se hace con la función actualizar_perfil de Supabase (supabase/actualizar-perfil.sql), que solo deja
-// cambiar esos dos datos de la fila de la propia persona (los puntos no). Si la función todavía no existe, el
-// carnet se guarda igual en la cuenta y solo la tabla queda con los datos anteriores.
+// nuevos (incluyendo el título para que se vea en el Sustómetro).
+// Se intenta primero con la función actualizar_perfil de Supabase (supabase/actualizar-perfil.sql)
+// y si aún no la han creado, se hace fallback directo con la política de UPDATE de perfiles.
 async function sincronizarPerfil(nombre, monstruo) {
+  let sincronizado = false;
   try {
     const { error } = await clienteSupabase.rpc('actualizar_perfil', { nuevo_nombre: nombre, nuevo_monstruo: monstruo });
-    if (error) console.warn('No se pudo actualizar la tabla del Sustómetro:', error.message);
+    if (!error) sincronizado = true;
   } catch (error) {
-    console.warn('No se pudo actualizar la tabla del Sustómetro:', error);
+    console.warn('Aviso RPC actualizar_perfil:', error);
+  }
+
+  // Fallback directo a perfiles
+  if (!sincronizado && usuarioActual?.id) {
+    try {
+      await clienteSupabase
+        .from('perfiles')
+        .update({ nombre, monstruo })
+        .eq('id', usuarioActual.id);
+    } catch (e) {
+      console.warn('Aviso update directo perfiles:', e);
+    }
   }
 }
 
@@ -279,13 +330,18 @@ async function guardarEdicion() {
   $('#edit-mensaje').hidden = true;
 
   try {
+    const titulosIds = titulosDesbloqueados(usuarioActual).map((t) => t.id);
+    const monstruoActualizado = { ...monstruoElegido(), titulo: titulo.id, titulos: titulosIds };
     const { data, error } = await clienteSupabase.auth.updateUser({
-      data: { ...usuarioActual.user_metadata, full_name: nombre, monstruo: monstruoElegido(), titulo: titulo.id },
+      data: { ...usuarioActual.user_metadata, full_name: nombre, monstruo: monstruoActualizado, titulo: titulo.id, titulos: titulosIds },
     });
     if (error) throw error;
-    await sincronizarPerfil(nombre, monstruoElegido());
+    await sincronizarPerfil(nombre, monstruoActualizado);
     salirDeEdicion();
     actualizarInterfazSesion(data.user);
+    if (typeof cargarSustometro === 'function') {
+      cargarSustometro();
+    }
   } catch (error) {
     mostrarMensajeEdicion(traducirError(error));
   } finally {
@@ -351,6 +407,19 @@ function actualizarInterfazSesion(usuario) {
   usuarioActual = usuario;
   $('#btn-abrir-auth').classList.toggle('portada__boton--conectado', Boolean(usuario));
   if (usuario) {
+    // Si la persona ya había elegido un título o desbloqueado títulos en su cuenta pero no estaban en su monstruo de la tabla,
+    // los sincronizamos automáticamente a 'perfiles' para que el conteo global y el Sustómetro los tengan al día.
+    const tId = usuario.user_metadata?.titulo;
+    const titulosIds = titulosDesbloqueados(usuario).map((t) => t.id);
+    const m = usuario.user_metadata?.monstruo || {};
+    const necesitaSincronizarTitulo = tId && m.titulo !== tId;
+    const necesitaSincronizarTitulos = !Array.isArray(m.titulos) || m.titulos.length !== titulosIds.length;
+
+    if (necesitaSincronizarTitulo || necesitaSincronizarTitulos) {
+      const mActualizado = { ...m, ...(tId ? { titulo: tId } : {}), titulos: titulosIds };
+      sincronizarPerfil(usuario.user_metadata.full_name || usuario.email.split('@')[0], mActualizado);
+    }
+
     // Supabase avisa de nuevo cada vez que la pestaña recupera el foco: si la persona está editando
     // no se le vuelve a pintar el perfil encima, para que no pierda lo que lleva.
     if (!editando) mostrarPerfil(usuario);
@@ -362,17 +431,70 @@ function actualizarInterfazSesion(usuario) {
   document.dispatchEvent(new CustomEvent('carnet:sesion'));
 }
 
+let usuarioMedalla = null; // 'oro' | 'plata' | 'bronce' | null
+let usuarioEsLider = false; // mantenido para compatibilidad
+
+async function obtenerMedallaUsuario(usuarioId) {
+  if (!usuarioId) return null;
+  try {
+    const { data: perfiles } = await clienteSupabase
+      .from('perfiles')
+      .select('id, puntos')
+      .order('puntos', { ascending: false });
+    if (!perfiles || !perfiles.length) return null;
+
+    const puntajes = perfiles.map((p) => Number(p.puntos) || 0);
+    const hayPuntosEnJuego = puntajes.some((p) => p > 0);
+    const persona = perfiles.find((p) => p.id === usuarioId);
+    if (!persona) return null;
+    const puntos = Number(persona.puntos) || 0;
+
+    if (!hayPuntosEnJuego) {
+      // Si nadie tiene puntos todavía, todos comparten el 1° lugar (oro)
+      return 'oro';
+    }
+    if (puntos <= 0) return null;
+
+    // Niveles únicos de puntaje para resolver empates (dense ranking)
+    const tiers = [...new Set(puntajes.filter((p) => p > 0))].sort((a, b) => b - a);
+    const tier = tiers.indexOf(puntos);
+    if (tier === 0) return 'oro';
+    if (tier === 1) return 'plata';
+    if (tier === 2) return 'bronce';
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+async function verificarSiEsLider(usuarioId) {
+  const medalla = await obtenerMedallaUsuario(usuarioId);
+  return medalla === 'oro';
+}
+
 function mostrarPerfil(usuario) {
   const nombreCompleto = usuario.user_metadata?.full_name || usuario.email.split('@')[0];
   const monstruo = usuario.user_metadata?.monstruo || monstruoElegido();
+  const titulo = tituloElegidoDe(usuario);
 
   $('#sesion-texto').textContent = nombreCompleto.trim().split(' ')[0];   // el botón de la portada muestra el primer nombre
   $('#auth-modal').classList.add('auth-modal--registro');
   $('#auth-vista-formulario').hidden = true;
   $('#auth-vista-perfil').hidden = false;
   $('#auth-titulo').textContent = 'Carnet de Asustador';
-  $('#perfil-carnet-final').innerHTML = carnetDeAsustador(nombreCompleto, usuario.email, monstruo, tituloElegidoDe(usuario));
+  $('#perfil-carnet-final').innerHTML = carnetDeAsustador(nombreCompleto, usuario.email, monstruo, titulo, usuarioMedalla || (usuarioEsLider ? 'oro' : null));
   $('#perfil-correo').textContent = usuario.email;
+
+  // Consulta asíncrona si tiene podio (oro, plata o bronce) en el Sustómetro para actualizar el carnet
+  obtenerMedallaUsuario(usuario.id).then((medalla) => {
+    if (medalla !== usuarioMedalla) {
+      usuarioMedalla = medalla;
+      usuarioEsLider = medalla === 'oro';
+      if (!editando && $('#auth-vista-perfil') && !$('#auth-vista-perfil').hidden) {
+        $('#perfil-carnet-final').innerHTML = carnetDeAsustador(nombreCompleto, usuario.email, monstruo, titulo, usuarioMedalla);
+      }
+    }
+  });
 }
 
 function mostrarFormulario() {

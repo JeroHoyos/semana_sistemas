@@ -112,8 +112,11 @@ function renderizarRanking(personas) {
     return;
   }
 
-  const maxPuntos = Math.max(100, ...personas.map((p) => Number(p.puntos) || 0));
-  const hayPuntosEnJuego = personas.some((p) => Number(p.puntos) > 0);
+  const todosLosPuntos = personas.map((p) => Number(p.puntos) || 0);
+  const maxPuntos = Math.max(100, ...todosLosPuntos);
+  const hayPuntosEnJuego = todosLosPuntos.some((p) => p > 0);
+  // Niveles únicos de puntaje para empates en podio (dense ranking)
+  const tiersConPuntos = [...new Set(todosLosPuntos.filter((p) => p > 0))].sort((a, b) => b - a);
   // La misma persona de antes (o el primer puesto si aún no se ha elegido a nadie)
   const elegido = Math.max(0, personas.findIndex((p) => p.id === idElegido));
 
@@ -125,19 +128,52 @@ function renderizarRanking(personas) {
     const monstruo = persona.monstruo || {};
     const colorMonstruo = monstruo.color || '#1667c2';
 
-    // Solo se destacan con podio si alguien ya tiene puntos mayores a 0
-    let medallaClase = 'normal';
-    if (hayPuntosEnJuego && puntos > 0) {
-      if (i === 0) medallaClase = 'oro';
-      else if (i === 1) medallaClase = 'plata';
-      else if (i === 2) medallaClase = 'bronce';
+    // Título del carnet: si es el usuario actual se prioriza su sesión, sino el de su monstruo en la tabla
+    const esMiCuenta = usuarioActual && (persona.id === usuarioActual.id || persona.correo === usuarioActual.email);
+    const tituloId = (esMiCuenta && usuarioActual.user_metadata?.titulo)
+      ? usuarioActual.user_metadata.titulo
+      : (persona.monstruo?.titulo || persona.titulo);
+    const tituloObj = (typeof buscarTitulo === 'function' ? buscarTitulo(tituloId) : null) || TITULO_BASE;
+    const tituloTexto = typeof textoDeTitulo === 'function' ? textoDeTitulo(tituloObj, monstruo.estilo) : tituloObj.nombre;
+    const esDebugger = tituloObj.id === 'debugger';
+    const esNocturno = tituloObj.id === 'terror-nocturno';
+
+    let tagTitulo = `<span class="asustador-card__titulo-tag">${tituloTexto}</span>`;
+    if (esDebugger) {
+      tagTitulo = `<span class="asustador-card__titulo-tag asustador-card__titulo-tag--debugger"><span class="glitch-text" data-text="${tituloTexto}">${tituloTexto}</span></span>`;
+    } else if (esNocturno) {
+      tagTitulo = `<span class="asustador-card__titulo-tag asustador-card__titulo-tag--nocturno">${tituloTexto}</span>`;
     }
+
+    // Sistema de podio con empates:
+    // Si nadie tiene puntos todavía, todos comparten el 1° lugar (oro)
+    // Si ya hay puntos en juego, se clasifica por niveles de puntaje mayor a 0
+    let medalla = null;
+    let puestoNumero = i + 1;
+
+    if (!hayPuntosEnJuego) {
+      medalla = 'oro';
+      puestoNumero = 1;
+    } else if (puntos > 0) {
+      const tierIndex = tiersConPuntos.indexOf(puntos);
+      puestoNumero = tierIndex + 1;
+      if (tierIndex === 0) medalla = 'oro';
+      else if (tierIndex === 1) medalla = 'plata';
+      else if (tierIndex === 2) medalla = 'bronce';
+    }
+
+    const claseTarjetaPodio = medalla ? `asustador-card--${medalla}` : '';
+    const claseBotonCarnet = medalla ? `asustador-item__carnet--${medalla}` : '';
+    let tituloBotonCarnet = 'Ver carnet';
+    if (medalla === 'oro') tituloBotonCarnet = 'Ver carnet dorado (1° puesto)';
+    else if (medalla === 'plata') tituloBotonCarnet = 'Ver carnet plateado (2° puesto)';
+    else if (medalla === 'bronce') tituloBotonCarnet = 'Ver carnet de bronce (3° puesto)';
 
     return `
       <li class="asustador-item">
-        <button type="button" class="asustador-card" data-indice="${i}" aria-pressed="${i === elegido ? 'true' : 'false'}">
-          <div class="asustador-card__posicion asustador-card__posicion--${medallaClase}">
-            <span>${i + 1}</span>
+        <button type="button" class="asustador-card ${claseTarjetaPodio}" data-indice="${i}" aria-pressed="${i === elegido ? 'true' : 'false'}">
+          <div class="asustador-card__posicion asustador-card__posicion--${medalla || 'normal'}">
+            <span>${puestoNumero}</span>
           </div>
 
           <div class="asustador-card__avatar" style="border-color: ${colorMonstruo}">
@@ -145,7 +181,10 @@ function renderizarRanking(personas) {
           </div>
 
           <div class="asustador-card__info">
-            <div class="asustador-card__nombre">${persona.nombre || 'Estudiante UNAL'}</div>
+            <div class="asustador-card__nombre">
+              <span>${persona.nombre || 'Estudiante UNAL'}</span>
+              ${tagTitulo}
+            </div>
             <div class="asustador-card__correo">@${usuario} · UNAL</div>
           </div>
 
@@ -154,7 +193,7 @@ function renderizarRanking(personas) {
             <span class="asustador-card__porcentaje">${porcentaje}%</span>
           </div>
         </button>
-        <button type="button" class="asustador-item__carnet" data-indice="${i}" aria-label="Ver carnet" title="Ver carnet">
+        <button type="button" class="asustador-item__carnet ${claseBotonCarnet}" data-indice="${i}" aria-label="Ver carnet" title="${tituloBotonCarnet}">
           ${ICONOS.carnet}
         </button>
       </li>
@@ -170,8 +209,31 @@ function renderizarRanking(personas) {
 // Abre la ventana con el carnet de una persona de la tabla
 function mostrarCarnetDe(indice) {
   const persona = asustadores[indice];
+  const todosLosPuntos = asustadores.map((p) => Number(p.puntos) || 0);
+  const hayPuntosEnJuego = todosLosPuntos.some((p) => p > 0);
+  const puntos = Number(persona.puntos) || 0;
+
+  // Determinar medalla con empates para el modal del carnet
+  let medalla = null;
+  if (!hayPuntosEnJuego) {
+    medalla = 'oro';
+  } else if (puntos > 0) {
+    const tiers = [...new Set(todosLosPuntos.filter((p) => p > 0))].sort((a, b) => b - a);
+    const tier = tiers.indexOf(puntos);
+    if (tier === 0) medalla = 'oro';
+    else if (tier === 1) medalla = 'plata';
+    else if (tier === 2) medalla = 'bronce';
+  }
+
+  // Si la persona es el usuario con sesión activa en este navegador, priorizamos el título de su sesión
+  const esMiCuenta = usuarioActual && (persona.id === usuarioActual.id || persona.correo === usuarioActual.email);
+  const tituloId = (esMiCuenta && usuarioActual.user_metadata?.titulo)
+    ? usuarioActual.user_metadata.titulo
+    : (persona.monstruo?.titulo || persona.titulo);
+
+  const titulo = (typeof buscarTitulo === 'function' ? buscarTitulo(tituloId) : null) || TITULO_BASE;
   const contenedor = $('#carnet-modal-carnet');
-  contenedor.innerHTML = carnetDeAsustador('', persona.correo, persona.monstruo || {});
+  contenedor.innerHTML = carnetDeAsustador('', persona.correo, persona.monstruo || {}, titulo, medalla);
   // El nombre lo escribe cada persona: se pone con textContent para que no se lea como HTML
   contenedor.querySelector('.carnet__nombre').textContent = (persona.nombre || 'Estudiante UNAL').trim();
   $('#carnet-modal').showModal();

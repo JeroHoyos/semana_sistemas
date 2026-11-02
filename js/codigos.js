@@ -62,14 +62,28 @@ function pintarColeccion() {
 
   lista.innerHTML = TITULOS.map((titulo) => {
     if (!abiertos.has(titulo.id)) {
+      const pistaTexto = titulo.pista || (titulo.limite ? `Título secreto (Edición limitada de ${titulo.limite})` : 'Título secreto');
       return `<li class="titulo-chip titulo-chip--bloqueado">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-        <span><span class="visualmente-oculto">Bloqueado: </span>${titulo.pista || 'Título secreto'}</span>
+        <span><span class="visualmente-oculto">Bloqueado: </span>${pistaTexto}</span>
       </li>`;
     }
-    return `<li class="titulo-chip titulo-chip--abierto ${titulo.id === enUso ? 'titulo-chip--en-uso' : ''}">
+    const texto = textoDeTitulo(titulo, estilo);
+    const esDebugger = titulo.id === 'debugger';
+    const esNocturno = titulo.id === 'terror-nocturno';
+    const contenido = esDebugger
+      ? `<span class="glitch-text" data-text="${texto}">${texto}</span>`
+      : texto;
+    const claseChip = [
+      'titulo-chip titulo-chip--abierto',
+      titulo.id === enUso ? 'titulo-chip--en-uso' : '',
+      esDebugger ? 'titulo-chip--debugger' : '',
+      esNocturno ? 'titulo-chip--nocturno' : '',
+    ].filter(Boolean).join(' ');
+
+    return `<li class="${claseChip}">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2.5 2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5L2.5 9.3l6.6-.8Z"/></svg>
-      <span>${textoDeTitulo(titulo, estilo)}${titulo.id === enUso ? '<small>en uso</small>' : ''}</span>
+      <span>${contenido}${titulo.id === enUso ? '<small>en uso</small>' : ''}</span>
     </li>`;
   }).join('');
 }
@@ -86,6 +100,29 @@ const ESPERA_SEGUNDOS = 30;
 let intentosFallidos = 0;
 let bloqueadoHasta = 0;
 
+// Consulta en tiempo real en la base de datos cuántas personas han desbloqueado un título limitado
+async function contarCanjesDeTitulo(tituloId) {
+  try {
+    const { data: perfiles, error } = await clienteSupabase
+      .from('perfiles')
+      .select('id, monstruo');
+    if (error || !perfiles) return 0;
+
+    let total = 0;
+    for (const p of perfiles) {
+      const m = p.monstruo || {};
+      const lista = Array.isArray(m.titulos) ? m.titulos : [];
+      if (lista.includes(tituloId) || m.titulo === tituloId) {
+        total++;
+      }
+    }
+    return total;
+  } catch (err) {
+    console.warn('Error al contar canjes:', err);
+    return 0;
+  }
+}
+
 async function canjearCodigo(texto) {
   const huella = await huellaDe(normalizarCodigo(texto));
   const titulo = TITULOS.find((t) => !t.libre && (t.codigo === huella || (Array.isArray(t.codigos) && t.codigos.includes(huella))));
@@ -95,10 +132,31 @@ async function canjearCodigo(texto) {
     return { estado: 'repetido', titulo };
   }
 
+  // Comprobar límite de canjes si el título tiene un cupo máximo
+  if (titulo.limite && titulo.limite > 0) {
+    const canjeados = await contarCanjesDeTitulo(titulo.id);
+    if (canjeados >= titulo.limite) {
+      return { estado: 'agotado', titulo, limite: titulo.limite };
+    }
+  }
+
   const meta = usuarioActual.user_metadata || {};
   const titulos = [...new Set([...(meta.titulos || []), titulo.id])];
   const { data, error } = await clienteSupabase.auth.updateUser({ data: { ...meta, titulos } });
   if (error) throw error;
+
+  // Sincronizar en la tabla perfiles para que quede registrado en el conteo de límite y en el Sustómetro
+  try {
+    const m = meta.monstruo || {};
+    const titulosActualizados = [...new Set([...(m.titulos || []), titulo.id])];
+    const nuevoMonstruo = { ...m, titulos: titulosActualizados };
+    if (typeof sincronizarPerfil === 'function') {
+      const nombre = meta.full_name || usuarioActual.email.split('@')[0];
+      await sincronizarPerfil(nombre, nuevoMonstruo);
+    }
+  } catch (syncError) {
+    console.warn('Aviso sincronizando título a perfiles:', syncError);
+  }
 
   actualizarInterfazSesion(data.user);   // refresca el carnet y la colección con el título nuevo
   return { estado: 'nuevo', titulo };
@@ -134,7 +192,7 @@ $('#codigos-form').addEventListener('submit', async (evento) => {
   textoBoton.textContent = 'Canjeando…';
 
   try {
-    const { estado, titulo } = await canjearCodigo(entrada.value);
+    const { estado, titulo, limite } = await canjearCodigo(entrada.value);
     const nombre = titulo && textoDeTitulo(titulo, estiloDeUsuario());
     const editar = { texto: 'Editar mi carnet', alClick: abrirEdicionCarnet };
 
@@ -154,12 +212,26 @@ $('#codigos-form').addEventListener('submit', async (evento) => {
     entrada.value = '';
     if (estado === 'repetido') {
       mostrarMensajeCodigo(`Ese código ya lo canjeaste: tienes el título «${nombre}».`, 'info', editar);
+    } else if (estado === 'agotado') {
+      mostrarMensajeCodigo(`¡Cupos agotados! El título «${nombre}» era una edición limitada de ${limite || 5} personas y ya fue reclamado en su totalidad.`, 'error');
     } else {
       mostrarMensajeCodigo(`¡Desbloqueaste el título «${nombre}»! Ya puedes ponértelo en tu carnet.`, 'exito', editar);
     }
   } catch (error) {
-    console.error(error);
-    mostrarMensajeCodigo('No se pudo guardar el título. Revisa tu conexión e intenta de nuevo.', 'error');
+    console.error('Error al canjear código:', error);
+    const msg = String(error?.message || '');
+    if (msg.includes('JWT') || msg.includes('token') || msg.includes('session') || msg.includes('User from sub') || msg.includes('Auth') || msg.includes('user not found')) {
+      mostrarMensajeCodigo('Tu sesión expiró o cambió en Supabase. Cierra sesión y vuelve a ingresar.', 'error', {
+        texto: 'Volver a ingresar',
+        alClick: async () => {
+          await clienteSupabase.auth.signOut();
+          $('#auth-modal').showModal();
+        },
+      });
+    } else {
+      const errorLegible = typeof traducirError === 'function' ? traducirError(error) : msg;
+      mostrarMensajeCodigo(errorLegible || 'No se pudo guardar el título. Revisa tu conexión e intenta de nuevo.', 'error');
+    }
   } finally {
     boton.disabled = false;
     textoBoton.textContent = 'Canjear';
