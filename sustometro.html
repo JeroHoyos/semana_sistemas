@@ -263,6 +263,35 @@
 
   <!-- PIE DE PÁGINA -->
   <footer class="pie">
+    <!-- CÓDIGOS: se canjean por títulos para el carnet (js/codigos.js) -->
+    <div class="codigos" id="codigos">
+      <p class="seccion-titulo__antetitulo">Easter eggs y premios</p>
+      <h2 class="codigos__titulo">¿Tienes un código?</h2>
+      <p class="codigos__intro">Cada vez que ganes un código (por encontrar un easter egg, por una competencia…) escríbelo aquí para desbloquear un título nuevo. Luego lo eliges en <strong>Editar carnet</strong>.</p>
+
+      <form class="codigos__form" id="codigos-form" autocomplete="off">
+        <label class="codigos__campo">
+          <span class="codigos__etiqueta">Código</span>
+          <input type="text" id="codigos-entrada" placeholder="Escribe tu código" maxlength="40"
+            autocomplete="off" autocapitalize="characters" spellcheck="false">
+        </label>
+        <button class="codigos__boton" id="codigos-boton" type="submit">
+          <span>Canjear</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </form>
+
+      <div class="codigos__mensaje" id="codigos-mensaje" role="status" aria-live="polite" hidden>
+        <span id="codigos-mensaje-texto"></span>
+        <button class="codigos__accion" id="codigos-accion" type="button" hidden></button>
+      </div>
+
+      <div class="codigos__coleccion-caja">
+        <p class="codigos__cuenta" id="codigos-cuenta"></p>
+        <ul class="codigos__coleccion" id="codigos-coleccion"></ul>
+      </div>
+    </div>
+
     <a class="pie__instagram" href="https://www.instagram.com/sistemasunalmed/" target="_blank" rel="noopener"
       title="Instagram de la representación de Ingeniería de Sistemas">
       <span class="pie__escudo" id="pie-escudo"></span>
@@ -314,7 +343,7 @@
             </div>
 
             <div class="selector-arcade" data-prop="estilo">
-              <span class="selector-arcade__label">Rol</span>
+              <span class="selector-arcade__label">Estilo</span>
               <div class="selector-arcade__control">
                 <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
                 <span class="selector-arcade__valor" id="val-estilo">Asustador</span>
@@ -409,14 +438,49 @@
       <!-- Vista cuando YA inició sesión -->
       <div class="auth-perfil" id="auth-vista-perfil" hidden>
         <div class="ponentes__carnet creador-carnet__preview" id="perfil-carnet-final"></div>
-        <button class="boton-semana boton-descargar" data-carnet="#perfil-carnet-final" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
-          <span>Descargar carnet</span>
-        </button>
+        <div class="auth-perfil__acciones">
+          <button class="boton-semana boton-descargar" data-carnet="#perfil-carnet-final" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+            <span>Descargar carnet</span>
+          </button>
+          <button class="boton-semana boton-editar" id="btn-editar-carnet" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+            Editar carnet
+          </button>
+        </div>
         <p class="auth-perfil__correo" id="perfil-correo"></p>
         <button class="boton-semana auth-perfil__salir" id="btn-cerrar-sesion" type="button">
           Cerrar sesión
         </button>
+      </div>
+
+      <!-- Vista para EDITAR el carnet: nombre, título (uno de los desbloqueados) y monstruo.
+           El selector del monstruo (#creador-carnet) se mueve aquí desde el formulario al editar. -->
+      <div class="auth-edicion" id="auth-vista-edicion" hidden>
+        <div class="auth-form">
+          <label class="auth-campo">
+            <span>Nombre en tu carnet</span>
+            <input type="text" id="edit-nombre" maxlength="28" autocomplete="name">
+          </label>
+
+          <div class="selector-arcade" id="selector-titulo">
+            <span class="selector-arcade__label">Título</span>
+            <div class="selector-arcade__control">
+              <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Título anterior">‹</button>
+              <span class="selector-arcade__valor" id="val-titulo" aria-live="polite"></span>
+              <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Título siguiente">›</button>
+            </div>
+          </div>
+          <p class="auth-edicion__nota" id="edit-titulos-nota"></p>
+        </div>
+
+        <div id="edit-creador-montaje"></div>
+
+        <p class="auth-mensaje" id="edit-mensaje" hidden></p>
+        <div class="auth-edicion__botones">
+          <button class="boton-semana auth-edicion__cancelar" id="btn-cancelar-edicion" type="button">Cancelar</button>
+          <button class="portada__boton auth-form__submit auth-edicion__guardar" id="btn-guardar-edicion" type="button">Guardar cambios</button>
+        </div>
       </div>
     </div>
   </dialog>
@@ -464,6 +528,7 @@
   <script src="js/comun.js"></script>
   <script src="js/pixeles.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/codigos.js"></script>
   <script src="js/sustometro.js"></script>
 </body>
 </html>

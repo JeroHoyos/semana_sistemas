@@ -93,11 +93,41 @@ function monstruoElegido() {
   return monstruo;
 }
 
-// Carnet con el nombre, el usuario del correo (lo que va antes de la @) y el monstruo
-function carnetDeAsustador(nombre, correo, monstruo) {
+/* ---------- Títulos del carnet ---------- */
+
+// La persona que está dentro (null si no hay sesión). Lo actualiza actualizarInterfazSesion.
+let usuarioActual = null;
+
+// El título de siempre (el "libre" de TITULOS en data.js): todos lo tienen
+const TITULO_BASE = TITULOS.find((titulo) => titulo.libre) || TITULOS[0];
+
+const buscarTitulo = (id) => TITULOS.find((titulo) => titulo.id === id);
+
+// Cómo se lee un título según el estilo del monstruo (Asustador / Asustadora, Rey / Reina…)
+function textoDeTitulo(titulo, estilo) {
+  return estilo === 'femenino' && titulo.femenino ? titulo.femenino : titulo.nombre;
+}
+
+// Los títulos que tiene la persona: los libres y los que canjeó con un código.
+// Se guardan en su cuenta como lista de ids (user_metadata.titulos); un id que ya no exista en TITULOS se ignora.
+function titulosDesbloqueados(usuario) {
+  const canjeados = usuario?.user_metadata?.titulos;
+  return TITULOS.filter((titulo) => titulo.libre || (Array.isArray(canjeados) && canjeados.includes(titulo.id)));
+}
+
+// El título que lleva en el carnet: el elegido (user_metadata.titulo) si sigue desbloqueado; si no, el de siempre
+function tituloElegidoDe(usuario) {
+  const id = usuario?.user_metadata?.titulo;
+  return titulosDesbloqueados(usuario).find((titulo) => titulo.id === id) || TITULO_BASE;
+}
+
+// Carnet con el nombre, el usuario del correo (lo que va antes de la @), el monstruo y el título
+function carnetDeAsustador(nombre, correo, monstruo, titulo = TITULO_BASE) {
   const nombreVisible = nombre?.trim() || 'Tu Nombre Aquí';
   const usuario = correo?.includes('@') ? correo.split('@')[0] : 'estudiante';
-  const rol = monstruo.estilo === 'femenino' ? 'Asustadora' : 'Asustador';
+  const rol = textoDeTitulo(titulo, monstruo.estilo);
+  // Los títulos largos se parten en dos renglones para no chocar con la foto
+  const claseFranja = rol.length > 12 ? 'carnet__franja carnet__franja--larga' : 'carnet__franja';
 
   return `
     <article class="carnet">
@@ -108,7 +138,7 @@ function carnetDeAsustador(nombre, correo, monstruo) {
       </div>
       <div class="carnet__nombre">${nombreVisible}</div>
       <div class="carnet__cargo">@${usuario} · UNAL</div>
-      <div class="carnet__franja" style="background: ${monstruo.color}">${rol}</div>
+      <div class="${claseFranja}" style="background: ${monstruo.color}; --letras: ${rol.length}">${rol}</div>
       <div class="carnet__foto" style="border-color: ${monstruo.color}">
         ${dibujarMonstruoPersonalizado(monstruo)}
       </div>
@@ -116,15 +146,31 @@ function carnetDeAsustador(nombre, correo, monstruo) {
   `;
 }
 
-// Muestra en cada selector la opción elegida y vuelve a dibujar el carnet de muestra
+// Muestra en cada selector la opción elegida y vuelve a dibujar el carnet de muestra.
+// Al crear el carnet usa el formulario; al editarlo, el nombre y el título de la vista de edición.
 function actualizarVistaPrevia() {
   for (const parte of PARTES) {
     $(`#val-${parte}`).textContent = opcionElegida(parte).texto;
   }
   $('#dot-color').style.background = opcionElegida('color').valor;
 
+  const monstruo = monstruoElegido();
+  if (!editando) {
+    $('#preview-carnet-registro').innerHTML =
+      carnetDeAsustador($('#auth-nombre').value, $('#auth-correo').value, monstruo);
+    return;
+  }
+
+  const titulos = titulosDesbloqueados(usuarioActual);
+  const titulo = titulos.find((t) => t.id === tituloEnEdicion) || TITULO_BASE;
+  $('#val-titulo').textContent = textoDeTitulo(titulo, monstruo.estilo);
+  $$('#selector-titulo .selector-arcade__flecha').forEach((flecha) => { flecha.disabled = titulos.length < 2; });
+  $('#edit-titulos-nota').textContent = titulos.length < 2
+    ? 'Aún no tienes otros títulos. Canjea códigos en el Sustómetro para desbloquearlos.'
+    : `Tienes ${titulos.length} de ${TITULOS.length} títulos. Canjea más códigos en el Sustómetro.`;
+
   $('#preview-carnet-registro').innerHTML =
-    carnetDeAsustador($('#auth-nombre').value, $('#auth-correo').value, monstruoElegido());
+    carnetDeAsustador($('#edit-nombre').value, usuarioActual.email, monstruo, titulo);
 }
 
 // Flechas ‹ › de cada selector: pasan a la opción anterior o a la siguiente (de la última vuelve a la primera)
@@ -147,6 +193,121 @@ $('#btn-monstruo-random').addEventListener('click', () => {
 
 $('#auth-nombre').addEventListener('input', actualizarVistaPrevia);
 $('#auth-correo').addEventListener('input', actualizarVistaPrevia);
+$('#edit-nombre').addEventListener('input', actualizarVistaPrevia);
+
+
+/* ---------- Editar el carnet ---------- */
+
+// Al editar, el selector del monstruo (#creador-carnet) se mueve de la vista de "Crear Carnet" a la de edición
+// y vuelve a su sitio al salir, así se usan los mismos botones y la misma vista previa en los dos casos.
+let editando = false;
+let tituloEnEdicion = TITULO_BASE.id;   // id del título que se está probando en la vista previa
+
+function mostrarMensajeEdicion(texto) {
+  const mensaje = $('#edit-mensaje');
+  mensaje.textContent = texto;
+  mensaje.className = 'auth-mensaje auth-mensaje--error';
+  mensaje.hidden = false;
+}
+
+function entrarEdicion() {
+  if (!usuarioActual || editando) return;
+  const meta = usuarioActual.user_metadata || {};
+
+  // El selector arranca con el monstruo que la persona ya tiene
+  for (const parte of PARTES) {
+    const indice = CATALOGO_MONSTRUO[parte].findIndex((opcion) => opcion.valor === meta.monstruo?.[parte]);
+    indicesMonstruo[parte] = Math.max(indice, 0);
+  }
+  tituloEnEdicion = tituloElegidoDe(usuarioActual).id;
+  editando = true;
+
+  $('#edit-nombre').value = meta.full_name || usuarioActual.email.split('@')[0];
+  $('#edit-mensaje').hidden = true;
+  $('#edit-creador-montaje').append($('#creador-carnet'));
+  $('#creador-carnet').hidden = false;
+  $('#auth-vista-perfil').hidden = true;
+  $('#auth-vista-edicion').hidden = false;
+  $('#auth-titulo').textContent = 'Editar carnet';
+  actualizarVistaPrevia();
+}
+
+// Descarta lo que se estaba editando y vuelve a mostrar el carnet guardado
+function salirDeEdicion() {
+  if (!editando) return;
+  editando = false;
+  $('#auth-form').before($('#creador-carnet'));
+  $('#creador-carnet').hidden = !modoRegistro;
+  $('#auth-vista-edicion').hidden = true;
+  $('#auth-vista-perfil').hidden = false;
+  $('#auth-titulo').textContent = 'Carnet de Asustador';
+}
+
+// Lo usa el apartado de códigos para llevar a la persona directo a elegir su título nuevo
+function abrirEdicionCarnet() {
+  if (!usuarioActual) return;
+  if (!$('#auth-modal').open) $('#auth-modal').showModal();
+  entrarEdicion();
+}
+
+// La tabla del Sustómetro lee de la tabla 'perfiles', no de la cuenta: hay que copiarle el nombre y el monstruo
+// nuevos. Se hace con la función actualizar_perfil de Supabase (supabase/actualizar-perfil.sql), que solo deja
+// cambiar esos dos datos de la fila de la propia persona (los puntos no). Si la función todavía no existe, el
+// carnet se guarda igual en la cuenta y solo la tabla queda con los datos anteriores.
+async function sincronizarPerfil(nombre, monstruo) {
+  try {
+    const { error } = await clienteSupabase.rpc('actualizar_perfil', { nuevo_nombre: nombre, nuevo_monstruo: monstruo });
+    if (error) console.warn('No se pudo actualizar la tabla del Sustómetro:', error.message);
+  } catch (error) {
+    console.warn('No se pudo actualizar la tabla del Sustómetro:', error);
+  }
+}
+
+async function guardarEdicion() {
+  const nombre = $('#edit-nombre').value.trim();
+  if (!nombre) {
+    mostrarMensajeEdicion('Escribe tu nombre para imprimirlo en el carnet.');
+    return;
+  }
+  // Solo se puede dejar un título que la persona ya desbloqueó
+  const titulo = titulosDesbloqueados(usuarioActual).find((t) => t.id === tituloEnEdicion) || TITULO_BASE;
+
+  const boton = $('#btn-guardar-edicion');
+  const textoOriginal = boton.textContent;
+  boton.disabled = true;
+  boton.textContent = 'Guardando…';
+  $('#edit-mensaje').hidden = true;
+
+  try {
+    const { data, error } = await clienteSupabase.auth.updateUser({
+      data: { ...usuarioActual.user_metadata, full_name: nombre, monstruo: monstruoElegido(), titulo: titulo.id },
+    });
+    if (error) throw error;
+    await sincronizarPerfil(nombre, monstruoElegido());
+    salirDeEdicion();
+    actualizarInterfazSesion(data.user);
+  } catch (error) {
+    mostrarMensajeEdicion(traducirError(error));
+  } finally {
+    boton.disabled = false;
+    boton.textContent = textoOriginal;
+  }
+}
+
+$('#btn-editar-carnet').addEventListener('click', entrarEdicion);
+$('#btn-cancelar-edicion').addEventListener('click', salirDeEdicion);
+$('#btn-guardar-edicion').addEventListener('click', guardarEdicion);
+
+// Flechas del selector de título: pasan entre los títulos desbloqueados
+$('#selector-titulo').addEventListener('click', (evento) => {
+  const flecha = evento.target.closest('.selector-arcade__flecha');
+  if (!flecha || !editando) return;
+
+  const titulos = titulosDesbloqueados(usuarioActual);
+  const actual = titulos.findIndex((titulo) => titulo.id === tituloEnEdicion);
+  tituloEnEdicion = titulos[(actual + Number(flecha.dataset.dir) + titulos.length) % titulos.length].id;
+  actualizarVistaPrevia();
+});
 
 
 /* ---------- Ventana de sesión ---------- */
@@ -187,12 +348,18 @@ function ocultarMensajeAuth() {
 
 // Con sesión, la ventana muestra el carnet de la persona; sin sesión, el formulario
 function actualizarInterfazSesion(usuario) {
+  usuarioActual = usuario;
   $('#btn-abrir-auth').classList.toggle('portada__boton--conectado', Boolean(usuario));
   if (usuario) {
-    mostrarPerfil(usuario);
+    // Supabase avisa de nuevo cada vez que la pestaña recupera el foco: si la persona está editando
+    // no se le vuelve a pintar el perfil encima, para que no pierda lo que lleva.
+    if (!editando) mostrarPerfil(usuario);
   } else {
+    salirDeEdicion();
     mostrarFormulario();
   }
+  // Para el apartado de códigos (js/codigos.js): cambió quién está dentro o sus títulos
+  document.dispatchEvent(new CustomEvent('carnet:sesion'));
 }
 
 function mostrarPerfil(usuario) {
@@ -204,7 +371,7 @@ function mostrarPerfil(usuario) {
   $('#auth-vista-formulario').hidden = true;
   $('#auth-vista-perfil').hidden = false;
   $('#auth-titulo').textContent = 'Carnet de Asustador';
-  $('#perfil-carnet-final').innerHTML = carnetDeAsustador(nombreCompleto, usuario.email, monstruo);
+  $('#perfil-carnet-final').innerHTML = carnetDeAsustador(nombreCompleto, usuario.email, monstruo, tituloElegidoDe(usuario));
   $('#perfil-correo').textContent = usuario.email;
 }
 
@@ -221,6 +388,9 @@ $('#btn-abrir-auth').addEventListener('click', () => {
 });
 
 $('#btn-cerrar-auth').addEventListener('click', () => $('#auth-modal').close());
+
+// Si se cierra la ventana a mitad de la edición, lo que no se guardó se descarta
+$('#auth-modal').addEventListener('close', salirDeEdicion);
 
 // Un clic en el fondo oscuro (fuera de la caja) cierra la ventana
 $('#auth-modal').addEventListener('click', (evento) => {

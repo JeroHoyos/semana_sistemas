@@ -378,8 +378,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: var(--azul);
   color: #fff;
   font-weight: 600;
-  font-size: 5.2cqw;
+  font-size: min(5.2cqw, 58cqw / var(--letras, 1));   /* --letras (auth.js) achica los títulos largos */
   text-transform: uppercase;
+}
+/* Títulos largos ("Maratonista Aterradora"): dos renglones a la izquierda de la foto */
+.carnet__franja--larga {
+  padding-right: 40%;
+  font-size: 3.9cqw;
+  line-height: 1.05;
 }
 
 .carnet__foto {
@@ -1277,19 +1283,48 @@ button { font: inherit; color: inherit; cursor: pointer; }
   color: var(--gris);
 }
 /* Botón para bajar el carnet como imagen (en el creador y en el perfil) */
-.boton-descargar {
+.boton-descargar,
+.boton-editar {
   justify-self: center;
   height: 40px;
+  cursor: pointer;
   transition: background .15s, border-color .15s, color .15s;
 }
-.boton-descargar:hover {
+.boton-descargar:hover,
+.boton-editar:hover {
   background: #eef5fc;
   border-color: var(--azul);
   color: var(--azul-marino);
 }
 .boton-descargar span { display: inline; }   /* en el celular .boton-semana esconde el texto; aquí se deja */
 .boton-descargar:disabled { opacity: .6; cursor: wait; }
-.auth-perfil .boton-descargar { margin-top: 16px; }
+.auth-perfil__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+/* Vista de edición del carnet: nombre, título y monstruo, con Cancelar y Guardar abajo */
+.auth-edicion { display: grid; gap: 14px; }
+.auth-edicion .auth-form { gap: 12px; }
+.auth-edicion__nota {
+  margin: -4px 0 0;
+  padding-left: 10px;
+  font-size: 13px;
+  color: var(--gris);
+}
+.auth-edicion .creador-carnet { margin-bottom: 0; }
+.auth-edicion__botones {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: center;
+}
+.auth-edicion__cancelar { height: 56px; padding: 0 22px; justify-content: center; cursor: pointer; }
+.auth-edicion__cancelar:hover { background: #eef5fc; border-color: var(--azul); color: var(--azul-marino); }
+.auth-edicion__guardar { margin-top: 0; cursor: pointer; }
 
 .auth-perfil__salir {
   margin-top: 22px;
@@ -1459,6 +1494,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .selector-arcade__flecha:active {
   transform: scale(0.92);
 }
+.selector-arcade__flecha:disabled {    /* con un solo título no hay a dónde pasar */
+  opacity: .35;
+  cursor: default;
+}
+.selector-arcade__flecha:disabled:hover { background: #f1f4f8; color: var(--azul-marino); }
+.selector-arcade__flecha:disabled:active { transform: none; }
 
 .selector-arcade__valor {
   display: inline-flex;
@@ -3071,4 +3112,179 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
   .galeria__fila { overflow-x: auto; }
   .galeria__fila + .galeria__fila,
   .galeria__grupo + .galeria__grupo { display: none; }
+}
+
+
+/* ---------- Códigos (pie de sustometro.html) ----------
+   Tarjeta blanca como la del ranking. La persona escribe un código y desbloquea un título del carnet (js/codigos.js). */
+
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.codigos {
+  width: min(640px, 100%);
+  margin-bottom: 18px;
+  padding: 30px 32px 28px;
+  border-radius: 30px;
+  background: #fff;
+  box-shadow: 0 24px 50px -26px rgba(10, 44, 82, .5);
+  color: var(--tinta);
+  text-align: center;
+}
+.codigos__titulo {
+  margin-top: 6px;
+  font-family: var(--letra-universidad);
+  font-weight: 400;
+  font-size: 26px;
+  letter-spacing: .04em;
+  color: var(--azul-marino);
+}
+.codigos__intro { margin-top: 10px; font-size: 16px; color: var(--tinta-suave); }
+.codigos__intro strong { font-weight: 600; color: var(--azul-marino); }
+
+.codigos__form { display: flex; gap: 10px; margin-top: 22px; }
+.codigos__campo { flex: 1; min-width: 0; }
+.codigos__etiqueta {                    /* la etiqueta solo la leen los lectores de pantalla */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.codigos__campo input {
+  width: 100%;
+  height: 56px;
+  padding: 0 24px;
+  border: 1px solid #e2e6ec;
+  border-radius: 999px;
+  background: #f3f5f8;
+  color: var(--tinta);
+  font-family: var(--letra-estrecha);
+  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  outline: none;
+  transition: border-color .2s, background .2s;
+}
+.codigos__campo input::placeholder {
+  color: var(--gris);
+  font-size: 17px;
+  letter-spacing: .06em;
+  text-transform: none;
+}
+.codigos__campo input:focus { border-color: var(--azul); background: #fff; }
+
+.codigos__boton {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 56px;
+  padding: 0 26px 0 30px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--azul-marino);
+  color: #fff;
+  font-family: var(--letra-universidad);
+  font-size: 15px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  box-shadow: inset 0 0 0 4px var(--azul-marino), inset 0 0 0 6px var(--azul-brillante), 0 10px 22px -10px rgba(10, 44, 82, .6);
+  transition: transform .15s;
+}
+.codigos__boton:hover { transform: translateY(-2px); }
+.codigos__boton:disabled { opacity: .6; cursor: wait; transform: none; }
+.codigos__boton svg { width: 18px; height: 18px; color: #a9d1ff; }
+
+.codigos__mensaje {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 14px;
+  margin-top: 16px;
+  padding: 12px 18px;
+  border-radius: 18px;
+  font-size: 15px;
+  font-weight: 500;
+  animation: aparecer .25s ease;
+}
+.codigos__accion[hidden] { display: none; }
+.codigos__mensaje--exito { background: #dff6e8; border: 1px solid #a8e2c0; color: #1c7441; }
+.codigos__mensaje--error { background: #fde3e8; border: 1px solid #f5b6c3; color: #b42340; }
+.codigos__mensaje--info { background: #e4effa; border: 1px solid #bcd6f2; color: var(--azul-oscuro); }
+
+.codigos__accion {
+  height: 36px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--azul-marino);
+  color: #fff;
+  font-family: var(--letra-estrecha);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.codigos__accion:hover { background: var(--azul); }
+
+.codigos__coleccion-caja { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--linea); }
+.codigos__cuenta {
+  font-family: var(--letra-universidad);
+  font-size: 13px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--gris);
+}
+.codigos__coleccion {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.titulo-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-family: var(--letra-estrecha);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.titulo-chip svg { width: 15px; height: 15px; flex: none; }
+.titulo-chip small { margin-left: 8px; font-size: 11px; letter-spacing: .1em; opacity: .8; }
+.titulo-chip--abierto { background: #e4effa; box-shadow: inset 0 0 0 1.5px #a9d1ff; color: var(--azul-oscuro); }
+.titulo-chip--en-uso { background: var(--azul-marino); box-shadow: none; color: #fff; }
+.titulo-chip--bloqueado {
+  background: #f3f5f8;
+  box-shadow: inset 0 0 0 1.5px var(--linea);
+  color: var(--gris);
+  font-family: var(--letra-texto);
+  font-weight: 500;
+  font-size: 13.5px;
+  letter-spacing: .02em;
+  text-transform: none;
+}
+
+@media (max-width: 520px) {
+  .codigos { padding: 26px 18px 22px; }
+  .codigos__form { flex-direction: column; }
 }

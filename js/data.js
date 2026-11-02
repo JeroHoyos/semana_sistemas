@@ -136,6 +136,41 @@ const ACTIVIDADES = [
     adornos: ['termometro', 'atomo', 'bombillo'] },
 ];
 
+// TÍTULOS del carnet: lo que sale en la franja de color. Todos arrancan con el primero (libre) y los
+// demás se desbloquean canjeando un código en el apartado del Sustómetro. Una vez desbloqueado, la
+// persona lo elige en "Editar carnet".
+//   id: nombre interno, no se cambia una vez publicado (queda guardado en la cuenta de cada persona).
+//   nombre / femenino: cómo se lee en el carnet según el estilo del monstruo. Si no hay `femenino`, se usa `nombre`.
+//   libre: true = todos lo tienen desde el inicio.
+//   codigo: la huella del código (NO el código). Se genera con: node herramientas/hash-codigo.js "EL CÓDIGO"
+//   pista: lo que se ve mientras el título está bloqueado, para dar ganas de buscarlo.
+// El título 'cazahuevos' es el del easter egg de los stickers (sustometro.js): su `codigo` debe ser la huella del
+// mismo código que la función reclamar_easter_egg de Supabase le entrega a quien lo encuentra, y que luego se lo
+// pasa al representante.
+// OJO: los códigos de estos ejemplos (HUEVO-SUSTO, GRITO-FUERTE, MARATON-UNAL, CAMPEON-SUSTO, NOCTURNO-MU
+// y PIONERO-MINAS) están escritos en el chat de la tarea: cámbialos por los reales antes del evento.
+const TITULOS = [
+  { id: 'asustador', nombre: 'Asustador', femenino: 'Asustadora', libre: true },
+  { id: 'cazahuevos', nombre: 'Cazador de Huevos', femenino: 'Cazadora de Huevos',
+    codigo: '2aeb584caf7c0ba6d484c8a4d0b36ff058f4c1cf22b779b17f7825d4e8e1f037',
+    pista: 'Hay un huevo escondido en la página…' },
+  { id: 'gritador', nombre: 'Rey del Grito', femenino: 'Reina del Grito',
+    codigo: '8ccc197be4799190a8e7ee7107e9fcb9c77467a988ec12daa1ae2d3afb969536',
+    pista: 'Para quien más grita en la Semana' },
+  { id: 'maratonista', nombre: 'Maratonista Aterrador', femenino: 'Maratonista Aterradora',
+    codigo: '3f22273e415daefb766d1c55b5b398663b51d9212ec516be3e4e549e4f08de92',
+    pista: 'Se gana en la maratón de programación' },
+  { id: 'campeon', nombre: 'Campeón del Susto', femenino: 'Campeona del Susto',
+    codigo: '3259fe0366385ce53e09ed33d870a219bcfe60da8be3c5ee7826f737c44936fd',
+    pista: 'Solo para quien gane una competencia' },
+  { id: 'nocturno', nombre: 'Monstruo Nocturno',
+    codigo: '42258d5f94e6568ef48a3906529c22b3601df63d71d7d3944479dddcad9e735d',
+    pista: 'Lo reparten en las actividades sociales' },
+  { id: 'pionero', nombre: 'Pionero de Minas', femenino: 'Pionera de Minas',
+    codigo: '568eca07bcf4b3d5bf303232c8ac9468518bc5f017ff02cec288fc628818d5b8',
+    pista: 'Para quienes llegan primero a la feria' },
+];
+
 // SUSTÓMETRO: Ahora se alimenta en tiempo real desde Supabase (tabla 'perfiles')
 // mostrando a las personas registradas con su monstruo y sus puntos en sustometro.html.
 
