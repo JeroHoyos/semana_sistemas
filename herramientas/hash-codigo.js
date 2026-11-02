@@ -21,7 +21,7 @@ function normalizarCodigo(texto) {
   return texto
     .normalize('NFD').replace(/[̀-ͯ]/g, '')
     .toUpperCase()
-    .replace(/\s+/g, '');
+    .replace(/[\s\-_]+/g, '');
 }
 
 const entradas = process.argv.slice(2);

@@ -10,12 +10,12 @@
    ============================================= */
 
 // Debe ser idéntica a normalizarCodigo() de herramientas/hash-codigo.js:
-// sin tildes, en mayúsculas y sin espacios ("huevo susto" y "HUEVO  SUSTO" valen igual)
+// sin tildes, en mayúsculas, sin espacios, guiones ni guiones bajos ("supervisor-sustos" y "SUPERVISOR SUSTOS" valen igual)
 function normalizarCodigo(texto) {
   return texto
     .normalize('NFD').replace(/[̀-ͯ]/g, '')
     .toUpperCase()
-    .replace(/\s+/g, '');
+    .replace(/[\s\-_]+/g, '');
 }
 
 // SHA-256 en texto hexadecimal. crypto.subtle solo existe en páginas seguras (https o localhost).
@@ -88,7 +88,7 @@ let bloqueadoHasta = 0;
 
 async function canjearCodigo(texto) {
   const huella = await huellaDe(normalizarCodigo(texto));
-  const titulo = TITULOS.find((t) => !t.libre && t.codigo === huella);
+  const titulo = TITULOS.find((t) => !t.libre && (t.codigo === huella || (Array.isArray(t.codigos) && t.codigos.includes(huella))));
   if (!titulo) return { estado: 'invalido' };
 
   if (titulosDesbloqueados(usuarioActual).some((t) => t.id === titulo.id)) {
