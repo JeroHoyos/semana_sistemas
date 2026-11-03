@@ -159,7 +159,7 @@ const TITULOS = [
   { id: 'asustador', nombre: 'Asustador', femenino: 'Asustadora', libre: true,
     descripcion: 'El título con el que arranca todo monstruo de la Semana.' },
   { id: 'supervisor', nombre: 'Supervisor de Sustos', femenino: 'Supervisora de Sustos',
-    descripcion: 'Del equipo organizador: puede ajustar los puntos del Sustómetro.',
+    descripcion: 'Del equipo de administración de la página.',
     pista: 'Solo para quienes mueven los hilos de la Semana.',
     codigo: '71c580f40935a6e35613a6223e59db79d22d534a8e3fed097020e3153da846da' },
   { id: 'pionero', nombre: 'Asustador Pionero', femenino: 'Asustadora Pionera',
