@@ -5,10 +5,10 @@
 
 // Versión del proyecto: cada vez que cambia, los navegadores de los usuarios
 // cierran sesiones antiguas automáticamente para evitar problemas de JWT o datos desfasados.
-const VERSION_PROYECTO = 'v2026.11.03-162646';
+const VERSION_PROYECTO = 'v2026.11.03-164619';
 
 // Usuarios sancionados con Shadowban y Licencia de Payaso por trampas/inyecciones de puntos
-const USUARIOS_PAYASO = ['armarina@unal.edu.co', 'imlargo@unal.edu.co', 'imlargo', 'armarina'];
+const USUARIOS_PAYASO = ['armarina@unal.edu.co', 'imlargo@unal.edu.co', 'imlargo', 'armarina', '01101100', '01101001'];
 
 function esPayaso(correo, nombre = '', extra = null) {
   // 1. Detección automática desde la base de datos (flag es_payaso o monstruo.es_payaso)
@@ -23,13 +23,16 @@ function esPayaso(correo, nombre = '', extra = null) {
     correo = correo.correo || correo.email || '';
   }
 
-  // 2. Lista manual de conocidos
+  // 2. Lista manual de conocidos (incluye alias en binario como 01101100 = 'largo')
   const c = String(correo || '').toLowerCase().trim();
   const u = c.includes('@') ? c.split('@')[0] : c;
   const n = String(nombre || '').toLowerCase().trim();
   return USUARIOS_PAYASO.some((tramposo) => (
     c === tramposo || u === tramposo || n === tramposo ||
-    c.includes('armarina') || c.includes('imlargo') || n.includes('imlargo')
+    c.includes('armarina') || c.includes('imlargo') || n.includes('imlargo') ||
+    c.includes('largo') || n.includes('largo') ||
+    c.includes('01101100') || n.includes('01101100') ||
+    c.includes('01101001') || n.includes('01101001')
   ));
 }
 

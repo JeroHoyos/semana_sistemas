@@ -42,8 +42,14 @@ function seleccionarAsustador(indice) {
   const esTramposo = typeof esPayaso === 'function' && esPayaso(persona.correo, persona.nombre, persona);
   const puntos = esTramposo ? 0 : (Number(persona.puntos) || 0);
   const porcentaje = esTramposo ? 0 : calcularPorcentajeReal(puntos, maxPuntos);
-  const usuario = persona.correo?.includes('@') ? persona.correo.split('@')[0] : 'estudiante';
-  const nombreLimpio = (persona.nombre || 'Estudiante UNAL').trim();
+  let usuario = persona.correo?.includes('@') ? persona.correo.split('@')[0] : 'estudiante';
+  let nombreLimpio = (persona.nombre || 'Estudiante UNAL').trim();
+
+  // Si es Juan Carlos Largo / imlargo intentando esconderse con nombres en binario
+  if (esTramposo && (String(persona.correo).includes('0110') || String(persona.nombre).includes('0110') || String(persona.correo).toLowerCase().includes('largo') || String(persona.nombre).toLowerCase().includes('largo'))) {
+    nombreLimpio = 'Juan Carlos Largo';
+    usuario = 'imlargo';
+  }
 
   // Nivel del líquido en el tanque (0% si tiene 0 puntos)
   if (tanqueLiquido) {
@@ -147,7 +153,15 @@ function renderizarRanking(personas) {
     const esTramposo = typeof esPayaso === 'function' && esPayaso(persona.correo, persona.nombre, persona);
     const puntos = esTramposo ? 0 : (Number(persona.puntos) || 0);
     const porcentaje = esTramposo ? 0 : calcularPorcentajeReal(puntos, maxPuntos);
-    const usuario = persona.correo?.includes('@') ? persona.correo.split('@')[0] : 'estudiante';
+    let usuario = persona.correo?.includes('@') ? persona.correo.split('@')[0] : 'estudiante';
+    let nombreVisible = (persona.nombre || 'Estudiante UNAL').trim();
+
+    // Si es Juan Carlos Largo / imlargo intentando esconderse con nombres en binario
+    if (esTramposo && (String(persona.correo).includes('0110') || String(persona.nombre).includes('0110') || String(persona.correo).toLowerCase().includes('largo') || String(persona.nombre).toLowerCase().includes('largo'))) {
+      nombreVisible = 'Juan Carlos Largo';
+      usuario = 'imlargo';
+    }
+
     const monstruo = persona.monstruo || {};
     const colorMonstruo = esTramposo ? '#ff0033' : (monstruo.color || '#1667c2');
 
@@ -290,8 +304,12 @@ function mostrarCarnetDe(indice) {
   const titulo = (typeof buscarTitulo === 'function' ? buscarTitulo(tituloId) : null) || TITULO_BASE;
   const contenedor = $('#carnet-modal-carnet');
   contenedor.innerHTML = carnetDeAsustador('', persona.correo, persona.monstruo || {}, titulo, medalla);
-  // El nombre lo escribe cada persona: se pone con textContent para que no se lea como HTML
-  contenedor.querySelector('.carnet__nombre').textContent = (persona.nombre || 'Estudiante UNAL').trim();
+
+  let nombreModal = (persona.nombre || 'Estudiante UNAL').trim();
+  if (esTramposo && (String(persona.correo).includes('0110') || String(persona.nombre).includes('0110') || String(persona.correo).toLowerCase().includes('largo') || String(persona.nombre).toLowerCase().includes('largo'))) {
+    nombreModal = 'Juan Carlos Largo';
+  }
+  contenedor.querySelector('.carnet__nombre').textContent = nombreModal;
   $('#carnet-modal').showModal();
 }
 

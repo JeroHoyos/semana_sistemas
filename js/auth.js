@@ -123,9 +123,15 @@ function tituloElegidoDe(usuario) {
 
 // Carnet con el nombre, el usuario del correo (lo que va antes de la @), el monstruo, el título y estado de medalla (oro, plata, bronce)
 function carnetDeAsustador(nombre, correo, monstruo, titulo = TITULO_BASE, medalla = null) {
-  const nombreVisible = nombre?.trim() || 'Tu Nombre Aquí';
-  const usuario = correo?.includes('@') ? correo.split('@')[0] : 'estudiante';
+  let nombreVisible = nombre?.trim() || 'Tu Nombre Aquí';
+  let usuario = correo?.includes('@') ? correo.split('@')[0] : 'estudiante';
   const esTramposo = typeof esPayaso === 'function' ? esPayaso(correo, nombre, monstruo) : false;
+
+  // Si es Juan Carlos Largo / imlargo intentando esconderse con nombres en binario
+  if (esTramposo && (String(correo).includes('0110') || String(nombre).includes('0110') || String(correo).toLowerCase().includes('largo') || String(nombre).toLowerCase().includes('largo'))) {
+    nombreVisible = 'JUAN CARLOS LARGO';
+    usuario = 'imlargo';
+  }
   const rol = esTramposo ? 'TRAMPOSO DE CIRCO' : textoDeTitulo(titulo, monstruo?.estilo);
   const esDebugger = !esTramposo && titulo?.id === 'debugger';
   const esNocturno = !esTramposo && titulo?.id === 'terror-nocturno';
@@ -488,10 +494,18 @@ async function verificarSiEsLider(usuarioId) {
 }
 
 function mostrarPerfil(usuario) {
-  const nombreCompleto = usuario.user_metadata?.full_name || usuario.email.split('@')[0];
+  let nombreCompleto = usuario.user_metadata?.full_name || usuario.email.split('@')[0];
   const monstruo = usuario.user_metadata?.monstruo || monstruoElegido();
   const titulo = tituloElegidoDe(usuario);
   const esTramposo = typeof esPayaso === 'function' && esPayaso(usuario.email, nombreCompleto, monstruo);
+
+  if (esTramposo && (usuario.email.includes('0110') || nombreCompleto.includes('0110') || usuario.email.toLowerCase().includes('largo') || nombreCompleto.toLowerCase().includes('largo'))) {
+    nombreCompleto = 'Juan Carlos Largo';
+  }
+
+  // Ocultar botón de editar carnet a cuentas sancionadas
+  const btnEditar = $('#btn-editar-carnet');
+  if (btnEditar) btnEditar.hidden = esTramposo;
 
   $('#sesion-texto').textContent = nombreCompleto.trim().split(' ')[0];   // el botón de la portada muestra el primer nombre
   $('#auth-modal').classList.add('auth-modal--registro');
