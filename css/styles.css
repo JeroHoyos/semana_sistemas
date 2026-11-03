@@ -716,10 +716,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .nariz-payaso {
   position: absolute;
-  top: 56%;
+  top: 71%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 26px;
+  font-size: 24px;
   line-height: 1;
   z-index: 10;
   pointer-events: none;
@@ -729,7 +729,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 @keyframes nariz-rebote {
   0%, 100% { transform: translate(-50%, -50%) scale(1); }
-  50% { transform: translate(-50%, -50%) scale(1.35); }
+  50% { transform: translate(-50%, -50%) scale(1.25); }
 }
 
 .asustador-item__carnet--payaso {

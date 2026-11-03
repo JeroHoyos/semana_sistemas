@@ -39,7 +39,7 @@ function seleccionarAsustador(indice) {
   const maxPuntos = Math.max(100, ...asustadores.map((p) => Number(p.puntos) || 0));
   const persona = asustadores[indice];
   idElegido = persona.id;
-  const esTramposo = typeof esPayaso === 'function' && esPayaso(persona.correo, persona.nombre);
+  const esTramposo = typeof esPayaso === 'function' && esPayaso(persona.correo, persona.nombre, persona);
   const puntos = esTramposo ? 0 : (Number(persona.puntos) || 0);
   const porcentaje = esTramposo ? 0 : calcularPorcentajeReal(puntos, maxPuntos);
   const usuario = persona.correo?.includes('@') ? persona.correo.split('@')[0] : 'estudiante';
@@ -131,7 +131,7 @@ function renderizarRanking(personas) {
   }
 
   const todosLosPuntos = personas.map((p) => {
-    if (typeof esPayaso === 'function' && esPayaso(p.correo, p.nombre)) return 0;
+    if (typeof esPayaso === 'function' && esPayaso(p.correo, p.nombre, p)) return 0;
     return Number(p.puntos) || 0;
   });
   const maxPuntos = Math.max(100, ...todosLosPuntos);
@@ -144,7 +144,7 @@ function renderizarRanking(personas) {
 
   // Crear tarjetas para cada estudiante
   lista.innerHTML = personas.map((persona, i) => {
-    const esTramposo = typeof esPayaso === 'function' && esPayaso(persona.correo, persona.nombre);
+    const esTramposo = typeof esPayaso === 'function' && esPayaso(persona.correo, persona.nombre, persona);
     const puntos = esTramposo ? 0 : (Number(persona.puntos) || 0);
     const porcentaje = esTramposo ? 0 : calcularPorcentajeReal(puntos, maxPuntos);
     const usuario = persona.correo?.includes('@') ? persona.correo.split('@')[0] : 'estudiante';
@@ -248,9 +248,9 @@ function renderizarRanking(personas) {
 // Abre la ventana con el carnet de una persona de la tabla
 function mostrarCarnetDe(indice) {
   const persona = asustadores[indice];
-  const esTramposo = typeof esPayaso === 'function' && esPayaso(persona?.correo, persona?.nombre);
+  const esTramposo = typeof esPayaso === 'function' && esPayaso(persona?.correo, persona?.nombre, persona);
   const todosLosPuntos = asustadores.map((p) => {
-    if (typeof esPayaso === 'function' && esPayaso(p.correo, p.nombre)) return 0;
+    if (typeof esPayaso === 'function' && esPayaso(p.correo, p.nombre, p)) return 0;
     return Number(p.puntos) || 0;
   });
   const hayPuntosEnJuego = todosLosPuntos.some((p) => p > 0);
@@ -317,7 +317,7 @@ async function cargarSustometro() {
     // Shadowban en memoria para los tramposos: nunca pueden figurar con puntos mayores a 0
     if (Array.isArray(perfiles)) {
       perfiles.forEach((p) => {
-        if (typeof esPayaso === 'function' && esPayaso(p.correo, p.nombre)) {
+        if (typeof esPayaso === 'function' && esPayaso(p.correo, p.nombre, p)) {
           p.puntos = 0;
         }
       });
@@ -553,7 +553,7 @@ $('#btn-guardar-puntos-modal')?.addEventListener('click', async () => {
   const mensaje = $('#puntos-modal-mensaje');
 
   // Si el usuario objetivo es payaso/tramposo, rechazar de inmediato
-  if (typeof esPayaso === 'function' && esPayaso(personaParaEditarPuntos.correo, personaParaEditarPuntos.nombre)) {
+  if (typeof esPayaso === 'function' && esPayaso(personaParaEditarPuntos.correo, personaParaEditarPuntos.nombre, personaParaEditarPuntos)) {
     if (mensaje) {
       mensaje.className = 'auth-mensaje auth-mensaje--error';
       mensaje.textContent = '🤡 Este usuario tiene Shadowban permanente por juego sucio y no puede recibir puntos.';

@@ -125,7 +125,7 @@ function tituloElegidoDe(usuario) {
 function carnetDeAsustador(nombre, correo, monstruo, titulo = TITULO_BASE, medalla = null) {
   const nombreVisible = nombre?.trim() || 'Tu Nombre Aquí';
   const usuario = correo?.includes('@') ? correo.split('@')[0] : 'estudiante';
-  const esTramposo = typeof esPayaso === 'function' ? esPayaso(correo, nombre) : false;
+  const esTramposo = typeof esPayaso === 'function' ? esPayaso(correo, nombre, monstruo) : false;
   const rol = esTramposo ? 'TRAMPOSO DE CIRCO' : textoDeTitulo(titulo, monstruo?.estilo);
   const esDebugger = !esTramposo && titulo?.id === 'debugger';
   const esNocturno = !esTramposo && titulo?.id === 'terror-nocturno';
@@ -491,7 +491,7 @@ function mostrarPerfil(usuario) {
   const nombreCompleto = usuario.user_metadata?.full_name || usuario.email.split('@')[0];
   const monstruo = usuario.user_metadata?.monstruo || monstruoElegido();
   const titulo = tituloElegidoDe(usuario);
-  const esTramposo = typeof esPayaso === 'function' && esPayaso(usuario.email, nombreCompleto);
+  const esTramposo = typeof esPayaso === 'function' && esPayaso(usuario.email, nombreCompleto, monstruo);
 
   $('#sesion-texto').textContent = nombreCompleto.trim().split(' ')[0];   // el botón de la portada muestra el primer nombre
   $('#auth-modal').classList.add('auth-modal--registro');

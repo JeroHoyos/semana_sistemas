@@ -5,12 +5,25 @@
 
 // Versión del proyecto: cada vez que cambia, los navegadores de los usuarios
 // cierran sesiones antiguas automáticamente para evitar problemas de JWT o datos desfasados.
-const VERSION_PROYECTO = 'v2026.11.03-161122';
+const VERSION_PROYECTO = 'v2026.11.03-162646';
 
 // Usuarios sancionados con Shadowban y Licencia de Payaso por trampas/inyecciones de puntos
 const USUARIOS_PAYASO = ['armarina@unal.edu.co', 'imlargo@unal.edu.co', 'imlargo', 'armarina'];
 
-function esPayaso(correo, nombre = '') {
+function esPayaso(correo, nombre = '', extra = null) {
+  // 1. Detección automática desde la base de datos (flag es_payaso o monstruo.es_payaso)
+  if (extra && (extra.es_payaso === true || extra.es_payaso === 'true' || extra.monstruo?.es_payaso === true || extra.monstruo?.es_payaso === 'true')) {
+    return true;
+  }
+  if (typeof correo === 'object' && correo !== null) {
+    if (correo.es_payaso === true || correo.es_payaso === 'true' || correo.monstruo?.es_payaso === true || correo.monstruo?.es_payaso === 'true') {
+      return true;
+    }
+    nombre = correo.nombre || '';
+    correo = correo.correo || correo.email || '';
+  }
+
+  // 2. Lista manual de conocidos
   const c = String(correo || '').toLowerCase().trim();
   const u = c.includes('@') ? c.split('@')[0] : c;
   const n = String(nombre || '').toLowerCase().trim();
