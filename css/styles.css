@@ -13,6 +13,7 @@
    11. Página de una actividad (evento.html)
    12. Grupos estudiantiles
    13. Galería
+   14. Juego de la semana
    ========================================================= */
 
 
@@ -3995,4 +3996,527 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
 @media (max-width: 520px) {
   .codigos { padding: 26px 18px 22px; }
   .codigos__form { flex-direction: column; }
+}
+
+
+/* ---------- 14. Juego de la semana (sustometro.html) ----------
+   Consola retro con el juego de la semana (js/juego-semana.js) y su tabla de récords al lado.
+   El letrero que se ve encima de la pantalla lo decide data-estado de .consola:
+   listo (inicio), jugando (ninguno), pausa o fin. */
+
+@keyframes parpadear {
+  50% { opacity: 0; }
+}
+
+/* Enlace en la cabecera que baja hasta la consola */
+.enlace-juego {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
+  padding: 11px 18px;
+  border: 2px solid #ffd23f;
+  border-radius: 999px;
+  background: rgba(10, 14, 28, .55);
+  color: #ffd23f;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow: 0 0 18px -4px rgba(255, 210, 63, .55);
+  transition: transform .15s, background .15s;
+}
+.enlace-juego strong { font-weight: 400; color: #fff; }
+.enlace-juego:hover { transform: translateY(-2px); background: rgba(10, 14, 28, .78); }
+.enlace-juego__flecha { animation: parpadear 1s steps(1) infinite; }
+
+/* Consola y récords lado a lado; en pantallas angostas, uno debajo del otro */
+.juego-semana {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 36px;
+  align-items: start;
+  max-width: 1100px;
+  margin-top: 64px;
+  scroll-margin-top: 24px;
+}
+@media (max-width: 900px) {
+  .juego-semana {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 660px;
+    gap: 28px;
+  }
+}
+
+/* Cuerpo de la consola: plástico azul con brillo arriba y cuatro tornillos */
+.consola {
+  position: relative;
+  padding: 20px 26px 28px;
+  border-radius: 32px;
+  background:
+    radial-gradient(120% 70% at 18% 0%, rgba(255, 255, 255, .16), transparent 55%),
+    linear-gradient(165deg, #2160a8, #133b72 55%, #0c2a52);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, .28),
+    inset 0 -8px 0 rgba(0, 0, 0, .28),
+    0 30px 60px -28px rgba(10, 44, 82, .8);
+  color: #fff;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.consola::before {
+  --tornillo: radial-gradient(circle, #0a1f3d 0 2px, rgba(255, 255, 255, .28) 2.5px 3.5px, transparent 4px);
+  content: '';
+  position: absolute;
+  inset: 9px;
+  pointer-events: none;
+  background:
+    var(--tornillo) 0 0 / 9px 9px no-repeat,
+    var(--tornillo) 100% 0 / 9px 9px no-repeat,
+    var(--tornillo) 0 100% / 9px 9px no-repeat,
+    var(--tornillo) 100% 100% / 9px 9px no-repeat;
+}
+
+/* Letrero de arriba con bombillos que se prenden y se apagan */
+.consola__marquesina {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin-bottom: 16px;
+  padding: 18px;
+  border-radius: 16px;
+  background: #0a0e1a;
+  box-shadow: inset 0 0 0 2px #04060c, inset 0 4px 12px rgba(0, 0, 0, .7), 0 1px 0 rgba(255, 255, 255, .14);
+  overflow: hidden;
+}
+.consola__marquesina::before,
+.consola__marquesina::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  height: 6px;
+  background:
+    radial-gradient(circle, #ffd23f 0 2px, transparent 2.5px) 0 50% / 14px 6px repeat-x,
+    radial-gradient(circle, rgba(255, 210, 63, .22) 0 2px, transparent 2.5px) 7px 50% / 14px 6px repeat-x;
+  animation: luces-marquesina 1s steps(1) infinite;
+}
+.consola__marquesina::before { top: 4px; }
+.consola__marquesina::after { bottom: 4px; animation-delay: -.5s; }
+@keyframes luces-marquesina {
+  50% { background-position: 7px 50%, 14px 50%; }
+}
+
+.consola__titulo {
+  font-family: 'Press Start 2P', monospace;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: .04em;
+  text-align: center;
+  text-transform: uppercase;
+  color: #ffd23f;
+  text-shadow: 3px 3px 0 #b5370f, 0 0 14px rgba(255, 210, 63, .5);
+}
+.consola__semana {
+  padding: 6px 9px 5px;
+  border-radius: 6px;
+  background: #e5484d;
+  color: #fff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  box-shadow: 0 3px 0 #8f1d2c;
+}
+
+/* Marco negro alrededor de la pantalla */
+.consola__bisel {
+  padding: 10px 16px 16px;
+  border-radius: 18px;
+  background: linear-gradient(#1d2231, #11141e);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, .08), inset 0 -2px 0 rgba(0, 0, 0, .45), 0 2px 0 rgba(255, 255, 255, .12);
+}
+.consola__bisel-barra {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 9px;
+  font-family: var(--letra-estrecha);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #8b93a7;
+}
+.consola__marca { margin-left: auto; overflow: hidden; text-overflow: ellipsis; }
+
+/* Luz de encendido: verde, amarilla en pausa y roja al perder */
+.consola__led {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #7ee081;
+  box-shadow: 0 0 8px #7ee081;
+}
+.consola[data-estado="pausa"] .consola__led { background: #ffd23f; box-shadow: 0 0 8px #ffd23f; }
+.consola[data-estado="fin"] .consola__led { background: #ff5c5c; box-shadow: 0 0 8px #ff5c5c; }
+
+/* Pantalla de tubo: los tamaños de letra se miden con su ancho (cqw) */
+.consola__pantalla {
+  position: relative;
+  container-type: inline-size;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #0b1426;
+  box-shadow: 0 0 0 2px #04060c, 0 0 28px rgba(126, 224, 129, .08);
+  outline: none;
+  cursor: pointer;
+}
+.consola__pantalla:focus-visible { box-shadow: 0 0 0 2px #04060c, 0 0 0 5px #ffd23f; }
+/* Mientras se juega, deslizar el dedo sobre la pantalla gira la culebra en vez de mover la página */
+.consola[data-estado="jugando"] .consola__pantalla { cursor: none; touch-action: none; }
+
+/* Rayas de televisor viejo y bordes más oscuros, encima de todo */
+.consola__pantalla::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, .2) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, transparent 62%, rgba(0, 0, 0, .45));
+}
+
+.consola__hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 12px 6px;
+  background: #08101f;
+  border-bottom: 2px solid #16233d;
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(8px, 1.9cqw, 12px);
+  letter-spacing: .04em;
+  color: #7d8bb0;
+}
+.consola__hud strong { font-weight: 400; color: #7ee081; text-shadow: 0 0 6px rgba(126, 224, 129, .6); }
+.consola__hud span:last-child strong { color: #ffd23f; text-shadow: 0 0 6px rgba(255, 210, 63, .5); }
+.consola__hud-sonido { color: #4f5b78; }
+
+.consola__tablero { position: relative; }
+.consola__lienzo {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+}
+
+/* Letreros sobre el tablero */
+.capa {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(7px, 2.6cqw, 18px);
+  padding: 4cqw;
+  background: rgba(6, 10, 22, .74);
+  font-family: 'Press Start 2P', monospace;
+  text-align: center;
+  text-transform: uppercase;
+  color: #fff;
+}
+.consola[data-estado="listo"] .capa--inicio,
+.consola[data-estado="pausa"] .capa--pausa,
+.consola[data-estado="fin"] .capa--fin { display: flex; }
+/* Antes de empezar el tablero casi no se ve, para que la culebra quieta no se confunda con el letrero */
+.capa--inicio { background: rgba(6, 10, 22, .9); }
+/* El letrero de fin espera a que la culebra termine de parpadear */
+.consola[data-estado="fin"] .capa--fin { animation: capa-aparece .25s .8s both; }
+@keyframes capa-aparece {
+  from { opacity: 0; }
+}
+
+.capa__titulo {
+  font-size: clamp(18px, 7cqw, 44px);
+  line-height: 1.1;
+  color: #ffd23f;
+  text-shadow: .6cqw .6cqw 0 #b5370f, 0 0 2.4cqw rgba(255, 210, 63, .45);
+}
+.capa__titulo--fin {
+  font-size: clamp(15px, 5.2cqw, 34px);
+  color: #ff5c5c;
+  text-shadow: .5cqw .5cqw 0 #5c1020, 0 0 2.4cqw rgba(255, 92, 92, .45);
+}
+.capa__texto { font-size: clamp(8px, 2.2cqw, 14px); line-height: 1.6; color: #c9d2dc; }
+.capa__items {
+  display: flex;
+  gap: clamp(14px, 5cqw, 36px);
+  font-size: clamp(8px, 2.2cqw, 14px);
+}
+.capa__item { display: inline-flex; align-items: center; gap: clamp(6px, 1.6cqw, 12px); }
+.capa__sprite { --px: clamp(2px, .75cqw, 5px); display: block; }
+.capa__parpadeo {
+  font-size: clamp(9px, 2.5cqw, 15px);
+  color: #7ee081;
+  text-shadow: 0 0 8px rgba(126, 224, 129, .5);
+  animation: parpadear 1s steps(1) infinite;
+}
+.capa__ayuda { font-size: clamp(7px, 1.7cqw, 11px); line-height: 1.7; color: #7d8bb0; }
+.capa__puntaje { font-size: clamp(9px, 2.5cqw, 15px); color: #c9d2dc; }
+.capa__puntaje strong {
+  display: block;
+  margin-top: clamp(4px, 1.4cqw, 10px);
+  font-weight: 400;
+  font-size: clamp(16px, 4.6cqw, 30px);
+  color: #7ee081;
+  text-shadow: 0 0 10px rgba(126, 224, 129, .55);
+}
+/* La letra pixelada dibuja diminutas las mayúsculas con tilde: los mensajes con tildes van en letra de terminal */
+.capa__estado {
+  max-width: 86%;
+  min-height: 1.4em;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(12px, 2.8cqw, 18px);
+  line-height: 1.4;
+  text-transform: none;
+  color: #c9d2dc;
+}
+.capa__estado--record { color: #ffd23f; animation: parpadear .5s steps(1) 6; }
+.capa__boton {
+  padding: clamp(7px, 1.8cqw, 12px) clamp(12px, 3cqw, 20px);
+  border: 0;
+  border-radius: 6px;
+  background: #ffd23f;
+  color: #120926;
+  font-family: inherit;
+  font-size: clamp(8px, 2cqw, 12px);
+  text-transform: uppercase;
+  box-shadow: 0 4px 0 #b58a00;
+}
+.capa__boton:active { translate: 0 3px; box-shadow: 0 1px 0 #b58a00; }
+.capa__boton:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+/* Con teclado se dice "Espacio"; en celular, "A" */
+.consola .solo-tactil { display: none; }
+@media (hover: none) and (pointer: coarse) {
+  .consola .solo-teclado { display: none; }
+  .consola .solo-tactil { display: inline; }
+}
+
+/* Controles */
+.consola__mandos {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  margin-top: 24px;
+  padding: 0 6px;
+}
+
+.cruceta {
+  --tam: 42px;
+  display: grid;
+  grid-template-columns: repeat(3, var(--tam));
+  grid-template-rows: repeat(3, var(--tam));
+  grid-template-areas:
+    '.         arriba .      '
+    'izquierda centro derecha'
+    '.         abajo  .      ';
+  filter: drop-shadow(0 5px 0 rgba(0, 0, 0, .35));
+}
+.cruceta__boton,
+.cruceta__centro {
+  position: relative;
+  border: 0;
+  padding: 0;
+  background: #1a1f2b;
+}
+.cruceta__boton { touch-action: manipulation; }
+.cruceta__boton--arriba { grid-area: arriba; border-radius: 8px 8px 0 0; }
+.cruceta__boton--abajo { grid-area: abajo; border-radius: 0 0 8px 8px; }
+.cruceta__boton--izquierda { grid-area: izquierda; border-radius: 8px 0 0 8px; }
+.cruceta__boton--derecha { grid-area: derecha; border-radius: 0 8px 8px 0; }
+.cruceta__centro { grid-area: centro; }
+.cruceta__centro::after {
+  content: '';
+  position: absolute;
+  inset: 30%;
+  border-radius: 50%;
+  background: #12151e;
+  box-shadow: inset 0 2px 3px rgba(0, 0, 0, .6);
+}
+.cruceta__boton:active { background: #11141c; }
+.cruceta__boton:focus-visible { z-index: 1; outline: 3px solid #ffd23f; outline-offset: 2px; }
+
+/* Flechita de cada brazo de la cruceta */
+.cruceta__boton::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  border-style: solid;
+  border-color: transparent;
+}
+.cruceta__boton--arriba::after { border-width: 0 6px 8px; border-bottom-color: #4a5268; }
+.cruceta__boton--abajo::after { border-width: 8px 6px 0; border-top-color: #4a5268; }
+.cruceta__boton--izquierda::after { border-width: 6px 8px 6px 0; border-right-color: #4a5268; }
+.cruceta__boton--derecha::after { border-width: 6px 0 6px 8px; border-left-color: #4a5268; }
+
+/* Rejilla del parlante */
+.consola__parlante {
+  justify-self: center;
+  display: flex;
+  gap: 7px;
+  transform: skewX(-22deg);
+}
+.consola__parlante span {
+  width: 6px;
+  height: 46px;
+  border-radius: 3px;
+  background: rgba(4, 12, 28, .55);
+  box-shadow: inset 0 2px 2px rgba(0, 0, 0, .5), 0 1px 0 rgba(255, 255, 255, .14);
+}
+
+/* Botones A y B, en diagonal */
+.consola__botones { display: flex; gap: 14px; }
+.consola__boton-grupo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.consola__boton-grupo--b { margin-top: 28px; }
+.consola__boton {
+  width: 56px;
+  height: 56px;
+  border: 0;
+  border-radius: 50%;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: rgba(0, 0, 0, .42);
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, .35), inset 0 -4px 0 rgba(0, 0, 0, .22), 0 5px 0 rgba(0, 0, 0, .35);
+  touch-action: manipulation;
+  transition: translate .06s, box-shadow .06s, filter .15s;
+}
+.consola__boton--a { background: #e5484d; }
+.consola__boton--b { background: #f5a524; }
+.consola__boton--b[aria-pressed="false"] { filter: saturate(.2) brightness(.75); }
+.consola__boton:active {
+  translate: 0 3px;
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, .25), inset 0 -2px 0 rgba(0, 0, 0, .22), 0 2px 0 rgba(0, 0, 0, .35);
+}
+.consola__boton:focus-visible { outline: 3px solid #ffd23f; outline-offset: 3px; }
+.consola__boton-texto {
+  font-family: var(--letra-estrecha);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .62);
+}
+
+/* Tabla de récords: la tarjeta blanca del ranking, más compacta */
+.records { padding: 26px 22px 22px; }
+.records .ranking-tarjeta__cabecera { margin-bottom: 16px; padding-bottom: 14px; }
+.records .ranking-vacio { padding: 12px 0; }
+.records__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.record {
+  display: grid;
+  grid-template-columns: 32px 40px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px 8px 10px;
+  border: 1px solid var(--linea);
+  border-radius: 16px;
+  background: #f7f8fa;
+}
+.record .asustador-card__posicion { width: 32px; height: 32px; font-size: 13px; }
+.record .asustador-card__avatar { width: 40px; height: 40px; }
+.record--oro { background: #fffbea; border-color: #f3dc8a; }
+.record--mio { border-color: var(--azul); background: #eef5fd; box-shadow: 0 0 0 2px rgba(22, 103, 194, .18); }
+.record__info { display: flex; flex-direction: column; min-width: 0; }
+.record__nombre {
+  overflow: hidden;
+  font-family: var(--letra-estrecha);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.15;
+  letter-spacing: .02em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--azul-marino);
+}
+.record__nombre small { font-size: 12px; letter-spacing: 0; text-transform: none; color: var(--azul); }
+.record__usuario {
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--gris);
+}
+.record__puntos { font-family: 'Press Start 2P', monospace; font-size: 12px; color: var(--azul-marino); }
+.record--oro .record__puntos { color: #8a6400; }
+
+.records__mio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--linea);
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--tinta-suave);
+}
+.records__mio:empty { display: none; }
+.records__mio strong { font-weight: 600; color: var(--azul-marino); }
+
+@media (max-width: 640px) {
+  .enlace-juego { margin-top: 18px; padding: 10px 14px; font-size: 8px; }
+  .juego-semana { margin-top: 40px; }
+  .consola { padding: 14px 12px 20px; border-radius: 24px; }
+  .consola::before { inset: 6px; }
+  .consola__marquesina { margin-bottom: 10px; padding: 16px 10px; border-radius: 12px; gap: 8px 10px; }
+  .consola__titulo { font-size: 12px; }
+  .consola__semana { font-size: 8px; }
+  .consola__bisel { padding: 8px 8px 10px; border-radius: 14px; }
+  .consola__bisel-barra { gap: 8px; margin-bottom: 7px; font-size: 9px; letter-spacing: .14em; }
+  .consola__mandos { gap: 10px; margin-top: 18px; padding: 0; }
+  .cruceta { --tam: 38px; }
+  .consola__parlante { gap: 5px; }
+  .consola__parlante span { width: 5px; height: 34px; }
+  .consola__boton { width: 50px; height: 50px; font-size: 12px; }
+  .consola__boton-grupo--b { margin-top: 22px; }
+  .records { padding: 18px 14px; }
+}
+@media (max-width: 380px) {
+  .consola__parlante { display: none; }
+  .consola__mandos { grid-template-columns: auto auto; justify-content: space-between; }
+  .consola__marca { display: none; }
 }

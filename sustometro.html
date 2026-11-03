@@ -8,7 +8,7 @@
   <link rel="icon" href="img/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Cinzel:wght@600;700&family=Graduate&family=Share+Tech+Mono&display=swap" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Cinzel:wght@600;700&family=Graduate&family=Press+Start+2P&family=Share+Tech+Mono&display=swap" crossorigin>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="pagina-sustometro">
@@ -40,6 +40,10 @@
       <p class="sustometro-portada__intro">
         Aquí no hay puestos, hay sustos. Quien va de líder deja el tanque lleno hasta arriba y, a medida que bajas en la tabla, el nivel desciende. Toca a una persona para ver sus puntos en el tanque, o el botón del carnet para ver su carnet.
       </p>
+      <a class="enlace-juego" href="#juego-semana">
+        <span class="enlace-juego__flecha" aria-hidden="true">▶</span>
+        Juego de la semana: <strong id="enlace-juego-nombre">Snake</strong>
+      </a>
     </div>
   </header>
 
@@ -263,6 +267,105 @@
       </section>
 
     </div>
+
+    <!-- JUEGO DE LA SEMANA: consola retro y su tabla de récords.
+         La consola la maneja js/juego-semana.js y el juego va en su propio archivo (esta semana js/snake.js). -->
+    <section class="contenedor juego-semana" id="juego-semana" aria-labelledby="juego-semana-titulo">
+      <div class="consola" id="consola" data-estado="listo">
+
+        <!-- Letrero de arriba, con luces como de maquinita -->
+        <div class="consola__marquesina">
+          <h2 class="consola__titulo" id="juego-semana-titulo">Juego de la semana</h2>
+          <span class="consola__semana" id="consola-semana">Semana 1</span>
+        </div>
+
+        <!-- Marco negro de la pantalla -->
+        <div class="consola__bisel">
+          <div class="consola__bisel-barra" aria-hidden="true">
+            <span class="consola__led"></span>
+            <span>Cartucho · <span id="consola-cartucho">Snake</span></span>
+            <span class="consola__marca">8 bits · Sistemas</span>
+          </div>
+
+          <div class="consola__pantalla" id="consola-pantalla" tabindex="0"
+            aria-label="Pantalla del juego. Espacio para empezar o pausar, flechas para moverte.">
+            <div class="consola__hud" aria-hidden="true">
+              <span>PTS <strong id="consola-pts">0000</strong></span>
+              <span class="consola__hud-sonido" id="consola-sonido">♪ ON</span>
+              <span>REC <strong id="consola-rec">0000</strong></span>
+            </div>
+
+            <div class="consola__tablero">
+              <canvas class="consola__lienzo" id="consola-lienzo" width="160" height="120" role="img"
+                aria-label="Tablero del juego"></canvas>
+
+              <!-- Letreros encima del tablero: se ve uno u otro según data-estado de la consola -->
+              <div class="capa capa--inicio">
+                <p class="capa__titulo">Snake</p>
+                <p class="capa__texto">Atrapa los bugs y no choques</p>
+                <div class="capa__items">
+                  <span class="capa__item"><span class="capa__sprite" id="consola-ayuda-bug"></span>10 pts</span>
+                  <span class="capa__item"><span class="capa__sprite" id="consola-ayuda-tinto"></span>50 pts</span>
+                </div>
+                <p class="capa__parpadeo"><span class="solo-teclado">Clic o Espacio</span><span class="solo-tactil">Presiona A</span></p>
+                <p class="capa__ayuda"><span class="solo-teclado">Flechas o WASD · P pausa · M sonido</span><span class="solo-tactil">Cruceta o desliza el dedo</span></p>
+              </div>
+
+              <div class="capa capa--pausa">
+                <p class="capa__titulo">Pausa</p>
+                <p class="capa__parpadeo"><span class="solo-teclado">Espacio para seguir</span><span class="solo-tactil">A para seguir</span></p>
+              </div>
+
+              <div class="capa capa--fin">
+                <p class="capa__titulo capa__titulo--fin">Fin del juego</p>
+                <p class="capa__puntaje">Puntaje <strong id="fin-puntaje">0000</strong></p>
+                <p class="capa__estado" id="fin-estado" role="status" aria-live="polite"></p>
+                <button class="capa__boton" id="fin-sesion" type="button" hidden>Ingresar</button>
+                <p class="capa__parpadeo"><span class="solo-teclado">Espacio para otra</span><span class="solo-tactil">A para otra</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controles: cruceta, parlante y botones A / B -->
+        <div class="consola__mandos">
+          <div class="cruceta" role="group" aria-label="Cruceta">
+            <button class="cruceta__boton cruceta__boton--arriba" type="button" data-direccion="arriba" aria-label="Arriba"></button>
+            <button class="cruceta__boton cruceta__boton--izquierda" type="button" data-direccion="izquierda" aria-label="Izquierda"></button>
+            <span class="cruceta__centro" aria-hidden="true"></span>
+            <button class="cruceta__boton cruceta__boton--derecha" type="button" data-direccion="derecha" aria-label="Derecha"></button>
+            <button class="cruceta__boton cruceta__boton--abajo" type="button" data-direccion="abajo" aria-label="Abajo"></button>
+          </div>
+
+          <div class="consola__parlante" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+
+          <div class="consola__botones">
+            <div class="consola__boton-grupo consola__boton-grupo--b">
+              <button class="consola__boton consola__boton--b" id="boton-b" type="button" aria-pressed="true" aria-label="B: sonido">B</button>
+              <span class="consola__boton-texto" aria-hidden="true">Sonido</span>
+            </div>
+            <div class="consola__boton-grupo consola__boton-grupo--a">
+              <button class="consola__boton consola__boton--a" id="boton-a" type="button" aria-label="A: jugar o pausar">A</button>
+              <span class="consola__boton-texto" aria-hidden="true">Jugar</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de récords del juego de la semana (el mejor puntaje de cada persona) -->
+      <aside class="ranking-tarjeta records" aria-labelledby="records-titulo">
+        <div class="ranking-tarjeta__cabecera">
+          <h3 class="ranking-tarjeta__titulo" id="records-titulo">Récords</h3>
+          <span class="ranking-tarjeta__badge" id="records-juego">Snake</span>
+        </div>
+        <ol class="records__lista" id="records-lista">
+          <li class="ranking-vacio"><span class="ranking-cargando-spinner"></span></li>
+        </ol>
+        <div class="records__mio" id="records-mio"></div>
+      </aside>
+    </section>
   </main>
 
   <!-- PIE DE PÁGINA -->
@@ -582,5 +685,7 @@
   <script src="js/auth.js"></script>
   <script src="js/codigos.js"></script>
   <script src="js/sustometro.js"></script>
+  <script src="js/snake.js"></script>
+  <script src="js/juego-semana.js"></script>
 </body>
 </html>
