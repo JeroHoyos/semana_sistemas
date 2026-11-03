@@ -194,6 +194,11 @@ function escribirFin(texto, destacado = false) {
 }
 
 async function guardarPuntaje(puntaje) {
+  if (typeof esPayaso === 'function' && usuarioActual && esPayaso(usuarioActual.email, usuarioActual.user_metadata?.full_name)) {
+    escribirFin('🤡 Tu cuenta tiene Shadowban permanente. No guarda récords.');
+    return;
+  }
+
   escribirFin('Guardando puntaje…');
   const { data, error } = await clienteSupabase.rpc('registrar_puntaje_juego', {
     p_juego: JUEGO_DE_LA_SEMANA.id,
@@ -359,15 +364,23 @@ function puestosConEmpates(filas) {
 }
 
 function pintarRecords(filas) {
-  if (!filas.length) {
+  // Filtrar a cualquier tramposo con Shadowban
+  const filasFiltradas = (filas || []).filter((fila) => {
+    if (typeof esPayaso === 'function') {
+      return !esPayaso(fila.usuario, fila.nombre);
+    }
+    return true;
+  });
+
+  if (!filasFiltradas.length) {
     pintarRecordsVacio('La tabla está vacía', `Nadie ha jugado ${escaparHtml(JUEGO_DE_LA_SEMANA.nombre)} todavía. ¡Estrena la tabla!`);
     return;
   }
 
-  const puestos = puestosConEmpates(filas);
+  const puestos = puestosConEmpates(filasFiltradas);
   const MEDALLAS = { 1: 'oro', 2: 'plata', 3: 'bronce' };
 
-  listaRecords.innerHTML = filas.map((fila, i) => {
+  listaRecords.innerHTML = filasFiltradas.map((fila, i) => {
     const puesto = puestos[i];
     const medalla = MEDALLAS[puesto] || 'normal';
     const monstruo = fila.monstruo || {};

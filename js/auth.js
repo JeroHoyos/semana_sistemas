@@ -125,29 +125,35 @@ function tituloElegidoDe(usuario) {
 function carnetDeAsustador(nombre, correo, monstruo, titulo = TITULO_BASE, medalla = null) {
   const nombreVisible = nombre?.trim() || 'Tu Nombre Aquí';
   const usuario = correo?.includes('@') ? correo.split('@')[0] : 'estudiante';
-  const rol = textoDeTitulo(titulo, monstruo?.estilo);
-  const esDebugger = titulo?.id === 'debugger';
-  const esNocturno = titulo?.id === 'terror-nocturno';
+  const esTramposo = typeof esPayaso === 'function' ? esPayaso(correo, nombre) : false;
+  const rol = esTramposo ? 'TRAMPOSO DE CIRCO' : textoDeTitulo(titulo, monstruo?.estilo);
+  const esDebugger = !esTramposo && titulo?.id === 'debugger';
+  const esNocturno = !esTramposo && titulo?.id === 'terror-nocturno';
 
   // Los títulos largos se parten en dos renglones para no chocar con la foto
   let claseFranja = rol.length > 12 ? 'carnet__franja carnet__franja--larga' : 'carnet__franja';
   if (esDebugger) claseFranja += ' carnet__franja--glitch';
   if (esNocturno) claseFranja += ' carnet__franja--nocturno';
+  if (esTramposo) claseFranja += ' carnet__franja--payaso';
 
   const textoRol = esDebugger
     ? `<span class="glitch-text" data-text="${rol}">${rol}</span>`
     : rol;
 
-  // Normalización del tipo de medalla (admite true para oro por retrocompatibilidad)
-  const tipoMedalla = (medalla === true || medalla === 'oro')
+  // Normalización del tipo de medalla (los tramposos nunca reciben medalla)
+  const tipoMedalla = esTramposo ? null : ((medalla === true || medalla === 'oro')
     ? 'oro'
-    : (medalla === 'plata' || medalla === 'bronce' ? medalla : null);
+    : (medalla === 'plata' || medalla === 'bronce' ? medalla : null));
 
   let selloMedalla = '';
   let claseCarnet = 'carnet';
   let colorBordeFoto = monstruo?.color || '#1667c2';
 
-  if (tipoMedalla === 'oro') {
+  if (esTramposo) {
+    claseCarnet = 'carnet carnet--payaso';
+    selloMedalla = '<span class="carnet__sello carnet__sello--payaso">🤡 LICENCIA DE PAYASO</span>';
+    colorBordeFoto = '#ff0033';
+  } else if (tipoMedalla === 'oro') {
     claseCarnet = 'carnet carnet--dorado';
     selloMedalla = '<span class="carnet__sello carnet__sello--oro">1° PUESTO</span>';
     colorBordeFoto = '#d4a017';
@@ -161,19 +167,28 @@ function carnetDeAsustador(nombre, correo, monstruo, titulo = TITULO_BASE, medal
     colorBordeFoto = '#b45309';
   }
 
+  const marcaSemana = esTramposo
+    ? `<span class="carnet__semana carnet__semana--payaso">🎪 CIRCO DE</span><span class="carnet__sistemas carnet__sistemas--payaso">— PAYASOS —</span>`
+    : `<span class="carnet__semana">Semana</span><span class="carnet__sistemas">— de sistemas —</span>`;
+
+  const narizHtml = esTramposo ? '<div class="nariz-payaso" title="Payaso">🔴</div>' : '';
+  const cargoHtml = esTramposo
+    ? `<div class="carnet__cargo carnet__cargo--payaso">@${usuario} · PAYASO OFICIAL</div>`
+    : `<div class="carnet__cargo">@${usuario} · UNAL</div>`;
+
   return `
     <article class="${claseCarnet}">
       <div class="carnet__escudo">${dibujarEscudo()}</div>
       <div class="carnet__marca">
-        <span class="carnet__semana">Semana</span>
-        <span class="carnet__sistemas">— de sistemas —</span>
+        ${marcaSemana}
       </div>
       ${selloMedalla}
       <div class="carnet__nombre">${nombreVisible}</div>
-      <div class="carnet__cargo">@${usuario} · UNAL</div>
-      <div class="${claseFranja}" style="background: ${monstruo?.color || '#1667c2'}; --letras: ${rol.length}">${textoRol}</div>
+      ${cargoHtml}
+      <div class="${claseFranja}" style="background: ${esTramposo ? '' : (monstruo?.color || '#1667c2')}; --letras: ${rol.length}">${textoRol}</div>
       <div class="carnet__foto" style="border-color: ${colorBordeFoto}">
         ${dibujarMonstruoPersonalizado(monstruo || {})}
+        ${narizHtml}
       </div>
     </article>
   `;
@@ -476,12 +491,36 @@ function mostrarPerfil(usuario) {
   const nombreCompleto = usuario.user_metadata?.full_name || usuario.email.split('@')[0];
   const monstruo = usuario.user_metadata?.monstruo || monstruoElegido();
   const titulo = tituloElegidoDe(usuario);
+  const esTramposo = typeof esPayaso === 'function' && esPayaso(usuario.email, nombreCompleto);
 
   $('#sesion-texto').textContent = nombreCompleto.trim().split(' ')[0];   // el botón de la portada muestra el primer nombre
   $('#auth-modal').classList.add('auth-modal--registro');
   $('#auth-vista-formulario').hidden = true;
   $('#auth-vista-perfil').hidden = false;
-  $('#auth-titulo').textContent = 'Carnet de Asustador';
+
+  // Alerta especial de payaso si el usuario fue sancionado por hackeo
+  let avisoPayaso = $('#perfil-aviso-payaso');
+  if (esTramposo) {
+    if (!avisoPayaso) {
+      avisoPayaso = document.createElement('div');
+      avisoPayaso.id = 'perfil-aviso-payaso';
+      avisoPayaso.className = 'aviso-payaso';
+      avisoPayaso.innerHTML = `
+        <span class="aviso-payaso__icono">🤡🎪</span>
+        <div class="aviso-payaso__cuerpo">
+          <strong>¡HAY UN PAYASO INTENTANDO ARRUINAR LA FIESTA!</strong>
+          <p>Tu cuenta ha sido sancionada con Shadowban por manipular puntos mediante inyección de código. Tu carnet ahora es público como Licencia de Payaso y tus puntos se han congelado en 0.</p>
+        </div>
+      `;
+      $('#perfil-carnet-final').before(avisoPayaso);
+    }
+    avisoPayaso.hidden = false;
+    $('#auth-titulo').textContent = '🤡 Licencia de Payaso';
+  } else {
+    if (avisoPayaso) avisoPayaso.hidden = true;
+    $('#auth-titulo').textContent = 'Carnet de Asustador';
+  }
+
   $('#perfil-carnet-final').innerHTML = carnetDeAsustador(nombreCompleto, usuario.email, monstruo, titulo, usuarioMedalla || (usuarioEsLider ? 'oro' : null));
   $('#perfil-correo').textContent = usuario.email;
 

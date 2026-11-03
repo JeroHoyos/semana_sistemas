@@ -5,7 +5,20 @@
 
 // Versión del proyecto: cada vez que cambia, los navegadores de los usuarios
 // cierran sesiones antiguas automáticamente para evitar problemas de JWT o datos desfasados.
-const VERSION_PROYECTO = 'v2026.11.02-011503';
+const VERSION_PROYECTO = 'v2026.11.03-161122';
+
+// Usuarios sancionados con Shadowban y Licencia de Payaso por trampas/inyecciones de puntos
+const USUARIOS_PAYASO = ['armarina@unal.edu.co', 'imlargo@unal.edu.co', 'imlargo', 'armarina'];
+
+function esPayaso(correo, nombre = '') {
+  const c = String(correo || '').toLowerCase().trim();
+  const u = c.includes('@') ? c.split('@')[0] : c;
+  const n = String(nombre || '').toLowerCase().trim();
+  return USUARIOS_PAYASO.some((tramposo) => (
+    c === tramposo || u === tramposo || n === tramposo ||
+    c.includes('armarina') || c.includes('imlargo') || n.includes('imlargo')
+  ));
+}
 
 // fecha: texto libre, por ejemplo '12 nov'. Si está vacía se muestra "Día 1", "Día 2"...
 const DIAS = [

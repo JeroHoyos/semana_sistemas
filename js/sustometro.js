@@ -39,8 +39,9 @@ function seleccionarAsustador(indice) {
   const maxPuntos = Math.max(100, ...asustadores.map((p) => Number(p.puntos) || 0));
   const persona = asustadores[indice];
   idElegido = persona.id;
-  const puntos = Number(persona.puntos) || 0;
-  const porcentaje = calcularPorcentajeReal(puntos, maxPuntos);
+  const esTramposo = typeof esPayaso === 'function' && esPayaso(persona.correo, persona.nombre);
+  const puntos = esTramposo ? 0 : (Number(persona.puntos) || 0);
+  const porcentaje = esTramposo ? 0 : calcularPorcentajeReal(puntos, maxPuntos);
   const usuario = persona.correo?.includes('@') ? persona.correo.split('@')[0] : 'estudiante';
   const nombreLimpio = (persona.nombre || 'Estudiante UNAL').trim();
 
@@ -50,7 +51,7 @@ function seleccionarAsustador(indice) {
   }
 
   // Pantalla del tanque: nombre y puntos
-  if (hudNombre) hudNombre.textContent = nombreLimpio;
+  if (hudNombre) hudNombre.textContent = esTramposo ? `🤡 ${nombreLimpio} [PAYASO]` : nombreLimpio;
   if (hudPuntos) hudPuntos.innerHTML = `${puntos} <small>pts</small>`;
 
   // Botón de supervisor en el HUD
@@ -66,7 +67,9 @@ function seleccionarAsustador(indice) {
 
   // Lectura debajo del tanque (también la anuncian los lectores de pantalla)
   // Los puntos ya salen en la pantalla del tanque: aquí solo va un mensaje
-  if (puntos === 0) {
+  if (esTramposo) {
+    escribirLectura('🤡 ¡HAY UN PAYASO INTENTANDO ARRUINAR LA FIESTA! Shadowban permanente por juego sucio.', nombreLimpio, usuario);
+  } else if (puntos === 0) {
     escribirLectura('¡Participa en las competencias para llenar el tanque de sustos!', nombreLimpio, usuario);
   } else if (indice === 0) {
     escribirLectura('¡Lidera la tabla del Sustómetro!', nombreLimpio, usuario);
@@ -127,7 +130,10 @@ function renderizarRanking(personas) {
     return;
   }
 
-  const todosLosPuntos = personas.map((p) => Number(p.puntos) || 0);
+  const todosLosPuntos = personas.map((p) => {
+    if (typeof esPayaso === 'function' && esPayaso(p.correo, p.nombre)) return 0;
+    return Number(p.puntos) || 0;
+  });
   const maxPuntos = Math.max(100, ...todosLosPuntos);
   const hayPuntosEnJuego = todosLosPuntos.some((p) => p > 0);
   // Niveles únicos de puntaje para empates en podio (dense ranking)
@@ -138,11 +144,12 @@ function renderizarRanking(personas) {
 
   // Crear tarjetas para cada estudiante
   lista.innerHTML = personas.map((persona, i) => {
-    const puntos = Number(persona.puntos) || 0;
-    const porcentaje = calcularPorcentajeReal(puntos, maxPuntos);
+    const esTramposo = typeof esPayaso === 'function' && esPayaso(persona.correo, persona.nombre);
+    const puntos = esTramposo ? 0 : (Number(persona.puntos) || 0);
+    const porcentaje = esTramposo ? 0 : calcularPorcentajeReal(puntos, maxPuntos);
     const usuario = persona.correo?.includes('@') ? persona.correo.split('@')[0] : 'estudiante';
     const monstruo = persona.monstruo || {};
-    const colorMonstruo = monstruo.color || '#1667c2';
+    const colorMonstruo = esTramposo ? '#ff0033' : (monstruo.color || '#1667c2');
 
     // Título del carnet: si es el usuario actual se prioriza su sesión, sino el de su monstruo en la tabla
     const esMiCuenta = usuarioActual && (persona.id === usuarioActual.id || persona.correo === usuarioActual.email);
@@ -151,11 +158,13 @@ function renderizarRanking(personas) {
       : (persona.monstruo?.titulo || persona.titulo);
     const tituloObj = (typeof buscarTitulo === 'function' ? buscarTitulo(tituloId) : null) || TITULO_BASE;
     const tituloTexto = typeof textoDeTitulo === 'function' ? textoDeTitulo(tituloObj, monstruo.estilo) : tituloObj.nombre;
-    const esDebugger = tituloObj.id === 'debugger';
-    const esNocturno = tituloObj.id === 'terror-nocturno';
+    const esDebugger = !esTramposo && tituloObj.id === 'debugger';
+    const esNocturno = !esTramposo && tituloObj.id === 'terror-nocturno';
 
     let tagTitulo = `<span class="asustador-card__titulo-tag">${tituloTexto}</span>`;
-    if (esDebugger) {
+    if (esTramposo) {
+      tagTitulo = `<span class="asustador-card__titulo-tag asustador-card__titulo-tag--payaso">🤡 Payaso</span>`;
+    } else if (esDebugger) {
       tagTitulo = `<span class="asustador-card__titulo-tag asustador-card__titulo-tag--debugger"><span class="glitch-text" data-text="${tituloTexto}">${tituloTexto}</span></span>`;
     } else if (esNocturno) {
       tagTitulo = `<span class="asustador-card__titulo-tag asustador-card__titulo-tag--nocturno">${tituloTexto}</span>`;
@@ -167,7 +176,10 @@ function renderizarRanking(personas) {
     let medalla = null;
     let puestoNumero = i + 1;
 
-    if (!hayPuntosEnJuego) {
+    if (esTramposo) {
+      medalla = null;
+      puestoNumero = '🤡';
+    } else if (!hayPuntosEnJuego) {
       medalla = 'oro';
       puestoNumero = 1;
     } else if (puntos > 0) {
@@ -178,10 +190,12 @@ function renderizarRanking(personas) {
       else if (tierIndex === 2) medalla = 'bronce';
     }
 
-    const claseTarjetaPodio = medalla ? `asustador-card--${medalla}` : '';
-    const claseBotonCarnet = medalla ? `asustador-item__carnet--${medalla}` : '';
+    const claseTarjetaPodio = esTramposo ? 'asustador-card--payaso' : (medalla ? `asustador-card--${medalla}` : '');
+    const clasePosicion = esTramposo ? 'asustador-card__posicion--payaso' : `asustador-card__posicion--${medalla || 'normal'}`;
+    const claseBotonCarnet = esTramposo ? 'asustador-item__carnet--payaso' : (medalla ? `asustador-item__carnet--${medalla}` : '');
     let tituloBotonCarnet = 'Ver carnet';
-    if (medalla === 'oro') tituloBotonCarnet = 'Ver carnet dorado (1° puesto)';
+    if (esTramposo) tituloBotonCarnet = 'Ver Licencia de Payaso 🤡';
+    else if (medalla === 'oro') tituloBotonCarnet = 'Ver carnet dorado (1° puesto)';
     else if (medalla === 'plata') tituloBotonCarnet = 'Ver carnet plateado (2° puesto)';
     else if (medalla === 'bronce') tituloBotonCarnet = 'Ver carnet de bronce (3° puesto)';
 
@@ -194,7 +208,7 @@ function renderizarRanking(personas) {
     return `
       <li class="asustador-item ${esSuper ? 'asustador-item--supervisor' : ''}">
         <button type="button" class="asustador-card ${claseTarjetaPodio}" data-indice="${i}" aria-pressed="${i === elegido ? 'true' : 'false'}">
-          <div class="asustador-card__posicion asustador-card__posicion--${medalla || 'normal'}">
+          <div class="asustador-card__posicion ${clasePosicion}">
             <span>${puestoNumero}</span>
           </div>
 
@@ -234,20 +248,37 @@ function renderizarRanking(personas) {
 // Abre la ventana con el carnet de una persona de la tabla
 function mostrarCarnetDe(indice) {
   const persona = asustadores[indice];
-  const todosLosPuntos = asustadores.map((p) => Number(p.puntos) || 0);
+  const esTramposo = typeof esPayaso === 'function' && esPayaso(persona?.correo, persona?.nombre);
+  const todosLosPuntos = asustadores.map((p) => {
+    if (typeof esPayaso === 'function' && esPayaso(p.correo, p.nombre)) return 0;
+    return Number(p.puntos) || 0;
+  });
   const hayPuntosEnJuego = todosLosPuntos.some((p) => p > 0);
-  const puntos = Number(persona.puntos) || 0;
+  const puntos = esTramposo ? 0 : (Number(persona.puntos) || 0);
 
-  // Determinar medalla con empates para el modal del carnet
+  // Determinar medalla con empates para el modal del carnet (los payasos nunca reciben medalla)
   let medalla = null;
-  if (!hayPuntosEnJuego) {
-    medalla = 'oro';
-  } else if (puntos > 0) {
-    const tiers = [...new Set(todosLosPuntos.filter((p) => p > 0))].sort((a, b) => b - a);
-    const tier = tiers.indexOf(puntos);
-    if (tier === 0) medalla = 'oro';
-    else if (tier === 1) medalla = 'plata';
-    else if (tier === 2) medalla = 'bronce';
+  if (!esTramposo) {
+    if (!hayPuntosEnJuego) {
+      medalla = 'oro';
+    } else if (puntos > 0) {
+      const tiers = [...new Set(todosLosPuntos.filter((p) => p > 0))].sort((a, b) => b - a);
+      const tier = tiers.indexOf(puntos);
+      if (tier === 0) medalla = 'oro';
+      else if (tier === 1) medalla = 'plata';
+      else if (tier === 2) medalla = 'bronce';
+    }
+  }
+
+  // Título del modal y aviso de payaso
+  const tituloModal = $('#carnet-modal-titulo');
+  const avisoPayaso = $('#carnet-modal-aviso-payaso');
+  if (esTramposo) {
+    if (tituloModal) tituloModal.textContent = '🤡 Licencia de Payaso';
+    if (avisoPayaso) avisoPayaso.hidden = false;
+  } else {
+    if (tituloModal) tituloModal.textContent = 'Carnet';
+    if (avisoPayaso) avisoPayaso.hidden = true;
   }
 
   // Si la persona es el usuario con sesión activa en este navegador, priorizamos el título de su sesión
@@ -281,6 +312,22 @@ async function cargarSustometro() {
         .order('creado_en', { ascending: true });
       perfiles = fallback.data;
       error = fallback.error;
+    }
+
+    // Shadowban en memoria para los tramposos: nunca pueden figurar con puntos mayores a 0
+    if (Array.isArray(perfiles)) {
+      perfiles.forEach((p) => {
+        if (typeof esPayaso === 'function' && esPayaso(p.correo, p.nombre)) {
+          p.puntos = 0;
+        }
+      });
+      // Re-ordenar la lista para que queden al fondo y no en la cima
+      perfiles.sort((a, b) => {
+        const ptA = Number(a.puntos) || 0;
+        const ptB = Number(b.puntos) || 0;
+        if (ptB !== ptA) return ptB - ptA;
+        return (a.creado_en || '').localeCompare(b.creado_en || '');
+      });
     }
 
     if (error) {
@@ -505,43 +552,29 @@ $('#btn-guardar-puntos-modal')?.addEventListener('click', async () => {
   const textoBoton = boton.querySelector('span');
   const mensaje = $('#puntos-modal-mensaje');
 
+  // Si el usuario objetivo es payaso/tramposo, rechazar de inmediato
+  if (typeof esPayaso === 'function' && esPayaso(personaParaEditarPuntos.correo, personaParaEditarPuntos.nombre)) {
+    if (mensaje) {
+      mensaje.className = 'auth-mensaje auth-mensaje--error';
+      mensaje.textContent = '🤡 Este usuario tiene Shadowban permanente por juego sucio y no puede recibir puntos.';
+      mensaje.hidden = false;
+    }
+    return;
+  }
+
   boton.disabled = true;
   if (textoBoton) textoBoton.textContent = 'Guardando…';
   if (mensaje) mensaje.hidden = true;
 
   try {
-    let guardado = false;
-    let rpcError = null;
+    // 1. Llamar a la función RPC segura en Supabase (con permisos de supervisor)
+    const { error } = await clienteSupabase.rpc('modificar_puntos', {
+      target_id: personaParaEditarPuntos.id,
+      nuevos_puntos: nuevosPuntos,
+    });
 
-    // 1. Intentar llamar a la función RPC segura en Supabase
-    try {
-      const { error } = await clienteSupabase.rpc('modificar_puntos', {
-        target_id: personaParaEditarPuntos.id,
-        nuevos_puntos: nuevosPuntos,
-      });
-      if (!error) {
-        guardado = true;
-      } else {
-        rpcError = error;
-      }
-    } catch (e) {
-      rpcError = e;
-    }
-
-    // 2. Fallback: intentar update directo a la tabla perfiles
-    if (!guardado) {
-      const { error } = await clienteSupabase
-        .from('perfiles')
-        .update({ puntos: nuevosPuntos })
-        .eq('id', personaParaEditarPuntos.id);
-
-      if (!error) {
-        guardado = true;
-      } else if (rpcError) {
-        throw rpcError;
-      } else {
-        throw error;
-      }
+    if (error) {
+      throw error;
     }
 
     // Actualizar datos en memoria para respuesta instantánea
@@ -561,7 +594,7 @@ $('#btn-guardar-puntos-modal')?.addEventListener('click', async () => {
       if (msg.includes('Acceso denegado') || msg.includes('supervisor')) {
         mensaje.textContent = 'Acceso denegado: solo quienes tengan el título Supervisor de Sustos pueden modificar puntos.';
       } else {
-        mensaje.textContent = 'No se pudo guardar en Supabase. Si aún no corriste el script SQL en Supabase, ejecuta supabase/modificar-puntos.sql en el SQL Editor.';
+        mensaje.textContent = 'No se pudo guardar en Supabase. Si aún no corriste el script de seguridad en Supabase, ejecuta supabase/seguridad-y-baneo.sql en el SQL Editor.';
       }
       mensaje.hidden = false;
     }

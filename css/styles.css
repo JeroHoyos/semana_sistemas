@@ -644,6 +644,153 @@ button { font: inherit; color: inherit; cursor: pointer; }
   box-shadow: 0 0 18px rgba(234, 88, 12, 0.55) !important;
 }
 
+/* ---------- Licencia de Payaso (Sanción por manipulación de puntos) ---------- */
+.carnet--payaso {
+  background:
+    radial-gradient(circle at 10% 20%, rgba(255, 230, 0, 0.25) 0%, transparent 20%),
+    radial-gradient(circle at 90% 80%, rgba(255, 0, 100, 0.2) 0%, transparent 25%),
+    repeating-linear-gradient(45deg, #fff5f5, #fff5f5 14px, #ffe4e6 14px, #ffe4e6 28px);
+  border: 3px dashed #e11d48 !important;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 24px rgba(225, 29, 72, 0.35),
+    0 16px 36px -8px rgba(225, 29, 72, 0.35);
+  animation: payaso-temblor 4s ease-in-out infinite alternate;
+}
+
+@keyframes payaso-temblor {
+  0%, 90% { transform: rotate(0deg); }
+  92% { transform: rotate(-1.5deg); }
+  94% { transform: rotate(1.5deg); }
+  96% { transform: rotate(-1deg); }
+  98% { transform: rotate(1deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.carnet--payaso .carnet__marca {
+  color: #9f1239;
+}
+
+.carnet__semana--payaso {
+  color: #e11d48 !important;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.carnet__sistemas--payaso {
+  color: #be123c !important;
+  font-weight: 700;
+}
+
+.carnet--payaso .carnet__nombre {
+  color: #881337 !important;
+  text-decoration: underline wavy #e11d48;
+}
+
+.carnet__cargo--payaso {
+  color: #e11d48 !important;
+  font-weight: 800 !important;
+  letter-spacing: .06em;
+}
+
+.carnet__franja--payaso {
+  background: repeating-linear-gradient(45deg, #e11d48, #e11d48 12px, #f59e0b 12px, #f59e0b 24px) !important;
+  color: #ffffff !important;
+  font-weight: 900 !important;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8) !important;
+  letter-spacing: .12em !important;
+  border-top: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+}
+
+.carnet__sello--payaso {
+  border-color: #e11d48 !important;
+  background: linear-gradient(135deg, #fff1f2, #ffe4e6) !important;
+  color: #be123c !important;
+  font-weight: 800;
+  letter-spacing: .12em;
+  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.25), inset 0 0 0 1px #fff;
+  transform: rotate(-6deg);
+  z-index: 2;
+}
+
+.nariz-payaso {
+  position: absolute;
+  top: 56%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 26px;
+  line-height: 1;
+  z-index: 10;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+  animation: nariz-rebote 1.4s ease-in-out infinite;
+}
+
+@keyframes nariz-rebote {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.35); }
+}
+
+.asustador-item__carnet--payaso {
+  color: #e11d48 !important;
+  background: rgba(225, 29, 72, 0.16) !important;
+  border-color: rgba(225, 29, 72, 0.45) !important;
+  box-shadow: 0 0 12px rgba(225, 29, 72, 0.35) !important;
+}
+.asustador-item__carnet--payaso:hover {
+  background: rgba(225, 29, 72, 0.3) !important;
+  box-shadow: 0 0 18px rgba(225, 29, 72, 0.55) !important;
+}
+
+/* Aviso Humillante para Payasos */
+.aviso-payaso {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, #fff1f2 0%, #fee2e2 100%);
+  border: 2px solid #f43f5e;
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  box-shadow: 0 6px 18px -4px rgba(244, 63, 94, 0.35);
+  animation: aviso-payaso-shake 5s ease-in-out infinite;
+}
+
+@keyframes aviso-payaso-shake {
+  0%, 90%, 100% { transform: translateX(0); }
+  92% { transform: translateX(-4px); }
+  94% { transform: translateX(4px); }
+  96% { transform: translateX(-3px); }
+  98% { transform: translateX(3px); }
+}
+
+.aviso-payaso__icono {
+  font-size: 32px;
+  flex-shrink: 0;
+  animation: nariz-rebote 1.5s infinite;
+}
+
+.aviso-payaso__cuerpo {
+  font-size: 13px;
+  line-height: 1.4;
+  color: #881337;
+}
+
+.aviso-payaso__cuerpo strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 800;
+  color: #be123c;
+  letter-spacing: .04em;
+  margin-bottom: 3px;
+}
+
+.aviso-payaso__cuerpo p {
+  margin: 0;
+  color: #9f1239;
+}
+
 /* ---------- Efecto Glitch para Debugger ---------- */
 
 .carnet__franja--glitch {
@@ -3141,6 +3288,29 @@ button { font: inherit; color: inherit; cursor: pointer; }
   color: #b45309;
 }
 
+/* Casilla de Payaso en la tabla del Sustómetro */
+.asustador-card--payaso {
+  background: repeating-linear-gradient(45deg, #fff5f5, #fff5f5 10px, #fee2e2 10px, #fee2e2 20px) !important;
+  border: 2px dashed #f43f5e !important;
+  box-shadow: 0 3px 14px -3px rgba(244, 63, 94, 0.3) !important;
+}
+.asustador-card--payaso:hover {
+  background: repeating-linear-gradient(45deg, #ffffff, #ffffff 10px, #fecdd3 10px, #fecdd3 20px) !important;
+  border-color: #e11d48 !important;
+  box-shadow: 0 6px 20px -3px rgba(225, 29, 72, 0.45) !important;
+}
+.asustador-card--payaso[aria-pressed='true'] {
+  background: #fff1f2 !important;
+  border-color: #be123c !important;
+  box-shadow: 0 0 0 3px rgba(225, 29, 72, .3), 0 10px 22px -12px rgba(190, 18, 60, .55) !important;
+}
+.asustador-card--payaso .asustador-card__pts {
+  color: #be123c !important;
+}
+.asustador-card--payaso .asustador-card__pts small {
+  color: #e11d48 !important;
+}
+
 /* Puesto en la tabla; los tres primeros con color de medalla si ya hay puntos */
 .asustador-card__posicion {
   width: 36px;
@@ -3159,6 +3329,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .asustador-card__posicion--oro { background: #fff3cf; border-color: #e0b200; color: #8a6400; }
 .asustador-card__posicion--plata { background: #eef1f5; border-color: #aab4c0; color: #4d5866; }
 .asustador-card__posicion--bronce { background: #fde8d4; border-color: #d98a3a; color: #8f4c10; }
+.asustador-card__posicion--payaso { background: #ffe4e6; border-color: #f43f5e; color: #be123c; font-size: 18px; }
 
 /* Avatar del monstruo (el color del borde lo pone cada monstruo) */
 .asustador-card__avatar {
@@ -3230,6 +3401,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
   border-color: rgba(168, 85, 247, 0.5);
   color: #d8b4fe;
   box-shadow: 0 0 8px rgba(168, 85, 247, 0.25);
+}
+
+.asustador-card__titulo-tag--payaso {
+  background: #ffe4e6 !important;
+  color: #be123c !important;
+  border: 1px solid #fda4af !important;
+  font-weight: 700;
+  box-shadow: 0 0 8px rgba(244, 63, 94, 0.2);
 }
 
 .asustador-card__correo {
