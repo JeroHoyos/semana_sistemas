@@ -147,7 +147,8 @@ const ACTIVIDADES = [
 //   nombre / femenino: cómo se lee en el carnet según el estilo del monstruo. Si no hay `femenino`, se usa `nombre`.
 //   libre: true = todos lo tienen desde el inicio.
 //   codigo: la huella del código (NO el código). Se genera con: node herramientas/hash-codigo.js "EL CÓDIGO"
-//   pista: lo que se ve mientras el título está bloqueado, para dar ganas de buscarlo.
+//   descripcion: frase corta que se ve en "Tus títulos" cuando ya está desbloqueado.
+//   pista: frase corta que se ve debajo de "Título secreto" mientras está bloqueado, para dar ganas de buscarlo.
 // El título 'cazahuevos' es el del easter egg de los stickers (sustometro.js): su `codigo` debe ser la huella del
 // mismo código que la función reclamar_easter_egg de Supabase le entrega a quien lo encuentra, y que luego se lo
 // pasa al representante.
@@ -155,14 +156,23 @@ const ACTIVIDADES = [
 //   libre: true indica que viene desbloqueado por defecto para todos los que se registran.
 //   codigo: huella SHA-256 del código que lo desbloquea (sin pistas públicas).
 const TITULOS = [
-  { id: 'asustador', nombre: 'Asustador', femenino: 'Asustadora', libre: true },
+  { id: 'asustador', nombre: 'Asustador', femenino: 'Asustadora', libre: true,
+    descripcion: 'El título con el que arranca todo monstruo de la Semana.' },
   { id: 'supervisor', nombre: 'Supervisor de Sustos', femenino: 'Supervisora de Sustos',
+    descripcion: 'Del equipo organizador: puede ajustar los puntos del Sustómetro.',
+    pista: 'Solo para quienes mueven los hilos de la Semana.',
     codigo: '71c580f40935a6e35613a6223e59db79d22d534a8e3fed097020e3153da846da' },
   { id: 'pionero', nombre: 'Asustador Pionero', femenino: 'Asustadora Pionera',
+    descripcion: 'Llegó antes que nadie y abrió camino a los demás monstruos.',
+    pista: 'Los primeros en llegar se llevan algo especial.',
     codigo: '3bed572cb2f9c1a9f7e3d08a818f5b5463d499f3ef24938aaa4d796347dbadd8' },
   { id: 'debugger', nombre: 'Debugger',
+    descripcion: 'Encuentra los bugs antes de que los bugs lo encuentren.',
+    pista: 'Algo no anda bien en el código… ¿lo notaste?',
     codigo: '30bc3d0b546272ae2dcbc55119bff7af556272354651bc674906fc2dd543f230' },
   { id: 'terror-nocturno', nombre: 'Terror Nocturno', femenino: 'Terror Nocturno', limite: 5,
+    descripcion: 'Acecha cuando se apagan las luces. Solo 5 lo tienen.',
+    pista: 'Solo 5 personas podrán reclamarlo. Corre.',
     codigo: 'c58b28118256f74718a66d20def69ac43887b5dacbc7ffcac09389da6ba38d08' },
 ];
 

@@ -44,13 +44,18 @@ function mostrarMensajeCodigo(texto, tipo, accion) {
 
 /* ---------- Colección de títulos ---------- */
 
-// Una pastilla por título: abierto (con su nombre) o bloqueado (con su pista)
+const ICONO_ESTRELLA = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2.5 2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5L2.5 9.3l6.6-.8Z"/></svg>';
+const ICONO_CANDADO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+
+// Una tarjeta por título: ícono, nombre, mini descripción y su estado (en uso / desbloqueado / bloqueado)
 function pintarColeccion() {
   const lista = $('#codigos-coleccion');
   const cuenta = $('#codigos-cuenta');
+  const progreso = $('#codigos-progreso');
 
   if (!usuarioActual) {
     cuenta.textContent = 'Inicia sesión para guardar tus títulos en tu carnet.';
+    progreso.hidden = true;
     lista.innerHTML = '';
     return;
   }
@@ -59,31 +64,41 @@ function pintarColeccion() {
   const enUso = tituloElegidoDe(usuarioActual).id;
   const estilo = estiloDeUsuario();
   cuenta.textContent = `Tus títulos: ${abiertos.size} de ${TITULOS.length}`;
+  progreso.hidden = false;
+  progreso.firstElementChild.style.width = `${(abiertos.size / TITULOS.length) * 100}%`;
 
   lista.innerHTML = TITULOS.map((titulo) => {
+    const limitada = titulo.limite ? `<span class="titulo-item__limite">Solo ${titulo.limite}</span>` : '';
+
     if (!abiertos.has(titulo.id)) {
-      const pistaTexto = titulo.pista || (titulo.limite ? `Título secreto (Edición limitada de ${titulo.limite})` : 'Título secreto');
-      return `<li class="titulo-chip titulo-chip--bloqueado">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-        <span><span class="visualmente-oculto">Bloqueado: </span>${pistaTexto}</span>
+      return `<li class="titulo-item titulo-item--bloqueado">
+        <span class="titulo-item__icono">${ICONO_CANDADO}</span>
+        <span class="titulo-item__texto">
+          <span class="titulo-item__nombre"><span class="visualmente-oculto">Bloqueado: </span>Título secreto ${limitada}</span>
+          <span class="titulo-item__desc">${titulo.pista || 'Consigue su código para descubrirlo.'}</span>
+        </span>
       </li>`;
     }
+
     const texto = textoDeTitulo(titulo, estilo);
     const esDebugger = titulo.id === 'debugger';
     const esNocturno = titulo.id === 'terror-nocturno';
-    const contenido = esDebugger
-      ? `<span class="glitch-text" data-text="${texto}">${texto}</span>`
-      : texto;
-    const claseChip = [
-      'titulo-chip titulo-chip--abierto',
-      titulo.id === enUso ? 'titulo-chip--en-uso' : '',
-      esDebugger ? 'titulo-chip--debugger' : '',
-      esNocturno ? 'titulo-chip--nocturno' : '',
+    const usado = titulo.id === enUso;
+    const nombre = esDebugger ? `<span class="glitch-text" data-text="${texto}">${texto}</span>` : texto;
+    const clases = [
+      'titulo-item titulo-item--abierto',
+      usado ? 'titulo-item--en-uso' : '',
+      esDebugger ? 'titulo-item--debugger' : '',
+      esNocturno ? 'titulo-item--nocturno' : '',
     ].filter(Boolean).join(' ');
 
-    return `<li class="${claseChip}">
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2.5 2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5L2.5 9.3l6.6-.8Z"/></svg>
-      <span>${contenido}${titulo.id === enUso ? '<small>en uso</small>' : ''}</span>
+    return `<li class="${clases}">
+      <span class="titulo-item__icono">${ICONO_ESTRELLA}</span>
+      <span class="titulo-item__texto">
+        <span class="titulo-item__nombre">${nombre} ${limitada}</span>
+        ${titulo.descripcion ? `<span class="titulo-item__desc">${titulo.descripcion}</span>` : ''}
+      </span>
+      ${usado ? '<span class="titulo-item__estado">En uso</span>' : ''}
     </li>`;
   }).join('');
 }
