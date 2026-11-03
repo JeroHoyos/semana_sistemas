@@ -1,8 +1,8 @@
 /* =============================================
    SNAKE · JUEGO DE LA SEMANA (SEMANA 1)
    Una culebra con los colores de Python se come los bugs del código.
-   Cada bug vale 10 puntos y la hace crecer. Cada 5 bugs aparece un tinto que vale 50
-   si lo alcanzas antes de que se enfríe. Chocar con la pared o contigo misma termina la partida.
+   Cada bug vale 10 puntos, la hace crecer y la acelera un poquito.
+   Chocar con la pared o contigo misma termina la partida.
 
    El tablero mide lo mismo en todas las pantallas (20 × 15 casillas) y la velocidad no depende
    del computador, para que los puntajes de la tabla se puedan comparar.
@@ -16,9 +16,6 @@ const SNAKE = {
   lado: 8,                 // pixeles de cada casilla: el tablero mide 160 × 120 pixeles y se escala a la pantalla
   largoInicial: 4,
   puntosBug: 10,
-  puntosTinto: 50,
-  bugsPorTinto: 5,
-  pasosTinto: 36,          // pasos que dura el tinto antes de enfriarse
   intervaloInicial: 150,   // milisegundos por paso al empezar…
   intervaloMinimo: 70,     // …y lo más rápido que llega a ir
   aceleracion: 3,          // milisegundos menos por cada bug
@@ -39,19 +36,6 @@ const SPRITES_SNAKE = {
       'lRRRrRRl',
       '.RRRrRR.',
       'l.RRRR.l',
-    ],
-  },
-  tinto: {
-    paleta: { s: '#c9d2dc', Y: '#ffd23f', y: '#ffe68a', b: '#6b3b1a' },
-    filas: [
-      '.s..s...',
-      '..s..s..',
-      'YYYYYY..',
-      'YbbbbYYY',
-      'YyyyyY.Y',
-      'YyyyyYYY',
-      'YyyyyY..',
-      '.YYYY...',
     ],
   },
   // Cabeza mirando a la derecha; para las otras direcciones se gira
@@ -96,7 +80,7 @@ function crearSnake(lienzo, avisos = {}) {
 
   let escala = 1;          // pixeles reales del lienzo por cada pixel del tablero
   let estado = 'listo';    // 'listo' | 'jugando' | 'pausa' | 'fin'
-  let culebra, direccion, giros, bug, tinto, puntaje, bugsComidos, intervalo, flotantes;
+  let culebra, direccion, giros, bug, puntaje, intervalo, flotantes;
   let acumulado = 0;
   let ultimoTiempo = 0;
   let finEn = 0;           // momento del choque, para el parpadeo
@@ -110,20 +94,17 @@ function crearSnake(lienzo, avisos = {}) {
     culebra = Array.from({ length: SNAKE.largoInicial }, (_, i) => ({ x: x - i, y }));
     direccion = 'derecha';
     giros = [];
-    tinto = null;
+    bug = null;
     puntaje = 0;
-    bugsComidos = 0;
     intervalo = SNAKE.intervaloInicial;
     flotantes = [];
     bug = casillaLibre();
     avisar('alCambiarPuntaje', 0);
   }
 
-  // Una casilla al azar donde no haya culebra, bug ni tinto (null si el tablero está lleno)
+  // Una casilla al azar donde no haya culebra (null si el tablero está lleno)
   function casillaLibre() {
     const ocupadas = new Set(culebra.map(({ x, y }) => `${x},${y}`));
-    if (bug) ocupadas.add(`${bug.x},${bug.y}`);
-    if (tinto) ocupadas.add(`${tinto.x},${tinto.y}`);
 
     const libres = [];
     for (let y = 0; y < SNAKE.filas; y++) {
@@ -139,7 +120,6 @@ function crearSnake(lienzo, avisos = {}) {
     const [dx, dy] = VECTORES[direccion];
     const nueva = { x: culebra[0].x + dx, y: culebra[0].y + dy };
     const comeBug = bug && nueva.x === bug.x && nueva.y === bug.y;
-    const comeTinto = tinto && nueva.x === tinto.x && nueva.y === tinto.y;
 
     // Si no crece, la cola se mueve en este mismo paso: se puede entrar a la casilla que deja libre
     const cuerpo = comeBug ? culebra : culebra.slice(0, -1);
@@ -154,27 +134,10 @@ function crearSnake(lienzo, avisos = {}) {
 
     if (comeBug) {
       sumar(SNAKE.puntosBug, nueva, ahora);
-      bugsComidos++;
       intervalo = Math.max(SNAKE.intervaloMinimo, intervalo - SNAKE.aceleracion);
       avisar('sonar', 'bug');
-      bug = null;
-      if (bugsComidos % SNAKE.bugsPorTinto === 0 && !tinto) {
-        const casilla = casillaLibre();
-        if (casilla) tinto = { ...casilla, pasos: SNAKE.pasosTinto };
-      }
       bug = casillaLibre();
-      if (!bug) {
-        terminar(ahora, true);   // no queda espacio: tablero completo
-        return;
-      }
-    }
-
-    if (comeTinto) {
-      sumar(SNAKE.puntosTinto, nueva, ahora);
-      avisar('sonar', 'tinto');
-      tinto = null;
-    } else if (tinto && --tinto.pasos <= 0) {
-      tinto = null;
+      if (!bug) terminar(ahora, true);   // no queda espacio: tablero completo
     }
   }
 
@@ -265,11 +228,6 @@ function crearSnake(lienzo, avisos = {}) {
       sprite(SPRITES_SNAKE.bug, bug.x * L, bug.y * L - meneo * 0.5);
     }
 
-    // El tinto parpadea cuando está por enfriarse
-    if (tinto && !(tinto.pasos < 10 && Math.floor(ahora / 120) % 2)) {
-      sprite(SPRITES_SNAKE.tinto, tinto.x * L, tinto.y * L);
-    }
-
     dibujarCulebra(ahora);
     dibujarFlotantes(ahora);
   }
@@ -334,7 +292,7 @@ function crearSnake(lienzo, avisos = {}) {
     for (const f of flotantes) {
       const avance = (ahora - f.desde) / DURACION;
       ctx.globalAlpha = 1 - avance * avance;
-      ctx.fillStyle = f.texto === `+${SNAKE.puntosTinto}` ? '#ffd23f' : '#ffffff';
+      ctx.fillStyle = '#ffffff';
       ctx.fillText(f.texto, f.x * escala, (f.y - 1 - avance * 7) * escala);
     }
     ctx.restore();

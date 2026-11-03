@@ -49,9 +49,9 @@ begin
   end if;
 
   -- Puntaje máximo que se puede lograr en cada juego. Cuando llegue un juego nuevo, se agrega aquí.
-  -- Snake: 300 casillas, 10 puntos por bug y 50 por cada tinto (sale uno cada 5 bugs) → menos de 6.000.
+  -- Snake: 300 casillas y la culebra empieza con 4, a 10 puntos por bug → máximo 2.960.
   v_tope := case p_juego
-    when 'snake' then 6000
+    when 'snake' then 3000
     else null
   end;
 

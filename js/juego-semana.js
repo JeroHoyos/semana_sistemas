@@ -66,7 +66,6 @@ const sonido = {
   NOTAS: {
     inicio: [[523, 0.07, 0], [784, 0.1, 0.08]],
     bug: [[880, 0.04, 0], [1320, 0.06, 0.04]],
-    tinto: [[660, 0.06, 0], [880, 0.06, 0.07], [1320, 0.12, 0.14]],
     fin: [[392, 0.12, 0, 'sawtooth'], [294, 0.14, 0.13, 'sawtooth'], [196, 0.32, 0.28, 'sawtooth']],
     record: [[523, 0.08, 0], [659, 0.08, 0.09], [784, 0.08, 0.18], [1047, 0.24, 0.27]],
     pausa: [[440, 0.06, 0]],
@@ -496,9 +495,8 @@ $('#records-juego').textContent = JUEGO_DE_LA_SEMANA.nombre;
 $('#consola-semana').textContent = `Semana ${JUEGO_DE_LA_SEMANA.semana}`;
 $('#enlace-juego-nombre').textContent = JUEGO_DE_LA_SEMANA.nombre;
 
-// Los dibujos del bug y el tinto en el letrero de inicio
+// El dibujo del bug en el letrero de inicio
 $('#consola-ayuda-bug').innerHTML = dibujarPixeles(SPRITES_SNAKE.bug);
-$('#consola-ayuda-tinto').innerHTML = dibujarPixeles(SPRITES_SNAKE.tinto);
 
 pintarSonido();
 pintarRecord();
