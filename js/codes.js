@@ -82,6 +82,7 @@ function renderCollection() {
     const text = titleText(title, style);
     const isDebugger = title.id === 'debugger';
     const isNocturnal = title.id === 'terror-nocturno';
+    const isQRGang = title.id === 'qr-gang';
     const used = title.id === inUse;
     const name = isDebugger ? `<span class="glitch-text" data-text="${text}">${text}</span>` : text;
     const classes = [
@@ -89,6 +90,7 @@ function renderCollection() {
       used ? 'title-item--in-use' : '',
       isDebugger ? 'title-item--debugger' : '',
       isNocturnal ? 'title-item--nocturnal' : '',
+      isQRGang ? 'title-item--qrgang' : '',
       title.id === 'video-futbol' ? 'title-item--phenomenon' : '',
       title.id === 'konami' ? 'title-item--konami' : '',
     ].filter(Boolean).join(' ');
@@ -153,14 +155,18 @@ async function redeemCode(text) {
 
   const meta = currentUser.user_metadata || {};
   const titles = [...new Set([...(meta.titulos || []), title.id])];
-  const { data, error } = await supabaseClient.auth.updateUser({ data: { ...meta, titulos: titles } });
+  const monster = meta.monstruo || {};
+  const carnetEstilo = title.id === 'qr-gang' ? 'vice' : (monster.carnet_estilo || 'clasico');
+  const updatedMonster = { ...monster, titulos: titles, carnet_estilo: carnetEstilo };
+
+  const { data, error } = await supabaseClient.auth.updateUser({
+    data: { ...meta, titulos: titles, monstruo: updatedMonster, carnet_estilo: carnetEstilo },
+  });
   if (error) throw error;
 
   // Sync to the perfiles table so it counts towards the limit and shows on the Scare Meter
   try {
-    const monster = meta.monstruo || {};
-    const updated = { ...monster, titulos: [...new Set([...(monster.titulos || []), title.id])] };
-    await syncProfile(meta.full_name || currentUser.email.split('@')[0], updated);
+    await syncProfile(meta.full_name || currentUser.email.split('@')[0], updatedMonster);
   } catch (syncError) {
     console.warn('Could not sync the title to perfiles:', syncError);
   }
@@ -221,6 +227,8 @@ $('#codes-form').addEventListener('submit', async (event) => {
       showCodeMessage(`Ese código ya lo canjeaste: tienes el título «${name}».`, 'info', edit);
     } else if (status === 'sold-out') {
       showCodeMessage(`¡Cupos agotados! El título «${name}» era una edición limitada de ${limit || 5} personas y ya fue reclamado en su totalidad.`, 'error');
+    } else if (title?.id === 'qr-gang') {
+      showCodeMessage(`¡Desbloqueaste el estilo de carnet Vice City y el título «${name}»! Ya puedes activarlo en tu carnet.`, 'success', edit);
     } else {
       showCodeMessage(`¡Desbloqueaste el título «${name}»! Ya puedes ponértelo en tu carnet.`, 'success', edit);
     }

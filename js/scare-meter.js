@@ -100,12 +100,51 @@ const IDCARD_BUTTON_TITLES = {
   bronze: 'Ver carnet de bronce (3° puesto)',
 };
 
-// Draws the scarer cards in the right column
-function renderRanking(people) {
-  scarers = people;
-  const total = people.length;
+let allLegitimateScarers = [];
+let currentSearchQuery = '';
 
-  rankingCount.textContent = `${total} ${total === 1 ? 'Asustador Registrado' : 'Asustadores Registrados'}`;
+function applyRankingFilter() {
+  const query = currentSearchQuery.trim().toLowerCase();
+  const clearBtn = $('#btn-clear-search');
+  if (clearBtn) clearBtn.hidden = !query;
+
+  let filtered = allLegitimateScarers;
+  if (query) {
+    const qClean = stripAccents(query);
+    filtered = allLegitimateScarers.filter((person) => {
+      const name = (person.nombre || '').toLowerCase();
+      const nameClean = stripAccents(name);
+      const handle = handleOf(person.correo || '').toLowerCase();
+      return nameClean.includes(qClean) || name.includes(query) || handle.includes(query);
+    });
+  }
+
+  renderRanking(filtered, query);
+}
+
+// Draws the scarer cards in the right column
+function renderRanking(people, query = '') {
+  scarers = people;
+  const total = allLegitimateScarers.length;
+  const filteredCount = people.length;
+
+  if (query) {
+    rankingCount.textContent = `${filteredCount} de ${total} ${total === 1 ? 'Asustador' : 'Asustadores'}`;
+  } else {
+    rankingCount.textContent = `${total} ${total === 1 ? 'Asustador Registrado' : 'Asustadores Registrados'}`;
+  }
+
+  if (query && filteredCount === 0) {
+    list.innerHTML = `
+      <li class="ranking-empty">
+        <div class="ranking-empty__box">
+          <h3>Sin resultados</h3>
+          <p>No se encontró ningún asustador que coincida con "<strong>${escapeHtml(query)}</strong>".</p>
+        </div>
+      </li>
+    `;
+    return;
+  }
 
   if (total === 0) {
     tankLiquid.style.height = '0%';
@@ -138,8 +177,9 @@ function renderRanking(people) {
     return;
   }
 
-  const allPoints = people.map(scarePoints);
-  const maxPoints = maxPointsOf(people);
+  const baseScarers = allLegitimateScarers.length ? allLegitimateScarers : people;
+  const allPoints = baseScarers.map(scarePoints);
+  const maxPoints = maxPointsOf(baseScarers);
   const tiers = pointTiers(allPoints);
   // The same person as before (or first place if nobody was chosen yet)
   const chosen = Math.max(0, people.findIndex((p) => p.id === chosenId));
@@ -261,7 +301,8 @@ async function loadScareMeter() {
     const legitimate = profiles.filter((p) => !isClown(p.correo, p.nombre, p));
 
     legitimate.sort((a, b) => scarePoints(b) - scarePoints(a) || (a.creado_en || '').localeCompare(b.creado_en || ''));
-    renderRanking(legitimate);
+    allLegitimateScarers = legitimate;
+    applyRankingFilter();
     renderClowns(clowns);
   } catch (err) {
     console.error('Unexpected error:', err);
@@ -505,7 +546,7 @@ $('#btn-admin-edit-points').addEventListener('click', () => {
 
 // Check the supervisor role again when the session changes or a title is redeemed
 document.addEventListener('idcard:session', () => {
-  if (scarers.length) renderRanking(scarers);
+  if (allLegitimateScarers.length) applyRankingFilter();
   $('#btn-admin-edit-points').hidden = !isCurrentSupervisor();
 });
 
@@ -580,3 +621,26 @@ document.addEventListener('click', (event) => {
     }
   }
 });
+
+
+// Search input listener for the ranking table
+const searchInput = $('#ranking-search-input');
+const clearSearchBtn = $('#btn-clear-search');
+
+if (searchInput) {
+  searchInput.addEventListener('input', (e) => {
+    currentSearchQuery = e.target.value;
+    applyRankingFilter();
+  });
+}
+
+if (clearSearchBtn) {
+  clearSearchBtn.addEventListener('click', () => {
+    if (searchInput) {
+      searchInput.value = '';
+      searchInput.focus();
+    }
+    currentSearchQuery = '';
+    applyRankingFilter();
+  });
+}

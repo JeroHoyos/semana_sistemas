@@ -35,6 +35,7 @@
   --font-title: 'Alfa Slab One', serif;      /* thick uniform-style letters */
   --font-varsity: 'Graduate', serif;       /* college letters */
   --font-idcard: 'Cinzel', serif;              /* ID card letters */
+  --font-gta: 'Pricedown', 'Pricedown Black', 'Impact', sans-serif; /* GTA (Pricedown) letters */
   --font-body: 'Barlow', sans-serif;
   --font-narrow: 'Barlow Condensed', sans-serif;
 }
@@ -644,6 +645,147 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .scarer-item__idcard--bronze:hover {
   background: rgba(234, 88, 12, 0.3) !important;
   box-shadow: 0 0 18px rgba(234, 88, 12, 0.55) !important;
+}
+
+@font-face {
+  font-family: 'Pricedown';
+  src: local('Pricedown'), local('Pricedown Black'),
+       url('https://cdn.jsdelivr.net/gh/multitheftauto/mtasa-blue@master/MTA10/cgui/pricedown.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- Vice City / GTA VI Chromatic ID Card ---------- */
+.idcard--vice {
+  font-family: var(--font-gta);
+  background:
+    radial-gradient(ellipse at 88% 18%, rgba(255, 60, 172, 0.45) 0%, transparent 48%),
+    radial-gradient(ellipse at 15% 85%, rgba(0, 229, 255, 0.28) 0%, transparent 48%),
+    linear-gradient(135deg, #180927 0%, #350f42 22%, #6e1754 44%, #b82260 66%, #f25b42 86%, #ffa347 100%);
+  color: #ffffff;
+  box-shadow:
+    0 0 0 2px rgba(255, 60, 172, 0.45),
+    0 0 26px rgba(233, 30, 99, 0.35),
+    0 26px 46px -10px rgba(0, 0, 0, .65);
+}
+
+.idcard--vice::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.22) 0%, transparent 40%, rgba(255, 60, 172, 0.18) 70%, transparent 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.idcard--vice::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 484 288' fill='none'%3E%3Cpath d='M0 115h484v2H0zm0 15h484v1.5H0zm0 15h484v1H0z' fill='rgba(255,255,255,0.04)'/%3E%3Cg fill='%23120520' opacity='0.22'%3E%3Cpath d='M484 288c-30-20-45-70-40-120 5-50 25-90 40-100v220z'/%3E%3Cpath d='M440 160c-25-15-60-18-95-12 30 10 65 18 95 12z'/%3E%3Cpath d='M445 145c-30-30-75-45-120-42 35 18 80 32 120 42z'/%3E%3Cpath d='M450 130c-20-40-55-75-100-95 25 28 60 62 100 95z'/%3E%3Cpath d='M460 120c-5-45-20-85-45-115 12 35 28 75 45 115z'/%3E%3Cpath d='M435 175c-35-5-75 5-110 25 35-8 75-16 110-25z'/%3E%3C/g%3E%3Cg fill='%23120520' opacity='0.15'%3E%3Cpath d='M0 288c20-15 35-50 30-90-5-35-18-65-30-75v165z'/%3E%3Cpath d='M28 195c20-10 48-12 75-8-24 7-52 13-75 8z'/%3E%3Cpath d='M25 180c25-22 60-32 95-30-28 13-64 23-95 30z'/%3E%3Cpath d='M20 170c15-30 42-55 78-70-20 20-48 45-78 70z'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  z-index: 1;
+}
+
+.idcard--vice .idcard__crest {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 10px rgba(255, 107, 74, 0.45));
+  z-index: 2;
+}
+
+.idcard--vice .idcard__brand {
+  z-index: 2;
+}
+
+.idcard--vice .idcard__week {
+  font-family: var(--font-gta);
+  font-size: 9.8cqw;
+  line-height: 1;
+  letter-spacing: .02em;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7), 0 0 16px rgba(255, 60, 172, 0.45);
+}
+
+.idcard--vice .idcard__systems {
+  font-family: var(--font-gta);
+  font-size: 3.8cqw;
+  letter-spacing: .35em;
+  color: #38bdf8;
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.8), 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.idcard--vice .idcard__name {
+  font-family: var(--font-gta);
+  font-size: min(4.5cqw, 70cqw / var(--letters, 1));
+  letter-spacing: .02em;
+  color: #ffffff;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 12px rgba(255, 60, 172, 0.3);
+  z-index: 2;
+}
+
+.idcard--vice .idcard__role {
+  font-family: var(--font-gta);
+  font-size: 3cqw;
+  letter-spacing: .1em;
+  color: #fed7aa;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+  z-index: 2;
+}
+
+.idcard--vice .idcard__photo {
+  border: 1.3cqw solid #ff2a85;
+  box-shadow: 0 0 18px rgba(255, 42, 133, 0.45), inset 0 0 8px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(180deg, #180927 0%, #30113c 100%);
+  z-index: 2;
+}
+
+.idcard--vice .idcard__band {
+  font-family: var(--font-gta);
+  font-size: min(5.2cqw, 58cqw / var(--letters, 1));
+  letter-spacing: .04em;
+  background: linear-gradient(90deg, rgba(255, 42, 133, 0.9) 0%, rgba(255, 107, 74, 0.9) 55%, rgba(251, 191, 36, 0.9) 100%);
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 3px 12px rgba(255, 42, 133, 0.4);
+  z-index: 2;
+}
+
+.idcard--vice .idcard__stamp {
+  font-family: var(--font-gta);
+  letter-spacing: .08em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.idcard__band--qrgang {
+  padding-right: 40% !important;
+  font-family: var(--font-gta) !important;
+  letter-spacing: .04em;
+  background: linear-gradient(90deg, #ff2a85 0%, #ff6b4a 55%, #ffb648 100%) !important;
+  color: #ffffff !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 42, 133, 0.7) !important;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.3), 0 0 14px rgba(255, 42, 133, 0.5) !important;
+  border-top: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+  border-bottom: 1.5px solid rgba(0, 0, 0, 0.4) !important;
+}
+
+.idcard--vice.idcard--vice-gold {
+  box-shadow:
+    0 0 0 2.5px #fbbf24,
+    0 0 28px rgba(251, 191, 36, 0.6),
+    0 26px 46px -10px rgba(0, 0, 0, .7);
+}
+.idcard--vice.idcard--vice-silver {
+  box-shadow:
+    0 0 0 2.5px #cbd5e1,
+    0 0 28px rgba(203, 213, 225, 0.5),
+    0 26px 46px -10px rgba(0, 0, 0, .7);
+}
+.idcard--vice.idcard--vice-bronze {
+  box-shadow:
+    0 0 0 2.5px #f97316,
+    0 0 28px rgba(249, 115, 22, 0.5),
+    0 26px 46px -10px rgba(0, 0, 0, .7);
 }
 
 /* ---------- Clown Licence (penalty for tampering with points) ---------- */
@@ -3146,6 +3288,62 @@ button { font: inherit; color: inherit; cursor: pointer; }
   color: var(--ink);
 }
 
+/* Search input for ranking list */
+.ranking-search {
+  position: relative;
+  margin-bottom: 18px;
+}
+.ranking-search__input {
+  width: 100%;
+  height: 46px;
+  padding: 0 42px 0 44px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: #f8fafc;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color .15s, background .15s, box-shadow .15s;
+  box-sizing: border-box;
+}
+.ranking-search__input:focus {
+  border-color: var(--blue);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(22, 103, 194, .12);
+}
+.ranking-search__icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray);
+  pointer-events: none;
+  font-size: 15px;
+  line-height: 1;
+}
+.ranking-search__clear {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gray);
+  font-size: 16px;
+  line-height: 1;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ranking-search__clear:hover {
+  color: var(--ink);
+  background: #e2e8f0;
+}
+
 .ranking-card__header {
   display: flex;
   align-items: center;
@@ -4479,6 +4677,30 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 .title-item--phenomenon .title-item__desc { color: #d9f2c4; }
 .title-item--phenomenon .title-item__status { background: #ffdf00; color: #004d1f; }
 
+.title-item--qrgang {
+  background: linear-gradient(120deg, #2a0b38 0%, #631247 50%, #ad2849 100%);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 60, 172, 0.5);
+}
+.title-item--qrgang.title-item--in-use {
+  box-shadow: inset 0 0 0 2px #ff3b81, 0 0 14px rgba(255, 59, 129, 0.45);
+}
+.title-item--qrgang .title-item__icon {
+  background: #3d0c4d;
+  color: #ff3b81;
+  box-shadow: inset 0 0 0 1px #ff3b81;
+}
+.title-item--qrgang .title-item__name {
+  color: #ffe4e6;
+  text-shadow: 0 0 10px rgba(255, 59, 129, 0.6);
+}
+.title-item--qrgang .title-item__desc {
+  color: #fbcfe8;
+}
+.title-item--qrgang .title-item__status {
+  background: #ff3b81;
+  color: #ffffff;
+}
+
 /* Maestro Konami: an old console in black and Nintendo red, pixel letters */
 .title-item--konami { background: #1f1f1f; box-shadow: inset 0 0 0 2px #e4000f; }
 .title-item--konami.title-item--in-use { box-shadow: inset 0 0 0 3px #e4000f, 0 0 18px -4px rgba(228, 0, 15, .6); }
@@ -5737,6 +5959,160 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   width: 16px;
   height: 16px;
   cursor: pointer;
+}
+
+/* Individual registrations (atletismo & videojuegos) */
+.participant-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #f7f8fa;
+  transition: transform .15s, border-color .15s;
+}
+.participant-card:hover {
+  transform: translateY(-2px);
+  border-color: #b9d3ef;
+}
+.participant-card--me {
+  border-color: #b9d3ef;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(22, 103, 194, .08);
+}
+.participant-card__num {
+  font-family: var(--font-varsity);
+  font-size: 18px;
+  color: var(--blue-dark);
+  min-width: 32px;
+  text-align: center;
+}
+.participant-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+.participant-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.participant-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+/* Individual registration: Tu inscripción card */
+.my-registration-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  border: 1px solid #b9d3ef;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(22, 103, 194, .08);
+}
+
+.my-registration-card__content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  flex: 1;
+}
+
+.my-registration-card__avatar {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border: 1.5px solid #d4e4f7;
+  border-radius: 50%;
+  background: #f7faff;
+  overflow: hidden;
+}
+.my-registration-card__avatar svg {
+  width: 100%;
+  height: 100%;
+}
+
+.my-registration-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.my-registration-card__top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 2px;
+}
+
+.my-registration-card__name {
+  margin: 0;
+  font-family: var(--font-varsity);
+  font-size: 19px;
+  color: var(--navy);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.my-registration-card__user {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+.my-registration-card__phone {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.my-registration-card__phone strong {
+  color: var(--navy);
+}
+
+.my-registration-card__cancel-btn {
+  flex: none;
+  height: 38px;
+  padding: 0 16px;
+  font-size: 13px;
+  white-space: nowrap;
+  border-radius: 999px;
+  cursor: pointer;
+  align-self: center;
+}
+
+@media (max-width: 640px) {
+  .my-registration-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    padding: 16px;
+  }
+  .my-registration-card__cancel-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+.individual-form__row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-top: 10px;
 }
 
 @media (max-width: 640px) {

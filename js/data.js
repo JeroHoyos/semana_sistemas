@@ -125,7 +125,7 @@ const ACTIVITIES = [
     decorations: ['balloon', 'computer', 'hourglass'] },
 
   // Friday
-  { id: 'atletismo', day: 'fri', start: '08:00', end: '09:00', type: 'competition', title: 'Carrera de atletismo 8‑bit',
+  { id: 'atletismo', day: 'fri', start: '08:00', end: '09:00', type: 'competition', title: 'Carrera de atletismo 8‑bit', individual: { tab: 'Atletismo', max: 45 },
     icon: 'pixel', color: '#f08a24', summary: 'Una carrera con alma de videojuego retro.', place: 'Hall M10',
     description: 'Pon a prueba tu velocidad y resistencia en un circuito a lo largo de todo el campus. Prepárate para enfrentar los cambios de inclinación del terreno, superar cada nivel y retarte a ti mismo en una carrera con pura alma de videojuego retro.',
     image: 'img/activity-athletics.jpg',
@@ -137,7 +137,7 @@ const ACTIVITIES = [
     image: 'img/activity-soccer.jpg',
     video: { id: '_2zoIHTWd00', title: 'Comercial de Nike Football: Arriésgalo todo (2014)' },
     decorations: ['jersey', 'cup', 'ball'] },
-  { id: 'videojuegos', day: 'fri', start: '10:00', end: '12:00', type: 'competition', title: 'Torneo de videojuegos', place: 'Sala Lovelace Turing',
+  { id: 'videojuegos', day: 'fri', start: '10:00', end: '12:00', type: 'competition', title: 'Torneo de videojuegos', individual: { tab: 'Videojuegos', max: 16 }, place: 'Sala Lovelace Turing',
     icon: 'gamepad', color: '#7b4fc9', summary: '16 jugadores se enfrentan en Overcooked hasta que solo quede un campeón.',
     description: 'Toma el control, demuestra tu talento en la pantalla y compite codo a codo con otros jugadores para coronarte como el campeón del torneo.',
     image: 'img/activity-overcooked2.jpg',
@@ -197,6 +197,10 @@ const TITLES = [
   { id: 'video-futbol', name: 'El Fenómeno', feminine: 'La Fenómeno', limit: 3,   // after Ronaldo Nazário: Brazil green
     description: 'Una de las 3 primeras personas en ver completo el video del torneo de fútbol.',
     hint: 'Hay un video que vale la pena ver hasta el final.' },
+  { id: 'qr-gang', name: 'QR Gang', feminine: 'QR Gang',
+    description: 'Desbloquea el estilo de carnet Vice City cromático.',
+    hint: 'El código de la banda QR esconde un estilo cromático.',
+    codeHash: '97313ae5dff440d435ccf82927fcebd9c7444ff7248e05d4be75d898bfe27995' },
 ];
 
 // SCARE METER: fed in real time from Supabase (table 'perfiles'),

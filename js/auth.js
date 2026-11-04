@@ -135,6 +135,19 @@ function chosenTitleOf(user) {
   return unlockedTitles(user).find((title) => title.id === id) || BASE_TITLE;
 }
 
+function hasUnlockedViceStyle(user) {
+  if (!user) return false;
+  const titles = (user.user_metadata?.titulos || []).concat(
+    Array.isArray(user.user_metadata?.monstruo?.titulos) ? user.user_metadata.monstruo.titulos : []
+  );
+  if (titles.includes('qr-gang') || user.user_metadata?.titulo === 'qr-gang' || user.user_metadata?.monstruo?.titulo === 'qr-gang') return true;
+  if (user.user_metadata?.carnet_estilo === 'vice') return true;
+  if (user.user_metadata?.monstruo?.carnet_estilo === 'vice') return true;
+  return false;
+}
+
+let cardStyleBeingEdited = 'clasico';
+
 // How each podium place dresses the ID card
 const MEDAL_STYLES = {
   gold: { card: 'idcard idcard--gold', stamp: '<span class="idcard__stamp idcard__stamp--gold">1° PUESTO</span>', border: '#d4a017' },
@@ -158,6 +171,8 @@ function scarerIdCard(name, email, monster, title = BASE_TITLE, medal = null) {
   const isPhenomenon = !clown && title?.id === 'video-futbol';
   const isKonami = !clown && title?.id === 'konami';
   const isSupervisor = !clown && title?.id === 'supervisor';
+  const isQRGang = !clown && title?.id === 'qr-gang';
+  const isVice = !clown && (monster?.carnet_estilo === 'vice' || monster?.tema === 'vice');
 
   // Long titles split into two lines so they do not hit the photo
   let bandClass = role.length > 12 ? 'idcard__band idcard__band--long' : 'idcard__band';
@@ -166,6 +181,7 @@ function scarerIdCard(name, email, monster, title = BASE_TITLE, medal = null) {
   if (isPhenomenon) bandClass += ' idcard__band--phenomenon';
   if (isKonami) bandClass += ' idcard__band--konami';
   if (isSupervisor) bandClass += ' idcard__band--supervisor';
+  if (isQRGang) bandClass += ' idcard__band--qrgang';
   if (clown) bandClass += ' idcard__band--clown';
 
   const roleHtml = isDebugger
@@ -174,17 +190,23 @@ function scarerIdCard(name, email, monster, title = BASE_TITLE, medal = null) {
     ? `🇧🇷 ${role}`
     : isSupervisor
     ? `👑 ${role}`
+    : isQRGang
+    ? `🌴 ${role}`
     : role;
 
   const color = monsterColor(monster);
   const medalStyle = clown ? null : MEDAL_STYLES[medal];
-  const cardClass = clown ? 'idcard idcard--clown' : medalStyle?.card ?? 'idcard';
+  let cardClass = clown
+    ? 'idcard idcard--clown'
+    : isVice
+    ? 'idcard idcard--vice' + (medal ? ` idcard--vice-${medal}` : '')
+    : medalStyle?.card ?? 'idcard';
   const stamp = clown
     ? '<span class="idcard__stamp idcard__stamp--clown">🤡 LICENCIA DE PAYASO</span>'
     : isSupervisor
     ? '<span class="idcard__stamp idcard__stamp--supervisor">⚡ STAFF ADMIN</span>'
     : medalStyle?.stamp ?? '';
-  const photoBorder = clown ? '#ff0033' : isSupervisor ? '#f59e0b' : medalStyle?.border ?? color;
+  const photoBorder = clown ? '#ff0033' : isVice ? '#ff2a85' : isSupervisor ? '#f59e0b' : medalStyle?.border ?? color;
 
   const brand = clown
     ? `<span class="idcard__week idcard__week--clown"><span class="idcard__tent" aria-hidden="true">🎪</span>CIRCO DE</span><span class="idcard__systems idcard__systems--clown">— PAYASOS —</span>`
@@ -241,6 +263,20 @@ function updatePreview() {
     ? 'Aún no tienes otros títulos. Canjea códigos en el Sustómetro para desbloquearlos.'
     : `Tienes ${titles.length} de ${TITLES.length} títulos. Canjea más códigos en el Sustómetro.`;
 
+  const viceAvailable = hasUnlockedViceStyle(currentUser);
+  const cardStyleSelector = $('#card-style-selector');
+  if (cardStyleSelector) {
+    cardStyleSelector.hidden = !viceAvailable;
+    const valEl = $('#val-card-style');
+    if (valEl) {
+      valEl.textContent = cardStyleBeingEdited === 'vice' ? 'Vice City' : 'Clásico';
+    }
+  }
+  if (!viceAvailable && cardStyleBeingEdited === 'vice') {
+    cardStyleBeingEdited = 'clasico';
+  }
+  monster.carnet_estilo = cardStyleBeingEdited;
+
   $('#signup-idcard-preview').innerHTML =
     scarerIdCard($('#edit-name').value, currentUser.email, monster, title, userMedal);
 }
@@ -293,6 +329,7 @@ function enterEdit() {
     monsterIndexes[part] = Math.max(index, 0);
   }
   titleBeingEdited = chosenTitleOf(currentUser).id;
+  cardStyleBeingEdited = meta.monstruo?.carnet_estilo || meta.carnet_estilo || 'clasico';
   editing = true;
 
   $('#edit-name').value = meta.full_name || currentUser.email.split('@')[0];
@@ -353,9 +390,9 @@ async function saveEdit() {
 
   try {
     const titleIds = unlockedTitles(currentUser).map((t) => t.id);
-    const monster = { ...chosenMonster(), titulo: title.id, titulos: titleIds };
+    const monster = { ...chosenMonster(), titulo: title.id, titulos: titleIds, carnet_estilo: cardStyleBeingEdited };
     const { data, error } = await supabaseClient.auth.updateUser({
-      data: { ...currentUser.user_metadata, full_name: name, monstruo: monster, titulo: title.id, titulos: titleIds },
+      data: { ...currentUser.user_metadata, full_name: name, monstruo: monster, titulo: title.id, titulos: titleIds, carnet_estilo: cardStyleBeingEdited },
     });
     if (error) throw error;
     await syncProfile(name, monster);
@@ -383,6 +420,13 @@ $('#title-selector').addEventListener('click', (event) => {
   const titles = unlockedTitles(currentUser);
   const current = titles.findIndex((title) => title.id === titleBeingEdited);
   titleBeingEdited = titles[(current + Number(arrow.dataset.dir) + titles.length) % titles.length].id;
+  updatePreview();
+});
+
+$('#card-style-selector')?.addEventListener('click', (event) => {
+  const arrow = event.target.closest('.arcade-selector__arrow');
+  if (!arrow || !editing) return;
+  cardStyleBeingEdited = cardStyleBeingEdited === 'vice' ? 'clasico' : 'vice';
   updatePreview();
 });
 
@@ -505,7 +549,8 @@ async function fetchUserMedal(userId) {
 
 function showProfile(user) {
   let fullName = user.user_metadata?.full_name || user.email.split('@')[0];
-  const monster = user.user_metadata?.monstruo || chosenMonster();
+  const style = user.user_metadata?.carnet_estilo || user.user_metadata?.monstruo?.carnet_estilo || 'clasico';
+  const monster = { ...(user.user_metadata?.monstruo || chosenMonster()), carnet_estilo: style };
   const title = chosenTitleOf(user);
   const clown = isClown(user.email, fullName, monster);
 

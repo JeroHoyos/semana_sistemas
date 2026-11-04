@@ -1,28 +1,43 @@
 /* =============================================
-   TEAM REGISTRATION (inscripciones.html)
-   For the competitions with `team` in ACTIVITIES (data.js). Whoever creates a team is its captain:
-   they leave their phone, design the banner and sign up the others by the email of their account.
-   Everything goes through the Supabase functions in supabase/teams.sql, which enforce the limits;
-   the checks here only spare the person a request that would fail.
+   REGISTRATION (inscripciones.html)
+   Handles both team competitions (observacion, maraton, futbol) and individual
+   competitions (atletismo, videojuegos).
+   Everything goes through Supabase RPC functions which enforce rules and limits.
    ============================================= */
 
+const REGISTRATION_ACTIVITIES = ACTIVITIES.filter((activity) => activity.team || activity.individual);
 const TEAM_ACTIVITIES = ACTIVITIES.filter((activity) => activity.team);
 
-// The competition on screen: the one in the address (inscripciones.html?id=futbol) or the first one
-let shownActivity = TEAM_ACTIVITIES.find((activity) => activity.id === new URLSearchParams(location.search).get('id'))
-  || TEAM_ACTIVITIES[0];
+// The competition on screen: the one in the URL (?id=...) or the first one
+let shownActivity = REGISTRATION_ACTIVITIES.find((activity) => activity.id === new URLSearchParams(location.search).get('id'))
+  || REGISTRATION_ACTIVITIES[0];
 
-let teams = null;        // every team of every competition (rows from equipos_inscritos); null until loaded
+const isIndividual = () => Boolean(shownActivity?.individual);
+
+let teams = null;                   // every team of every team competition; null until loaded
 let loadFailed = false;
-let freeAgents = null;   // players looking for a team; null until loaded
+let freeAgents = null;              // players looking for a team; null until loaded
 let loadFreeAgentsFailed = false;
+let individualRegistrations = null; // participants in current individual competition; null until loaded
+let loadIndividualFailed = false;
 
 const teamsShown = () => (teams || []).filter((team) => team.actividad === shownActivity.id);
 const myTeam = () => teamsShown().find((team) => team.miembros?.some((member) => member.id === currentUser?.id));
-const noSpotsLeft = () => shownActivity.team.maxTeams && teamsShown().length >= shownActivity.team.maxTeams;
-const loadingText = () => (loadFailed
-  ? 'No se pudieron cargar los equipos. Recarga la página en un momento.'
-  : 'Cargando equipos…');
+const myIndividual = () => (individualRegistrations || []).find((reg) => reg.usuario_id === currentUser?.id);
+
+const noSpotsLeft = () => {
+  if (isIndividual()) {
+    return Boolean(shownActivity.individual.max && (individualRegistrations || []).length >= shownActivity.individual.max);
+  }
+  return Boolean(shownActivity.team?.maxTeams && teamsShown().length >= shownActivity.team.maxTeams);
+};
+
+const loadingText = () => {
+  if (isIndividual()) {
+    return loadIndividualFailed ? 'No se pudieron cargar los participantes. Recarga la página.' : 'Cargando participantes…';
+  }
+  return loadFailed ? 'No se pudieron cargar los equipos. Recarga la página en un momento.' : 'Cargando equipos…';
+};
 
 function showMessage(element, text, isError = true) {
   element.textContent = text;
@@ -42,31 +57,53 @@ function render() {
 }
 
 function renderTabs() {
-  $('#registration-tabs').innerHTML = TEAM_ACTIVITIES.map((activity) => `
-    <button class="day" type="button" data-id="${activity.id}" aria-pressed="${activity === shownActivity}">
-      ${ICONS[activity.icon]}
-      <strong>${activity.team.tab}</strong>
-    </button>
-  `).join('');
+  $('#registration-tabs').innerHTML = REGISTRATION_ACTIVITIES.map((activity) => {
+    const tabName = activity.team?.tab || activity.individual?.tab || activity.title;
+    return `
+      <button class="day" type="button" data-id="${activity.id}" aria-pressed="${activity === shownActivity}">
+        ${ICONS[activity.icon]}
+        <strong>${escapeHtml(tabName)}</strong>
+      </button>
+    `;
+  }).join('');
 }
 
-// The same fact boxes as an activity page. With a team limit, a bar shows how full it is.
+// Summary fact boxes: day, modality / team size, and registered count with progress bar
 function renderSummary() {
-  const { team } = shownActivity;
   const day = findDay(shownActivity.day);
-  const count = teamsShown().length;
-  let signedUp = `${count} ${count === 1 ? 'equipo' : 'equipos'}`;
-  if (team.maxTeams) {
-    signedUp = `${count} de ${team.maxTeams} equipos
-      <span class="registration__bar" style="--filled: ${Math.min(100, count / team.maxTeams * 100)}%"></span>`;
-  }
-  if (!teams) signedUp = loadFailed ? '—' : '…';
+  let facts = [];
 
-  const facts = [
-    { icon: ICONS.calendar, name: 'Cuándo', value: `${day.name} ${day.date}, ${shownActivity.start}` },
-    { icon: ICONS.people, name: 'Equipos', value: `Hasta ${team.size} personas` },
-    { icon: ICONS.trophy, name: 'Inscritos', value: signedUp },
-  ];
+  if (isIndividual()) {
+    const { individual } = shownActivity;
+    const count = (individualRegistrations || []).length;
+    let signedUp = `${count} ${count === 1 ? 'participante' : 'participantes'}`;
+    if (individual.max) {
+      signedUp = `${count} de ${individual.max} participantes
+        <span class="registration__bar" style="--filled: ${Math.min(100, (count / individual.max) * 100)}%"></span>`;
+    }
+    if (!individualRegistrations) signedUp = loadIndividualFailed ? '—' : '…';
+
+    facts = [
+      { icon: ICONS.calendar, name: 'Cuándo', value: `${day.name} ${day.date}, ${shownActivity.start}` },
+      { icon: ICONS.people, name: 'Modalidad', value: 'Individual (1 persona)' },
+      { icon: ICONS.trophy, name: 'Inscritos', value: signedUp },
+    ];
+  } else {
+    const { team } = shownActivity;
+    const count = teamsShown().length;
+    let signedUp = `${count} ${count === 1 ? 'equipo' : 'equipos'}`;
+    if (team.maxTeams) {
+      signedUp = `${count} de ${team.maxTeams} equipos
+        <span class="registration__bar" style="--filled: ${Math.min(100, (count / team.maxTeams) * 100)}%"></span>`;
+    }
+    if (!teams) signedUp = loadFailed ? '—' : '…';
+
+    facts = [
+      { icon: ICONS.calendar, name: 'Cuándo', value: `${day.name} ${day.date}, ${shownActivity.start}` },
+      { icon: ICONS.people, name: 'Equipos', value: `Hasta ${team.size} personas` },
+      { icon: ICONS.trophy, name: 'Inscritos', value: signedUp },
+    ];
+  }
 
   $('#registration-summary').innerHTML = `
     <dl class="event__facts">
@@ -77,6 +114,90 @@ function renderSummary() {
 
 function renderMyTeam() {
   const panel = $('#my-team');
+  const myHeading = $('#my-team-heading');
+  const listHeading = $('#team-list-heading');
+  const buscandoSec = $('#buscando-equipo');
+  const introEl = $('#registration-intro');
+
+  if (isIndividual()) {
+    if (myHeading) myHeading.textContent = 'Tu inscripción';
+    if (listHeading) listHeading.textContent = 'Participantes inscritos';
+    if (buscandoSec) buscandoSec.hidden = true;
+    if (introEl) {
+      introEl.textContent = 'Inscríbete individualmente con tu carnet y tu número de celular. Los cupos son limitados.';
+    }
+
+    if (!currentUser) {
+      panel.innerHTML = `
+        <p class="registration__text">Inicia sesión con tu carnet para inscribirte a esta competencia.</p>
+        <div class="team__actions-row">
+          <button class="hero__button auth-form__submit" type="button" data-action="login">Iniciar sesión</button>
+        </div>
+      `;
+      return;
+    }
+    if (!individualRegistrations) {
+      panel.innerHTML = `<p class="registration__text">${loadingText()}</p>`;
+      return;
+    }
+
+    const reg = myIndividual();
+    if (reg) {
+      const position = individualRegistrations.findIndex((r) => r.usuario_id === currentUser.id) + 1;
+      const phoneDisplay = reg.celular ? escapeHtml(reg.celular) : 'No especificado';
+      panel.innerHTML = `
+        <div class="my-registration-card">
+          <div class="my-registration-card__content">
+            <span class="my-registration-card__avatar">${drawCustomMonster(reg.monstruo || currentUser.user_metadata?.monstruo || {})}</span>
+            <div class="my-registration-card__info">
+              <div class="my-registration-card__top">
+                <span class="team__badge" style="background: #e6f7ec; color: #1a7f37; border: 1px solid #b7ebc6;">✓ Inscrito</span>
+                <span class="team__badge">Cupo #${position} de ${shownActivity.individual.max}</span>
+              </div>
+              <h3 class="my-registration-card__name">${escapeHtml(reg.nombre || currentUser.user_metadata?.full_name || 'Asustador')}</h3>
+              <p class="my-registration-card__user">@${escapeHtml(reg.usuario || (currentUser.email ? currentUser.email.split('@')[0] : ''))}</p>
+              <p class="my-registration-card__phone">Celular registrado: <strong>${phoneDisplay}</strong></p>
+            </div>
+          </div>
+          <button class="week-button team__danger my-registration-card__cancel-btn" type="button" data-action="cancel-individual">
+            Cancelar inscripción
+          </button>
+        </div>
+      `;
+    } else if (noSpotsLeft()) {
+      panel.innerHTML = `
+        <p class="registration__text">Ya se llenaron los ${shownActivity.individual.max} cupos disponibles para esta competencia.</p>
+      `;
+    } else {
+      panel.innerHTML = `
+        <form class="individual-form" id="individual-form">
+          <p class="registration__text">
+            Te inscribirás con tu cuenta <strong>${escapeHtml(currentUser.user_metadata?.full_name || 'Estudiante')}</strong> (${escapeHtml(currentUser.email)}).
+            Ingresa tu número de celular para asegurar tu cupo en <strong>${escapeHtml(shownActivity.title)}</strong>.
+          </p>
+          <div class="individual-form__row">
+            <label class="auth-field" style="margin: 0; flex: 1; min-width: 220px;">
+              <span>Número de celular / WhatsApp</span>
+              <input type="tel" id="individual-phone" maxlength="20" required placeholder="Ej. 300 123 4567" autocomplete="tel">
+            </label>
+            <button class="hero__button auth-form__submit auth-edit__save" id="btn-submit-individual" type="submit" style="margin-top: 0; height: 44px;">
+              Inscribirme
+            </button>
+          </div>
+          <p class="auth-message" id="individual-form-message" hidden></p>
+        </form>
+      `;
+    }
+    return;
+  }
+
+  // Team competition
+  if (myHeading) myHeading.textContent = 'Tu equipo';
+  if (listHeading) listHeading.textContent = 'Equipos inscritos';
+  if (buscandoSec) buscandoSec.hidden = false;
+  if (introEl) {
+    introEl.textContent = 'Arma tu equipo y hazle su bandera. Quien crea el equipo queda de capitán: deja su celular e inscribe a los demás con el correo de su carnet.';
+  }
 
   const inThisList = freeAgents?.some((agent) => agent.usuario_id === currentUser?.id);
   const findTeamLabel = inThisList ? 'Editar mis datos' : 'Buscar equipo';
@@ -121,6 +242,49 @@ function renderMyTeam() {
 }
 
 function renderTeamList() {
+  if (isIndividual()) {
+    if (!individualRegistrations) {
+      $('#team-list').innerHTML = `<li class="registration__text">${loadingText()}</li>`;
+      return;
+    }
+    if (!individualRegistrations.length) {
+      $('#team-list').innerHTML = '<li class="registration__text">Aún no hay participantes inscritos. ¡Sé el primero en inscribirte!</li>';
+      return;
+    }
+
+    $('#team-list').innerHTML = individualRegistrations.map((p, index) => {
+      const isMe = p.usuario_id === currentUser?.id;
+      const cleanPhone = (p.celular || '').replace(/\D/g, '');
+      const waUrl = cleanPhone ? `https://wa.me/57${cleanPhone.replace(/^57/, '')}` : null;
+      const phoneDisplay = p.celular
+        ? `<div class="free-agent__contacts">
+             <a class="whatsapp-button" href="${waUrl}" target="_blank" rel="noopener">
+               ${ICONS.whatsapp}
+               <span>WhatsApp</span>
+             </a>
+             <a class="phone-link" href="tel:${escapeHtml(p.celular)}">${escapeHtml(p.celular)}</a>
+           </div>`
+        : '<span class="free-agent__anon">Inicia sesión para ver el contacto</span>';
+
+      return `
+        <li class="participant-card ${isMe ? 'participant-card--me' : ''}">
+          <span class="participant-card__num">#${index + 1}</span>
+          <span class="team__avatar">${drawCustomMonster(p.monstruo || {})}</span>
+          <div class="participant-card__info">
+            <div class="participant-card__top">
+              <span class="team__who">${escapeHtml(p.nombre)}<small>@${escapeHtml(p.usuario)}</small></span>
+              ${isMe ? '<span class="team__badge">Tú</span>' : ''}
+            </div>
+            <div class="participant-card__actions">
+              ${phoneDisplay}
+            </div>
+          </div>
+        </li>
+      `;
+    }).join('');
+    return;
+  }
+
   const shown = teamsShown();
   let html = shown.map((team) => `<li>${teamCard(team)}</li>`).join('');
   if (!teams) html = `<li class="registration__text">${loadingText()}</li>`;
@@ -129,6 +293,13 @@ function renderTeamList() {
 }
 
 function renderFreeAgents() {
+  const section = $('#buscando-equipo');
+  if (isIndividual()) {
+    if (section) section.hidden = true;
+    return;
+  }
+  if (section) section.hidden = false;
+
   const list = $('#free-agents-list');
   if (!list) return;
 
@@ -184,9 +355,8 @@ function renderFreeAgents() {
 }
 
 // A team with its banner, members (and an empty row per free spot) and the captain's phone.
-// In "Tu equipo" (manage) it also gets the captain's tools, or the button to leave.
 function teamCard(team, manage = false) {
-  const { size } = shownActivity.team;
+  const { size } = shownActivity.team || { size: 1 };
   const members = team.miembros || [];
   const full = members.length >= size;
   const captainTools = manage && team.capitan_id === currentUser?.id;
@@ -249,9 +419,10 @@ function teamCard(team, manage = false) {
 }
 
 
-/* ---------- Reading and changing the teams ---------- */
+/* ---------- Reading and changing data ---------- */
 
 async function loadTeams() {
+  if (isIndividual()) return;
   const { data, error } = await supabaseClient.rpc('equipos_inscritos');
   if (error) console.error('Could not load the teams:', error);
   loadFailed = Boolean(error);
@@ -260,6 +431,7 @@ async function loadTeams() {
 }
 
 async function loadFreeAgents() {
+  if (isIndividual()) return;
   const { data, error } = await supabaseClient.rpc('personas_buscando_equipo', { p_actividad: shownActivity.id });
   if (error) console.error('Could not load the free agents:', error);
   loadFreeAgentsFailed = Boolean(error);
@@ -268,7 +440,16 @@ async function loadFreeAgents() {
   renderMyTeam();
 }
 
-// Calls a function from teams.sql (its errors already come in Spanish) and reads the teams again
+async function loadIndividualRegistrations() {
+  if (!isIndividual()) return;
+  const { data, error } = await supabaseClient.rpc('inscritos_individuales', { p_actividad: shownActivity.id });
+  if (error) console.error('Could not load individual registrations:', error);
+  loadIndividualFailed = Boolean(error);
+  individualRegistrations = error ? null : data;
+  render();
+}
+
+// Calls a function from teams.sql and reads the teams again
 async function changeTeam(button, name, params, success) {
   $('#team-message').hidden = true;
   button.disabled = true;
@@ -282,7 +463,7 @@ async function changeTeam(button, name, params, success) {
   showMessage($('#team-message'), success, false);
 }
 
-$('#my-team').addEventListener('click', (event) => {
+$('#my-team').addEventListener('click', async (event) => {
   const button = event.target.closest('[data-action]');
   if (!button) return;
   const { action, team, member } = button.dataset;
@@ -290,6 +471,16 @@ $('#my-team').addEventListener('click', (event) => {
   if (action === 'login') {
     setAuthMode(false);
     $('#auth-modal').showModal();
+  } else if (action === 'cancel-individual' && confirm('¿Seguro que deseas cancelar tu inscripción?')) {
+    button.disabled = true;
+    const { error } = await supabaseClient.rpc('cancelar_inscripcion_individual', { p_actividad: shownActivity.id });
+    button.disabled = false;
+    if (error) {
+      showMessage($('#team-message'), translateError(error));
+      return;
+    }
+    await loadIndividualRegistrations();
+    showMessage($('#team-message'), 'Cancelaste tu inscripción.', false);
   } else if (action === 'create') {
     openTeamForm(null);
   } else if (action === 'open-find-team') {
@@ -305,10 +496,34 @@ $('#my-team').addEventListener('click', (event) => {
   }
 });
 
-// The captain signs up someone by the email of their account
-$('#my-team').addEventListener('submit', (event) => {
+// Handling form submissions in #my-team (individual signup or captain adding member)
+$('#my-team').addEventListener('submit', async (event) => {
   event.preventDefault();
   const form = event.target;
+
+  if (form.id === 'individual-form') {
+    const button = $('#btn-submit-individual');
+    const phoneInput = $('#individual-phone');
+    const phone = phoneInput ? phoneInput.value.trim() : '';
+    if (!phone) return;
+
+    button.disabled = true;
+    $('#individual-form-message').hidden = true;
+    const { error } = await supabaseClient.rpc('inscribirse_individual', {
+      p_actividad: shownActivity.id,
+      p_celular: phone,
+    });
+    button.disabled = false;
+    if (error) {
+      showMessage($('#individual-form-message'), translateError(error));
+      return;
+    }
+    await loadIndividualRegistrations();
+    showMessage($('#team-message'), '¡Te has inscrito con éxito!', false);
+    return;
+  }
+
+  // The captain signs up someone by the email of their account
   const email = form.correo.value.trim().toLowerCase();
   changeTeam(form.querySelector('button'), 'agregar_miembro', { p_equipo: form.dataset.team, p_correo: email },
     `Inscribiste a ${email}.`);
@@ -323,16 +538,20 @@ $('#registration-tabs').addEventListener('click', (event) => {
   $('#team-message').hidden = true;
   $('#free-agents-message').hidden = true;
   freeAgents = null;
+  individualRegistrations = null;
   render();
-  loadFreeAgents();
+
+  if (isIndividual()) {
+    loadIndividualRegistrations();
+  } else {
+    loadTeams();
+    loadFreeAgents();
+  }
 });
 
 
 /* ---------- Team form and banner designer ---------- */
 
-// The options of each selector, in the order they show. The colors are the cloth's (fondo) and the
-// letters' (tinta), starting with those of the fraternity banners in the reference photo;
-// the rest of the parts come from BANNER_OPTIONS (icons.js).
 const BANNER_COLORS = {
   fondo: [
     ['#2f8f5b', 'Verde'], ['#f4f4ef', 'Blanco'], ['#f6e21c', 'Amarillo'], ['#3c4a92', 'Azul noche'],
@@ -354,13 +573,10 @@ const BANNER_CHOICES = Object.fromEntries(Object.keys(BANNER_LABELS).map((part) 
   ? BANNER_COLORS[part].map(([value, label]) => ({ value, label }))
   : Object.entries(BANNER_OPTIONS[part]).map(([value, option]) => ({ value, label: option.label }))]));
 
-// Greek letters that do not look like Latin ones, for fraternity names like ΣΣΚ
 const GREEK_LETTERS = ['Γ', 'Δ', 'Θ', 'Λ', 'Ξ', 'Π', 'Σ', 'Φ', 'Ψ', 'Ω'];
 
-let banner = {};   // the banner being designed, with the same keys as DEFAULT_BANNER (icons.js)
+let banner = {};
 
-// One group per part: colors are round swatches; the other parts, a small banner that shows
-// how yours would look with that option (updateBanner draws them)
 $('#banner-pickers').innerHTML = Object.entries(BANNER_CHOICES).map(([part, options]) => `
   <fieldset class="banner-picker">
     <legend>${BANNER_LABELS[part]}</legend>
@@ -377,8 +593,6 @@ $('#banner-pickers').innerHTML = Object.entries(BANNER_CHOICES).map(([part, opti
 
 $('#greek-letters').innerHTML = GREEK_LETTERS.map((letter) => `<button class="random-button" type="button">${letter}</button>`).join('');
 
-// team: the team to edit, or null to create one.
-// The defaults fill any part a banner saved before that part existed.
 function openTeamForm(team) {
   const isEditing = Boolean(team);
   banner = team
@@ -399,7 +613,7 @@ function openTeamForm(team) {
     membersInputs.innerHTML = '';
   } else {
     membersBox.hidden = false;
-    const { size } = shownActivity.team;
+    const { size } = shownActivity.team || { size: 3 };
     let slotsHtml = '';
     for (let i = 2; i <= size; i++) {
       const isRequired = i <= 3;
@@ -421,8 +635,6 @@ function closeTeamForm() {
   $('#my-team').hidden = false;
 }
 
-// Redraws the big banner, marks the chosen options and redraws each small banner with the current design.
-// The buttons stay in place, so the keyboard focus is not lost.
 function updateBanner() {
   banner.letras = $('#banner-letters').value.toUpperCase();
   $('#banner-preview').innerHTML = drawBanner(banner);
@@ -441,7 +653,6 @@ $('#banner-pickers').addEventListener('click', (event) => {
   updateBanner();
 });
 
-// A random option for every part except the letters. The letters' color never repeats the cloth's.
 $('#btn-random-banner').addEventListener('click', () => {
   const pick = (options) => options[Math.floor(Math.random() * options.length)].value;
   for (const part of Object.keys(BANNER_CHOICES)) banner[part] = pick(BANNER_CHOICES[part]);
@@ -537,7 +748,7 @@ function openFindTeamModal() {
     return;
   }
 
-  $('#find-team-activity').value = shownActivity.id;
+  $('#find-team-activity').value = isIndividual() ? TEAM_ACTIVITIES[0].id : shownActivity.id;
   updateFindTeamModalPositions();
 
   const existing = freeAgents?.find((agent) => agent.usuario_id === currentUser.id);
@@ -612,20 +823,27 @@ $('#free-agents-list').addEventListener('click', async (event) => {
 
 /* ---------- Startup ---------- */
 
-// auth.js announces every session change. Phones only come with a session, so the teams are read
-// again each time. They are also read at startup: the session may have been announced before this file loaded.
 document.addEventListener('idcard:session', () => {
   if (!currentUser) closeTeamForm();
-  loadTeams();
-  loadFreeAgents();
+  if (isIndividual()) {
+    loadIndividualRegistrations();
+  } else {
+    loadTeams();
+    loadFreeAgents();
+  }
 });
 
 $('#registration-decorations').innerHTML = ['magnifier', 'computer', 'ball'].map((name) => drawPixelArt(PIXEL_ART[name])).join('');
 $('#find-team-eye-icon').innerHTML = drawPixelArt(PIXEL_ART.magnifier);
 $('#footer-crest').innerHTML = drawCrest();
 render();
-loadTeams();
-loadFreeAgents();
+
+if (isIndividual()) {
+  loadIndividualRegistrations();
+} else {
+  loadTeams();
+  loadFreeAgents();
+}
 
 if (location.hash === '#buscando-equipo') {
   setTimeout(() => {

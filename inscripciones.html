@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Cinzel:wght@600;700&family=Creepster&family=Graduate&family=Press+Start+2P&family=Rye&display=swap" crossorigin>
+  <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/pricedown">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -35,7 +36,7 @@
     <div class="container scare-meter-hero__content">
       <div class="event-hero__decorations" id="registration-decorations"></div>
       <h1 class="event-hero__title">Inscripciones</h1>
-      <p class="scare-meter-hero__intro">
+      <p class="scare-meter-hero__intro" id="registration-intro">
         Arma tu equipo y hazle su bandera. Quien crea el equipo queda de capitán: deja su celular e inscribe a los demás con el correo de su carnet.
       </p>
     </div>
@@ -47,7 +48,7 @@
       <div class="schedule__days registration__tabs" id="registration-tabs"></div>
       <div class="registration__summary" id="registration-summary"></div>
 
-      <h2 class="event__subtitle">Tu equipo</h2>
+      <h2 class="event__subtitle" id="my-team-heading">Tu equipo</h2>
       <div id="my-team"></div>
       <p class="auth-message" id="team-message" hidden></p>
 
@@ -95,7 +96,7 @@
         </div>
       </form>
 
-      <h2 class="event__subtitle">Equipos inscritos</h2>
+      <h2 class="event__subtitle" id="team-list-heading">Equipos inscritos</h2>
       <ul class="team-list" id="team-list"></ul>
 
       <!-- Free agents pool: players looking for a team -->
@@ -295,6 +296,14 @@
             </div>
           </div>
           <p class="auth-edit__note" id="edit-titles-note"></p>
+          <div class="arcade-selector" id="card-style-selector" hidden>
+            <span class="arcade-selector__label">Estilo de carnet</span>
+            <div class="arcade-selector__control">
+              <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Estilo anterior">‹</button>
+              <span class="arcade-selector__value" id="val-card-style" aria-live="polite">Clásico</span>
+              <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Estilo siguiente">›</button>
+            </div>
+          </div>
         </div>
 
         <div id="edit-builder-mount"></div>

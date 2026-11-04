@@ -40,7 +40,7 @@ function renderInfo() {
     noticeSection(),
     factsSection(),
     descriptionSection(),
-    teamSection(activity.team),
+    registrationSection(),
     videoSection(activity.video),
     rulesSection(activity.rules),
     speakerSection(findSpeaker(activity.speaker)),
@@ -109,18 +109,29 @@ function statBoxes(stats) {
   `;
 }
 
-// Team size and the button to sign a team up (team field)
-function teamSection(team) {
-  if (!team) return '';
-
-  return `
-    <h2 class="event__subtitle">Inscripciones</h2>
-    <p class="event__bio">
-      Equipos de hasta ${team.size} personas${team.maxTeams ? `, con cupo para ${team.maxTeams} equipos` : ''}.
-      Quien crea el equipo queda de capitán e inscribe a los demás con el correo de su carnet.
-    </p>
-    <a class="hero__button auth-form__submit" href="inscripciones.html?id=${activity.id}">Inscribir equipo ${ICONS.arrow}</a>
-  `;
+// Team or individual registration call to action
+function registrationSection() {
+  if (activity.team) {
+    return `
+      <h2 class="event__subtitle">Inscripciones</h2>
+      <p class="event__bio">
+        Equipos de hasta ${activity.team.size} personas${activity.team.maxTeams ? `, con cupo para ${activity.team.maxTeams} equipos` : ''}.
+        Quien crea el equipo queda de capitán e inscribe a los demás con el correo de su carnet.
+      </p>
+      <a class="hero__button auth-form__submit" href="inscripciones.html?id=${activity.id}">Inscribir equipo ${ICONS.arrow}</a>
+    `;
+  }
+  if (activity.individual) {
+    return `
+      <h2 class="event__subtitle">Inscripciones</h2>
+      <p class="event__bio">
+        Inscripción individual con cupo para ${activity.individual.max} participantes.
+        Solo necesitas tener tu carnet e ingresar tu número de celular.
+      </p>
+      <a class="hero__button auth-form__submit" href="inscripciones.html?id=${activity.id}">Inscribirme ${ICONS.arrow}</a>
+    `;
+  }
+  return '';
 }
 
 // YouTube video (video field). youtube-nocookie leaves no cookies until someone presses play.
