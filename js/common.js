@@ -10,6 +10,12 @@ const findDay = (id) => DAYS.find((day) => day.id === id);
 const findSpeaker = (id) => SPEAKERS.find((speaker) => speaker.id === id);
 const findActivity = (id) => ACTIVITIES.find((activity) => activity.id === id);
 const findGroup = (id) => GROUPS.find((group) => group.id === id);
+const findTitle = (id) => TITLES.find((title) => title.id === id);
+
+// How a title reads according to the monster's style (Asustador / Asustadora, Rey / Reina…)
+function titleText(title, style) {
+  return style === 'femenino' && title.feminine ? title.feminine : title.name;
+}
 
 // Names and emails are typed by each person: anything that goes into innerHTML passes through here
 function escapeHtml(text) {

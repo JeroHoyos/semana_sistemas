@@ -100,13 +100,6 @@ let currentUser = null;
 // The usual title (the "free" one in TITLES, data.js): everyone has it
 const BASE_TITLE = TITLES.find((title) => title.free) || TITLES[0];
 
-const findTitle = (id) => TITLES.find((title) => title.id === id);
-
-// How a title reads according to the monster's style (Asustador / Asustadora, Rey / Reina…)
-function titleText(title, style) {
-  return style === 'femenino' && title.feminine ? title.feminine : title.name;
-}
-
 // The titles a person has: the free ones and those redeemed with a code.
 // Stored in their account as a list of ids (user_metadata.titulos); an id no longer in TITLES is ignored.
 function unlockedTitles(user) {

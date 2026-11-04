@@ -1,7 +1,8 @@
 /* =============================================
    SECRET CODES
    Hidden challenges. Only the first person who completes each one gets its code, to send to the
-   representative for the prize; whoever comes later learns that someone got there first.
+   representative for the prize, and its title for the ID card (the one in TITLES with the secret's id);
+   whoever comes later learns that someone got there first.
      konami        the Konami code (↑ ↑ ↓ ↓ ← → ← → B A) on the Scare Meter console's d-pad and buttons
                    (js/weekly-game.js notices it and calls claimSecret)
      video-futbol  the whole video on the football tournament page, without skipping
@@ -42,11 +43,35 @@ async function claimSecret(id) {
       console.error('Could not claim the secret:', error);
       return;
     }
+    let title = '';
+    if (data.estado === 'primero') {
+      try {
+        title = await grantTitle(id);
+      } catch (titleError) {
+        console.error('Could not save the title:', titleError);
+      }
+    }
     // 'incompleto': according to Supabase the video did not take as long as it lasts (sped up or faked)
-    if (data.estado !== 'incompleto') showSecret(id, data.estado, data.codigo);
+    if (data.estado !== 'incompleto') showSecret(id, data.estado, data.codigo, title);
   } finally {
     claiming = false;
   }
+}
+
+// Saves the secret's title in the account, like a title from a code (js/codes.js); auth.js copies it
+// to 'perfiles' on the next page that has it. Returns how the title reads on the person's ID card.
+async function grantTitle(id) {
+  // The account fresh from Supabase, not the session's copy: a title redeemed elsewhere is not lost
+  const { data, error } = await supabaseClient.auth.getUser();
+  if (error) throw error;
+  const meta = data.user.user_metadata;
+  const titles = meta.titulos || [];
+  if (!titles.includes(id)) {
+    // Supabase only replaces the keys it receives: the rest of the account stays as it is
+    const { error: saveError } = await supabaseClient.auth.updateUser({ data: { titulos: [...titles, id] } });
+    if (saveError) throw saveError;
+  }
+  return titleText(findTitle(id), meta.monstruo?.estilo);
 }
 
 // Built here so every page has it without repeating its HTML. It looks like the sticker easter egg's.
@@ -86,14 +111,16 @@ function secretDialog() {
   return dialog;
 }
 
-// estado: 'primero' (with the code), 'tarde' (someone found it first) or 'sin-sesion'
-function showSecret(id, estado, codigo = '') {
+// estado: 'primero' (with the code and the title, '' if it could not be saved), 'tarde' (someone found it first) or 'sin-sesion'
+function showSecret(id, estado, codigo = '', title = '') {
   const dialog = secretDialog();
   const late = estado === 'tarde';
   $('#secret-gif').src = late ? 'img/angry-programmer-cat.gif' : 'img/programmer-cat.gif';
   $('#secret-gif').alt = late ? 'Gato programador con gafas, enojado frente al portátil' : 'Gato programando en un portátil';
   $('#secret-title').textContent = late ? 'Alguien más lo encontró primero...' : SECRET_TITLES[id];
-  $('#secret-text').textContent = SECRET_TEXTS[estado];
+  $('#secret-text').textContent = title
+    ? `Fuiste la primera persona en descubrir este secreto y ganaste el título «${title}» para tu carnet. Además, escríbele al representante y mándale este código:`
+    : SECRET_TEXTS[estado];
   $('#secret-code').textContent = codigo || '';
   $('#secret-code').hidden = !codigo;
   $('#secret-login').hidden = estado !== 'sin-sesion';
