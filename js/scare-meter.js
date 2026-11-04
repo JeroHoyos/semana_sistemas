@@ -160,6 +160,8 @@ function renderRanking(people) {
       titleTag = `<span class="scarer-card__title-tag scarer-card__title-tag--debugger"><span class="glitch-text" data-text="${text}">${text}</span></span>`;
     } else if (title.id === 'terror-nocturno') {
       titleTag = `<span class="scarer-card__title-tag scarer-card__title-tag--nocturnal">${text}</span>`;
+    } else if (title.id === 'video-futbol') {
+      titleTag = `<span class="scarer-card__title-tag scarer-card__title-tag--phenomenon">${text}</span>`;
     }
 
     const medal = clown ? null : medalFor(points, allPoints);
@@ -330,12 +332,13 @@ $('#idcard-modal').addEventListener('click', (event) => {
 // reclamar_easter_egg function keeps them, and also remembers who found it first.
 // The page sends it the last five stickers tapped, comma separated, each time
 // all five are different (for example 'python,git,cpp,linux,terminal').
+// Without a session it does nothing (Supabase also refuses it: supabase/secrets.sql).
 const TOTAL_STICKERS = 5;
 let tappedStickers = [];
 
 $('.tank__stickers').addEventListener('click', async (event) => {
   const sticker = event.target.closest('.sticker');
-  if (!sticker) return;
+  if (!sticker || !currentUser) return;
 
   tappedStickers = [...tappedStickers, sticker.dataset.sticker].slice(-TOTAL_STICKERS);
   if (new Set(tappedStickers).size < TOTAL_STICKERS) return;

@@ -133,11 +133,13 @@ function scarerIdCard(name, email, monster, title = BASE_TITLE, medal = null) {
   const role = clown ? 'TRAMPOSO DE CIRCO' : titleText(title, monster?.estilo);
   const isDebugger = !clown && title?.id === 'debugger';
   const isNocturnal = !clown && title?.id === 'terror-nocturno';
+  const isPhenomenon = !clown && title?.id === 'video-futbol';
 
   // Long titles split into two lines so they do not hit the photo
   let bandClass = role.length > 12 ? 'idcard__band idcard__band--long' : 'idcard__band';
   if (isDebugger) bandClass += ' idcard__band--glitch';
   if (isNocturnal) bandClass += ' idcard__band--nocturnal';
+  if (isPhenomenon) bandClass += ' idcard__band--phenomenon';
   if (clown) bandClass += ' idcard__band--clown';
 
   const roleHtml = isDebugger

@@ -89,6 +89,7 @@ function renderCollection() {
       used ? 'title-item--in-use' : '',
       isDebugger ? 'title-item--debugger' : '',
       isNocturnal ? 'title-item--nocturnal' : '',
+      title.id === 'video-futbol' ? 'title-item--phenomenon' : '',
     ].filter(Boolean).join(' ');
 
     return `<li class="${classes}">

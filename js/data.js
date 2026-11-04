@@ -193,7 +193,7 @@ const TITLES = [
   { id: 'konami', name: 'Maestro Konami', feminine: 'Maestra Konami', limit: 1,
     description: 'La primera persona en meter el código Konami en la consola.',
     hint: 'Los gamers de la vieja escuela conocen el truco.' },
-  { id: 'video-futbol', name: 'Árbitro del VAR', feminine: 'Árbitra del VAR', limit: 1,
+  { id: 'video-futbol', name: 'El Fenómeno', feminine: 'La Fenómeno', limit: 1,   // after Ronaldo Nazário: Brazil green
     description: 'La primera persona en ver completo el video del torneo de fútbol.',
     hint: 'Hay un video que vale la pena ver hasta el final.' },
 ];

@@ -2,7 +2,7 @@
    SECRET CODES
    Hidden challenges. Only the first person who completes each one gets its code, to send to the
    representative for the prize, and its title for the ID card (the one in TITLES with the secret's id);
-   whoever comes later learns that someone got there first.
+   whoever comes later learns that someone got there first. Without a session they do nothing.
      konami        the Konami code (↑ ↑ ↓ ↓ ← → ← → B A) on the Scare Meter console's d-pad and buttons
                    (js/weekly-game.js notices it and calls claimSecret)
      video-futbol  the whole video on the football tournament page, without skipping
@@ -21,7 +21,7 @@ const SECRET_TITLES = {
 const SECRET_TEXTS = {
   primero: 'Fuiste la primera persona en descubrir este secreto. Escríbele al representante y mándale este código:',
   tarde: 'Descubriste el secreto, pero otra persona llegó antes. ¡Sigue buscando!',
-  'sin-sesion': 'Encontraste un secreto, pero el premio es para quien tenga su carnet. Inicia sesión y hazlo otra vez.',
+  error: 'Encontraste un secreto, pero no pudimos revisarlo. Hazlo otra vez en un rato.',
 };
 
 
@@ -34,13 +34,11 @@ async function claimSecret(id) {
   claiming = true;
   try {
     const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) {
-      showSecret(id, 'sin-sesion');
-      return;
-    }
+    if (!session) return;
     const { data, error } = await supabaseClient.rpc('reclamar_secreto', { p_secreto: id });
     if (error) {
       console.error('Could not claim the secret:', error);
+      showSecret(id, 'error');
       return;
     }
     let title = '';
@@ -90,7 +88,6 @@ function secretDialog() {
       <h2 class="auth-modal__title easter-egg__title" id="secret-title"></h2>
       <p class="easter-egg__text" id="secret-text"></p>
       <strong class="easter-egg__code" id="secret-code"></strong>
-      <button class="hero__button auth-form__submit" id="secret-login" type="button">Iniciar sesión</button>
     </div>`;
   document.body.append(dialog);
 
@@ -98,20 +95,11 @@ function secretDialog() {
   dialog.addEventListener('click', (event) => {
     if (event.target === dialog) dialog.close();
   });
-  // Pages with the login dialog open it; the activity page sends to the home page, which has it
-  $('#secret-login').addEventListener('click', () => {
-    dialog.close();
-    if ($('#auth-modal')) {
-      setAuthMode(false);
-      $('#auth-modal').showModal();
-    } else {
-      location.href = 'index.html';
-    }
-  });
   return dialog;
 }
 
-// estado: 'primero' (with the code and the title, '' if it could not be saved), 'tarde' (someone found it first) or 'sin-sesion'
+// estado: 'primero' (with the code and the title, '' if it could not be saved), 'tarde' (someone found it first)
+// or 'error' (Supabase did not answer)
 function showSecret(id, estado, codigo = '', title = '') {
   const dialog = secretDialog();
   const late = estado === 'tarde';
@@ -123,7 +111,6 @@ function showSecret(id, estado, codigo = '', title = '') {
     : SECRET_TEXTS[estado];
   $('#secret-code').textContent = codigo || '';
   $('#secret-code').hidden = !codigo;
-  $('#secret-login').hidden = estado !== 'sin-sesion';
   if (!dialog.open) dialog.showModal();
 }
 
@@ -154,7 +141,7 @@ if (footballVideo) {
   async function noteStart() {
     started = true;
     const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) return;   // without a session there is no prize: on ending it asks to log in
+    if (!session) return;   // without a session the secret does nothing
     const { error } = await supabaseClient.rpc('empezar_secreto', { p_secreto: 'video-futbol' });
     if (error) console.error('Could not note the start of the video:', error);
   }

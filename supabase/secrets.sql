@@ -14,6 +14,9 @@
 -- segundos: the least time between starting the challenge and claiming it. The video lasts 4:13 (253 s);
 -- 240 leaves room for the page's own checks. 0 = no minimum time.
 -- To see who won:  select id, ganador, encontrado_en from public.secretos;
+-- To start a secret over (after testing it yourself):
+--   update public.secretos set ganador = null, encontrado_en = null where id = 'konami';
+-- The winner also gets the title with the secret's id on their ID card (js/secrets.js).
 --
 -- Table and function names stay in Spanish, like the rest of the database.
 -- =============================================
@@ -105,3 +108,10 @@ revoke all on function public.empezar_secreto(text) from public, anon;
 revoke all on function public.reclamar_secreto(text) from public, anon;
 grant execute on function public.empezar_secreto(text) to authenticated;
 grant execute on function public.reclamar_secreto(text) to authenticated;
+
+
+-- ---------- The tank sticker easter egg (js/scare-meter.js) ----------
+-- Its function, reclamar_easter_egg, lives only in Supabase (it keeps the order and the code).
+-- Like the secrets above, only people with a session can claim it.
+revoke all on function public.reclamar_easter_egg(text) from public, anon;
+grant execute on function public.reclamar_easter_egg(text) to authenticated;
