@@ -13,11 +13,11 @@
 </head>
 <body>
 
-  <!-- PORTADA -->
-  <header class="portada foto foto--entrada">
-    <!-- Barra de sustómetro arriba a la izquierda -->
-    <div class="sustometro-barra" id="sustometro-barra">
-      <a class="portada__boton portada__boton--sesion portada__boton--sustometro" href="sustometro.html">
+  <!-- HERO -->
+  <header class="hero photo-bg photo-bg--entrance">
+    <!-- Scare Meter link, top left -->
+    <div class="scare-meter-bar">
+      <a class="hero__button hero__button--session hero__button--scare-meter" href="sustometro.html">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M18 20V10M12 20V4M6 20v-6"/>
         </svg>
@@ -25,27 +25,27 @@
       </a>
     </div>
 
-    <!-- Barra de sesión arriba a la derecha -->
-    <div class="sesion-barra" id="sesion-barra">
-      <button class="portada__boton portada__boton--sesion" id="btn-abrir-auth" type="button">
-        <span id="sesion-texto">Iniciar sesión</span>
+    <!-- Session bar, top right -->
+    <div class="session-bar">
+      <button class="hero__button hero__button--session" id="btn-open-auth" type="button">
+        <span id="session-text">Iniciar sesión</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
         </svg>
       </button>
     </div>
 
-    <div class="contenedor portada__contenido">
-      <p class="portada__lugar">Facultad de Minas · Medellín</p>
+    <div class="container hero__content">
+      <p class="hero__place">Facultad de Minas · Medellín</p>
 
-      <h1 class="portada__titulo">
-        <span class="portada__antetitulo">Semana de</span>
-        <span class="letras-varsity" data-texto="Sistemas">Sistemas</span>
+      <h1 class="hero__title">
+        <span class="hero__eyebrow">Semana de</span>
+        <span class="varsity-letters" data-text="Sistemas">Sistemas</span>
       </h1>
 
-      <div class="portada__acciones">
-        <ul class="portada__dias" id="portada-dias" aria-label="Días del evento"></ul>
-        <a class="portada__boton" href="#horario">
+      <div class="hero__actions">
+        <ul class="hero__days" id="hero-days" aria-label="Días del evento"></ul>
+        <a class="hero__button" href="#horario">
           Ver horario
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
@@ -55,315 +55,315 @@
 
   <main>
 
-    <!-- PONENTES: título, las fotos para elegir ponente y el carnet del ponente elegido -->
-    <section class="ponentes foto foto--edificio foto--suave" id="ponentes">
-      <div class="contenedor">
-        <div class="seccion-titulo">
-          <p class="seccion-titulo__antetitulo">Charlas y conferencias</p>
+    <!-- SPEAKERS: title, photos to pick a speaker, and the chosen speaker's ID card -->
+    <section class="speakers photo-bg photo-bg--building photo-bg--soft" id="ponentes">
+      <div class="container">
+        <div class="section-title">
+          <p class="section-title__eyebrow">Charlas y conferencias</p>
           <h2>Ponentes</h2>
         </div>
-        <div class="ponentes__miniaturas" id="ponentes-miniaturas"></div>
-        <div class="ponentes__carnet" id="ponentes-carnet"></div>
+        <div class="speakers__thumbnails" id="speakers-thumbnails"></div>
+        <div class="speakers__idcard" id="speakers-idcard"></div>
       </div>
     </section>
 
-    <!-- HORARIO: días, buscador, pestañas y la lista (o la cuadrícula de la semana) -->
-    <section class="horario foto foto--auditorio" id="horario">
-      <div class="contenedor">
-        <div class="horario__tarjeta">
+    <!-- SCHEDULE: days, search box, tabs, and the list (or the week grid) -->
+    <section class="schedule photo-bg photo-bg--auditorium" id="horario">
+      <div class="container">
+        <div class="schedule__card">
 
-          <h2 class="horario__banda">
-            <svg class="horario__icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4M16 2v4M3 10h11M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"/><circle cx="17.5" cy="17.5" r="4.5"/><path d="M17.5 15.5v2l1.3 1.3"/></svg>
+          <h2 class="schedule__band">
+            <svg class="schedule__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4M16 2v4M3 10h11M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"/><circle cx="17.5" cy="17.5" r="4.5"/><path d="M17.5 15.5v2l1.3 1.3"/></svg>
             Horario
           </h2>
 
-          <div class="horario__dias" id="horario-dias"></div>
+          <div class="schedule__days" id="schedule-days"></div>
 
-          <div class="horario__encabezado">
-            <h3 id="horario-titulo"></h3>
-            <p id="horario-subtitulo"></p>
+          <div class="schedule__heading">
+            <h3 id="schedule-title"></h3>
+            <p id="schedule-subtitle"></p>
           </div>
 
-          <div class="horario__herramientas">
-            <label class="buscador">
+          <div class="schedule__tools">
+            <label class="search-box">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-              <input type="search" id="buscador" placeholder="Buscar actividad o ponente…" aria-label="Buscar en el horario">
+              <input type="search" id="search-input" placeholder="Buscar actividad o ponente…" aria-label="Buscar en el horario">
             </label>
-            <button class="boton-semana" id="ver-semana" aria-pressed="false" aria-label="Ver toda la semana">
+            <button class="week-button" id="week-toggle" aria-pressed="false" aria-label="Ver toda la semana">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M9 9v12M15 9v12"/></svg>
               <span>Semana</span>
             </button>
           </div>
 
-          <div class="horario__pestanas" id="horario-pestanas"></div>
+          <div class="schedule__tabs" id="schedule-tabs"></div>
 
-          <ol class="horario__lista" id="horario-lista"></ol>
-          <div class="semana" id="horario-semana" hidden></div>
+          <ol class="schedule__list" id="schedule-list"></ol>
+          <div class="week-grid" id="schedule-week" hidden></div>
         </div>
       </div>
     </section>
 
-    <!-- COMPETENCIAS -->
-    <section class="competencias foto foto--edificio foto--clara" id="competencias">
-      <div class="contenedor">
-        <div class="seccion-titulo">
-          <p class="seccion-titulo__antetitulo">Programa de sustos</p>
+    <!-- COMPETITIONS -->
+    <section class="competitions photo-bg photo-bg--building photo-bg--light" id="competencias">
+      <div class="container">
+        <div class="section-title">
+          <p class="section-title__eyebrow">Programa de sustos</p>
           <h2>Competencias</h2>
-          <p class="seccion-titulo__intro">Cinco retos para medirte con el resto de la facultad. Toca una tarjeta para ver todos los detalles.</p>
+          <p class="section-title__intro">Cinco retos para medirte con el resto de la facultad. Toca una tarjeta para ver todos los detalles.</p>
         </div>
-        <div class="competencias__lista" id="competencias-lista"></div>
+        <div class="competitions__list" id="competitions-list"></div>
       </div>
     </section>
 
 
-    <!-- GRUPOS ESTUDIANTILES QUE PARTICIPAN: un banderín por grupo -->
-    <section class="grupos" id="grupos">
-      <div class="contenedor">
-        <div class="seccion-titulo">
-          <p class="seccion-titulo__antetitulo">También participan</p>
+    <!-- STUDENT GROUPS: one pennant per group -->
+    <section class="groups" id="grupos">
+      <div class="container">
+        <div class="section-title">
+          <p class="section-title__eyebrow">También participan</p>
           <h2>Grupos estudiantiles</h2>
-          <p class="seccion-titulo__intro">Grupos de la facultad que se suman a la Semana de Sistemas.</p>
+          <p class="section-title__intro">Grupos de la facultad que se suman a la Semana de Sistemas.</p>
         </div>
-        <ul class="grupos__lista" id="grupos-lista"></ul>
+        <ul class="groups__list" id="groups-list"></ul>
       </div>
     </section>
 
-    <!-- GALERÍA: dos filas de fotos y videos que pasan solas; "Ver todo" las pone en cuadrícula -->
-    <section class="galeria" id="galeria">
-      <div class="contenedor">
-        <div class="seccion-titulo">
-          <p class="seccion-titulo__antetitulo">Galería</p>
+    <!-- GALLERY: two rows of photos and videos that scroll by themselves; "Ver todo" turns them into a grid -->
+    <section class="gallery" id="galeria">
+      <div class="container">
+        <div class="section-title">
+          <p class="section-title__eyebrow">Galería</p>
           <h2>La Semana en fotos</h2>
-          <p class="seccion-titulo__intro">Así se vivió la edición anterior: las charlas, las competencias y los momentos que hacen especial la Semana de Sistemas.</p>
-          <button class="portada__boton galeria__boton" id="galeria-ver-todo" type="button" aria-pressed="false">
-            <span id="galeria-ver-todo-texto">Ver todo</span>
+          <p class="section-title__intro">Así se vivió la edición anterior: las charlas, las competencias y los momentos que hacen especial la Semana de Sistemas.</p>
+          <button class="hero__button gallery__button" id="gallery-toggle" type="button" aria-pressed="false">
+            <span id="gallery-toggle-text">Ver todo</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>
           </button>
         </div>
       </div>
-      <div class="galeria__carrusel" id="galeria-carrusel"></div>
-      <div class="contenedor">
-        <ul class="galeria__cuadricula" id="galeria-cuadricula" hidden></ul>
+      <div class="gallery__carousel" id="gallery-carousel"></div>
+      <div class="container">
+        <ul class="gallery__grid" id="gallery-grid" hidden></ul>
       </div>
     </section>
 
   </main>
 
-  <!-- PIE -->
-  <footer class="pie">
-    <a class="pie__instagram" href="https://www.instagram.com/sistemasunalmed/" target="_blank" rel="noopener"
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <a class="site-footer__instagram" href="https://www.instagram.com/sistemasunalmed/" target="_blank" rel="noopener"
       title="Instagram de la representación de Ingeniería de Sistemas">
-      <span class="pie__escudo" id="pie-escudo"></span>
-      <span class="pie__usuario">
+      <span class="site-footer__crest" id="footer-crest"></span>
+      <span class="site-footer__handle">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg>
         @sistemasunalmed
       </span>
     </a>
     <p>Semana de Sistemas · Facultad de Minas · Medellín</p>
-    <p class="pie__autores">Web hecha por <strong>Santiago Escobar Arias</strong> y <strong>Jerónimo Hoyos Botero</strong></p>
+    <p class="site-footer__authors">Web hecha por <strong>Santiago Escobar Arias</strong> y <strong>Jerónimo Hoyos Botero</strong></p>
   </footer>
 
-  <!-- MODAL DE INICIO DE SESIÓN / CARNET DE ASUSTADOR -->
+  <!-- LOGIN MODAL / SCARER ID CARD -->
   <dialog class="auth-modal" id="auth-modal">
-    <div class="auth-modal__caja">
-      <button class="auth-modal__cerrar" id="btn-cerrar-auth" type="button" aria-label="Cerrar ventana">✕</button>
+    <div class="auth-modal__box">
+      <button class="auth-modal__close" id="btn-close-auth" type="button" aria-label="Cerrar ventana">✕</button>
 
-      <div class="auth-modal__cabecera">
-        <div class="auth-modal__ojo" id="auth-icono-ojo"></div>
-        <p class="seccion-titulo__antetitulo">Facultad de Minas · UNAL</p>
-        <h2 class="auth-modal__titulo" id="auth-titulo">Acceso</h2>
+      <div class="auth-modal__header">
+        <div class="auth-modal__eye" id="auth-eye-icon"></div>
+        <p class="section-title__eyebrow">Facultad de Minas · UNAL</p>
+        <h2 class="auth-modal__title" id="auth-title">Acceso</h2>
       </div>
 
-      <!-- Vista cuando NO ha iniciado sesión -->
-      <div id="auth-vista-formulario">
-        <div class="horario__dias auth-modal__tabs" role="tablist">
-          <button class="dia" id="tab-login" type="button" aria-pressed="true">
+      <!-- View when NOT logged in -->
+      <div id="auth-form-view">
+        <div class="schedule__days auth-modal__tabs">
+          <button class="day" id="tab-login" type="button" aria-pressed="true">
             <strong>Ingresar</strong>
           </button>
-          <button class="dia" id="tab-registro" type="button" aria-pressed="false">
+          <button class="day" id="tab-signup" type="button" aria-pressed="false">
             <strong>Crear Carnet</strong>
           </button>
         </div>
 
-        <!-- Creador en vivo del Carnet de Asustador (estilo videojuego) -->
-        <div class="creador-carnet" id="creador-carnet" hidden>
-          <div class="ponentes__carnet creador-carnet__preview" id="preview-carnet-registro"></div>
-          <button class="boton-semana boton-descargar" data-carnet="#preview-carnet-registro" type="button">
+        <!-- Live builder for the Scarer ID card (video game style) -->
+        <div class="idcard-builder" id="idcard-builder" hidden>
+          <div class="speakers__idcard idcard-builder__preview" id="signup-idcard-preview"></div>
+          <button class="week-button download-button" data-idcard="#signup-idcard-preview" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
             <span>Descargar carnet</span>
           </button>
 
-          <div class="creador-carnet__controles">
-            <div class="creador-carnet__barra-top">
-              <span class="creador-carnet__subtitulo">Personaliza tu monstruo</span>
-              <button type="button" class="btn-aleatorio" id="btn-monstruo-random">
+          <div class="idcard-builder__controls">
+            <div class="idcard-builder__top-bar">
+              <span class="idcard-builder__subtitle">Personaliza tu monstruo</span>
+              <button type="button" class="random-button" id="btn-random-monster">
                 Aleatorio
               </button>
             </div>
 
-            <div class="selector-arcade" data-prop="estilo">
-              <span class="selector-arcade__label">Estilo</span>
-              <div class="selector-arcade__control">
-                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
-                <span class="selector-arcade__valor" id="val-estilo">Asustador</span>
-                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+            <div class="arcade-selector" data-prop="estilo">
+              <span class="arcade-selector__label">Estilo</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-estilo">Asustador</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
               </div>
             </div>
 
-            <div class="selector-arcade" data-prop="cuerpo">
-              <span class="selector-arcade__label">Cuerpo</span>
-              <div class="selector-arcade__control">
-                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
-                <span class="selector-arcade__valor" id="val-cuerpo">Peludo Manchas</span>
-                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+            <div class="arcade-selector" data-prop="cuerpo">
+              <span class="arcade-selector__label">Cuerpo</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-cuerpo">Peludo Manchas</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
               </div>
             </div>
 
-            <div class="selector-arcade" data-prop="color">
-              <span class="selector-arcade__label">Color</span>
-              <div class="selector-arcade__control">
-                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
-                <span class="selector-arcade__valor">
-                  <span class="selector-arcade__dot" id="dot-color"></span>
+            <div class="arcade-selector" data-prop="color">
+              <span class="arcade-selector__label">Color</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value">
+                  <span class="arcade-selector__dot" id="dot-color"></span>
                   <span id="val-color">Azul Sulley</span>
                 </span>
-                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
               </div>
             </div>
 
-            <div class="selector-arcade" data-prop="ojos">
-              <span class="selector-arcade__label">Ojos</span>
-              <div class="selector-arcade__control">
-                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
-                <span class="selector-arcade__valor" id="val-ojos">1 Ojo Cíclope</span>
-                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+            <div class="arcade-selector" data-prop="ojos">
+              <span class="arcade-selector__label">Ojos</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-ojos">1 Ojo Cíclope</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
               </div>
             </div>
 
-            <div class="selector-arcade" data-prop="cuernos">
-              <span class="selector-arcade__label">Cabeza</span>
-              <div class="selector-arcade__control">
-                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
-                <span class="selector-arcade__valor" id="val-cuernos">Cuernos Toro</span>
-                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+            <div class="arcade-selector" data-prop="cuernos">
+              <span class="arcade-selector__label">Cabeza</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-cuernos">Cuernos Toro</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
               </div>
             </div>
 
-            <div class="selector-arcade" data-prop="boca">
-              <span class="selector-arcade__label">Boca</span>
-              <div class="selector-arcade__control">
-                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
-                <span class="selector-arcade__valor" id="val-boca">Colmillos</span>
-                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+            <div class="arcade-selector" data-prop="boca">
+              <span class="arcade-selector__label">Boca</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-boca">Colmillos</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
               </div>
             </div>
 
-            <div class="selector-arcade" data-prop="accesorio">
-              <span class="selector-arcade__label">Detalle</span>
-              <div class="selector-arcade__control">
-                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
-                <span class="selector-arcade__valor" id="val-accesorio">Al Natural</span>
-                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+            <div class="arcade-selector" data-prop="accesorio">
+              <span class="arcade-selector__label">Detalle</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-accesorio">Al Natural</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
               </div>
             </div>
           </div>
         </div>
 
         <form class="auth-form" id="auth-form">
-          <label class="auth-campo" id="campo-nombre" hidden>
+          <label class="auth-field" id="name-field" hidden>
             <span>Nombre en tu carnet</span>
-            <input type="text" id="auth-nombre" placeholder="Ej. Santiago Escobar" maxlength="28" autocomplete="name">
+            <input type="text" id="auth-name" placeholder="Ej. Santiago Escobar" maxlength="28" autocomplete="name">
           </label>
 
-          <label class="auth-campo">
+          <label class="auth-field">
             <span>Correo institucional</span>
-            <input type="email" id="auth-correo" placeholder="usuario@unal.edu.co" required autocomplete="email">
+            <input type="email" id="auth-email" placeholder="usuario@unal.edu.co" required autocomplete="email">
           </label>
 
-          <label class="auth-campo">
+          <label class="auth-field">
             <span>Contraseña</span>
-            <input type="password" id="auth-clave" placeholder="Mínimo 6 caracteres" minlength="6" required autocomplete="current-password">
+            <input type="password" id="auth-password" placeholder="Mínimo 6 caracteres" minlength="6" required autocomplete="current-password">
           </label>
 
-          <p class="auth-mensaje" id="auth-mensaje" hidden></p>
+          <p class="auth-message" id="auth-message" hidden></p>
 
-          <button class="portada__boton auth-form__submit" id="auth-submit" type="submit">
-            <span id="auth-submit-texto">Entrar</span>
+          <button class="hero__button auth-form__submit" id="auth-submit" type="submit">
+            <span id="auth-submit-text">Entrar</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </button>
         </form>
       </div>
 
-      <!-- Vista cuando YA inició sesión -->
-      <div class="auth-perfil" id="auth-vista-perfil" hidden>
-        <div class="ponentes__carnet creador-carnet__preview" id="perfil-carnet-final"></div>
-        <div class="auth-perfil__acciones">
-          <button class="boton-semana boton-descargar" data-carnet="#perfil-carnet-final" type="button">
+      <!-- View when logged in -->
+      <div class="auth-profile" id="auth-profile-view" hidden>
+        <div class="speakers__idcard idcard-builder__preview" id="profile-idcard"></div>
+        <div class="auth-profile__actions">
+          <button class="week-button download-button" data-idcard="#profile-idcard" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
             <span>Descargar carnet</span>
           </button>
-          <button class="boton-semana boton-editar" id="btn-editar-carnet" type="button">
+          <button class="week-button edit-button" id="btn-edit-idcard" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
             Editar carnet
           </button>
         </div>
-        <p class="auth-perfil__correo" id="perfil-correo"></p>
-        <button class="boton-semana auth-perfil__salir" id="btn-cerrar-sesion" type="button">
+        <p class="auth-profile__email" id="profile-email"></p>
+        <button class="week-button auth-profile__logout" id="btn-logout" type="button">
           Cerrar sesión
         </button>
       </div>
 
-      <!-- Vista para EDITAR el carnet: nombre, título (uno de los desbloqueados) y monstruo.
-           El selector del monstruo (#creador-carnet) se mueve aquí desde el formulario al editar. -->
-      <div class="auth-edicion" id="auth-vista-edicion" hidden>
+      <!-- View to EDIT the ID card: name, title (one of the unlocked ones) and monster.
+           The monster selector (#idcard-builder) moves here from the form while editing. -->
+      <div class="auth-edit" id="auth-edit-view" hidden>
         <div class="auth-form">
-          <label class="auth-campo">
+          <label class="auth-field">
             <span>Nombre en tu carnet</span>
-            <input type="text" id="edit-nombre" maxlength="28" autocomplete="name">
+            <input type="text" id="edit-name" maxlength="28" autocomplete="name">
           </label>
 
-          <div class="selector-arcade" id="selector-titulo">
-            <span class="selector-arcade__label">Título</span>
-            <div class="selector-arcade__control">
-              <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Título anterior">‹</button>
-              <span class="selector-arcade__valor" id="val-titulo" aria-live="polite"></span>
-              <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Título siguiente">›</button>
+          <div class="arcade-selector" id="title-selector">
+            <span class="arcade-selector__label">Título</span>
+            <div class="arcade-selector__control">
+              <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Título anterior">‹</button>
+              <span class="arcade-selector__value" id="val-title" aria-live="polite"></span>
+              <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Título siguiente">›</button>
             </div>
           </div>
-          <p class="auth-edicion__nota" id="edit-titulos-nota"></p>
+          <p class="auth-edit__note" id="edit-titles-note"></p>
         </div>
 
-        <div id="edit-creador-montaje"></div>
+        <div id="edit-builder-mount"></div>
 
-        <p class="auth-mensaje" id="edit-mensaje" hidden></p>
-        <div class="auth-edicion__botones">
-          <button class="boton-semana auth-edicion__cancelar" id="btn-cancelar-edicion" type="button">Cancelar</button>
-          <button class="portada__boton auth-form__submit auth-edicion__guardar" id="btn-guardar-edicion" type="button">Guardar cambios</button>
+        <p class="auth-message" id="edit-message" hidden></p>
+        <div class="auth-edit__buttons">
+          <button class="week-button auth-edit__cancel" id="btn-cancel-edit" type="button">Cancelar</button>
+          <button class="hero__button auth-form__submit auth-edit__save" id="btn-save-edit" type="button">Guardar cambios</button>
         </div>
       </div>
     </div>
   </dialog>
 
-  <!-- VISOR DE LA GALERÍA: la foto o el video en grande, con flechas para pasar. Tocar fuera lo cierra. -->
-  <dialog class="visor" id="visor" aria-label="Galería">
-    <figure class="visor__figura">
-      <div class="visor__medio" id="visor-medio"></div>
-      <figcaption class="visor__cuenta" id="visor-cuenta"></figcaption>
+  <!-- GALLERY VIEWER: the photo or video in large, with arrows to move on. Tapping outside closes it. -->
+  <dialog class="viewer" id="viewer" aria-label="Galería">
+    <figure class="viewer__figure">
+      <div class="viewer__media" id="viewer-media"></div>
+      <figcaption class="viewer__count" id="viewer-count"></figcaption>
     </figure>
-    <button class="visor__boton visor__boton--anterior" id="visor-anterior" type="button" aria-label="Foto anterior">
+    <button class="viewer__button viewer__button--prev" id="viewer-prev" type="button" aria-label="Foto anterior">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
     </button>
-    <button class="visor__boton visor__boton--siguiente" id="visor-siguiente" type="button" aria-label="Foto siguiente">
+    <button class="viewer__button viewer__button--next" id="viewer-next" type="button" aria-label="Foto siguiente">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </button>
-    <button class="visor__boton visor__cerrar" id="visor-cerrar" type="button" aria-label="Cerrar galería" autofocus>✕</button>
+    <button class="viewer__button viewer__close" id="viewer-close" type="button" aria-label="Cerrar galería" autofocus>✕</button>
   </dialog>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
   <script src="js/data.js"></script>
-  <script src="js/iconos.js"></script>
-  <script src="js/comun.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/common.js"></script>
   <script src="js/main.js"></script>
   <script src="js/auth.js"></script>
 </body>

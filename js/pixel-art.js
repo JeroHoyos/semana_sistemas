@@ -1,32 +1,32 @@
 /* =============================================
-   DIBUJOS EN PIXEL ART
-   Adornos de la cabecera de algunas actividades (campo "adornos" en data.js).
-   Cada dibujo es una cuadrícula: cada letra es un pixel del color que dice
-   su paleta y '.' es un pixel vacío. Todas las filas de un dibujo miden lo mismo.
+   PIXEL ART DRAWINGS
+   Header decorations for some activities ("decorations" field in data.js).
+   Each drawing is a grid: each letter is a pixel in the color its palette says
+   and '.' is an empty pixel. All rows of a drawing have the same length.
    ============================================= */
 
-// Cifras de 3 × 5 pixeles para los números de las medallas y la camiseta
-const CIFRAS_PIXEL = {
+// 3 × 5 pixel digits for the numbers on the medals and the jersey
+const PIXEL_DIGITS = {
   0: ['###', '#.#', '#.#', '#.#', '###'],
   1: ['.#.', '##.', '.#.', '.#.', '###'],
 };
 
-// Escribe un número de dos cifras sobre un dibujo, con 2 pixeles entre cifra y cifra.
-// (x, y) es la esquina de arriba a la izquierda del número; letra es su color en la paleta.
-function escribirNumero(filas, numero, x, y, letra) {
-  const cuadricula = filas.map((fila) => [...fila]);
-  [...numero].forEach((cifra, i) => {
-    CIFRAS_PIXEL[cifra].forEach((fila, dy) => {
-      [...fila].forEach((pixel, dx) => {
-        if (pixel === '#') cuadricula[y + dy][x + i * 5 + dx] = letra;
+// Writes a two-digit number on a drawing, with 2 pixels between digits.
+// (x, y) is the number's top-left corner; letter is its color in the palette.
+function writeNumber(rows, number, x, y, letter) {
+  const grid = rows.map((row) => [...row]);
+  [...number].forEach((digit, i) => {
+    PIXEL_DIGITS[digit].forEach((row, dy) => {
+      [...row].forEach((pixel, dx) => {
+        if (pixel === '#') grid[y + dy][x + i * 5 + dx] = letter;
       });
     });
   });
-  return cuadricula.map((fila) => fila.join(''));
+  return grid.map((row) => row.join(''));
 }
 
-// Medalla sin número: k borde, c y C cinta (clara y oscura), M brillo, m metal y o sombra
-const MOLDE_MEDALLA = [
+// Medal without a number: k border, c and C ribbon (light and dark), M shine, m metal and o shadow
+const MEDAL_TEMPLATE = [
   '.kkkkk....kkkkk.',
   '.kccCk....kCcck.',
   '..kccCk..kCcck..',
@@ -52,21 +52,21 @@ const MOLDE_MEDALLA = [
   '.....kkkkkk.....',
 ];
 
-// Medalla con su puesto en binario (01, 10, 11) en el centro, del color n de la paleta
-function medalla(numero, paleta) {
-  return { paleta, filas: escribirNumero(MOLDE_MEDALLA, numero, 4, 12, 'n') };
+// Medal with its place in binary (01, 10, 11) in the center, in palette color n
+function medal(number, palette) {
+  return { palette, rows: writeNumber(MEDAL_TEMPLATE, number, 4, 12, 'n') };
 }
 
-const PIXELES = {
-  // Carrera de atletismo: oro, plata y bronce
-  medalla01: medalla('01', { k: '#6b4a0f', c: '#e04848', C: '#a3262f', M: '#fff2a8', m: '#f5c518', o: '#d29a0a', n: '#fff8d6' }),
-  medalla10: medalla('10', { k: '#3d4652', c: '#3b82e0', C: '#1f4f9e', M: '#ffffff', m: '#c4ccd6', o: '#8f9aa8', n: '#ffffff' }),
-  medalla11: medalla('11', { k: '#5c3216', c: '#34a865', C: '#1f7040', M: '#ffc58f', m: '#e0893c', o: '#b5652a', n: '#ffe6cc' }),
+const PIXEL_ART = {
+  // Athletics race: gold, silver and bronze
+  medal01: medal('01', { k: '#6b4a0f', c: '#e04848', C: '#a3262f', M: '#fff2a8', m: '#f5c518', o: '#d29a0a', n: '#fff8d6' }),
+  medal10: medal('10', { k: '#3d4652', c: '#3b82e0', C: '#1f4f9e', M: '#ffffff', m: '#c4ccd6', o: '#8f9aa8', n: '#ffffff' }),
+  medal11: medal('11', { k: '#5c3216', c: '#34a865', C: '#1f7040', M: '#ffc58f', m: '#e0893c', o: '#b5652a', n: '#ffe6cc' }),
 
-  // Torneo de fútbol
-  camiseta: {
-    paleta: { k: '#0a2c52', j: '#1f78e0', J: '#ffffff', n: '#ffffff' },
-    filas: escribirNumero([
+  // Soccer tournament
+  jersey: {
+    palette: { k: '#0a2c52', j: '#1f78e0', J: '#ffffff', n: '#ffffff' },
+    rows: writeNumber([
       '...kkkk..kkkk...',
       '..kjjjjkkjjjjk..',
       '.kjjjjjjjjjjjjk.',
@@ -84,9 +84,9 @@ const PIXELES = {
       '...kkkkkkkkkk...',
     ], '10', 4, 8, 'n'),
   },
-  copa: {
-    paleta: { k: '#6b4a0f', M: '#fff2a8', m: '#f5c518', o: '#d29a0a', B: '#a8703f', b: '#7a4a2a', p: '#f5c518' },
-    filas: [
+  cup: {
+    palette: { k: '#6b4a0f', M: '#fff2a8', m: '#f5c518', o: '#d29a0a', B: '#a8703f', b: '#7a4a2a', p: '#f5c518' },
+    rows: [
       '...kkkkkkkkkkkk...',
       'kkkkMMmmmmmmmokkkk',
       'kmk.kMmmmmmmok.kmk',
@@ -106,10 +106,10 @@ const PIXELES = {
       '...kkkkkkkkkkkk...',
     ],
   },
-  balon: {
-    // El borde es gris para que los parches negros de la orilla no se confundan con él
-    paleta: { k: '#6b7685', P: '#1e2630', w: '#ffffff', s: '#c9d1db' },
-    filas: [
+  ball: {
+    // The outline is gray so the black patches on the edge are not confused with it
+    palette: { k: '#6b7685', P: '#1e2630', w: '#ffffff', s: '#c9d1db' },
+    rows: [
       '.....kkkkkk.....',
       '...kkwPPPPwkk...',
       '..kwwwwPPwwwwk..',
@@ -129,10 +129,10 @@ const PIXELES = {
     ],
   },
 
-  // Torneo de Overcooked
-  gorroChef: {
-    paleta: { k: '#1b2440', w: '#ffffff', g: '#c9d1db' },
-    filas: [
+  // Overcooked tournament
+  chefHat: {
+    palette: { k: '#1b2440', w: '#ffffff', g: '#c9d1db' },
+    rows: [
       '....kkk..kkk....',
       '..kkwwwkkwwwkk..',
       '.kwwwwwwwwwwwwk.',
@@ -149,9 +149,9 @@ const PIXELES = {
       '..kkkkkkkkkkkk..',
     ],
   },
-  control: {
-    paleta: { k: '#2b2d42', g: '#dcdfe6', K: '#4a4e5c', s: '#4a4e5c', a: '#e5484d', b: '#8b5fd6' },
-    filas: [
+  gamepad: {
+    palette: { k: '#2b2d42', g: '#dcdfe6', K: '#4a4e5c', s: '#4a4e5c', a: '#e5484d', b: '#8b5fd6' },
+    rows: [
       '...kkkkkkkkkkkkkk...',
       '.kkggggggggggggggkk.',
       'kggggggggggggggggggk',
@@ -164,10 +164,10 @@ const PIXELES = {
       '..kkkk........kkkk..',
     ],
   },
-  // El Rey Cebolla del juego, con su corona y su bigote
-  reyCebolla: {
-    paleta: { k: '#3b2414', y: '#f5c518', R: '#e5484d', o: '#e0a35f', O: '#b5733a', w: '#ffffff', M: '#5c3216' },
-    filas: [
+  // The game's Onion King, with his crown and mustache
+  onionKing: {
+    palette: { k: '#3b2414', y: '#f5c518', R: '#e5484d', o: '#e0a35f', O: '#b5733a', w: '#ffffff', M: '#5c3216' },
+    rows: [
       '...k..kk..k...',
       '..kykkyykkyk..',
       '..kyyyyyyyyk..',
@@ -186,10 +186,10 @@ const PIXELES = {
     ],
   },
 
-  // Karaoke y Just Dance
-  nota: {
-    paleta: { k: '#5a1638', n: '#ff6fae' },
-    filas: [
+  // Karaoke and Just Dance
+  note: {
+    palette: { k: '#5a1638', n: '#ff6fae' },
+    rows: [
       '.....kkkkkkkkkkk',
       '.....knnnnnnnnnk',
       '.....knnnnnnnnnk',
@@ -204,9 +204,9 @@ const PIXELES = {
       '.kkkkk...kkkkk..',
     ],
   },
-  microfono: {
-    paleta: { k: '#2b2d42', G: '#ffffff', g: '#dcdfe6', d: '#8f96a3', b: '#ff6fae', M: '#a988e6', m: '#7b4fc9' },
-    filas: [
+  microphone: {
+    palette: { k: '#2b2d42', G: '#ffffff', g: '#dcdfe6', d: '#8f96a3', b: '#ff6fae', M: '#a988e6', m: '#7b4fc9' },
+    rows: [
       '...kkkkkk...',
       '.kkGGggggkk.',
       '.kGgdgdgdgk.',
@@ -229,9 +229,9 @@ const PIXELES = {
       '.....kk.....',
     ],
   },
-  bolaDisco: {
-    paleta: { k: '#1b2440', W: '#ffffff', a: '#a8d4ff', b: '#4f8fd6', c: '#2c5a99' },
-    filas: [
+  discoBall: {
+    palette: { k: '#1b2440', W: '#ffffff', a: '#a8d4ff', b: '#4f8fd6', c: '#2c5a99' },
+    rows: [
       '......kk......',
       '......kk......',
       '....kkkkkk....',
@@ -251,10 +251,10 @@ const PIXELES = {
     ],
   },
 
-  // Premiación (va a los lados de la copa del fútbol)
-  estrella: {
-    paleta: { k: '#6b4a0f', Y: '#fff2a8', y: '#f5c518', o: '#d29a0a' },
-    filas: [
+  // Awards (on each side of the soccer cup)
+  star: {
+    palette: { k: '#6b4a0f', Y: '#fff2a8', y: '#f5c518', o: '#d29a0a' },
+    rows: [
       '......k......',
       '.....kYk.....',
       '.....kYk.....',
@@ -270,10 +270,10 @@ const PIXELES = {
     ],
   },
 
-  // Conferencia inaugural
-  bandera: {
-    paleta: { k: '#1b2440', Y: '#f5c518', p: '#c9d1db', w: '#ffffff', b: '#26303b' },
-    filas: [
+  // Opening talk
+  flag: {
+    palette: { k: '#1b2440', Y: '#f5c518', p: '#c9d1db', w: '#ffffff', b: '#26303b' },
+    rows: [
       '.kk.............',
       'kYYkkkkkkkkkkkk.',
       'kppkwwbbwwbbwwk.',
@@ -294,9 +294,9 @@ const PIXELES = {
       'kkkk............',
     ],
   },
-  cohete: {
-    paleta: { k: '#1b2440', R: '#e5484d', w: '#e9edf2', b: '#3b82e0', B: '#a8d4ff', O: '#f08a24', Y: '#ffd23f' },
-    filas: [
+  rocket: {
+    palette: { k: '#1b2440', R: '#e5484d', w: '#e9edf2', b: '#3b82e0', B: '#a8d4ff', O: '#f08a24', Y: '#ffd23f' },
+    rows: [
       '.....kk.....',
       '....kRRk....',
       '...kRRRRk...',
@@ -318,10 +318,10 @@ const PIXELES = {
     ],
   },
 
-  // Feria de stands
-  maletin: {
-    paleta: { k: '#3b2414', B: '#b07a4d', b: '#8a5a35', Y: '#f5c518' },
-    filas: [
+  // Stands fair
+  briefcase: {
+    palette: { k: '#3b2414', B: '#b07a4d', b: '#8a5a35', Y: '#f5c518' },
+    rows: [
       '.....kkkkkk.....',
       '.....k....k.....',
       '.kkkkkkkkkkkkkk.',
@@ -336,9 +336,9 @@ const PIXELES = {
       '.kkkkkkkkkkkkkk.',
     ],
   },
-  carpa: {
-    paleta: { k: '#1b2440', R: '#e5484d', w: '#ffffff', p: '#a8703f', T: '#8a5a35', G: '#34a865', B: '#3b82e0' },
-    filas: [
+  tent: {
+    palette: { k: '#1b2440', R: '#e5484d', w: '#ffffff', p: '#a8703f', T: '#8a5a35', G: '#34a865', B: '#3b82e0' },
+    rows: [
       '.kkkkkkkkkkkkkkkkkk.',
       'kRRwwRRwwRRwwRRwwRRk',
       'kRRwwRRwwRRwwRRwwRRk',
@@ -353,9 +353,9 @@ const PIXELES = {
       'kkkkkkkkkkkkkkkkkkkk',
     ],
   },
-  gafete: {
-    paleta: { k: '#1b2440', g: '#c9d1db', B: '#1667c2', w: '#ffffff', F: '#f2c29b', l: '#8f9aa8' },
-    filas: [
+  lanyard: {
+    palette: { k: '#1b2440', g: '#c9d1db', B: '#1667c2', w: '#ffffff', F: '#f2c29b', l: '#8f9aa8' },
+    rows: [
       '....kkkk....',
       '....kggk....',
       'kkkkkkkkkkkk',
@@ -373,10 +373,10 @@ const PIXELES = {
     ],
   },
 
-  // Conferencia "Más allá del código": de estudiante (birrete) a ingeniero (casco), y los datos
-  birrete: {
-    paleta: { k: '#10141f', D: '#5b6b85', d: '#3b4458', Y: '#f5c518' },
-    filas: [
+  // "Más allá del código" talk: from student (grad cap) to engineer (helmet), and the data
+  gradCap: {
+    palette: { k: '#10141f', D: '#5b6b85', d: '#3b4458', Y: '#f5c518' },
+    rows: [
       '.......kk.......',
       '.....kkDDkk.....',
       '...kkDDDDDDkk...',
@@ -391,9 +391,9 @@ const PIXELES = {
       '....kkkkkkkk.YYY',
     ],
   },
-  casco: {
-    paleta: { k: '#6b4a0f', W: '#fff2a8', Y: '#ffd23f', o: '#d29a0a' },
-    filas: [
+  helmet: {
+    palette: { k: '#6b4a0f', W: '#fff2a8', Y: '#ffd23f', o: '#d29a0a' },
+    rows: [
       '.....kkkkkk.....',
       '...kkWWYoYYkk...',
       '..kWWYYYoYYYYk..',
@@ -407,9 +407,9 @@ const PIXELES = {
       '.kkkkkkkkkkkkkk.',
     ],
   },
-  baseDatos: {
-    paleta: { k: '#0a2c52', C: '#8ec5ff', c: '#3b82e0', L: '#7ee081' },
-    filas: [
+  database: {
+    palette: { k: '#0a2c52', C: '#8ec5ff', c: '#3b82e0', L: '#7ee081' },
+    rows: [
       '...kkkkkkkk...',
       '.kkCCCCCCCCkk.',
       'kCCCCCCCCCCCCk',
@@ -428,10 +428,10 @@ const PIXELES = {
     ],
   },
 
-  // Taller de agentes de IA con Python
+  // AI agents with Python workshop
   terminal: {
-    paleta: { k: '#2b2d42', T: '#4a4e5c', R: '#e5484d', Y: '#ffd23f', G: '#7ee081', s: '#10141f', W: '#ffffff' },
-    filas: [
+    palette: { k: '#2b2d42', T: '#4a4e5c', R: '#e5484d', Y: '#ffd23f', G: '#7ee081', s: '#10141f', W: '#ffffff' },
+    rows: [
       'kkkkkkkkkkkkkkkkkk',
       'kTRTYTGTTTTTTTTTTk',
       'kkkkkkkkkkkkkkkkkk',
@@ -446,8 +446,8 @@ const PIXELES = {
     ],
   },
   robot: {
-    paleta: { k: '#1b2440', R: '#e5484d', g: '#c9d1db', C: '#5ff0ff', w: '#ffffff', b: '#1aa3b8', Y: '#ffd23f' },
-    filas: [
+    palette: { k: '#1b2440', R: '#e5484d', g: '#c9d1db', C: '#5ff0ff', w: '#ffffff', b: '#1aa3b8', Y: '#ffd23f' },
+    rows: [
       '......kkkk......',
       '......kRRk......',
       '.......kk.......',
@@ -468,9 +468,9 @@ const PIXELES = {
       '...kkkkkkkkkk...',
     ],
   },
-  rayo: {
-    paleta: { k: '#6b4a0f', Y: '#ffd23f' },
-    filas: [
+  lightning: {
+    palette: { k: '#6b4a0f', Y: '#ffd23f' },
+    rows: [
       '.....kkkk.',
       '....kYYYk.',
       '....kYYk..',
@@ -487,10 +487,10 @@ const PIXELES = {
     ],
   },
 
-  // Taller de LLM, agentes, harness, skills y MCP
+  // LLM, agents, harness, skills and MCP workshop
   chat: {
-    paleta: { k: '#1b2440', w: '#ffffff', p: '#8b5fd6' },
-    filas: [
+    palette: { k: '#1b2440', w: '#ffffff', p: '#8b5fd6' },
+    rows: [
       '.kkkkkkkkkkkkkk.',
       'kwwwwwwwwwwwwwwk',
       'kwwwwwwwwwwwwwwk',
@@ -504,8 +504,8 @@ const PIXELES = {
     ],
   },
   chip: {
-    paleta: { k: '#10141f', d: '#3a3f55', C: '#8b5fd6', p: '#f5c518' },
-    filas: [
+    palette: { k: '#10141f', d: '#3a3f55', C: '#8b5fd6', p: '#f5c518' },
+    rows: [
       '....p.p..p.p....',
       '....p.p..p.p....',
       '...kkkkkkkkkk...',
@@ -522,9 +522,9 @@ const PIXELES = {
       '....p.p..p.p....',
     ],
   },
-  enchufe: {
-    paleta: { k: '#1b2440', g: '#dcdfe6', Q: '#ffc58f', P: '#f08a24', c: '#8f9aa8' },
-    filas: [
+  plug: {
+    palette: { k: '#1b2440', g: '#dcdfe6', Q: '#ffc58f', P: '#f08a24', c: '#8f9aa8' },
+    rows: [
       '..kkk..kkk..',
       '..kgk..kgk..',
       '..kgk..kgk..',
@@ -545,10 +545,10 @@ const PIXELES = {
     ],
   },
 
-  // Carrera de observación
-  interrogacion: {
-    paleta: { k: '#5a1638', Y: '#ff7a9a' },
-    filas: [
+  // Observation race
+  questionMark: {
+    palette: { k: '#5a1638', Y: '#ff7a9a' },
+    rows: [
       '..kkkkkk..',
       '.kYYYYYYk.',
       'kYYkkkkYYk',
@@ -566,9 +566,9 @@ const PIXELES = {
       '...kkkk...',
     ],
   },
-  lupa: {
-    paleta: { k: '#1b2440', R: '#e05a7a', w: '#ffffff', g: '#a8d4ff', h: '#8a5a35' },
-    filas: [
+  magnifier: {
+    palette: { k: '#1b2440', R: '#e05a7a', w: '#ffffff', g: '#a8d4ff', h: '#8a5a35' },
+    rows: [
       '....kkkk........',
       '..kkRRRRkk......',
       '.kRRwwggRRk.....',
@@ -586,9 +586,9 @@ const PIXELES = {
       '.............kkk',
     ],
   },
-  mapa: {
-    paleta: { k: '#5c3216', p: '#f3dfb0', P: '#d9bf86', d: '#8a5a35', X: '#e5484d' },
-    filas: [
+  map: {
+    palette: { k: '#5c3216', p: '#f3dfb0', P: '#d9bf86', d: '#8a5a35', X: '#e5484d' },
+    rows: [
       'kkkkkkkkkkkkkkkkkk',
       'kpppppPppppPpppppk',
       'kpppppPppppPpXpXpk',
@@ -606,10 +606,10 @@ const PIXELES = {
     ],
   },
 
-  // Maratón de programación (en la maratón cada problema resuelto se celebra con un globo)
-  globo: {
-    paleta: { k: '#0e3a20', W: '#b9f5cf', R: '#34c06e', r: '#1f7040', s: '#dcdfe6' },
-    filas: [
+  // Programming marathon (each solved problem is celebrated with a balloon)
+  balloon: {
+    palette: { k: '#0e3a20', W: '#b9f5cf', R: '#34c06e', r: '#1f7040', s: '#dcdfe6' },
+    rows: [
       '..kkkkkk..',
       '.kWRRRRRk.',
       'kWWRRRRRRk',
@@ -629,9 +629,9 @@ const PIXELES = {
       '....s.....',
     ],
   },
-  computador: {
-    paleta: { k: '#1b2440', F: '#c9d1db', s: '#10141f', G: '#7ee081', B: '#5fb3ff', P: '#ff6fae', W: '#ffffff' },
-    filas: [
+  computer: {
+    palette: { k: '#1b2440', F: '#c9d1db', s: '#10141f', G: '#7ee081', B: '#5fb3ff', P: '#ff6fae', W: '#ffffff' },
+    rows: [
       'kkkkkkkkkkkkkkkkkk',
       'kFFFFFFFFFFFFFFFFk',
       'kFssssssssssssssFk',
@@ -652,9 +652,9 @@ const PIXELES = {
       '....kkkkkkkkkk....',
     ],
   },
-  relojArena: {
-    paleta: { k: '#3b2414', W: '#a8703f', g: '#cfe8ff', S: '#ffd23f' },
-    filas: [
+  hourglass: {
+    palette: { k: '#3b2414', W: '#a8703f', g: '#cfe8ff', S: '#ffd23f' },
+    rows: [
       'kkkkkkkkkkkk',
       'kWWWWWWWWWWk',
       'kkkkkkkkkkkk',
@@ -675,10 +675,10 @@ const PIXELES = {
     ],
   },
 
-  // Charla de computación cuántica, fotónica y térmica
-  termometro: {
-    paleta: { k: '#1b2440', w: '#ffffff', R: '#e5484d', W: '#ffb3b3' },
-    filas: [
+  // Quantum, photonic and thermal computing talk
+  thermometer: {
+    palette: { k: '#1b2440', w: '#ffffff', R: '#e5484d', W: '#ffb3b3' },
+    rows: [
       '..kkkk..',
       '..kwwk..',
       '..kwwk..',
@@ -698,9 +698,9 @@ const PIXELES = {
       '..kkkk..',
     ],
   },
-  atomo: {
-    paleta: { o: '#5ff0ff', e: '#ffd23f', N: '#e5484d', n: '#3b82e0' },
-    filas: [
+  atom: {
+    palette: { o: '#5ff0ff', e: '#ffd23f', N: '#e5484d', n: '#3b82e0' },
+    rows: [
       '.......ee.......',
       '......o..o......',
       '......o..o......',
@@ -717,9 +717,9 @@ const PIXELES = {
       '.......oo.......',
     ],
   },
-  bombillo: {
-    paleta: { k: '#3b3220', Y: '#fff8d6', y: '#ffe066', o: '#f5c518', f: '#f08a24', g: '#c9d1db', d: '#8f9aa8' },
-    filas: [
+  lightbulb: {
+    palette: { k: '#3b3220', Y: '#fff8d6', y: '#ffe066', o: '#f5c518', f: '#f08a24', g: '#c9d1db', d: '#8f9aa8' },
+    rows: [
       '...kkkkkk...',
       '..kYYyyyyk..',
       '.kYyyyyyyyk.',
@@ -739,10 +739,10 @@ const PIXELES = {
     ],
   },
 
-  // Sustómetro: un asustador, el tanque de sustos y un fantasma
-  monstruoSusto: {
-    paleta: { k: '#1b2440', h: '#f5e6c8', b: '#8b5fd6', B: '#6a43b0', w: '#ffffff', i: '#2fbf71', m: '#5c1a2e', t: '#ffffff' },
-    filas: [
+  // Scare Meter: a scarer, the scare tank and a ghost
+  scareMonster: {
+    palette: { k: '#1b2440', h: '#f5e6c8', b: '#8b5fd6', B: '#6a43b0', w: '#ffffff', i: '#2fbf71', m: '#5c1a2e', t: '#ffffff' },
+    rows: [
       '.k..........k.',
       '.khk......khk.',
       '..khk....khk..',
@@ -762,10 +762,10 @@ const PIXELES = {
       '...kkkkkkkk...',
     ],
   },
-  // Tanque amarillo con el tubo a medio llenar de líquido rojo, como el de la página
-  tanqueSustos: {
-    paleta: { k: '#1b2440', Y: '#ffd23f', y: '#d29a0a', M: '#fff2a8', d: '#2b2f36', g: '#c9d1db', t: '#10141b', R: '#e5484d', W: '#ffb3b3' },
-    filas: [
+  // Yellow tank with the tube half full of red liquid, like the one on the page
+  scareTank: {
+    palette: { k: '#1b2440', Y: '#ffd23f', y: '#d29a0a', M: '#fff2a8', d: '#2b2f36', g: '#c9d1db', t: '#10141b', R: '#e5484d', W: '#ffb3b3' },
+    rows: [
       '.....kkkkkk.....',
       '....kYYYYYYk....',
       '...kYkkkkkkYk...',
@@ -788,9 +788,9 @@ const PIXELES = {
       '..kkkkkkkkkkkk..',
     ],
   },
-  fantasma: {
-    paleta: { k: '#1b2440', w: '#ffffff', W: '#c9d8ec' },
-    filas: [
+  ghost: {
+    palette: { k: '#1b2440', w: '#ffffff', W: '#c9d8ec' },
+    rows: [
       '...kkkkkk...',
       '..kwwwwwwk..',
       '.kwwwwwwwWk.',
@@ -809,24 +809,24 @@ const PIXELES = {
   },
 };
 
-// Convierte un dibujo en SVG. Los pixeles seguidos del mismo color van en un solo rectángulo.
-// --ancho y --alto (en pixeles del dibujo) los usa el CSS para que el pixel mida lo mismo en todos.
-function dibujarPixeles({ paleta, filas }) {
-  const ancho = filas[0].length;
-  let rectangulos = '';
+// Turns a drawing into SVG. Consecutive pixels of the same color share one rectangle.
+// --width and --height (in drawing pixels) let the CSS keep the same pixel size in all of them.
+function drawPixelArt({ palette, rows }) {
+  const width = rows[0].length;
+  let rects = '';
 
-  filas.forEach((fila, y) => {
+  rows.forEach((row, y) => {
     let x = 0;
-    while (x < fila.length) {
-      let fin = x + 1;
-      while (fila[fin] === fila[x]) fin++;
-      if (paleta[fila[x]]) {
-        rectangulos += `<rect x="${x}" y="${y}" width="${fin - x}" height="1" fill="${paleta[fila[x]]}"/>`;
+    while (x < row.length) {
+      let end = x + 1;
+      while (row[end] === row[x]) end++;
+      if (palette[row[x]]) {
+        rects += `<rect x="${x}" y="${y}" width="${end - x}" height="1" fill="${palette[row[x]]}"/>`;
       }
-      x = fin;
+      x = end;
     }
   });
 
-  return `<svg class="pixeles" viewBox="0 0 ${ancho} ${filas.length}" style="--ancho: ${ancho}; --alto: ${filas.length}"
-    shape-rendering="crispEdges" aria-hidden="true">${rectangulos}</svg>`;
+  return `<svg class="pixel-art" viewBox="0 0 ${width} ${rows.length}" style="--width: ${width}; --height: ${rows.length}"
+    shape-rendering="crispEdges" aria-hidden="true">${rects}</svg>`;
 }

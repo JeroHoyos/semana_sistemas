@@ -1,236 +1,208 @@
 /* =============================================
-   DATOS DEL EVENTO
-   Todo el contenido de la página se cambia aquí.
+   EVENT DATA
+   All the page content is changed here.
    ============================================= */
 
-// Versión del proyecto: cada vez que cambia, los navegadores de los usuarios
-// cierran sesiones antiguas automáticamente para evitar problemas de JWT o datos desfasados.
-const VERSION_PROYECTO = 'v2026.11.03-201304';
+// Project version: whenever it changes, users' browsers close old sessions
+// automatically, to avoid stale JWTs or stale data.
+const PROJECT_VERSION = 'v2026.11.03-201304';
 
-// Usuarios sancionados con Shadowban y Licencia de Payaso por trampas/inyecciones de puntos
-const USUARIOS_PAYASO = [
-  'armarina@unal.edu.co',
-  'imlargo@unal.edu.co',
-  'imlargo',
-  'armarina',
-  'argenis',
-  '01101100',
-  '01101001'
-];
+// Accounts sanctioned with a Shadowban and the Clown Licence for cheating or injecting points.
+// A fragment matches anywhere in the email or the name: that is how it catches binary aliases such as 01101100.
+const CLOWN_FRAGMENTS = ['armarina', 'argenis', 'largo', '01101100', '01101001'];
 
-function esPayaso(correo, nombre = '', extra = null) {
-  // 1. Detección automática desde la base de datos (flag es_payaso o monstruo.es_payaso)
-  if (extra && (extra.es_payaso === true || extra.es_payaso === 'true' || extra.monstruo?.es_payaso === true || extra.monstruo?.es_payaso === 'true')) {
-    return true;
-  }
-  if (typeof correo === 'object' && correo !== null) {
-    if (correo.es_payaso === true || correo.es_payaso === 'true' || correo.monstruo?.es_payaso === true || correo.monstruo?.es_payaso === 'true') {
-      return true;
-    }
-    nombre = correo.nombre || '';
-    correo = correo.correo || correo.email || '';
-  }
+// extra: a row from 'perfiles', or a monster. Both can carry the es_payaso flag set in the database.
+function isClown(email, name = '', extra = null) {
+  if ([extra?.es_payaso, extra?.monstruo?.es_payaso].some((flag) => flag === true || flag === 'true')) return true;
 
-  // 2. Lista manual de conocidos (Argenis Marín, Largo, binarios)
-  const c = String(correo || '').toLowerCase().trim();
-  const u = c.includes('@') ? c.split('@')[0] : c;
-  const n = String(nombre || '').toLowerCase().trim();
-  return USUARIOS_PAYASO.some((tramposo) => (
-    c === tramposo || u === tramposo || n === tramposo ||
-    c.includes('armarina') || n.includes('armarina') ||
-    c.includes('argenis') || n.includes('argenis') ||
-    (n.includes('marin') && (n.includes('argenis') || c.includes('argenis') || c.includes('armarina'))) ||
-    c.includes('imlargo') || n.includes('imlargo') ||
-    c.includes('largo') || n.includes('largo') ||
-    c.includes('01101100') || n.includes('01101100') ||
-    c.includes('01101001') || n.includes('01101001')
-  ));
+  const texts = [email, name].map((text) => String(text || '').toLowerCase());
+  return texts.some((text) => CLOWN_FRAGMENTS.some((fragment) => text.includes(fragment)));
 }
 
-// fecha: texto libre, por ejemplo '12 nov'. Si está vacía se muestra "Día 1", "Día 2"...
-const DIAS = [
-  { id: 'mie', nombre: 'Miércoles', corto: 'Mié', fecha: '18 nov' },
-  { id: 'jue', nombre: 'Jueves', corto: 'Jue', fecha: '19 nov' },
-  { id: 'vie', nombre: 'Viernes', corto: 'Vie', fecha: '20 nov' },
+// One sanctioned person hides behind binary names: the page shows their real identity instead.
+function isLargoAlias(email, name) {
+  return [email, name].some((value) => String(value).includes('0110') || String(value).toLowerCase().includes('largo'));
+}
+
+// date: free text, for example '12 nov'. If empty, the page shows "Día 1", "Día 2"...
+const DAYS = [
+  { id: 'wed', name: 'Miércoles', short: 'Mié', date: '18 nov' },
+  { id: 'thu', name: 'Jueves', short: 'Jue', date: '19 nov' },
+  { id: 'fri', name: 'Viernes', short: 'Vie', date: '20 nov' },
 ];
 
-// Tipos de actividad: nombre en las pestañas, etiqueta en las tarjetas, colores
-// e icono (uno de js/iconos.js) para reconocer el tipo de un vistazo
-const TIPOS = {
-  conferencia: { plural: 'Conferencias', singular: 'Conferencia', color: '#c98a00', fondo: '#fff3cf', icono: 'microfono' },
-  taller: { plural: 'Talleres', singular: 'Taller', color: '#1667c2', fondo: '#dceafa', icono: 'taller' },
-  competencia: { plural: 'Competencias', singular: 'Competencia', color: '#d23c5a', fondo: '#fde3e8', icono: 'trofeo' },
-  social: { plural: 'Social', singular: 'Social', color: '#7b4fc9', fondo: '#ece4fa', icono: 'personas' },
+// Activity types: name on the tabs, label on the cards, colors
+// and icon (one from js/icons.js) to recognize the type at a glance
+const ACTIVITY_TYPES = {
+  talk: { plural: 'Conferencias', singular: 'Conferencia', color: '#c98a00', bg: '#fff3cf', icon: 'microphone' },
+  workshop: { plural: 'Talleres', singular: 'Taller', color: '#1667c2', bg: '#dceafa', icon: 'workshop' },
+  competition: { plural: 'Competencias', singular: 'Competencia', color: '#d23c5a', bg: '#fde3e8', icon: 'trophy' },
+  social: { plural: 'Social', singular: 'Social', color: '#7b4fc9', bg: '#ece4fa', icon: 'people' },
 };
 
-// nombre: null significa "por anunciar"
-// Opcionales: foto (imagen cuadrada en img/; si no hay, sale su monstruo), bio y enlace
-// (LinkedIn o página: sale como "Saber más" en la página de su charla)
-// y porConfirmar: true (su carnet sale con el sello "Por confirmar" y su charla con un aviso)
-const PONENTES = [
-  { id: 'eduardo', nombre: 'Eduardo', cargo: 'CEO de Unergy', credencial: 'Invitado', color: '#f2a33a', porConfirmar: true },
-  { id: 'mariano', nombre: 'Mariano Sosa', cargo: 'Ingeniero de datos y docente', credencial: 'Ponente', color: '#8b5fd6',
-    foto: 'img/ponente-mariano-sosa.jpg',
+// name: null means "to be announced"
+// Optional: photo (square image in img/; without it, their monster shows), bio and link
+// (LinkedIn or web page: shown as "Saber más" on their talk's page)
+// and unconfirmed: true (their ID card gets the "Por confirmar" stamp and their talk a notice)
+const SPEAKERS = [
+  { id: 'eduardo', name: 'Eduardo', role: 'CEO de Unergy', credential: 'Invitado', color: '#f2a33a', unconfirmed: true },
+  { id: 'mariano', name: 'Mariano Sosa', role: 'Ingeniero de datos y docente', credential: 'Ponente', color: '#8b5fd6',
+    photo: 'img/speaker-mariano-sosa.jpg',
     bio: 'Soy ingeniero de datos en Lovelytics, donde he participado en proyectos de arquitectura y gobierno de plataformas de datos, migración de información y desarrollo de pipelines en Azure y Databricks para empresas de los sectores de seguros, salud y servicios financieros. Paralelamente, me dedico a la formación en análisis de datos donde acompaño a estudiantes en el desarrollo de sus habilidades técnicas.\n' +
       'Desde mi experiencia en la industria tecnológica y en la educación, promuevo una visión integral de la ingeniería que combina fundamentos sólidos, pensamiento crítico, comunicación, aprendizaje continuo y habilidades humanas para resolver problemas reales. Me interesa conectar el conocimiento técnico con su aplicación práctica y ayudar a otros a desarrollar las competencias que necesitan para crecer profesionalmente en un entorno tecnológico en constante evolución.' },
-  { id: 'daniel', nombre: 'Daniel Arango Sohm', cargo: 'Conferencista internacional', credencial: 'Ponente', color: '#1667c2',
-    foto: 'img/ponente-daniel-arango.jpg', enlace: 'https://www.linkedin.com/in/daniel-arango-sohm-352b4822a/',
+  { id: 'daniel', name: 'Daniel Arango Sohm', role: 'Conferencista internacional', credential: 'Ponente', color: '#1667c2',
+    photo: 'img/speaker-daniel-arango.jpg', link: 'https://www.linkedin.com/in/daniel-arango-sohm-352b4822a/',
     bio: 'He ganado tres veces el premio al mejor proyecto en Ingeniería de Sistemas en la EAFIT. Soy conferencista internacional y he dado charlas en Medellín JS, Python Medellín (dos veces), Medellín AI, PyCon Colombia, Python Moscow, Perú y BarNLP. Soy mitad colombiano, también tengo ascendencia alemana y rusa, y hablo ruso y alemán.' },
 ];
 
-// Grupos estudiantiles que participan en la Semana. Cada uno sale como un banderín de su color.
-// tipo: el texto pequeño debajo del banderín.
-// Opcionales: logo (imagen cuadrada en img/), enlace (red social o página: el banderín lleva a ella)
-// y descripcion (sale en la página de las actividades que organiza, junto con el enlace como "Saber más").
-const GRUPOS = [
-  { id: 'unalgoritmo', nombre: 'UNAlgoritmo', tipo: 'Grupo estudiantil', color: '#9128d9', logo: 'img/grupo-unalgoritmo.jpg',
-    enlace: 'https://www.linkedin.com/company/unalgoritmo/',
-    descripcion: 'UN Algoritmo es un grupo estudiantil adscrito a la Facultad de Minas de la Universidad Nacional de Colombia (Sede Medellín) dedicado a impulsar la programación competitiva, el pensamiento algorítmico y las estructuras de datos. Mediante entrenamientos semanales estructurados tanto para principiantes como para niveles avanzados, el grupo prepara equipos para competir en la Maratón Nacional de Programación, en las rondas clasificatorias del ICPC (International Collegiate Programming Contest) y en la Maratona Feminina de Programação (MFP), fortaleciendo la comunicación, la resolución rápida de problemas y el trabajo en equipo bajo el formato de un computador por terna.' },
-  { id: 'aperture', nombre: 'Aperture', tipo: 'Semillero', color: '#1aa3b8', logo: 'img/grupo-aperture.jpg',
-    enlace: 'https://aperture-systems-lab.github.io',
-    descripcion: 'Aperture es un Semillero de Investigación estudiantil donde se explora la ciencia de datos, el machine learning y la IA. Es un espacio para aprender haciendo: desarrollamos proyectos, compartimos conocimientos y conectamos esa teoría con problemas de la vida real, impulsando una comunidad colaborativa en la universidad.' },
-  { id: 'turing-box', nombre: 'Turing Box', tipo: 'Grupo estudiantil', color: '#c4358c', logo: 'img/grupo-turing-box.jpg',
-    enlace: 'https://www.instagram.com/turingbox/' },
-  { id: 'uneural', nombre: 'UNeural', tipo: 'Grupo estudiantil', color: '#4a4fd8', logo: 'img/grupo-uneural.jpg',
-    enlace: 'https://www.instagram.com/uneuralgroup' },
+// Student groups taking part in the week. Each one shows as a pennant in its color.
+// type: the small text below the pennant.
+// Optional: logo (square image in img/), link (social network or web page: the pennant links to it)
+// and description (shown on the pages of the activities it organizes, with the link as "Saber más").
+const GROUPS = [
+  { id: 'unalgoritmo', name: 'UNAlgoritmo', type: 'Grupo estudiantil', color: '#9128d9', logo: 'img/group-unalgoritmo.jpg',
+    link: 'https://www.linkedin.com/company/unalgoritmo/',
+    description: 'UN Algoritmo es un grupo estudiantil adscrito a la Facultad de Minas de la Universidad Nacional de Colombia (Sede Medellín) dedicado a impulsar la programación competitiva, el pensamiento algorítmico y las estructuras de datos. Mediante entrenamientos semanales estructurados tanto para principiantes como para niveles avanzados, el grupo prepara equipos para competir en la Maratón Nacional de Programación, en las rondas clasificatorias del ICPC (International Collegiate Programming Contest) y en la Maratona Feminina de Programação (MFP), fortaleciendo la comunicación, la resolución rápida de problemas y el trabajo en equipo bajo el formato de un computador por terna.' },
+  { id: 'aperture', name: 'Aperture', type: 'Semillero', color: '#1aa3b8', logo: 'img/group-aperture.jpg',
+    link: 'https://aperture-systems-lab.github.io',
+    description: 'Aperture es un Semillero de Investigación estudiantil donde se explora la ciencia de datos, el machine learning y la IA. Es un espacio para aprender haciendo: desarrollamos proyectos, compartimos conocimientos y conectamos esa teoría con problemas de la vida real, impulsando una comunidad colaborativa en la universidad.' },
+  { id: 'turing-box', name: 'Turing Box', type: 'Grupo estudiantil', color: '#c4358c', logo: 'img/group-turing-box.jpg',
+    link: 'https://www.instagram.com/turingbox/' },
+  { id: 'uneural', name: 'UNeural', type: 'Grupo estudiantil', color: '#4a4fd8', logo: 'img/group-uneural.jpg',
+    link: 'https://www.instagram.com/uneuralgroup' },
 ];
 
-// Horas en formato 'HH:MM' (24 h). Mantén el orden por día y hora.
-// Las horas son provisionales: hay que confirmarlas con el horario oficial.
-// Las competencias llevan además icono, color y resumen para su tarjeta.
-// Opcionales: lugar (ej. 'Bloque M8, auditorio'), descripcion (texto largo
-// para la página de la actividad, cada \n es un párrafo; si no hay, se usa el resumen), organiza (id de GRUPOS),
-// reglas (lista de { titulo, texto } que sale como "Formato y reglas" en su página),
-// imagen (en img/: sale junto al texto de su página),
-// video ({ id, titulo } de un video de YouTube: el id es lo que va después de youtu.be/ en el enlace),
-// cifras (lista de { valor, nombre } que salen como recuadros grandes debajo del texto, ej. { valor: 16, nombre: 'jugadores' }),
-// porConfirmar: true (sale un aviso de "Información por confirmar" en su página)
-// y adornos (tres dibujos pixel art de js/pixeles.js que salen en la cabecera de su página; el del medio va más alto).
-const ACTIVIDADES = [
-  // Miércoles
-  { id: 'inaugural', dia: 'mie', inicio: '09:00', fin: '10:00', tipo: 'conferencia', titulo: 'Conferencia inaugural', ponente: 'eduardo', lugar: 'Aula Máxima',
-    adornos: ['bandera', 'microfono', 'cohete'] },
-  { id: 'feria', dia: 'mie', inicio: '09:00', fin: '12:00', tipo: 'social', titulo: 'Feria de stands', lugar: 'Hall M10',
-    descripcion: 'Descubre la innovación desde adentro y amplía tus horizontes. Conecta con el talento universitario recorriendo los stands de nuestros grupos estudiantiles y semilleros de investigación, e interactúa directamente con empresas invitadas para resolver dudas, intercambiar experiencias y construir tu red profesional.',
-    adornos: ['maletin', 'carpa', 'gafete'] },
-  { id: 'datos', dia: 'mie', inicio: '11:00', fin: '12:00', tipo: 'conferencia', titulo: 'Más allá del código: de estudiante a ingeniero en la era de la inteligencia artificial', ponente: 'mariano', lugar: 'Aula Máxima',
-    descripcion: '¿Qué significa realmente ser un buen ingeniero de sistemas en un mundo donde la inteligencia artificial puede generar código, las tecnologías cambian constantemente y los problemas reales exigen mucho más que conocimientos técnicos?\n' +
+// Times in 'HH:MM' format (24 h). Keep them sorted by day and time.
+// Times are provisional: they must be confirmed against the official schedule.
+// Competitions also have icon, color and summary for their card.
+// Optional: place (e.g. 'Bloque M8, auditorio'), description (long text
+// for the activity page, each \n is a paragraph; without it, the summary is used), organizer (id from GROUPS),
+// rules (list of { title, text } shown as "Formato y reglas" on its page),
+// image (in img/: shown next to the text on its page),
+// video ({ id, title } of a YouTube video: the id is what follows youtu.be/ in the link),
+// stats (list of { value, label } shown as big boxes below the text, e.g. { value: 16, label: 'jugadores' }),
+// unconfirmed: true (shows an "Información por confirmar" notice on its page)
+// and decorations (three pixel art drawings from js/pixel-art.js for its page header; the middle one sits higher).
+const ACTIVITIES = [
+  // Wednesday
+  { id: 'inaugural', day: 'wed', start: '09:00', end: '10:00', type: 'talk', title: 'Conferencia inaugural', speaker: 'eduardo', place: 'Aula Máxima',
+    decorations: ['flag', 'microphone', 'rocket'] },
+  { id: 'feria', day: 'wed', start: '09:00', end: '12:00', type: 'social', title: 'Feria de stands', place: 'Hall M10',
+    description: 'Descubre la innovación desde adentro y amplía tus horizontes. Conecta con el talento universitario recorriendo los stands de nuestros grupos estudiantiles y semilleros de investigación, e interactúa directamente con empresas invitadas para resolver dudas, intercambiar experiencias y construir tu red profesional.',
+    decorations: ['briefcase', 'tent', 'lanyard'] },
+  { id: 'datos', day: 'wed', start: '11:00', end: '12:00', type: 'talk', title: 'Más allá del código: de estudiante a ingeniero en la era de la inteligencia artificial', speaker: 'mariano', place: 'Aula Máxima',
+    description: '¿Qué significa realmente ser un buen ingeniero de sistemas en un mundo donde la inteligencia artificial puede generar código, las tecnologías cambian constantemente y los problemas reales exigen mucho más que conocimientos técnicos?\n' +
       'Durante esta charla exploraremos cómo pasar de aprender herramientas a desarrollar un perfil profesional integral, capaz de comprender problemas, tomar decisiones técnicas y construir soluciones que generen valor. Abordaremos la importancia de los fundamentos de la ingeniería, el pensamiento crítico y el uso responsable de la inteligencia artificial, así como el papel de las habilidades humanas, la comunicación, el trabajo en equipo y el aprendizaje continuo.\n' +
       'A través de ejemplos prácticos y situaciones del mundo tecnológico, reflexionaremos sobre cómo se conectan los conocimientos adquiridos en la universidad con los desafíos de la industria y qué pueden hacer los estudiantes, desde cualquier semestre, para prepararse para su futuro profesional.\n' +
       'Una invitación a mirar más allá del código y descubrir cómo construir una carrera en la que la tecnología, el criterio y las habilidades humanas trabajen juntos.',
-    adornos: ['birrete', 'casco', 'baseDatos'] },
-  { id: 'taller-aperture', dia: 'mie', inicio: '14:00', fin: '15:00', tipo: 'taller', titulo: 'De Prompts a Agentes: Inteligencia Artificial Agéntica con Python', organiza: 'aperture', lugar: 'Aula M3-224',
-    descripcion: '¿Qué pasa cuando un LLM deja de solo responder y empieza a actuar?\n' +
+    decorations: ['gradCap', 'helmet', 'database'] },
+  { id: 'taller-aperture', day: 'wed', start: '14:00', end: '15:00', type: 'workshop', title: 'De Prompts a Agentes: Inteligencia Artificial Agéntica con Python', organizer: 'aperture', place: 'Aula M3-224',
+    description: '¿Qué pasa cuando un LLM deja de solo responder y empieza a actuar?\n' +
       'En este taller veremos cómo crear un agente, hacerlo más capaz y llevarlo a producción. Lo haremos con LangChain, uno de los frameworks de Python más usados para construir aplicaciones y agentes con LLMs.\n' +
       '¡Ven a descubrir cómo funciona un agente!',
-    adornos: ['terminal', 'robot', 'rayo'] },
-  { id: 'taller-llm', dia: 'mie', inicio: '15:00', fin: '16:00', tipo: 'taller', titulo: 'LLM, agentes, harness, skills y MCP', organiza: 'turing-box', lugar: 'Aula M3-224', porConfirmar: true,
-    descripcion: 'Un recorrido general sobre qué es un LLM, un agente, un harness, skills y MCP.',
-    adornos: ['chat', 'chip', 'enchufe'] },
+    decorations: ['terminal', 'robot', 'lightning'] },
+  { id: 'taller-llm', day: 'wed', start: '15:00', end: '16:00', type: 'workshop', title: 'LLM, agentes, harness, skills y MCP', organizer: 'turing-box', place: 'Aula M3-224', unconfirmed: true,
+    description: 'Un recorrido general sobre qué es un LLM, un agente, un harness, skills y MCP.',
+    decorations: ['chat', 'chip', 'plug'] },
 
-  // Jueves
-  { id: 'observacion', dia: 'jue', inicio: '07:00', fin: '10:00', tipo: 'competencia', titulo: 'Carrera de observación',
-    icono: 'lupa', color: '#e05a7a', resumen: 'Recorre el campus resolviendo pistas antes que los demás equipos.', lugar: 'Hall M10',
-    descripcion: 'Una verdadera prueba de velocidad, lógica y trabajo en equipo. Recorre las estaciones distribuidas alrededor del campus resolviendo acertijos y desafíos en el menor tiempo posible.\n' +
+  // Thursday
+  { id: 'observacion', day: 'thu', start: '07:00', end: '10:00', type: 'competition', title: 'Carrera de observación',
+    icon: 'magnifier', color: '#e05a7a', summary: 'Recorre el campus resolviendo pistas antes que los demás equipos.', place: 'Hall M10',
+    description: 'Una verdadera prueba de velocidad, lógica y trabajo en equipo. Recorre las estaciones distribuidas alrededor del campus resolviendo acertijos y desafíos en el menor tiempo posible.\n' +
       '¿Tiene tu equipo la destreza mental y la resistencia necesarias para llevarse la victoria?',
-    adornos: ['interrogacion', 'lupa', 'mapa'] },
-  { id: 'maraton', dia: 'jue', inicio: '14:00', fin: '18:00', tipo: 'competencia', titulo: 'Maratón de programación',
-    icono: 'codigo', color: '#2f9e5b', resumen: 'Cuatro horas de problemas algorítmicos contra el reloj.', organiza: 'unalgoritmo', lugar: 'Salón M7-501',
-    descripcion: 'Llega la Maratón de Programación, el evento insignia en la sede Medellín para medir el pensamiento algorítmico, la lógica y el trabajo colaborativo en equipos de tres personas frente a retos de programación.',
-    reglas: [
-      { titulo: 'Conformación y estaciones', texto: 'Participación en ternas (3 integrantes). Cada equipo contará con un computador para la resolución e implementación del código.' },
-      { titulo: 'Lenguajes permitidos', texto: 'Los problemas se pueden resolver en cualquier lenguaje de programación, principalmente C++, Python y Java.' },
-      { titulo: 'Material de consulta', texto: 'Se permite llevar material impreso o escrito (libros, apuntes, notas o código en papel). No se admiten memorias USB ni dispositivos de almacenamiento externos.' },
-      { titulo: 'Entorno cerrado e integridad', texto: 'Queda estrictamente prohibido el acceso a internet y el uso de herramientas de inteligencia artificial (Google, ChatGPT, Copilot, Stack Overflow, entre otros); el incumplimiento implicará la expulsión inmediata del equipo. Sí se permitirá consultar la documentación de los lenguajes de programación.' },
+    decorations: ['questionMark', 'magnifier', 'map'] },
+  { id: 'maraton', day: 'thu', start: '14:00', end: '18:00', type: 'competition', title: 'Maratón de programación',
+    icon: 'code', color: '#2f9e5b', summary: 'Cuatro horas de problemas algorítmicos contra el reloj.', organizer: 'unalgoritmo', place: 'Salón M7-501',
+    description: 'Llega la Maratón de Programación, el evento insignia en la sede Medellín para medir el pensamiento algorítmico, la lógica y el trabajo colaborativo en equipos de tres personas frente a retos de programación.',
+    rules: [
+      { title: 'Conformación y estaciones', text: 'Participación en ternas (3 integrantes). Cada equipo contará con un computador para la resolución e implementación del código.' },
+      { title: 'Lenguajes permitidos', text: 'Los problemas se pueden resolver en cualquier lenguaje de programación, principalmente C++, Python y Java.' },
+      { title: 'Material de consulta', text: 'Se permite llevar material impreso o escrito (libros, apuntes, notas o código en papel). No se admiten memorias USB ni dispositivos de almacenamiento externos.' },
+      { title: 'Entorno cerrado e integridad', text: 'Queda estrictamente prohibido el acceso a internet y el uso de herramientas de inteligencia artificial (Google, ChatGPT, Copilot, Stack Overflow, entre otros); el incumplimiento implicará la expulsión inmediata del equipo. Sí se permitirá consultar la documentación de los lenguajes de programación.' },
     ],
-    adornos: ['globo', 'computador', 'relojArena'] },
+    decorations: ['balloon', 'computer', 'hourglass'] },
 
-  // Viernes
-  { id: 'atletismo', dia: 'vie', inicio: '08:00', fin: '09:00', tipo: 'competencia', titulo: 'Carrera de atletismo 8‑bit',
-    icono: 'pixel', color: '#f08a24', resumen: 'Una carrera con alma de videojuego retro.', lugar: 'Hall M10',
-    descripcion: 'Pon a prueba tu velocidad y resistencia en un circuito a lo largo de todo el campus. Prepárate para enfrentar los cambios de inclinación del terreno, superar cada nivel y retarte a ti mismo en una carrera con pura alma de videojuego retro.',
-    imagen: 'img/actividad-atletismo.jpg',
-    adornos: ['medalla10', 'medalla01', 'medalla11'] },
-  { id: 'futbol', dia: 'vie', inicio: '09:00', fin: '11:00', tipo: 'competencia', titulo: 'Torneo de fútbol',
-    icono: 'balon', color: '#1667c2', resumen: 'Arma tu equipo y sal a la cancha.', lugar: 'Placa polideportiva',
-    descripcion: 'Reúne a tu equipo y demuestra tu nivel en la cancha en un torneo de eliminación directa por brackets. Avanza llave a llave, supera a tus rivales en cada partido y compite hasta alcanzar la gran final.\n' +
+  // Friday
+  { id: 'atletismo', day: 'fri', start: '08:00', end: '09:00', type: 'competition', title: 'Carrera de atletismo 8‑bit',
+    icon: 'pixel', color: '#f08a24', summary: 'Una carrera con alma de videojuego retro.', place: 'Hall M10',
+    description: 'Pon a prueba tu velocidad y resistencia en un circuito a lo largo de todo el campus. Prepárate para enfrentar los cambios de inclinación del terreno, superar cada nivel y retarte a ti mismo en una carrera con pura alma de videojuego retro.',
+    image: 'img/activity-athletics.jpg',
+    decorations: ['medal10', 'medal01', 'medal11'] },
+  { id: 'futbol', day: 'fri', start: '09:00', end: '11:00', type: 'competition', title: 'Torneo de fútbol',
+    icon: 'ball', color: '#1667c2', summary: 'Arma tu equipo y sal a la cancha.', place: 'Placa polideportiva',
+    description: 'Reúne a tu equipo y demuestra tu nivel en la cancha en un torneo de eliminación directa por brackets. Avanza llave a llave, supera a tus rivales en cada partido y compite hasta alcanzar la gran final.\n' +
       'Se prestan los petos y el balón.',
-    imagen: 'img/actividad-futbol.jpg',
-    video: { id: '_2zoIHTWd00', titulo: 'Comercial de Nike Football: Arriésgalo todo (2014)' },
-    adornos: ['camiseta', 'copa', 'balon'] },
-  { id: 'videojuegos', dia: 'vie', inicio: '10:00', fin: '12:00', tipo: 'competencia', titulo: 'Torneo de videojuegos', lugar: 'Sala Lovelace Turing',
-    icono: 'control', color: '#7b4fc9', resumen: '16 jugadores se enfrentan en Overcooked hasta que solo quede un campeón.',
-    descripcion: 'Toma el control, demuestra tu talento en la pantalla y compite codo a codo con otros jugadores para coronarte como el campeón del torneo.',
-    imagen: 'img/actividad-overcooked2.jpg',
-    cifras: [{ valor: 16, nombre: 'jugadores' }, { valor: 'VS', nombre: 'modo' }],
-    adornos: ['gorroChef', 'control', 'reyCebolla'] },
-  { id: 'karaoke', dia: 'vie', inicio: '14:00', fin: '15:00', tipo: 'social', titulo: 'Karaoke y Just Dance', lugar: 'Sala Lovelace Turing',
-    descripcion: 'El espacio perfecto para soltar la voz, sacar los mejores pasos y pasar un buen rato. Canta tus canciones favoritas en el karaoke o acepta el reto en la pantalla de Just Dance para demostrar quién domina la pista.',
-    imagen: 'img/actividad-just-dance.jpg',
-    adornos: ['nota', 'microfono', 'bolaDisco'] },
-  { id: 'premiacion', dia: 'vie', inicio: '15:00', fin: '16:00', tipo: 'social', titulo: 'Premiación', lugar: 'Sala Lovelace Turing',
-    descripcion: '¡Llegó el momento de la verdad! Acompaña a tus equipos y competidores favoritos en la entrega oficial de premios y la clausura del evento.',
-    imagen: 'img/actividad-premiacion.jpg',
-    adornos: ['estrella', 'copa', 'estrella'] },
-  { id: 'ia-cuantica', dia: 'vie', inicio: '16:00', fin: '17:00', tipo: 'conferencia', lugar: 'Aula M3-224',
-    titulo: 'El futuro de los LLM está en la computación cuántica, fotónica y térmica', ponente: 'daniel',
-    descripcion: 'El problema de la IA es el consumo de energía, pero ¿qué pasa si no calculamos con energía?\n' +
+    image: 'img/activity-soccer.jpg',
+    video: { id: '_2zoIHTWd00', title: 'Comercial de Nike Football: Arriésgalo todo (2014)' },
+    decorations: ['jersey', 'cup', 'ball'] },
+  { id: 'videojuegos', day: 'fri', start: '10:00', end: '12:00', type: 'competition', title: 'Torneo de videojuegos', place: 'Sala Lovelace Turing',
+    icon: 'gamepad', color: '#7b4fc9', summary: '16 jugadores se enfrentan en Overcooked hasta que solo quede un campeón.',
+    description: 'Toma el control, demuestra tu talento en la pantalla y compite codo a codo con otros jugadores para coronarte como el campeón del torneo.',
+    image: 'img/activity-overcooked2.jpg',
+    stats: [{ value: 16, label: 'jugadores' }, { value: 'VS', label: 'modo' }],
+    decorations: ['chefHat', 'gamepad', 'onionKing'] },
+  { id: 'karaoke', day: 'fri', start: '14:00', end: '15:00', type: 'social', title: 'Karaoke y Just Dance', place: 'Sala Lovelace Turing',
+    description: 'El espacio perfecto para soltar la voz, sacar los mejores pasos y pasar un buen rato. Canta tus canciones favoritas en el karaoke o acepta el reto en la pantalla de Just Dance para demostrar quién domina la pista.',
+    image: 'img/activity-just-dance.jpg',
+    decorations: ['note', 'microphone', 'discoBall'] },
+  { id: 'premiacion', day: 'fri', start: '15:00', end: '16:00', type: 'social', title: 'Premiación', place: 'Sala Lovelace Turing',
+    description: '¡Llegó el momento de la verdad! Acompaña a tus equipos y competidores favoritos en la entrega oficial de premios y la clausura del evento.',
+    image: 'img/activity-awards.jpg',
+    decorations: ['star', 'cup', 'star'] },
+  { id: 'ia-cuantica', day: 'fri', start: '16:00', end: '17:00', type: 'talk', place: 'Aula M3-224',
+    title: 'El futuro de los LLM está en la computación cuántica, fotónica y térmica', speaker: 'daniel',
+    description: 'El problema de la IA es el consumo de energía, pero ¿qué pasa si no calculamos con energía?\n' +
       'Durante esta charla veremos el proceso para llegar a hacer diferentes modelos de lenguaje estado del arte, autorregresivos y de difusión, y entender cómo llegar a la mejor configuración de capas entre los diferentes paradigmas de computación. ¿Dónde puedo usar la cuántica? ¿Dónde puedo poner la térmica? ¿Para qué sirve y qué es eso? ¿Y cómo multiplicar a la velocidad de la luz de forma paralelizada?\n' +
       'Con demo en vivo y animaciones para que sea intuitivo.',
-    adornos: ['termometro', 'atomo', 'bombillo'] },
+    decorations: ['thermometer', 'atom', 'lightbulb'] },
 ];
 
-// TÍTULOS del carnet: lo que sale en la franja de color. Todos arrancan con el primero (libre) y los
-// demás se desbloquean canjeando un código en el apartado del Sustómetro. Una vez desbloqueado, la
-// persona lo elige en "Editar carnet".
-//   id: nombre interno, no se cambia una vez publicado (queda guardado en la cuenta de cada persona).
-//   nombre / femenino: cómo se lee en el carnet según el estilo del monstruo. Si no hay `femenino`, se usa `nombre`.
-//   libre: true = todos lo tienen desde el inicio.
-//   codigo: la huella del código (NO el código). Se genera con: node herramientas/hash-codigo.js "EL CÓDIGO"
-//   descripcion: frase corta que se ve en "Tus títulos" cuando ya está desbloqueado.
-//   pista: frase corta que se ve debajo de "Título secreto" mientras está bloqueado, para dar ganas de buscarlo.
-// El título 'cazahuevos' es el del easter egg de los stickers (sustometro.js): su `codigo` debe ser la huella del
-// mismo código que la función reclamar_easter_egg de Supabase le entrega a quien lo encuentra, y que luego se lo
-// pasa al representante.
-// Catálogo de títulos para el carnet.
-//   libre: true indica que viene desbloqueado por defecto para todos los que se registran.
-//   codigo: huella SHA-256 del código que lo desbloquea (sin pistas públicas).
-const TITULOS = [
-  { id: 'asustador', nombre: 'Asustador', femenino: 'Asustadora', libre: true,
-    descripcion: 'El título con el que arranca todo monstruo de la Semana.' },
-  { id: 'supervisor', nombre: 'Supervisor de Sustos', femenino: 'Supervisora de Sustos',
-    descripcion: 'Del equipo de administración de la página.',
-    pista: 'Solo para quienes mueven los hilos de la Semana.',
-    codigo: '71c580f40935a6e35613a6223e59db79d22d534a8e3fed097020e3153da846da' },
-  { id: 'pionero', nombre: 'Asustador Pionero', femenino: 'Asustadora Pionera',
-    descripcion: 'Llegó antes que nadie y abrió camino a los demás monstruos.',
-    pista: 'Los primeros en llegar se llevan algo especial.',
-    codigo: '3bed572cb2f9c1a9f7e3d08a818f5b5463d499f3ef24938aaa4d796347dbadd8' },
-  { id: 'debugger', nombre: 'Debugger',
-    descripcion: 'Encuentra los bugs antes de que los bugs lo encuentren.',
-    pista: 'Algo no anda bien en el código… ¿lo notaste?',
-    codigo: '30bc3d0b546272ae2dcbc55119bff7af556272354651bc674906fc2dd543f230' },
-  { id: 'terror-nocturno', nombre: 'Terror Nocturno', femenino: 'Terror Nocturno', limite: 5,
-    descripcion: 'Acecha cuando se apagan las luces. Solo 5 lo tienen.',
-    pista: 'Solo 5 personas podrán reclamarlo. Corre.',
-    codigo: 'c58b28118256f74718a66d20def69ac43887b5dacbc7ffcac09389da6ba38d08' },
+// ID card TITLES: what shows on the colored band. Everyone starts with the first one (free) and the
+// others unlock by redeeming a code in the Scare Meter section. Once unlocked, the
+// person picks it in "Editar carnet".
+//   id: internal name, never change it once published (it is stored in each person's account).
+//   name / feminine: how it reads on the ID card depending on the monster's style. Without `feminine`, `name` is used.
+//   free: true = everyone has it from the start.
+//   codeHash: the code's SHA-256 hash (NOT the code). Generate it with: node tools/hash-code.js "THE CODE"
+//   description: short phrase shown under "Tus títulos" once unlocked.
+//   hint: short phrase shown below "Título secreto" while locked, to make people want to look for it.
+//   limit: how many people can hold it (checked in the browser only, see js/codes.js).
+const TITLES = [
+  { id: 'asustador', name: 'Asustador', feminine: 'Asustadora', free: true,
+    description: 'El título con el que arranca todo monstruo de la Semana.' },
+  { id: 'supervisor', name: 'Supervisor de Sustos', feminine: 'Supervisora de Sustos',
+    description: 'Del equipo de administración de la página.',
+    hint: 'Solo para quienes mueven los hilos de la Semana.',
+    codeHash: '71c580f40935a6e35613a6223e59db79d22d534a8e3fed097020e3153da846da' },
+  { id: 'pionero', name: 'Asustador Pionero', feminine: 'Asustadora Pionera',
+    description: 'Llegó antes que nadie y abrió camino a los demás monstruos.',
+    hint: 'Los primeros en llegar se llevan algo especial.',
+    codeHash: '3bed572cb2f9c1a9f7e3d08a818f5b5463d499f3ef24938aaa4d796347dbadd8' },
+  { id: 'debugger', name: 'Debugger',
+    description: 'Encuentra los bugs antes de que los bugs lo encuentren.',
+    hint: 'Algo no anda bien en el código… ¿lo notaste?',
+    codeHash: '30bc3d0b546272ae2dcbc55119bff7af556272354651bc674906fc2dd543f230' },
+  { id: 'terror-nocturno', name: 'Terror Nocturno', feminine: 'Terror Nocturno', limit: 5,
+    description: 'Acecha cuando se apagan las luces. Solo 5 lo tienen.',
+    hint: 'Solo 5 personas podrán reclamarlo. Corre.',
+    codeHash: 'c58b28118256f74718a66d20def69ac43887b5dacbc7ffcac09389da6ba38d08' },
 ];
 
-// SUSTÓMETRO: Ahora se alimenta en tiempo real desde Supabase (tabla 'perfiles')
-// mostrando a las personas registradas con su monstruo y sus puntos en sustometro.html.
+// SCARE METER: fed in real time from Supabase (table 'perfiles'),
+// showing registered people with their monster and points in sustometro.html.
 
-// Fotos y videos de ediciones anteriores para la galería (los archivos van en img/galeria/).
-// Los .mp4 salen como videos cortos sin sonido; portada es la imagen que se ve mientras cargan.
-// texto: lo que se ve. No sale en pantalla: lo leen los lectores de pantalla.
-const GALERIA = [
-  { archivo: 'img/galeria/foto-grupal.jpg', texto: 'Foto grupal en las escaleras de la entrada de la Facultad de Minas' },
-  { archivo: 'img/galeria/maraton.jpg', texto: 'Sala de computadores llena de globos durante la maratón de programación' },
-  { archivo: 'img/galeria/globos.mp4', portada: 'img/galeria/globos-portada.jpg', texto: 'Carrera con globos en la placa polideportiva' },
-  { archivo: 'img/galeria/futbol.jpg', texto: 'Partido de fútbol con petos en la placa polideportiva' },
-  { archivo: 'img/galeria/conferencia.jpg', texto: 'Conferencia sobre agentes de inteligencia artificial en el auditorio' },
-  { archivo: 'img/galeria/feria.mp4', portada: 'img/galeria/feria-portada.jpg', texto: 'Recorrido por la feria de stands' },
-  { archivo: 'img/galeria/maraton-equipo.jpg', texto: 'Un equipo concentrado frente al computador en la maratón' },
-  { archivo: 'img/galeria/carrera.jpg', texto: 'Estudiantes sentados en fila durante un juego en la placa' },
-  { archivo: 'img/galeria/auditorio.mp4', portada: 'img/galeria/auditorio-portada.jpg', texto: 'Público en el auditorio durante una charla' },
-  { archivo: 'img/galeria/globos.jpg', texto: 'Estudiantes jugando con un globo en la placa polideportiva' },
+// Photos and videos from past editions for the gallery (the files go in img/gallery/).
+// The .mp4 files show as short silent videos; poster is the image shown while they load.
+// text: what is in the image. Not shown on screen: screen readers read it.
+const GALLERY = [
+  { file: 'img/gallery/group-photo.jpg', text: 'Foto grupal en las escaleras de la entrada de la Facultad de Minas' },
+  { file: 'img/gallery/marathon.jpg', text: 'Sala de computadores llena de globos durante la maratón de programación' },
+  { file: 'img/gallery/balloons.mp4', poster: 'img/gallery/balloons-poster.jpg', text: 'Carrera con globos en la placa polideportiva' },
+  { file: 'img/gallery/soccer.jpg', text: 'Partido de fútbol con petos en la placa polideportiva' },
+  { file: 'img/gallery/talk.jpg', text: 'Conferencia sobre agentes de inteligencia artificial en el auditorio' },
+  { file: 'img/gallery/fair.mp4', poster: 'img/gallery/fair-poster.jpg', text: 'Recorrido por la feria de stands' },
+  { file: 'img/gallery/marathon-team.jpg', text: 'Un equipo concentrado frente al computador en la maratón' },
+  { file: 'img/gallery/race.jpg', text: 'Estudiantes sentados en fila durante un juego en la placa' },
+  { file: 'img/gallery/auditorium.mp4', poster: 'img/gallery/auditorium-poster.jpg', text: 'Público en el auditorio durante una charla' },
+  { file: 'img/gallery/balloons.jpg', text: 'Estudiantes jugando con un globo en la placa polideportiva' },
 ];

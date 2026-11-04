@@ -1,751 +1,689 @@
 /* =============================================
-   SESIÓN Y CARNET DE ASUSTADOR (SUPABASE)
-   Ventana para ingresar o crear una cuenta con el correo de la UNAL.
-   Al crear la cuenta, la persona arma su monstruo y se le emite un carnet.
+   SESSION AND SCARER ID CARD (SUPABASE)
+   Dialog to log in or create an account with the UNAL email.
+   On signing up, the person builds their monster and gets an ID card.
+
+   Supabase names stay in Spanish because they are live data: table and column names (perfiles,
+   nombre, correo, monstruo, puntos), function names and parameters, and the keys and values stored
+   in accounts (user_metadata.monstruo, titulo, titulos). Renaming them needs a database migration.
    ============================================= */
 
-// Esta es la clave pública (anon) de Supabase: está hecha para ir en el navegador.
-// Lo que protege los datos son las reglas configuradas en Supabase. Nunca pongas aquí la clave service_role.
+// This is Supabase's public (anon) key: it is made to live in the browser.
+// The rules configured in Supabase are what protect the data. Never put the service_role key here.
 const SUPABASE_URL = 'https://uwcdgpxdiigllqhhmyss.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3Y2RncHhkaWlnbGxxaGhteXNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MDc4ODUsImV4cCI6MjEwODI4Mzg4NX0.NuHGfN7un_7Qxg_uosrxtYcUouK593WdmQLrg9mjHjs';
 
-const clienteSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Solo se aceptan correos institucionales
-const DOMINIO_UNAL = '@unal.edu.co';
+// Only institutional emails are accepted
+const UNAL_DOMAIN = '@unal.edu.co';
 
-// true = pestaña "Crear Carnet", false = pestaña "Ingresar"
-let modoRegistro = false;
+// true = "Crear Carnet" tab, false = "Ingresar" tab
+let signupMode = false;
 
 
-/* ---------- Creador del monstruo ---------- */
+/* ---------- Monster builder ---------- */
 
-// Opciones de cada parte del monstruo, en el orden en que pasan con las flechas.
-// valor: la opción que dibuja dibujarMonstruoPersonalizado (iconos.js); texto: lo que se ve en el selector.
-const CATALOGO_MONSTRUO = {
+// Options for each monster part, in the order the arrows go through them.
+// value: the option drawCustomMonster draws (icons.js); label: what the selector shows.
+const MONSTER_CATALOG = {
   estilo: [
-    { valor: 'masculino', texto: 'Asustador' },
-    { valor: 'femenino', texto: 'Asustadora' },
+    { value: 'masculino', label: 'Asustador' },
+    { value: 'femenino', label: 'Asustadora' },
   ],
   cuerpo: [
-    { valor: 'manchas', texto: 'Peludo Manchas' },
-    { valor: 'redondo', texto: 'Redondo Mike' },
-    { valor: 'escamas', texto: 'Reptil Randall' },
-    { valor: 'rayas', texto: 'Bestia a Rayas' },
-    { valor: 'gelatina', texto: 'Mutante Gel' },
+    { value: 'manchas', label: 'Peludo Manchas' },
+    { value: 'redondo', label: 'Redondo Mike' },
+    { value: 'escamas', label: 'Reptil Randall' },
+    { value: 'rayas', label: 'Bestia a Rayas' },
+    { value: 'gelatina', label: 'Mutante Gel' },
   ],
   color: [
-    { valor: '#1667c2', texto: 'Azul Sulley' },
-    { valor: '#2f9e5b', texto: 'Verde Wazowski' },
-    { valor: '#8b5fd6', texto: 'Morado Boggs' },
-    { valor: '#e05a7a', texto: 'Rosa Sustos' },
-    { valor: '#f08a24', texto: 'Naranja Rugido' },
-    { valor: '#35b6b4', texto: 'Turquesa' },
-    { valor: '#d23c5a', texto: 'Rojo Escarlata' },
-    { valor: '#3b4d63', texto: 'Gris Nocturno' },
+    { value: '#1667c2', label: 'Azul Sulley' },
+    { value: '#2f9e5b', label: 'Verde Wazowski' },
+    { value: '#8b5fd6', label: 'Morado Boggs' },
+    { value: '#e05a7a', label: 'Rosa Sustos' },
+    { value: '#f08a24', label: 'Naranja Rugido' },
+    { value: '#35b6b4', label: 'Turquesa' },
+    { value: '#d23c5a', label: 'Rojo Escarlata' },
+    { value: '#3b4d63', label: 'Gris Nocturno' },
   ],
   ojos: [
-    { valor: 'ciclope', texto: '1 Ojo Cíclope' },
-    { valor: 'doble', texto: '2 Ojos Clásicos' },
-    { valor: 'triple', texto: '3 Ojos Mutantes' },
-    { valor: 'tallos', texto: 'Ojos en Antena' },
-    { valor: 'intenso', texto: 'Mirada Feroz' },
+    { value: 'ciclope', label: '1 Ojo Cíclope' },
+    { value: 'doble', label: '2 Ojos Clásicos' },
+    { value: 'triple', label: '3 Ojos Mutantes' },
+    { value: 'tallos', label: 'Ojos en Antena' },
+    { value: 'intenso', label: 'Mirada Feroz' },
   ],
   cuernos: [
-    { valor: 'toro', texto: 'Cuernos Toro' },
-    { valor: 'ramas', texto: 'Cuernos Retorcidos' },
-    { valor: 'antenas', texto: 'Antenas Luz' },
-    { valor: 'cresta', texto: 'Cresta Dragón' },
-    { valor: 'serpientes', texto: 'Cabello Medusa' },
-    { valor: 'orejas', texto: 'Orejas Peludas' },
+    { value: 'toro', label: 'Cuernos Toro' },
+    { value: 'ramas', label: 'Cuernos Retorcidos' },
+    { value: 'antenas', label: 'Antenas Luz' },
+    { value: 'cresta', label: 'Cresta Dragón' },
+    { value: 'serpientes', label: 'Cabello Medusa' },
+    { value: 'orejas', label: 'Orejas Peludas' },
   ],
   boca: [
-    { valor: 'colmillos', texto: 'Colmillos' },
-    { valor: 'rugido', texto: 'Rugido Susto' },
-    { valor: 'sonrisa', texto: 'Sonrisa MU' },
-    { valor: 'sierra', texto: 'Dientes Sierra' },
-    { valor: 'brackets', texto: 'Brackets' },
-    { valor: 'lengua', texto: 'Lengua Afuera' },
+    { value: 'colmillos', label: 'Colmillos' },
+    { value: 'rugido', label: 'Rugido Susto' },
+    { value: 'sonrisa', label: 'Sonrisa MU' },
+    { value: 'sierra', label: 'Dientes Sierra' },
+    { value: 'brackets', label: 'Brackets' },
+    { value: 'lengua', label: 'Lengua Afuera' },
   ],
   accesorio: [
-    { valor: 'ninguno', texto: 'Al Natural' },
-    { valor: 'gorra', texto: 'Gorra UNAL' },
-    { valor: 'gafas', texto: 'Gafas Dev' },
-    { valor: 'audifonos', texto: 'Audífonos' },
-    { valor: 'corbata', texto: 'Corbata Sustos' },
-    { valor: 'mono', texto: 'Moño Sustos' },
+    { value: 'ninguno', label: 'Al Natural' },
+    { value: 'gorra', label: 'Gorra UNAL' },
+    { value: 'gafas', label: 'Gafas Dev' },
+    { value: 'audifonos', label: 'Audífonos' },
+    { value: 'corbata', label: 'Corbata Sustos' },
+    { value: 'mono', label: 'Moño Sustos' },
   ],
 };
 
-const PARTES = Object.keys(CATALOGO_MONSTRUO);
+const PARTS = Object.keys(MONSTER_CATALOG);
 
-// Posición de la opción elegida en cada parte (todas arrancan en la primera)
-const indicesMonstruo = Object.fromEntries(PARTES.map((parte) => [parte, 0]));
+// Position of the chosen option in each part (all start at the first one)
+const monsterIndexes = Object.fromEntries(PARTS.map((part) => [part, 0]));
 
-const opcionElegida = (parte) => CATALOGO_MONSTRUO[parte][indicesMonstruo[parte]];
+const chosenOption = (part) => MONSTER_CATALOG[part][monsterIndexes[part]];
 
-// El monstruo elegido, por ejemplo { estilo: 'masculino', cuerpo: 'manchas', color: '#1667c2', ... }
-function monstruoElegido() {
-  const monstruo = {};
-  for (const parte of PARTES) {
-    monstruo[parte] = opcionElegida(parte).valor;
+// The chosen monster, for example { estilo: 'masculino', cuerpo: 'manchas', color: '#1667c2', ... }
+function chosenMonster() {
+  const monster = {};
+  for (const part of PARTS) {
+    monster[part] = chosenOption(part).value;
   }
-  return monstruo;
+  return monster;
 }
 
-/* ---------- Títulos del carnet ---------- */
+/* ---------- ID card titles ---------- */
 
-// La persona que está dentro (null si no hay sesión). Lo actualiza actualizarInterfazSesion.
-let usuarioActual = null;
+// The logged-in person (null without a session). Set by updateSessionUi.
+let currentUser = null;
 
-// El título de siempre (el "libre" de TITULOS en data.js): todos lo tienen
-const TITULO_BASE = TITULOS.find((titulo) => titulo.libre) || TITULOS[0];
+// The usual title (the "free" one in TITLES, data.js): everyone has it
+const BASE_TITLE = TITLES.find((title) => title.free) || TITLES[0];
 
-const buscarTitulo = (id) => TITULOS.find((titulo) => titulo.id === id);
+const findTitle = (id) => TITLES.find((title) => title.id === id);
 
-// Cómo se lee un título según el estilo del monstruo (Asustador / Asustadora, Rey / Reina…)
-function textoDeTitulo(titulo, estilo) {
-  return estilo === 'femenino' && titulo.femenino ? titulo.femenino : titulo.nombre;
+// How a title reads according to the monster's style (Asustador / Asustadora, Rey / Reina…)
+function titleText(title, style) {
+  return style === 'femenino' && title.feminine ? title.feminine : title.name;
 }
 
-// Los títulos que tiene la persona: los libres y los que canjeó con un código.
-// Se guardan en su cuenta como lista de ids (user_metadata.titulos); un id que ya no exista en TITULOS se ignora.
-function titulosDesbloqueados(usuario) {
-  const canjeados = usuario?.user_metadata?.titulos;
-  return TITULOS.filter((titulo) => titulo.libre || (Array.isArray(canjeados) && canjeados.includes(titulo.id)));
+// The titles a person has: the free ones and those redeemed with a code.
+// Stored in their account as a list of ids (user_metadata.titulos); an id no longer in TITLES is ignored.
+function unlockedTitles(user) {
+  const redeemed = user?.user_metadata?.titulos;
+  return TITLES.filter((title) => title.free || (Array.isArray(redeemed) && redeemed.includes(title.id)));
 }
 
-// El título que lleva en el carnet: el elegido (user_metadata.titulo) si sigue desbloqueado; si no, el de siempre
-function tituloElegidoDe(usuario) {
-  const id = usuario?.user_metadata?.titulo;
-  return titulosDesbloqueados(usuario).find((titulo) => titulo.id === id) || TITULO_BASE;
+// The title on their ID card: the chosen one (user_metadata.titulo) if still unlocked; otherwise the usual one
+function chosenTitleOf(user) {
+  const id = user?.user_metadata?.titulo;
+  return unlockedTitles(user).find((title) => title.id === id) || BASE_TITLE;
 }
 
-// Carnet con el nombre, el usuario del correo (lo que va antes de la @), el monstruo, el título y estado de medalla (oro, plata, bronce)
-function carnetDeAsustador(nombre, correo, monstruo, titulo = TITULO_BASE, medalla = null) {
-  let nombreVisible = nombre?.trim() || 'Tu Nombre Aquí';
-  let usuario = correo?.includes('@') ? correo.split('@')[0] : 'estudiante';
-  const esTramposo = typeof esPayaso === 'function' ? esPayaso(correo, nombre, monstruo) : false;
+// How each podium place dresses the ID card
+const MEDAL_STYLES = {
+  gold: { card: 'idcard idcard--gold', stamp: '<span class="idcard__stamp idcard__stamp--gold">1° PUESTO</span>', border: '#d4a017' },
+  silver: { card: 'idcard idcard--silver', stamp: '<span class="idcard__stamp idcard__stamp--silver">2° PUESTO</span>', border: '#94a3b8' },
+  bronze: { card: 'idcard idcard--bronze', stamp: '<span class="idcard__stamp idcard__stamp--bronze">3° PUESTO</span>', border: '#b45309' },
+};
 
-  // Si es Juan Carlos Largo / imlargo intentando esconderse con nombres en binario
-  if (esTramposo && (String(correo).includes('0110') || String(nombre).includes('0110') || String(correo).toLowerCase().includes('largo') || String(nombre).toLowerCase().includes('largo'))) {
-    nombreVisible = 'JUAN CARLOS LARGO';
-    usuario = 'imlargo';
+// ID card with the name, the email's user (what goes before the @), the monster, the title and the medal
+function scarerIdCard(name, email, monster, title = BASE_TITLE, medal = null) {
+  let shownName = name?.trim() || 'Tu Nombre Aquí';
+  let handle = email?.includes('@') ? email.split('@')[0] : 'estudiante';
+  const clown = isClown(email, name, monster);
+
+  if (clown && isLargoAlias(email, name)) {
+    shownName = 'JUAN CARLOS LARGO';
+    handle = 'imlargo';
   }
-  const rol = esTramposo ? 'TRAMPOSO DE CIRCO' : textoDeTitulo(titulo, monstruo?.estilo);
-  const esDebugger = !esTramposo && titulo?.id === 'debugger';
-  const esNocturno = !esTramposo && titulo?.id === 'terror-nocturno';
+  const role = clown ? 'TRAMPOSO DE CIRCO' : titleText(title, monster?.estilo);
+  const isDebugger = !clown && title?.id === 'debugger';
+  const isNocturnal = !clown && title?.id === 'terror-nocturno';
 
-  // Los títulos largos se parten en dos renglones para no chocar con la foto
-  let claseFranja = rol.length > 12 ? 'carnet__franja carnet__franja--larga' : 'carnet__franja';
-  if (esDebugger) claseFranja += ' carnet__franja--glitch';
-  if (esNocturno) claseFranja += ' carnet__franja--nocturno';
-  if (esTramposo) claseFranja += ' carnet__franja--payaso';
+  // Long titles split into two lines so they do not hit the photo
+  let bandClass = role.length > 12 ? 'idcard__band idcard__band--long' : 'idcard__band';
+  if (isDebugger) bandClass += ' idcard__band--glitch';
+  if (isNocturnal) bandClass += ' idcard__band--nocturnal';
+  if (clown) bandClass += ' idcard__band--clown';
 
-  const textoRol = esDebugger
-    ? `<span class="glitch-text" data-text="${rol}">${rol}</span>`
-    : rol;
+  const roleHtml = isDebugger
+    ? `<span class="glitch-text" data-text="${role}">${role}</span>`
+    : role;
 
-  // Normalización del tipo de medalla (los tramposos nunca reciben medalla)
-  const tipoMedalla = esTramposo ? null : ((medalla === true || medalla === 'oro')
-    ? 'oro'
-    : (medalla === 'plata' || medalla === 'bronce' ? medalla : null));
+  const color = monsterColor(monster);
+  const medalStyle = clown ? null : MEDAL_STYLES[medal];
+  const cardClass = clown ? 'idcard idcard--clown' : medalStyle?.card ?? 'idcard';
+  const stamp = clown
+    ? '<span class="idcard__stamp idcard__stamp--clown">🤡 LICENCIA DE PAYASO</span>'
+    : medalStyle?.stamp ?? '';
+  const photoBorder = clown ? '#ff0033' : medalStyle?.border ?? color;
 
-  let selloMedalla = '';
-  let claseCarnet = 'carnet';
-  let colorBordeFoto = monstruo?.color || '#1667c2';
+  const brand = clown
+    ? `<span class="idcard__week idcard__week--clown"><span class="idcard__tent" aria-hidden="true">🎪</span>CIRCO DE</span><span class="idcard__systems idcard__systems--clown">— PAYASOS —</span>`
+    : `<span class="idcard__week">Semana</span><span class="idcard__systems">— de sistemas —</span>`;
 
-  if (esTramposo) {
-    claseCarnet = 'carnet carnet--payaso';
-    selloMedalla = '<span class="carnet__sello carnet__sello--payaso">🤡 LICENCIA DE PAYASO</span>';
-    colorBordeFoto = '#ff0033';
-  } else if (tipoMedalla === 'oro') {
-    claseCarnet = 'carnet carnet--dorado';
-    selloMedalla = '<span class="carnet__sello carnet__sello--oro">1° PUESTO</span>';
-    colorBordeFoto = '#d4a017';
-  } else if (tipoMedalla === 'plata') {
-    claseCarnet = 'carnet carnet--plata';
-    selloMedalla = '<span class="carnet__sello carnet__sello--plata">2° PUESTO</span>';
-    colorBordeFoto = '#94a3b8';
-  } else if (tipoMedalla === 'bronce') {
-    claseCarnet = 'carnet carnet--bronce';
-    selloMedalla = '<span class="carnet__sello carnet__sello--bronce">3° PUESTO</span>';
-    colorBordeFoto = '#b45309';
-  }
-
-  const marcaSemana = esTramposo
-    ? `<span class="carnet__semana carnet__semana--payaso">🎪 CIRCO DE</span><span class="carnet__sistemas carnet__sistemas--payaso">— PAYASOS —</span>`
-    : `<span class="carnet__semana">Semana</span><span class="carnet__sistemas">— de sistemas —</span>`;
-
-  const narizHtml = esTramposo ? '<div class="nariz-payaso" title="Payaso">🔴</div>' : '';
-  const cargoHtml = esTramposo
-    ? `<div class="carnet__cargo carnet__cargo--payaso">@${usuario} · PAYASO OFICIAL</div>`
-    : `<div class="carnet__cargo">@${usuario} · UNAL</div>`;
+  const nose = clown ? '<div class="clown-nose" title="Payaso">🔴</div>' : '';
+  const roleLine = clown
+    ? `<div class="idcard__role idcard__role--clown">@${escapeHtml(handle)} · PAYASO OFICIAL</div>`
+    : `<div class="idcard__role">@${escapeHtml(handle)} · UNAL</div>`;
 
   return `
-    <article class="${claseCarnet}">
-      <div class="carnet__escudo">${dibujarEscudo()}</div>
-      <div class="carnet__marca">
-        ${marcaSemana}
+    <article class="${cardClass}">
+      <div class="idcard__crest">${drawCrest()}</div>
+      <div class="idcard__brand">
+        ${brand}
       </div>
-      ${selloMedalla}
-      <div class="carnet__nombre">${nombreVisible}</div>
-      ${cargoHtml}
-      <div class="${claseFranja}" style="background: ${esTramposo ? '' : (monstruo?.color || '#1667c2')}; --letras: ${rol.length}">${textoRol}</div>
-      <div class="carnet__foto" style="border-color: ${colorBordeFoto}">
-        ${dibujarMonstruoPersonalizado(monstruo || {})}
-        ${narizHtml}
+      ${stamp}
+      <div class="idcard__name">${escapeHtml(shownName)}</div>
+      ${roleLine}
+      <div class="${bandClass}" style="background: ${clown ? '' : color}; --letters: ${role.length}">${roleHtml}</div>
+      <div class="idcard__photo" style="border-color: ${photoBorder}">
+        ${drawCustomMonster(monster || {})}
+        ${nose}
       </div>
     </article>
   `;
 }
 
-// Muestra en cada selector la opción elegida y vuelve a dibujar el carnet de muestra.
-// Al crear el carnet usa el formulario; al editarlo, el nombre y el título de la vista de edición.
-function actualizarVistaPrevia() {
-  for (const parte of PARTES) {
-    $(`#val-${parte}`).textContent = opcionElegida(parte).texto;
+// Shows the chosen option on each selector and redraws the sample ID card.
+// When creating the card it reads the form; when editing, the name and title of the edit view.
+function updatePreview() {
+  for (const part of PARTS) {
+    $(`#val-${part}`).textContent = chosenOption(part).label;
   }
-  $('#dot-color').style.background = opcionElegida('color').valor;
+  $('#dot-color').style.background = chosenOption('color').value;
 
-  const monstruo = monstruoElegido();
-  if (!editando) {
-    $('#preview-carnet-registro').innerHTML =
-      carnetDeAsustador($('#auth-nombre').value, $('#auth-correo').value, monstruo);
+  const monster = chosenMonster();
+  if (!editing) {
+    $('#signup-idcard-preview').innerHTML =
+      scarerIdCard($('#auth-name').value, $('#auth-email').value, monster);
     return;
   }
 
-  const titulos = titulosDesbloqueados(usuarioActual);
-  const titulo = titulos.find((t) => t.id === tituloEnEdicion) || TITULO_BASE;
-  const textoTitulo = textoDeTitulo(titulo, monstruo.estilo);
-  if (titulo.id === 'debugger') {
-    $('#val-titulo').innerHTML = `<span class="glitch-text" data-text="${textoTitulo}">${textoTitulo}</span>`;
+  const titles = unlockedTitles(currentUser);
+  const title = titles.find((t) => t.id === titleBeingEdited) || BASE_TITLE;
+  const text = titleText(title, monster.estilo);
+  if (title.id === 'debugger') {
+    $('#val-title').innerHTML = `<span class="glitch-text" data-text="${text}">${text}</span>`;
   } else {
-    $('#val-titulo').textContent = textoTitulo;
+    $('#val-title').textContent = text;
   }
-  $$('#selector-titulo .selector-arcade__flecha').forEach((flecha) => { flecha.disabled = titulos.length < 2; });
-  $('#edit-titulos-nota').textContent = titulos.length < 2
+  $$('#title-selector .arcade-selector__arrow').forEach((arrow) => { arrow.disabled = titles.length < 2; });
+  $('#edit-titles-note').textContent = titles.length < 2
     ? 'Aún no tienes otros títulos. Canjea códigos en el Sustómetro para desbloquearlos.'
-    : `Tienes ${titulos.length} de ${TITULOS.length} títulos. Canjea más códigos en el Sustómetro.`;
+    : `Tienes ${titles.length} de ${TITLES.length} títulos. Canjea más códigos en el Sustómetro.`;
 
-  $('#preview-carnet-registro').innerHTML =
-    carnetDeAsustador($('#edit-nombre').value, usuarioActual.email, monstruo, titulo, usuarioMedalla || (usuarioEsLider ? 'oro' : null));
+  $('#signup-idcard-preview').innerHTML =
+    scarerIdCard($('#edit-name').value, currentUser.email, monster, title, userMedal);
 }
 
-// Flechas ‹ › de cada selector: pasan a la opción anterior o a la siguiente (de la última vuelve a la primera)
-$('#creador-carnet').addEventListener('click', (evento) => {
-  const flecha = evento.target.closest('.selector-arcade__flecha');
-  if (!flecha) return;
+// ‹ › arrows on each selector: go to the previous or next option (from the last one back to the first)
+$('#idcard-builder').addEventListener('click', (event) => {
+  const arrow = event.target.closest('.arcade-selector__arrow');
+  if (!arrow) return;
 
-  const parte = flecha.closest('.selector-arcade').dataset.prop;
-  const total = CATALOGO_MONSTRUO[parte].length;
-  indicesMonstruo[parte] = (indicesMonstruo[parte] + Number(flecha.dataset.dir) + total) % total;
-  actualizarVistaPrevia();
+  const part = arrow.closest('.arcade-selector').dataset.prop;
+  const total = MONSTER_CATALOG[part].length;
+  monsterIndexes[part] = (monsterIndexes[part] + Number(arrow.dataset.dir) + total) % total;
+  updatePreview();
 });
 
-$('#btn-monstruo-random').addEventListener('click', () => {
-  for (const parte of PARTES) {
-    indicesMonstruo[parte] = Math.floor(Math.random() * CATALOGO_MONSTRUO[parte].length);
+$('#btn-random-monster').addEventListener('click', () => {
+  for (const part of PARTS) {
+    monsterIndexes[part] = Math.floor(Math.random() * MONSTER_CATALOG[part].length);
   }
-  actualizarVistaPrevia();
+  updatePreview();
 });
 
-$('#auth-nombre').addEventListener('input', actualizarVistaPrevia);
-$('#auth-correo').addEventListener('input', actualizarVistaPrevia);
-$('#edit-nombre').addEventListener('input', actualizarVistaPrevia);
+$('#auth-name').addEventListener('input', updatePreview);
+$('#auth-email').addEventListener('input', updatePreview);
+$('#edit-name').addEventListener('input', updatePreview);
 
 
-/* ---------- Editar el carnet ---------- */
+/* ---------- Editing the ID card ---------- */
 
-// Al editar, el selector del monstruo (#creador-carnet) se mueve de la vista de "Crear Carnet" a la de edición
-// y vuelve a su sitio al salir, así se usan los mismos botones y la misma vista previa en los dos casos.
-let editando = false;
-let tituloEnEdicion = TITULO_BASE.id;   // id del título que se está probando en la vista previa
+// While editing, the monster selector (#idcard-builder) moves from the "Crear Carnet" view to the edit view
+// and goes back on leaving, so both cases use the same buttons and the same preview.
+let editing = false;
+let titleBeingEdited = BASE_TITLE.id;   // id of the title being tried on the preview
 
-function mostrarMensajeEdicion(texto) {
-  const mensaje = $('#edit-mensaje');
-  mensaje.textContent = texto;
-  mensaje.className = 'auth-mensaje auth-mensaje--error';
-  mensaje.hidden = false;
+function showEditMessage(text) {
+  const message = $('#edit-message');
+  message.textContent = text;
+  message.className = 'auth-message auth-message--error';
+  message.hidden = false;
 }
 
-function entrarEdicion() {
-  if (!usuarioActual || editando) return;
-  const meta = usuarioActual.user_metadata || {};
+function enterEdit() {
+  if (!currentUser || editing) return;
+  const meta = currentUser.user_metadata || {};
 
-  // El selector arranca con el monstruo que la persona ya tiene
-  for (const parte of PARTES) {
-    const indice = CATALOGO_MONSTRUO[parte].findIndex((opcion) => opcion.valor === meta.monstruo?.[parte]);
-    indicesMonstruo[parte] = Math.max(indice, 0);
+  // The selector starts with the monster the person already has
+  for (const part of PARTS) {
+    const index = MONSTER_CATALOG[part].findIndex((option) => option.value === meta.monstruo?.[part]);
+    monsterIndexes[part] = Math.max(index, 0);
   }
-  tituloEnEdicion = tituloElegidoDe(usuarioActual).id;
-  editando = true;
+  titleBeingEdited = chosenTitleOf(currentUser).id;
+  editing = true;
 
-  $('#edit-nombre').value = meta.full_name || usuarioActual.email.split('@')[0];
-  $('#edit-mensaje').hidden = true;
-  $('#edit-creador-montaje').append($('#creador-carnet'));
-  $('#creador-carnet').hidden = false;
-  $('#auth-vista-perfil').hidden = true;
-  $('#auth-vista-edicion').hidden = false;
-  $('#auth-titulo').textContent = 'Editar carnet';
-  actualizarVistaPrevia();
+  $('#edit-name').value = meta.full_name || currentUser.email.split('@')[0];
+  $('#edit-message').hidden = true;
+  $('#edit-builder-mount').append($('#idcard-builder'));
+  $('#idcard-builder').hidden = false;
+  $('#auth-profile-view').hidden = true;
+  $('#auth-edit-view').hidden = false;
+  $('#auth-title').textContent = 'Editar carnet';
+  updatePreview();
 }
 
-// Descarta lo que se estaba editando y vuelve a mostrar el carnet guardado
-function salirDeEdicion() {
-  if (!editando) return;
-  editando = false;
-  $('#auth-form').before($('#creador-carnet'));
-  $('#creador-carnet').hidden = !modoRegistro;
-  $('#auth-vista-edicion').hidden = true;
-  $('#auth-vista-perfil').hidden = false;
-  $('#auth-titulo').textContent = 'Carnet de Asustador';
+// Discards the edit in progress and shows the saved ID card again
+function leaveEdit() {
+  if (!editing) return;
+  editing = false;
+  $('#auth-form').before($('#idcard-builder'));
+  $('#idcard-builder').hidden = !signupMode;
+  $('#auth-edit-view').hidden = true;
+  $('#auth-profile-view').hidden = false;
+  $('#auth-title').textContent = 'Carnet de Asustador';
 }
 
-// Lo usa el apartado de códigos para llevar a la persona directo a elegir su título nuevo
-function abrirEdicionCarnet() {
-  if (!usuarioActual) return;
+// The codes section uses it to take the person straight to picking their new title
+function openIdCardEdit() {
+  if (!currentUser) return;
   if (!$('#auth-modal').open) $('#auth-modal').showModal();
-  entrarEdicion();
+  enterEdit();
 }
 
-// La tabla del Sustómetro lee de la tabla 'perfiles', no de la cuenta: hay que copiarle el nombre y el monstruo
-// nuevos (incluyendo el título para que se vea en el Sustómetro).
-// Se intenta primero con la función actualizar_perfil de Supabase (supabase/actualizar-perfil.sql)
-// y si aún no la han creado, se hace fallback directo con la política de UPDATE de perfiles.
-async function sincronizarPerfil(nombre, monstruo) {
-  let sincronizado = false;
-  try {
-    const { error } = await clienteSupabase.rpc('actualizar_perfil', { nuevo_nombre: nombre, nuevo_monstruo: monstruo });
-    if (!error) sincronizado = true;
-  } catch (error) {
-    console.warn('Aviso RPC actualizar_perfil:', error);
-  }
+// The Scare Meter reads from the 'perfiles' table, not from the account: the new name and monster
+// (with the title, so the Scare Meter shows it) must be copied there.
+// It tries Supabase's actualizar_perfil function first and falls back to a direct update.
+async function syncProfile(name, monster) {
+  const { error } = await supabaseClient.rpc('actualizar_perfil', { nuevo_nombre: name, nuevo_monstruo: monster });
+  if (!error) return;
 
-  // Fallback directo a perfiles
-  if (!sincronizado && usuarioActual?.id) {
-    try {
-      await clienteSupabase
-        .from('perfiles')
-        .update({ nombre, monstruo })
-        .eq('id', usuarioActual.id);
-    } catch (e) {
-      console.warn('Aviso update directo perfiles:', e);
-    }
-  }
+  const { error: updateError } = await supabaseClient
+    .from('perfiles')
+    .update({ nombre: name, monstruo: monster })
+    .eq('id', currentUser.id);
+  if (updateError) console.warn('Could not sync the profile:', updateError);
 }
 
-async function guardarEdicion() {
-  const nombre = $('#edit-nombre').value.trim();
-  if (!nombre) {
-    mostrarMensajeEdicion('Escribe tu nombre para imprimirlo en el carnet.');
+async function saveEdit() {
+  const name = $('#edit-name').value.trim();
+  if (!name) {
+    showEditMessage('Escribe tu nombre para imprimirlo en el carnet.');
     return;
   }
-  // Solo se puede dejar un título que la persona ya desbloqueó
-  const titulo = titulosDesbloqueados(usuarioActual).find((t) => t.id === tituloEnEdicion) || TITULO_BASE;
+  // Only a title the person already unlocked can stay
+  const title = unlockedTitles(currentUser).find((t) => t.id === titleBeingEdited) || BASE_TITLE;
 
-  const boton = $('#btn-guardar-edicion');
-  const textoOriginal = boton.textContent;
-  boton.disabled = true;
-  boton.textContent = 'Guardando…';
-  $('#edit-mensaje').hidden = true;
+  const button = $('#btn-save-edit');
+  const originalText = button.textContent;
+  button.disabled = true;
+  button.textContent = 'Guardando…';
+  $('#edit-message').hidden = true;
 
   try {
-    const titulosIds = titulosDesbloqueados(usuarioActual).map((t) => t.id);
-    const monstruoActualizado = { ...monstruoElegido(), titulo: titulo.id, titulos: titulosIds };
-    const { data, error } = await clienteSupabase.auth.updateUser({
-      data: { ...usuarioActual.user_metadata, full_name: nombre, monstruo: monstruoActualizado, titulo: titulo.id, titulos: titulosIds },
+    const titleIds = unlockedTitles(currentUser).map((t) => t.id);
+    const monster = { ...chosenMonster(), titulo: title.id, titulos: titleIds };
+    const { data, error } = await supabaseClient.auth.updateUser({
+      data: { ...currentUser.user_metadata, full_name: name, monstruo: monster, titulo: title.id, titulos: titleIds },
     });
     if (error) throw error;
-    await sincronizarPerfil(nombre, monstruoActualizado);
-    salirDeEdicion();
-    actualizarInterfazSesion(data.user);
-    if (typeof cargarSustometro === 'function') {
-      cargarSustometro();
-    }
+    await syncProfile(name, monster);
+    leaveEdit();
+    updateSessionUi(data.user);
+    // Only sustometro.html loads scare-meter.js
+    if (typeof loadScareMeter === 'function') loadScareMeter();
   } catch (error) {
-    mostrarMensajeEdicion(traducirError(error));
+    showEditMessage(translateError(error));
   } finally {
-    boton.disabled = false;
-    boton.textContent = textoOriginal;
+    button.disabled = false;
+    button.textContent = originalText;
   }
 }
 
-$('#btn-editar-carnet').addEventListener('click', entrarEdicion);
-$('#btn-cancelar-edicion').addEventListener('click', salirDeEdicion);
-$('#btn-guardar-edicion').addEventListener('click', guardarEdicion);
+$('#btn-edit-idcard').addEventListener('click', enterEdit);
+$('#btn-cancel-edit').addEventListener('click', leaveEdit);
+$('#btn-save-edit').addEventListener('click', saveEdit);
 
-// Flechas del selector de título: pasan entre los títulos desbloqueados
-$('#selector-titulo').addEventListener('click', (evento) => {
-  const flecha = evento.target.closest('.selector-arcade__flecha');
-  if (!flecha || !editando) return;
+// Arrows on the title selector: go through the unlocked titles
+$('#title-selector').addEventListener('click', (event) => {
+  const arrow = event.target.closest('.arcade-selector__arrow');
+  if (!arrow || !editing) return;
 
-  const titulos = titulosDesbloqueados(usuarioActual);
-  const actual = titulos.findIndex((titulo) => titulo.id === tituloEnEdicion);
-  tituloEnEdicion = titulos[(actual + Number(flecha.dataset.dir) + titulos.length) % titulos.length].id;
-  actualizarVistaPrevia();
+  const titles = unlockedTitles(currentUser);
+  const current = titles.findIndex((title) => title.id === titleBeingEdited);
+  titleBeingEdited = titles[(current + Number(arrow.dataset.dir) + titles.length) % titles.length].id;
+  updatePreview();
 });
 
 
-/* ---------- Ventana de sesión ---------- */
+/* ---------- Session dialog ---------- */
 
-$('#auth-icono-ojo').innerHTML = ICONOS.ojo;
+$('#auth-eye-icon').innerHTML = ICONS.eye;
 
-// Cambia entre la pestaña "Ingresar" y "Crear Carnet"
-function cambiarModoAuth(esRegistro) {
-  modoRegistro = esRegistro;
-  $('#tab-login').setAttribute('aria-pressed', !esRegistro);
-  $('#tab-registro').setAttribute('aria-pressed', esRegistro);
+// Switches between the "Ingresar" and "Crear Carnet" tabs
+function setAuthMode(isSignup) {
+  signupMode = isSignup;
+  $('#tab-login').setAttribute('aria-pressed', !isSignup);
+  $('#tab-signup').setAttribute('aria-pressed', isSignup);
 
-  $('#auth-modal').classList.toggle('auth-modal--registro', esRegistro);
-  $('#creador-carnet').hidden = !esRegistro;
-  $('#campo-nombre').hidden = !esRegistro;
-  $('#auth-nombre').required = esRegistro;
+  $('#auth-modal').classList.toggle('auth-modal--signup', isSignup);
+  $('#idcard-builder').hidden = !isSignup;
+  $('#name-field').hidden = !isSignup;
+  $('#auth-name').required = isSignup;
 
-  $('#auth-titulo').textContent = esRegistro ? 'Carnet de Asustador' : 'Acceso';
-  $('#auth-submit-texto').textContent = esRegistro ? 'Emitir mi Carnet' : 'Entrar';
-  ocultarMensajeAuth();
+  $('#auth-title').textContent = isSignup ? 'Carnet de Asustador' : 'Acceso';
+  $('#auth-submit-text').textContent = isSignup ? 'Emitir mi Carnet' : 'Entrar';
+  hideAuthMessage();
 
-  if (esRegistro) actualizarVistaPrevia();
+  if (isSignup) updatePreview();
 }
 
-// Mensaje debajo del formulario: de error (rojo) o de éxito (verde)
-function mostrarMensajeAuth(texto, esError = true) {
-  const mensaje = $('#auth-mensaje');
-  mensaje.textContent = texto;
-  mensaje.className = `auth-mensaje ${esError ? 'auth-mensaje--error' : 'auth-mensaje--exito'}`;
-  mensaje.hidden = false;
+// Message below the form: error (red) or success (green)
+function showAuthMessage(text, isError = true) {
+  const message = $('#auth-message');
+  message.textContent = text;
+  message.className = `auth-message ${isError ? 'auth-message--error' : 'auth-message--success'}`;
+  message.hidden = false;
 }
 
-function ocultarMensajeAuth() {
-  const mensaje = $('#auth-mensaje');
-  mensaje.hidden = true;
-  mensaje.textContent = '';
+function hideAuthMessage() {
+  const message = $('#auth-message');
+  message.hidden = true;
+  message.textContent = '';
 }
 
-// Con sesión, la ventana muestra el carnet de la persona; sin sesión, el formulario
-function actualizarInterfazSesion(usuario) {
-  usuarioActual = usuario;
-  $('#btn-abrir-auth').classList.toggle('portada__boton--conectado', Boolean(usuario));
-  if (usuario) {
-    // Si la persona ya había elegido un título o desbloqueado títulos en su cuenta pero no estaban en su monstruo de la tabla,
-    // los sincronizamos automáticamente a 'perfiles' para que el conteo global y el Sustómetro los tengan al día.
-    const tId = usuario.user_metadata?.titulo;
-    const titulosIds = titulosDesbloqueados(usuario).map((t) => t.id);
-    const m = usuario.user_metadata?.monstruo || {};
-    const necesitaSincronizarTitulo = tId && m.titulo !== tId;
-    const necesitaSincronizarTitulos = !Array.isArray(m.titulos) || m.titulos.length !== titulosIds.length;
+// With a session, the dialog shows the person's ID card; without one, the form
+function updateSessionUi(user) {
+  currentUser = user;
+  $('#btn-open-auth').classList.toggle('hero__button--signed-in', Boolean(user));
+  if (user) {
+    // If the person chose or unlocked titles in their account that are not on their monster in the table,
+    // they are synced to 'perfiles' so the global count and the Scare Meter stay up to date.
+    const titleId = user.user_metadata?.titulo;
+    const titleIds = unlockedTitles(user).map((t) => t.id);
+    const monster = user.user_metadata?.monstruo || {};
+    const titleOutdated = titleId && monster.titulo !== titleId;
+    const titlesOutdated = !Array.isArray(monster.titulos) || monster.titulos.length !== titleIds.length;
 
-    if (necesitaSincronizarTitulo || necesitaSincronizarTitulos) {
-      const mActualizado = { ...m, ...(tId ? { titulo: tId } : {}), titulos: titulosIds };
-      sincronizarPerfil(usuario.user_metadata.full_name || usuario.email.split('@')[0], mActualizado);
+    if (titleOutdated || titlesOutdated) {
+      const updated = { ...monster, ...(titleId ? { titulo: titleId } : {}), titulos: titleIds };
+      syncProfile(user.user_metadata.full_name || user.email.split('@')[0], updated);
     }
 
-    // Supabase avisa de nuevo cada vez que la pestaña recupera el foco: si la persona está editando
-    // no se le vuelve a pintar el perfil encima, para que no pierda lo que lleva.
-    if (!editando) mostrarPerfil(usuario);
+    // Supabase notifies again each time the tab regains focus: while the person is editing
+    // the profile is not repainted on top, so they do not lose their work.
+    if (!editing) showProfile(user);
   } else {
-    salirDeEdicion();
-    mostrarFormulario();
+    leaveEdit();
+    showForm();
   }
-  // Para el apartado de códigos (js/codigos.js): cambió quién está dentro o sus títulos
-  document.dispatchEvent(new CustomEvent('carnet:sesion'));
+  // For the codes section (js/codes.js): who is logged in, or their titles, changed
+  document.dispatchEvent(new CustomEvent('idcard:session'));
 }
 
-let usuarioMedalla = null; // 'oro' | 'plata' | 'bronce' | null
-let usuarioEsLider = false; // mantenido para compatibilidad
+let userMedal = null;   // 'gold' | 'silver' | 'bronze' | null
 
-async function obtenerMedallaUsuario(usuarioId) {
-  if (!usuarioId) return null;
-  try {
-    const { data: perfiles } = await clienteSupabase
-      .from('perfiles')
-      .select('id, puntos')
-      .order('puntos', { ascending: false });
-    if (!perfiles || !perfiles.length) return null;
-
-    const puntajes = perfiles.map((p) => Number(p.puntos) || 0);
-    const hayPuntosEnJuego = puntajes.some((p) => p > 0);
-    const persona = perfiles.find((p) => p.id === usuarioId);
-    if (!persona) return null;
-    const puntos = Number(persona.puntos) || 0;
-
-    if (!hayPuntosEnJuego) {
-      // Si nadie tiene puntos todavía, todos comparten el 1° lugar (oro)
-      return 'oro';
-    }
-    if (puntos <= 0) return null;
-
-    // Niveles únicos de puntaje para resolver empates (dense ranking)
-    const tiers = [...new Set(puntajes.filter((p) => p > 0))].sort((a, b) => b - a);
-    const tier = tiers.indexOf(puntos);
-    if (tier === 0) return 'oro';
-    if (tier === 1) return 'plata';
-    if (tier === 2) return 'bronce';
-    return null;
-  } catch {
-    return null;
-  }
+async function fetchUserMedal(userId) {
+  const { data: profiles } = await supabaseClient.from('perfiles').select('id, nombre, correo, monstruo, puntos');
+  const person = profiles?.find((p) => p.id === userId);
+  return person ? medalFor(scarePoints(person), profiles.map(scarePoints)) : null;
 }
 
-async function verificarSiEsLider(usuarioId) {
-  const medalla = await obtenerMedallaUsuario(usuarioId);
-  return medalla === 'oro';
-}
+function showProfile(user) {
+  let fullName = user.user_metadata?.full_name || user.email.split('@')[0];
+  const monster = user.user_metadata?.monstruo || chosenMonster();
+  const title = chosenTitleOf(user);
+  const clown = isClown(user.email, fullName, monster);
 
-function mostrarPerfil(usuario) {
-  let nombreCompleto = usuario.user_metadata?.full_name || usuario.email.split('@')[0];
-  const monstruo = usuario.user_metadata?.monstruo || monstruoElegido();
-  const titulo = tituloElegidoDe(usuario);
-  const esTramposo = typeof esPayaso === 'function' && esPayaso(usuario.email, nombreCompleto, monstruo);
+  if (clown && isLargoAlias(user.email, fullName)) fullName = 'Juan Carlos Largo';
 
-  if (esTramposo && (usuario.email.includes('0110') || nombreCompleto.includes('0110') || usuario.email.toLowerCase().includes('largo') || nombreCompleto.toLowerCase().includes('largo'))) {
-    nombreCompleto = 'Juan Carlos Largo';
-  }
+  // Sanctioned accounts cannot edit their ID card
+  $('#btn-edit-idcard').hidden = clown;
 
-  // Ocultar botón de editar carnet a cuentas sancionadas
-  const btnEditar = $('#btn-editar-carnet');
-  if (btnEditar) btnEditar.hidden = esTramposo;
+  $('#session-text').textContent = fullName.trim().split(' ')[0];   // the hero button shows the first name
+  $('#auth-modal').classList.add('auth-modal--signup');
+  $('#auth-form-view').hidden = true;
+  $('#auth-profile-view').hidden = false;
 
-  $('#sesion-texto').textContent = nombreCompleto.trim().split(' ')[0];   // el botón de la portada muestra el primer nombre
-  $('#auth-modal').classList.add('auth-modal--registro');
-  $('#auth-vista-formulario').hidden = true;
-  $('#auth-vista-perfil').hidden = false;
-
-  // Alerta especial de payaso si el usuario fue sancionado por hackeo
-  let avisoPayaso = $('#perfil-aviso-payaso');
-  if (esTramposo) {
-    if (!avisoPayaso) {
-      avisoPayaso = document.createElement('div');
-      avisoPayaso.id = 'perfil-aviso-payaso';
-      avisoPayaso.className = 'aviso-payaso';
-      avisoPayaso.innerHTML = `
-        <span class="aviso-payaso__icono">🤡🎪</span>
-        <div class="aviso-payaso__cuerpo">
+  // Special clown notice if the user was sanctioned for hacking
+  let clownNotice = $('#profile-clown-notice');
+  if (clown) {
+    if (!clownNotice) {
+      clownNotice = document.createElement('div');
+      clownNotice.id = 'profile-clown-notice';
+      clownNotice.className = 'clown-notice';
+      clownNotice.innerHTML = `
+        <span class="clown-notice__icon">🤡🎪</span>
+        <div class="clown-notice__body">
           <strong>¡HAY UN PAYASO INTENTANDO ARRUINAR LA FIESTA!</strong>
           <p>Tu cuenta ha sido sancionada con Shadowban por manipular puntos mediante inyección de código. Tu carnet ahora es público como Licencia de Payaso y tus puntos se han congelado en 0.</p>
         </div>
       `;
-      $('#perfil-carnet-final').before(avisoPayaso);
+      $('#profile-idcard').before(clownNotice);
     }
-    avisoPayaso.hidden = false;
-    $('#auth-titulo').textContent = '🤡 Licencia de Payaso';
+    clownNotice.hidden = false;
+    $('#auth-title').textContent = '🤡 Licencia de Payaso';
   } else {
-    if (avisoPayaso) avisoPayaso.hidden = true;
-    $('#auth-titulo').textContent = 'Carnet de Asustador';
+    if (clownNotice) clownNotice.hidden = true;
+    $('#auth-title').textContent = 'Carnet de Asustador';
   }
 
-  $('#perfil-carnet-final').innerHTML = carnetDeAsustador(nombreCompleto, usuario.email, monstruo, titulo, usuarioMedalla || (usuarioEsLider ? 'oro' : null));
-  $('#perfil-correo').textContent = usuario.email;
+  $('#profile-idcard').innerHTML = scarerIdCard(fullName, user.email, monster, title, userMedal);
+  $('#profile-email').textContent = user.email;
 
-  // Consulta asíncrona si tiene podio (oro, plata o bronce) en el Sustómetro para actualizar el carnet
-  obtenerMedallaUsuario(usuario.id).then((medalla) => {
-    if (medalla !== usuarioMedalla) {
-      usuarioMedalla = medalla;
-      usuarioEsLider = medalla === 'oro';
-      if (!editando && $('#auth-vista-perfil') && !$('#auth-vista-perfil').hidden) {
-        $('#perfil-carnet-final').innerHTML = carnetDeAsustador(nombreCompleto, usuario.email, monstruo, titulo, usuarioMedalla);
-      }
+  // Asks asynchronously whether they are on the Scare Meter podium, to update the ID card
+  fetchUserMedal(user.id).then((medal) => {
+    if (medal === userMedal) return;
+    userMedal = medal;
+    if (!editing && !$('#auth-profile-view').hidden) {
+      $('#profile-idcard').innerHTML = scarerIdCard(fullName, user.email, monster, title, userMedal);
     }
   });
 }
 
-function mostrarFormulario() {
-  $('#sesion-texto').textContent = 'Iniciar sesión';
-  $('#auth-vista-formulario').hidden = false;
-  $('#auth-vista-perfil').hidden = true;
-  cambiarModoAuth(modoRegistro);
+function showForm() {
+  $('#session-text').textContent = 'Iniciar sesión';
+  $('#auth-form-view').hidden = false;
+  $('#auth-profile-view').hidden = true;
+  setAuthMode(signupMode);
 }
 
-$('#btn-abrir-auth').addEventListener('click', () => {
-  ocultarMensajeAuth();
+$('#btn-open-auth').addEventListener('click', () => {
+  hideAuthMessage();
   $('#auth-modal').showModal();
 });
 
-$('#btn-cerrar-auth').addEventListener('click', () => $('#auth-modal').close());
+$('#btn-close-auth').addEventListener('click', () => $('#auth-modal').close());
 
-// Si se cierra la ventana a mitad de la edición, lo que no se guardó se descarta
-$('#auth-modal').addEventListener('close', salirDeEdicion);
+// If the dialog closes mid-edit, whatever was not saved is discarded
+$('#auth-modal').addEventListener('close', leaveEdit);
 
-// Un clic en el fondo oscuro (fuera de la caja) cierra la ventana
-$('#auth-modal').addEventListener('click', (evento) => {
-  if (evento.target === $('#auth-modal')) $('#auth-modal').close();
+// A click on the dark background (outside the box) closes the dialog
+$('#auth-modal').addEventListener('click', (event) => {
+  if (event.target === $('#auth-modal')) $('#auth-modal').close();
 });
 
-$('#tab-login').addEventListener('click', () => cambiarModoAuth(false));
-$('#tab-registro').addEventListener('click', () => cambiarModoAuth(true));
+$('#tab-login').addEventListener('click', () => setAuthMode(false));
+$('#tab-signup').addEventListener('click', () => setAuthMode(true));
 
 
-/* ---------- Crear carnet, ingresar y salir ---------- */
+/* ---------- Creating the ID card, logging in and out ---------- */
 
-// Errores de Supabase (vienen en inglés) que se le explican a la persona en español
-const ERRORES_SUPABASE = {
+// Supabase errors (they come in English), explained to the person in Spanish
+const SUPABASE_ERRORS = {
   'Invalid login credentials': 'Correo o contraseña incorrectos.',
   'User already registered': 'Este correo ya tiene un carnet. Ve a la pestaña Ingresar.',
 };
 
-function traducirError(error) {
-  const mensaje = error.message || 'No se pudo completar la operación.';
-  const conocido = Object.keys(ERRORES_SUPABASE).find((texto) => mensaje.includes(texto));
-  return conocido ? ERRORES_SUPABASE[conocido] : mensaje;
+function translateError(error) {
+  const message = error.message || 'No se pudo completar la operación.';
+  const known = Object.keys(SUPABASE_ERRORS).find((text) => message.includes(text));
+  return known ? SUPABASE_ERRORS[known] : message;
 }
 
-// Crea la cuenta y guarda en ella el nombre y el monstruo elegido
-async function crearCarnet({ nombre, correo, clave }) {
-  if (!nombre) throw new Error('Escribe tu nombre para imprimirlo en el carnet.');
+// Creates the account and stores the name and the chosen monster in it
+async function createIdCard({ name, email, password }) {
+  if (!name) throw new Error('Escribe tu nombre para imprimirlo en el carnet.');
 
-  const { data, error } = await clienteSupabase.auth.signUp({
-    email: correo,
-    password: clave,
-    options: { data: { full_name: nombre, monstruo: monstruoElegido() } },
+  const { data, error } = await supabaseClient.auth.signUp({
+    email,
+    password,
+    options: { data: { full_name: name, monstruo: chosenMonster() } },
   });
   if (error) throw error;
 
-  // Si Supabase pide confirmar el correo, todavía no hay sesión
+  // If Supabase asks to confirm the email, there is no session yet
   if (!data.session) {
-    mostrarMensajeAuth(`¡Carnet creado! Revisa tu correo ${DOMINIO_UNAL} para activarlo.`, false);
+    showAuthMessage(`¡Carnet creado! Revisa tu correo ${UNAL_DOMAIN} para activarlo.`, false);
     return;
   }
-  mostrarMensajeAuth('¡Carnet de Asustador emitido con éxito!', false);
+  showAuthMessage('¡Carnet de Asustador emitido con éxito!', false);
   setTimeout(() => $('#auth-modal').close(), 1000);
 }
 
-async function ingresar({ correo, clave }) {
-  const { error } = await clienteSupabase.auth.signInWithPassword({ email: correo, password: clave });
+async function logIn({ email, password }) {
+  const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
   if (error) throw error;
   $('#auth-modal').close();
 }
 
-// Envío del formulario: crea el carnet o ingresa, según la pestaña elegida
-$('#auth-form').addEventListener('submit', async (evento) => {
-  evento.preventDefault();
-  ocultarMensajeAuth();
+// Form submit: creates the ID card or logs in, depending on the chosen tab
+$('#auth-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  hideAuthMessage();
 
-  const datos = {
-    nombre: $('#auth-nombre').value.trim(),
-    correo: $('#auth-correo').value.trim().toLowerCase(),
-    clave: $('#auth-clave').value,
+  const fields = {
+    name: $('#auth-name').value.trim(),
+    email: $('#auth-email').value.trim().toLowerCase(),
+    password: $('#auth-password').value,
   };
 
-  if (!datos.correo.endsWith(DOMINIO_UNAL)) {
-    mostrarMensajeAuth(`Usa tu correo institucional terminado en ${DOMINIO_UNAL}`);
+  if (!fields.email.endsWith(UNAL_DOMAIN)) {
+    showAuthMessage(`Usa tu correo institucional terminado en ${UNAL_DOMAIN}`);
     return;
   }
 
-  // Mientras Supabase responde, el botón queda deshabilitado y dice "Cargando…"
-  const boton = $('#auth-submit');
-  const textoBoton = $('#auth-submit-texto');
-  const textoOriginal = textoBoton.textContent;
-  boton.disabled = true;
-  textoBoton.textContent = 'Cargando…';
+  // While Supabase answers, the button is disabled and says "Cargando…"
+  const button = $('#auth-submit');
+  const buttonText = $('#auth-submit-text');
+  const originalText = buttonText.textContent;
+  button.disabled = true;
+  buttonText.textContent = 'Cargando…';
 
   try {
-    await (modoRegistro ? crearCarnet(datos) : ingresar(datos));
+    await (signupMode ? createIdCard(fields) : logIn(fields));
   } catch (error) {
-    mostrarMensajeAuth(traducirError(error));
+    showAuthMessage(translateError(error));
   } finally {
-    boton.disabled = false;
-    textoBoton.textContent = textoOriginal;
+    button.disabled = false;
+    buttonText.textContent = originalText;
   }
 });
 
-$('#btn-cerrar-sesion').addEventListener('click', async () => {
-  await clienteSupabase.auth.signOut();
+$('#btn-logout').addEventListener('click', async () => {
+  await supabaseClient.auth.signOut();
   $('#auth-form').reset();
   $('#auth-modal').close();
 });
 
 
-/* ---------- Descargar el carnet como imagen ---------- */
+/* ---------- Downloading the ID card as an image ---------- */
 
-// Ancho en píxeles de la imagen, sin importar el tamaño de la pantalla
-const ANCHO_IMAGEN_CARNET = 1080;
+// Image width in pixels, whatever the screen size
+const IDCARD_IMAGE_WIDTH = 1080;
 
-// Nombre del archivo a partir del nombre del carnet: "Ana María" → carnet-asustador-ana-maria.png
-function nombreDeArchivo(nombre) {
-  const limpio = nombre
-    .normalize('NFD').replace(/[̀-ͯ]/g, '')   // quita las tildes
+// File name from the name on the ID card: "Ana María" → carnet-asustador-ana-maria.png
+function fileNameFor(name) {
+  const clean = stripAccents(name)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
-  return `carnet-asustador-${limpio || 'unal'}.png`;
+  return `carnet-asustador-${clean || 'unal'}.png`;
 }
 
-// htmlToImage (librería html-to-image) copia el carnet con sus letras y lo pinta en un lienzo.
-// La primera vez suele salir en blanco porque el navegador aún no ha preparado las letras,
-// así que se vuelve a pintar hasta que el centro del carnet tenga color (máximo 3 intentos).
-async function pintarCarnet(carnet) {
-  for (let intento = 0; intento < 3; intento++) {
-    const lienzo = await htmlToImage.toCanvas(carnet, {
-      pixelRatio: ANCHO_IMAGEN_CARNET / carnet.offsetWidth,   // se mide en cada intento por si la ventana cambió de tamaño
-      style: { boxShadow: 'none', animation: 'none' },        // sin la sombra ni la animación de entrada
+// htmlToImage (the html-to-image library) copies the ID card with its fonts and paints it on a canvas.
+// The first time it often comes out blank because the browser has not prepared the fonts yet,
+// so it repaints until the center of the card has color (3 tries at most).
+async function paintIdCard(card) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const canvas = await htmlToImage.toCanvas(card, {
+      pixelRatio: IDCARD_IMAGE_WIDTH / card.offsetWidth,   // measured on each try in case the window resized
+      style: { boxShadow: 'none', animation: 'none' },     // without the shadow or the entry animation
     });
-    const centro = lienzo.getContext('2d').getImageData(lienzo.width / 2, lienzo.height / 2, 1, 1).data;
-    if (centro[3] > 0) return lienzo.toDataURL('image/png');
+    const center = canvas.getContext('2d').getImageData(canvas.width / 2, canvas.height / 2, 1, 1).data;
+    if (center[3] > 0) return canvas.toDataURL('image/png');
   }
-  throw new Error('El carnet salió en blanco');
+  throw new Error('The ID card came out blank');
 }
 
-// Convierte el carnet en una imagen PNG y la descarga. No necesita sesión: también sirve con el carnet de muestra.
-async function descargarCarnet(boton) {
-  const carnet = $(`${boton.dataset.carnet} .carnet`);
-  const texto = boton.querySelector('span');
-  boton.disabled = true;
-  texto.textContent = 'Preparando…';
+// Turns the ID card into a PNG and downloads it. Needs no session: it also works with the sample card.
+async function downloadIdCard(button) {
+  const card = $(`${button.dataset.idcard} .idcard`);
+  const text = button.querySelector('span');
+  button.disabled = true;
+  text.textContent = 'Preparando…';
 
   try {
-    const imagen = await pintarCarnet(carnet);
-    const enlace = document.createElement('a');
-    enlace.href = imagen;
-    enlace.download = nombreDeArchivo(carnet.querySelector('.carnet__nombre').textContent);
-    enlace.click();
-    texto.textContent = 'Descargar carnet';
+    const image = await paintIdCard(card);
+    const link = document.createElement('a');
+    link.href = image;
+    link.download = fileNameFor(card.querySelector('.idcard__name').textContent);
+    link.click();
+    text.textContent = 'Descargar carnet';
   } catch (error) {
     console.error(error);
-    texto.textContent = 'No se pudo, intenta de nuevo';
+    text.textContent = 'No se pudo, intenta de nuevo';
   } finally {
-    boton.disabled = false;
+    button.disabled = false;
   }
 }
 
-$$('.boton-descargar').forEach((boton) => {
-  boton.addEventListener('click', () => descargarCarnet(boton));
+$$('.download-button').forEach((button) => {
+  button.addEventListener('click', () => downloadIdCard(button));
 });
 
 
-/* ---------- Arranque y control de versiones ---------- */
+/* ---------- Startup and version control ---------- */
 
-// Si la versión del proyecto cambió, cerramos sesiones viejas en el navegador
-// y limpiamos tokens almacenados para evitar problemas de JWT o versiones desfasadas.
-async function sincronizarVersionSesion() {
-  const versionActual = typeof VERSION_PROYECTO !== 'undefined' ? VERSION_PROYECTO : 'v1';
-  const versionGuardada = localStorage.getItem('semana_sistemas_version');
+// If the project version changed, old sessions in the browser are closed
+// and stored tokens are cleared, to avoid stale JWTs or outdated versions.
+async function syncSessionVersion() {
+  const savedVersion = localStorage.getItem('semana_sistemas_version');
 
-  if (versionGuardada !== versionActual) {
-    const haySesionPrevia = Object.keys(localStorage).some((k) => k.startsWith('sb-') || k.includes('supabase'));
-    if (versionGuardada || haySesionPrevia) {
+  if (savedVersion !== PROJECT_VERSION) {
+    const hadSession = Object.keys(localStorage).some((k) => k.startsWith('sb-') || k.includes('supabase'));
+    if (savedVersion || hadSession) {
       try {
-        await clienteSupabase.auth.signOut();
+        await supabaseClient.auth.signOut();
       } catch {
-        // Ignorar si falla la conexión
+        // Ignored if the connection fails
       }
-      for (const clave of Object.keys(localStorage)) {
-        if (clave.startsWith('sb-') || clave.includes('supabase')) {
-          localStorage.removeItem(clave);
+      for (const key of Object.keys(localStorage)) {
+        if (key.startsWith('sb-') || key.includes('supabase')) {
+          localStorage.removeItem(key);
         }
       }
     }
-    localStorage.setItem('semana_sistemas_version', versionActual);
+    localStorage.setItem('semana_sistemas_version', PROJECT_VERSION);
   }
 }
 
-// Al cargar la página, primero aseguramos que la versión coincida; luego inicializamos la sesión
-sincronizarVersionSesion().finally(() => {
-  clienteSupabase.auth.getSession().then(({ data: { session } }) => {
-    actualizarInterfazSesion(session?.user ?? null);
+// On page load, first make sure the version matches; then start the session
+syncSessionVersion().finally(() => {
+  supabaseClient.auth.getSession().then(({ data: { session } }) => {
+    updateSessionUi(session?.user ?? null);
   });
 
-  clienteSupabase.auth.onAuthStateChange((_evento, session) => {
-    actualizarInterfazSesion(session?.user ?? null);
+  supabaseClient.auth.onAuthStateChange((_event, session) => {
+    updateSessionUi(session?.user ?? null);
   });
 });
