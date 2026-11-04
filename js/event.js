@@ -40,6 +40,7 @@ function renderInfo() {
     noticeSection(),
     factsSection(),
     descriptionSection(),
+    teamSection(activity.team),
     videoSection(activity.video),
     rulesSection(activity.rules),
     speakerSection(findSpeaker(activity.speaker)),
@@ -105,6 +106,20 @@ function statBoxes(stats) {
     <ul class="event__stats">
       ${stats.map((stat) => `<li><strong>${stat.value}</strong>${stat.label}</li>`).join('')}
     </ul>
+  `;
+}
+
+// Team size and the button to sign a team up (team field)
+function teamSection(team) {
+  if (!team) return '';
+
+  return `
+    <h2 class="event__subtitle">Inscripciones</h2>
+    <p class="event__bio">
+      Equipos de hasta ${team.size} personas${team.maxTeams ? `, con cupo para ${team.maxTeams} equipos` : ''}.
+      Quien crea el equipo queda de capitán e inscribe a los demás con el correo de su carnet.
+    </p>
+    <a class="hero__button auth-form__submit" href="inscripciones.html?id=${activity.id}">Inscribir equipo ${ICONS.arrow}</a>
   `;
 }
 

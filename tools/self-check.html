@@ -57,6 +57,13 @@
     check('doom no secrets in level', doomScore({ tics: 0, kills: 0, totalKills: 0, items: 0, totalItems: 0, secrets: 0, totalSecrets: 0 }).points, 200);
     check('doom lines add up', doomRun(45, 2, 10, 0).lines.length, 4);
 
+    // Hostile team banners (equipos.bandera) neither inject markup nor break the team list
+    const hostileBanner = drawBanner({ letras: '<img src=x onerror=alert(1)>', fondo: '"><script>', tinta: 'red', fuente: '__proto__', adorno: 'constructor' });
+    check('banner no tags', /<(img|script)/.test(hostileBanner), false);
+    check('banner bad colors', hostileBanner.includes(`fill="${DEFAULT_BANNER.fondo}"`) && hostileBanner.includes(`fill="${DEFAULT_BANNER.tinta}"`), true);
+    check('banner four letters', drawBanner({ letras: 'ΣΣΚΑΒ' }).includes('>ΣΣΚΑ</text>'), true);
+    check('banner good colors', drawBanner({ fondo: '#2f8f5b', tinta: '#f5c814' }).includes('fill="#f5c814"'), true);
+
     check('handle', handleOf('ana@unal.edu.co'), 'ana');
     check('accents', stripAccents('Fútbol'), 'Futbol');
 
