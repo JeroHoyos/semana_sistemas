@@ -100,7 +100,7 @@ const IDCARD_BUTTON_TITLES = {
   bronze: 'Ver carnet de bronce (3° puesto)',
 };
 
-let allLegitimateScarers = [];
+let allScarers = [];
 let currentSearchQuery = '';
 
 function applyRankingFilter() {
@@ -108,13 +108,15 @@ function applyRankingFilter() {
   const clearBtn = $('#btn-clear-search');
   if (clearBtn) clearBtn.hidden = !query;
 
-  let filtered = allLegitimateScarers;
+  let filtered = allScarers;
   if (query) {
     const qClean = stripAccents(query);
-    filtered = allLegitimateScarers.filter((person) => {
-      const name = (person.nombre || '').toLowerCase();
+    filtered = allScarers.filter((person) => {
+      // The name on screen, so a clown behind a binary name is found under their real one
+      const view = personView(person);
+      const name = view.name.toLowerCase();
       const nameClean = stripAccents(name);
-      const handle = handleOf(person.correo || '').toLowerCase();
+      const handle = view.handle.toLowerCase();
       return nameClean.includes(qClean) || name.includes(query) || handle.includes(query);
     });
   }
@@ -125,7 +127,7 @@ function applyRankingFilter() {
 // Draws the scarer cards in the right column
 function renderRanking(people, query = '') {
   scarers = people;
-  const total = allLegitimateScarers.length;
+  const total = allScarers.length;
   const filteredCount = people.length;
 
   if (query) {
@@ -177,16 +179,15 @@ function renderRanking(people, query = '') {
     return;
   }
 
-  const baseScarers = allLegitimateScarers.length ? allLegitimateScarers : people;
-  const allPoints = baseScarers.map(scarePoints);
-  const maxPoints = maxPointsOf(baseScarers);
+  const allPoints = allScarers.map(scarePoints);
+  const maxPoints = maxPointsOf(allScarers);
   const tiers = pointTiers(allPoints);
   // The same person as before (or first place if nobody was chosen yet)
   const chosen = Math.max(0, people.findIndex((p) => p.id === chosenId));
   const isSupervisor = isCurrentSupervisor();
 
   list.innerHTML = people.map((person, i) => {
-    const { clown, points, handle } = personView(person);
+    const { clown, points, handle, name } = personView(person);
     const percent = percentOf(points, maxPoints);
     const monster = person.monstruo || {};
     const avatarColor = clown ? '#ff0033' : monsterColor(monster);
@@ -239,15 +240,15 @@ function renderRanking(people, query = '') {
 
           <div class="scarer-card__info">
             <div class="scarer-card__name">
-              <span>${escapeHtml(person.nombre || 'Estudiante UNAL')}</span>
+              <span>${escapeHtml(name)}</span>
               ${titleTag}
             </div>
-            <div class="scarer-card__email">@${escapeHtml(handle)} · UNAL</div>
+            <div class="scarer-card__email">@${escapeHtml(handle)} · ${clown ? 'TRAMPOSO DE CIRCO' : 'UNAL'}</div>
           </div>
 
           <div class="scarer-card__score">
             <span class="scarer-card__pts">${points} <small>PTS</small></span>
-            <span class="scarer-card__percent">${percent}%</span>
+            <span class="scarer-card__percent">${clown ? 'SHADOWBAN' : `${percent}%`}</span>
           </div>
         </button>
         <div class="scarer-item__actions">
@@ -296,14 +297,13 @@ async function loadScareMeter() {
       return;
     }
 
-    // Separate honest scarers from clown shadowbanned accounts
+    // Clowns go last, below the people who also have 0 points
     const clowns = profiles.filter((p) => isClown(p.correo, p.nombre, p));
     const legitimate = profiles.filter((p) => !isClown(p.correo, p.nombre, p));
 
     legitimate.sort((a, b) => scarePoints(b) - scarePoints(a) || (a.creado_en || '').localeCompare(b.creado_en || ''));
-    allLegitimateScarers = legitimate;
+    allScarers = [...legitimate, ...clowns];
     applyRankingFilter();
-    renderClowns(clowns);
   } catch (err) {
     console.error('Unexpected error:', err);
     showScareMeterError('Ocurrió un error inesperado al conectar con el servidor.');
@@ -546,81 +546,11 @@ $('#btn-admin-edit-points').addEventListener('click', () => {
 
 // Check the supervisor role again when the session changes or a title is redeemed
 document.addEventListener('idcard:session', () => {
-  if (allLegitimateScarers.length) applyRankingFilter();
+  if (allScarers.length) applyRankingFilter();
   $('#btn-admin-edit-points').hidden = !isCurrentSupervisor();
 });
 
 loadScareMeter();
-
-
-// Renders the separate "Circo de Payasos" box for shadowbanned accounts (Largo & Argenis)
-let currentClowns = [];
-
-function renderClowns(clowns) {
-  currentClowns = clowns;
-  const card = $('#clowns-card');
-  const list = $('#clowns-list');
-  if (!card || !list) return;
-
-  if (!clowns.length) {
-    card.hidden = true;
-    return;
-  }
-
-  card.hidden = false;
-  list.innerHTML = clowns.map((person, i) => {
-    const { handle, name } = personView(person);
-    const monster = person.monstruo || {};
-    return `
-      <li class="scarer-item scarer-item--clown">
-        <div class="scarer-card scarer-card--clown">
-          <div class="scarer-card__rank scarer-card__rank--clown">
-            <span>🤡</span>
-          </div>
-
-          <div class="scarer-card__avatar" style="border-color: #ff0033; position: relative;">
-            ${drawCustomMonster(monster)}
-          </div>
-
-          <div class="scarer-card__info">
-            <div class="scarer-card__name">
-              <span>${escapeHtml(name)}</span>
-              <span class="scarer-card__title-tag scarer-card__title-tag--clown">🤡 Payaso</span>
-            </div>
-            <div class="scarer-card__email">@${escapeHtml(handle)} · TRAMPOSO DE CIRCO</div>
-          </div>
-
-          <div class="scarer-card__score">
-            <span class="scarer-card__pts" style="color: #ff0033">0 <small>PTS</small></span>
-            <span class="scarer-card__percent" style="color: #ff0033">SHADOWBAN</span>
-          </div>
-        </div>
-
-        <div class="scarer-item__actions">
-          <button type="button" class="scarer-item__idcard scarer-item__idcard--clown btn-view-clown" data-clown-index="${i}" aria-label="Ver Licencia de Payaso" title="Ver Licencia de Payaso">
-            ${ICONS.idCard}
-          </button>
-        </div>
-      </li>
-    `;
-  }).join('');
-}
-
-// Interaction for clown cards
-document.addEventListener('click', (event) => {
-  const clownBtn = event.target.closest('.btn-view-clown');
-  if (clownBtn) {
-    const idx = Number(clownBtn.dataset.clownIndex);
-    const person = currentClowns[idx];
-    if (person) {
-      $('#idcard-modal-title').textContent = '🤡 Licencia de Payaso';
-      $('#idcard-modal-clown-notice').hidden = false;
-      $('#idcard-modal-idcard').innerHTML = scarerIdCard(
-        person.nombre || 'Estudiante UNAL', person.correo, person.monstruo || {}, personTitle(person), null);
-      $('#idcard-modal').showModal();
-    }
-  }
-});
 
 
 // Search input listener for the ranking table
