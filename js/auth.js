@@ -165,7 +165,7 @@ function scarerIdCard(name, email, monster, title = BASE_TITLE, medal = null) {
   const photoBorder = clown ? '#ff0033' : medalStyle?.border ?? color;
 
   const brand = clown
-    ? `<span class="idcard__week idcard__week--clown">🎪 CIRCO DE</span><span class="idcard__systems idcard__systems--clown">— PAYASOS —</span>`
+    ? `<span class="idcard__week idcard__week--clown"><span class="idcard__tent" aria-hidden="true">🎪</span>CIRCO DE</span><span class="idcard__systems idcard__systems--clown">— PAYASOS —</span>`
     : `<span class="idcard__week">Semana</span><span class="idcard__systems">— de sistemas —</span>`;
 
   const nose = clown ? '<div class="clown-nose" title="Payaso">🔴</div>' : '';

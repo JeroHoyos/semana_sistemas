@@ -673,8 +673,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
   color: #9f1239;
 }
 
-/* "CIRCO DE" is longer than "SEMANA": at its font size it broke into three lines */
+/* "CIRCO DE" is longer than "SEMANA": at its font size it broke into three lines.
+   The box hugs the text, so "— PAYASOS —" centers under the words and not under the tent. */
 .idcard__week--clown {
+  position: relative;
+  width: fit-content;
+  margin-inline: auto;
   color: #e11d48 !important;
   font-size: 6.4cqw;
   font-weight: 800;
@@ -682,7 +686,15 @@ button { font: inherit; color: inherit; cursor: pointer; }
   white-space: nowrap;
 }
 
+/* The tent hangs outside the box, to the left of the words */
+.idcard__tent {
+  position: absolute;
+  right: 100%;
+  margin-right: .25em;
+}
+
 .idcard__systems--clown {
+  padding-left: .2em;   /* balances the letter spacing after the last dash, so the text centers exactly */
   margin-top: 1.2cqw;
   color: #be123c !important;
   font-weight: 700;
