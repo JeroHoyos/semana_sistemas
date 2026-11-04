@@ -1,0 +1,239 @@
+diff --git a/doomgeneric/d_main.c b/doomgeneric/d_main.c
+index 9012e5f..2ee74b4 100644
+--- a/doomgeneric/d_main.c
++++ b/doomgeneric/d_main.c
+@@ -196,6 +196,10 @@ void D_Display (void)
+     }
+ 
+     // save the current screen if about to wipe
++#ifdef DOOM_WEB
++    // Web: no "melt" between screens (it is a loop that never yields to the browser)
++    wipe = false;
++#else
+     if (gamestate != wipegamestate)
+ 		{
+ 		wipe = true;
+@@ -203,6 +207,7 @@ void D_Display (void)
+     }
+     else
+     	wipe = false;
++#endif
+ 
+     if (gamestate == GS_LEVEL && gametic)
+     	HU_Erase();
+@@ -474,6 +479,9 @@ char                    *pagename;
+ //
+ void D_PageTicker (void)
+ {
++#ifdef DOOM_WEB
++    return;  // Web: the title stays (no demos, they would load other levels)
++#endif
+     if (--pagetic < 0)
+ 	D_AdvanceDemo ();
+ }
+diff --git a/doomgeneric/g_game.c b/doomgeneric/g_game.c
+index 9954d78..7641a12 100644
+--- a/doomgeneric/g_game.c
++++ b/doomgeneric/g_game.c
+@@ -344,6 +344,9 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
+          || joybspeed >= MAX_JOY_BUTTONS
+          || gamekeydown[key_speed] 
+          || joybuttons[joybspeed];
++#ifdef DOOM_WEB
++    speed = 1;  // Web: always runs (the same for everyone, phones too)
++#endif
+  
+     forward = side = 0;
+     
+@@ -604,6 +607,12 @@ void G_DoLoadLevel (void)
+ { 
+     int             i; 
+ 
++#ifdef DOOM_WEB
++    // Web: only E1M1 exists
++    gameepisode = 1;
++    gamemap = 1;
++#endif
++
+     // Set the sky map.
+     // First thing, we have a dummy sky texture name,
+     //  a flat. The data is in the WAD only because
+@@ -1343,6 +1352,11 @@ void G_SecretExitLevel (void)
+     gameaction = ga_completed; 
+ } 
+  
++#ifdef DOOM_WEB
++void DG_LevelCompleted(int tics, int kills, int total_kills, int items,
++                       int total_items, int secrets, int total_secrets);
++#endif
++
+ void G_DoCompleted (void) 
+ { 
+     int             i; 
+@@ -1485,6 +1499,14 @@ void G_DoCompleted (void)
+     StatCopy(&wminfo);
+  
+     WI_Start (&wminfo); 
++
++#ifdef DOOM_WEB
++    // Web: tells the page the level time in tics (35 per second)
++    DG_LevelCompleted(leveltime,
++                      players[consoleplayer].killcount, totalkills,
++                      players[consoleplayer].itemcount, totalitems,
++                      players[consoleplayer].secretcount, totalsecret);
++#endif
+ } 
+ 
+ 
+@@ -1493,6 +1515,10 @@ void G_DoCompleted (void)
+ //
+ void G_WorldDone (void) 
+ { 
++#ifdef DOOM_WEB
++    // Web: there are no levels after E1M1; the results screen stays still
++    return;
++#endif
+     gameaction = ga_worlddone; 
+ 
+     if (secretexit) 
+@@ -1732,6 +1758,12 @@ G_InitNew
+     char *skytexturename;
+     int             i;
+ 
++#ifdef DOOM_WEB
++    // Web: only E1M1 exists (whatever happens, a new game starts there)
++    episode = 1;
++    map = 1;
++#endif
++
+     if (paused)
+     {
+ 	paused = false;
+diff --git a/doomgeneric/i_sound.c b/doomgeneric/i_sound.c
+index c80a9d1..45604e4 100644
+--- a/doomgeneric/i_sound.c
++++ b/doomgeneric/i_sound.c
+@@ -18,7 +18,7 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ 
+-#if defined(FEATURE_SOUND) && !defined(__DJGPP__)
++#if defined(FEATURE_SOUND) && !defined(__DJGPP__) && !defined(DOOM_WEB)
+ #include <SDL_mixer.h>
+ #endif
+ 
+@@ -130,9 +130,12 @@ static void InitSfxModule(boolean use_sfx_prefix)
+ 
+ static void InitMusicModule(void)
+ {
+-#ifdef FEATURE_SOUND
++#if defined(DOOM_WEB)
++    // Web: Chocolate Doom's OPL music, as it sounded on a Sound Blaster
++    music_module = &music_opl_module;
++#elif defined(FEATURE_SOUND)
+     music_module = &DG_music_module;
+-#endif /* FEATURE_SOUND */
++#endif
+ }
+ 
+ //
+diff --git a/doomgeneric/i_system.c b/doomgeneric/i_system.c
+index 53ab2c9..52aee72 100644
+--- a/doomgeneric/i_system.c
++++ b/doomgeneric/i_system.c
+@@ -264,7 +264,7 @@ void I_Quit (void)
+ #endif
+ }
+ 
+-#if !defined(_WIN32) && !defined(__MACOSX__) && !defined(__DJGPP__)
++#if !defined(_WIN32) && !defined(__MACOSX__) && !defined(__DJGPP__) && !defined(DOOM_WEB)
+ #define ZENITY_BINARY "/usr/bin/zenity"
+ 
+ // returns non-zero if zenity is available
+@@ -448,6 +448,10 @@ void I_Error (char *error, ...)
+                                         message,
+                                         NULL);
+     }
++#elif defined(DOOM_WEB)
++    {
++        // Web: the message already went to stderr (the browser console)
++    }
+ #elif defined(__DJGPP__)
+     {
+         printf("%s\n", msgbuf);
+diff --git a/doomgeneric/m_menu.c b/doomgeneric/m_menu.c
+index 6df9655..976744e 100644
+--- a/doomgeneric/m_menu.c
++++ b/doomgeneric/m_menu.c
+@@ -889,8 +889,10 @@ void M_MusicVol(int choice)
+ //
+ void M_DrawMainMenu(void)
+ {
++#ifndef DOOM_WEB
+     V_DrawPatchDirect(94, 2,
+                       W_CacheLumpName(DEH_String("M_DOOM"), PU_CACHE));
++#endif
+ }
+ 
+ 
+@@ -905,8 +907,17 @@ void M_DrawNewGame(void)
+     V_DrawPatchDirect(54, 38, W_CacheLumpName(DEH_String("M_SKILL"), PU_CACHE));
+ }
+ 
++#ifdef DOOM_WEB
++void DG_NewGame(void);  // doomgeneric_web.c
++#endif
++
+ void M_NewGame(int choice)
+ {
++#ifdef DOOM_WEB
++    // Web: only E1M1 exists and the difficulty is fixed: the game starts right away
++    DG_NewGame();
++    return;
++#endif
+     if (netgame && !demoplayback)
+     {
+ 	M_StartMessage(DEH_String(NEWGAME),NULL,false);
+@@ -1425,6 +1436,14 @@ boolean M_Responder (event_t* ev)
+     static  int     mousex = 0;
+     static  int     lastx = 0;
+ 
++#ifdef DOOM_WEB
++    // Web: the menu only exists on the title screen; with it closed there are no shortcuts
++    if (!menuactive)
++    {
++        return false;
++    }
++#endif
++
+     // In testcontrols mode, none of the function keys should do anything
+     // - the only key is escape to quit.
+ 
+@@ -2120,6 +2139,13 @@ void M_Init (void)
+ 	EpiDef.numitems--;
+     }
+ 
++#ifdef DOOM_WEB
++    // Web: the menu is New Game only, at the bottom of the title screen
++    MainDef.numitems = 1;
++    MainDef.x = 106;
++    MainDef.y = 166;
++#endif
++
+     //opldev = M_CheckParm("-opldev") > 0;
+ }
+ 
+diff --git a/doomgeneric/st_stuff.c b/doomgeneric/st_stuff.c
+index e25accc..8254717 100644
+--- a/doomgeneric/st_stuff.c
++++ b/doomgeneric/st_stuff.c
+@@ -461,6 +461,9 @@ ST_Responder (event_t* ev)
+   // if a user keypress...
+   else if (ev->type == ev_keydown)
+   {
++#ifdef DOOM_WEB
++    return false;  // Web: no cheats (not even idclev to skip levels)
++#endif
+     if (!netgame && gameskill != sk_nightmare)
+     {
+       // 'dqd' cheat for toggleable god mode
