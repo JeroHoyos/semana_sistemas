@@ -542,7 +542,8 @@ function updateSessionUi(user) {
 let userMedal = null;   // 'gold' | 'silver' | 'bronze' | null
 
 async function fetchUserMedal(userId) {
-  const { data: profiles } = await supabaseClient.from('perfiles').select('id, nombre, correo, monstruo, puntos');
+  // shortcut: full table fetch capped at ~2000 rows, replace with an RPC returning user position when perfiles exceeds ~2000 rows.
+  const { data: profiles } = await supabaseClient.from('perfiles').select('id, nombre, correo, puntos');
   const person = profiles?.find((p) => p.id === userId);
   return person ? medalFor(scarePoints(person), profiles.map(scarePoints)) : null;
 }

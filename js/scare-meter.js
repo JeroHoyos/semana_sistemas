@@ -283,6 +283,7 @@ function showIdCardOf(index) {
 
 async function loadScareMeter() {
   try {
+    // shortcut: full table fetch capped at ~2000 rows, replace with an RPC returning top N plus user rank when perfiles exceeds ~2000 rows.
     // es_payaso marks sanctioned accounts (isClown reads it). Without that column the query fails,
     // so it is asked again without it.
     const columns = 'id, nombre, correo, monstruo, puntos, creado_en';
@@ -426,15 +427,41 @@ $('#easter-egg-modal').addEventListener('click', (event) => {
 
 // Supabase real-time subscription
 try {
+  let realtimeDebounceTimer = null;
+  let reloadPendingOnVisible = false;
+
+  function scheduleRealtimeReload() {
+    clearTimeout(realtimeDebounceTimer);
+    if (document.hidden) {
+      reloadPendingOnVisible = true;
+      return;
+    }
+    realtimeDebounceTimer = setTimeout(() => {
+      loadScareMeter();
+    }, 5000);
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && reloadPendingOnVisible) {
+      reloadPendingOnVisible = false;
+      scheduleRealtimeReload();
+    }
+  });
+
   supabaseClient
     .channel('scare-meter-profile-changes')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'perfiles' }, () => {
-      loadScareMeter();
+      scheduleRealtimeReload();
     })
     .subscribe();
 
-  supabaseClient.auth.onAuthStateChange(() => {
-    loadScareMeter();
+  let lastAuthUserId = currentUser?.id ?? null;
+  supabaseClient.auth.onAuthStateChange((_event, session) => {
+    const currentUserId = session?.user?.id ?? null;
+    if (currentUserId !== lastAuthUserId) {
+      lastAuthUserId = currentUserId;
+      loadScareMeter();
+    }
   });
 } catch {
   console.log('Realtime is not available in this client');
