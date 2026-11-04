@@ -162,6 +162,8 @@ function renderRanking(people) {
       titleTag = `<span class="scarer-card__title-tag scarer-card__title-tag--nocturnal">${text}</span>`;
     } else if (title.id === 'video-futbol') {
       titleTag = `<span class="scarer-card__title-tag scarer-card__title-tag--phenomenon">${text}</span>`;
+    } else if (title.id === 'konami') {
+      titleTag = `<span class="scarer-card__title-tag scarer-card__title-tag--konami">${text}</span>`;
     }
 
     const medal = clown ? null : medalFor(points, allPoints);
