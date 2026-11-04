@@ -6,8 +6,8 @@
 // screen with its menu and passes it what arrives from the page.
 //
 // What changed in the engine is in doomgeneric-web.patch (all behind DOOM_WEB):
-// only E1M1 on Hurt Me Plenty exists, the menu is New Game only, there are no cheats, the player
-// always runs and on reaching the exit it calls DG_LevelCompleted with the level time.
+// only E1M1 on Ultra-Violence exists, the menu is New Game only, there are no cheats, the player
+// always runs and on reaching the exit it calls DG_LevelCompleted with the level results.
 // The music is played by Chocolate Doom's OPL player (i_oplmusic.c) with opl_web.c.
 //
 // Doom, doomgeneric and Chocolate Doom are free software under the GPL-2.0 (see README.md).
@@ -36,8 +36,8 @@
 
 void M_ClearMenus(void);   // it is in m_menu.c, but not in its header
 
-// Fixed difficulty so times are comparable: Doom's normal, Hurt Me Plenty
-#define DIFFICULTY sk_medium
+// Fixed difficulty so scores are comparable: Ultra-Violence, one above Doom's normal (Hurt Me Plenty)
+#define DIFFICULTY sk_hard
 
 
 /* ---------- What the page provides (js/doom.js) ---------- */

@@ -8,9 +8,10 @@
 
    Each game brings its cartridge (SNAKE_CARTRIDGE in snake.js, DOOM_CARTRIDGE in doom.js, DEFRAG_CARTRIDGE in defrag.js):
      id, name               how it is saved in Supabase and how it shows
-     scoring                'points' (highest wins) or 'time' (in tics of 1/35 s; lowest wins)
+     scoring                'points' (highest wins)
      create(canvas, events) builds the run
      splash                 text, items and help of the start overlay
+     controls               { keyboard, touch }: lists of [keys, what they do] shown on the pause overlay
      end                    title of the end overlay (success: true paints it as a triumph)
      buttons                optional, { a, b }: A and B are game buttons while playing (without it, B does not show)
      dpad                   optional, 'diagonal': lets two directions be held at once
@@ -52,14 +53,6 @@ const pending = new Map();
 
 /* ---------- Small helpers ---------- */
 
-// 2345 tics → "1:07.00": minutes, seconds and hundredths, as in speedruns
-function formatTime(tics) {
-  const hundredths = Math.floor(Math.max(0, tics) * 100 / 35);
-  const minutes = Math.floor(hundredths / 6000);
-  const seconds = Math.floor(hundredths / 100) % 60;
-  return `${minutes}:${String(seconds).padStart(2, '0')}.${String(hundredths % 100).padStart(2, '0')}`;
-}
-
 // How each kind of result is shown and compared
 const SCORINGS = {
   // More points is better. On screen they have four digits, as on arcade machines (120 → "0120").
@@ -72,22 +65,10 @@ const SCORINGS = {
     improves: (next, previous) => next > (previous || 0),
     noRecord: 'Todavía no tienes puntaje. Juega una partida para entrar a la tabla.',
   },
-  // Time is in tics (1/35 s). Less is better; 0 means there is none yet.
-  time: {
-    hud: 'TIEMPO',
-    name: 'tiempo',
-    empty: '-:--.--',
-    screen: formatTime,
-    text: formatTime,
-    table: formatTime,
-    improves: (next, previous) => !previous || next < previous,
-    lowerWins: true,
-    noRecord: 'Todavía no tienes tiempo. Llega a la salida para entrar a la tabla.',
-  },
 };
 const scoringOf = (game) => SCORINGS[game.scoring] || SCORINGS.points;
 let scoring = SCORINGS.points;   // that of the game on display
-const screenRecord = (value) => (value ? scoring.screen(value) : scoring.empty ?? scoring.screen(0));
+const screenRecord = (value) => scoring.screen(value || 0);
 const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
 const localRecordKey = (game = cartridge) => `juego_semana_record_${game.id}`;
 const endDelay = () => cartridge.endDelay ?? 900;
@@ -333,7 +314,7 @@ function pauseIfPlaying() {
   renderState();
 }
 
-// detail: one more line for the end overlay (Doom: enemies and secrets)
+// detail: more lines for the end overlay (Doom: the points of each factor)
 async function finishRun(score, detail = '') {
   const game = cartridge;
   const gameScoring = scoringOf(game);
@@ -832,14 +813,11 @@ async function renderMyRecord(game) {
   renderRecord();
 
   // Place = how many people have a better result, plus one
-  let query = supabaseClient
+  const { count } = await supabaseClient
     .from('puntajes_juego')
     .select('usuario_id', { count: 'exact', head: true })
-    .eq('juego', game.id);
-  query = gameScoring.lowerWins
-    ? query.gt('mejor_puntaje', 0).lt('mejor_puntaje', row.mejor_puntaje)
-    : query.gt('mejor_puntaje', row.mejor_puntaje);
-  const { count } = await query;
+    .eq('juego', game.id)
+    .gt('mejor_puntaje', row.mejor_puntaje);
   if (game !== cartridge) return;
 
   const place = typeof count === 'number' ? ` · puesto <strong>${count + 1}</strong>` : '';
@@ -916,7 +894,7 @@ document.addEventListener('idcard:session', async () => {
 /* ---------- The console dresses up with the game's cartridge ---------- */
 
 function dressConsole() {
-  const { name, splash = {}, end = {}, buttons } = cartridge;
+  const { name, splash = {}, end = {}, buttons, controls = {} } = cartridge;
 
   gameConsole.dataset.game = cartridge.id;
   gameConsole.style.setProperty('--end-delay', `${endDelay()}ms`);
@@ -930,6 +908,11 @@ function dressConsole() {
   $('#start-items').innerHTML = typeof splash.items === 'function' ? splash.items() : splash.items || '';
   $('#keyboard-help').textContent = splash.keyboardHelp || '';
   $('#touch-help').textContent = splash.touchHelp || '';
+
+  // Pause overlay: the full list of controls
+  const controlRows = (rows = []) => rows.map(([keys, action]) => `<dt>${keys}</dt><dd>${action}</dd>`).join('');
+  $('#pause-keyboard').innerHTML = controlRows(controls.keyboard);
+  $('#pause-touch').innerHTML = controlRows(controls.touch);
 
   // Score and end overlay
   $('#hud-label').textContent = scoring.hud;

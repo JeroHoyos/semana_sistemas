@@ -2,7 +2,7 @@
 # =============================================
 # BUILDS DOOM FOR THE SCARE METER CONSOLE
 # Generates games/doom/doom.wasm from:
-#   - doomgeneric (GPL-2.0) with the web patch in games/doom/source: only E1M1 on Hurt Me Plenty,
+#   - doomgeneric (GPL-2.0) with the web patch in games/doom/source: only E1M1 on Ultra-Violence,
 #     minimal menu (New Game only), no cheats, a notification on finishing the level
 #   - Chocolate Doom's music (GPL-2.0): the OPL player (i_oplmusic.c, midifile.c)
 #     and the Nuked OPL3 chip emulator (opl3.c, LGPL-2.1)
