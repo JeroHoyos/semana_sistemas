@@ -90,6 +90,7 @@ function renderCollection() {
       isDebugger ? 'title-item--debugger' : '',
       isNocturnal ? 'title-item--nocturnal' : '',
       title.id === 'video-futbol' ? 'title-item--phenomenon' : '',
+      title.id === 'konami' ? 'title-item--konami' : '',
     ].filter(Boolean).join(' ');
 
     return `<li class="${classes}">

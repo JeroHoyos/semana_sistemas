@@ -875,6 +875,19 @@ button { font: inherit; color: inherit; cursor: pointer; }
   color: #ffdf00 !important;
 }
 
+/* Maestro Konami: Nintendo red, pixel letters with a hard 8-bit shadow */
+.idcard__band--konami {
+  background: #e4000f !important;
+  border-top: 2px solid #fff;
+  border-bottom: 2px solid #8b0009;
+  color: #fff !important;
+  font-family: 'Press Start 2P', monospace;
+  font-weight: 400;
+  font-size: 2.9cqw;
+  line-height: 1.6;
+  text-shadow: .35cqw .35cqw 0 #8b0009;
+}
+
 .glitch-text {
   position: relative;
   display: inline-block;
@@ -3504,6 +3517,19 @@ button { font: inherit; color: inherit; cursor: pointer; }
   color: #ffdf00;
 }
 
+.scarer-card__title-tag--konami {
+  padding: 3px 6px 2px;
+  border: 0;
+  border-radius: 0;
+  background: #e4000f;
+  box-shadow: 2px 2px 0 #8b0009;
+  font-family: 'Press Start 2P', monospace;
+  font-weight: 400;
+  font-size: 8px;
+  letter-spacing: 0;
+  color: #fff;
+}
+
 .scarer-card__title-tag--clown {
   background: #ffe4e6 !important;
   color: #be123c !important;
@@ -4260,7 +4286,7 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 .title-item--locked .title-item__name { color: #8a95a3; }
 .title-item--locked .title-item__desc { color: var(--gray); font-style: italic; }
 
-/* Special titles: Debugger (cyan terminal), Terror Nocturno (purple) and El Fenómeno (Brazil green) */
+/* Special titles: Debugger (cyan terminal), Terror Nocturno (purple), El Fenómeno (Brazil green) and Maestro Konami (Nintendo red) */
 .title-item--debugger { background: #071820; box-shadow: inset 0 0 0 1.5px rgba(0, 240, 255, .35); }
 .title-item--debugger.title-item--in-use { box-shadow: inset 0 0 0 2px #00f0ff, 0 0 18px -4px rgba(0, 240, 255, .55); }
 .title-item--debugger .title-item__icon { background: #0d2a33; color: #00f0ff; box-shadow: 0 0 10px rgba(0, 240, 255, .4); }
@@ -4280,6 +4306,15 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 .title-item--phenomenon .title-item__name { color: #ffdf00; }
 .title-item--phenomenon .title-item__desc { color: #d9f2c4; }
 .title-item--phenomenon .title-item__status { background: #ffdf00; color: #004d1f; }
+
+/* Maestro Konami: an old console in black and Nintendo red, pixel letters */
+.title-item--konami { background: #1f1f1f; box-shadow: inset 0 0 0 2px #e4000f; }
+.title-item--konami.title-item--in-use { box-shadow: inset 0 0 0 3px #e4000f, 0 0 18px -4px rgba(228, 0, 15, .6); }
+.title-item--konami .title-item__icon { border-radius: 0; background: #e4000f; color: #fff; box-shadow: 3px 3px 0 #8b0009; }
+.title-item--konami .title-item__name { font-family: 'Press Start 2P', monospace; font-weight: 400; font-size: 11px; line-height: 1.7; color: #fff; text-shadow: 2px 2px 0 #e4000f; }
+.title-item--konami .title-item__limit { text-shadow: none; }
+.title-item--konami .title-item__desc { color: #c9c9c9; }
+.title-item--konami .title-item__status { border-radius: 0; background: #e4000f; color: #fff; }
 
 @media (max-width: 520px) {
   .codes { padding: 26px 18px 22px; }
