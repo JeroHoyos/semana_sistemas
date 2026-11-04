@@ -78,12 +78,15 @@ function renderSummary() {
 function renderMyTeam() {
   const panel = $('#my-team');
 
+  const inThisList = freeAgents?.some((agent) => agent.usuario_id === currentUser?.id);
+  const findTeamLabel = inThisList ? 'Editar mis datos' : 'Buscar equipo';
+
   if (!currentUser) {
     panel.innerHTML = `
       <p class="registration__text">Inicia sesión con tu carnet para crear un equipo, ver en cuál te inscribieron o buscar uno.</p>
       <div class="team__actions-row">
         <button class="hero__button auth-form__submit" type="button" data-action="login">Iniciar sesión</button>
-        <button class="hero__button hero__button--secondary" type="button" data-action="open-find-team">Buscar equipo</button>
+        <button class="hero__button hero__button--find-team" type="button" data-action="open-find-team">Buscar equipo</button>
       </div>
     `;
     return;
@@ -100,7 +103,7 @@ function renderMyTeam() {
     panel.innerHTML = `
       <p class="registration__text">Ya se llenaron los ${shownActivity.team.maxTeams} cupos. Si un capitán te inscribe en su equipo, aparecerá aquí.</p>
       <div class="team__actions-row">
-        <button class="hero__button hero__button--secondary" type="button" data-action="open-find-team">Buscar equipo</button>
+        <button class="hero__button hero__button--find-team" type="button" data-action="open-find-team">${findTeamLabel}</button>
       </div>
     `;
   } else {
@@ -111,7 +114,7 @@ function renderMyTeam() {
       </p>
       <div class="team__actions-row">
         <button class="hero__button auth-form__submit" type="button" data-action="create">Crear equipo</button>
-        <button class="hero__button hero__button--secondary" type="button" data-action="open-find-team">Buscar equipo</button>
+        <button class="hero__button hero__button--find-team" type="button" data-action="open-find-team">${findTeamLabel}</button>
       </div>
     `;
   }
@@ -127,13 +130,7 @@ function renderTeamList() {
 
 function renderFreeAgents() {
   const list = $('#free-agents-list');
-  const btn = $('#btn-open-find-team');
   if (!list) return;
-
-  const inThisList = freeAgents?.find((agent) => agent.usuario_id === currentUser?.id);
-  if (btn) {
-    btn.textContent = inThisList ? 'Editar mis datos' : 'Buscar equipo';
-  }
 
   if (!freeAgents) {
     list.innerHTML = `<li class="registration__text">${loadFreeAgentsFailed ? 'No se pudo cargar la lista.' : 'Cargando lista…'}</li>`;
@@ -268,6 +265,7 @@ async function loadFreeAgents() {
   loadFreeAgentsFailed = Boolean(error);
   freeAgents = error ? null : data;
   renderFreeAgents();
+  renderMyTeam();
 }
 
 // Calls a function from teams.sql (its errors already come in Spanish) and reads the teams again
@@ -295,7 +293,7 @@ $('#my-team').addEventListener('click', (event) => {
   } else if (action === 'create') {
     openTeamForm(null);
   } else if (action === 'open-find-team') {
-    $('#btn-open-find-team')?.click();
+    openFindTeamModal();
   } else if (action === 'edit') {
     openTeamForm(myTeam());
   } else if (action === 'leave' && confirm('¿Seguro que quieres salirte del equipo?')) {
@@ -528,7 +526,7 @@ $('#find-team-activity').innerHTML = TEAM_ACTIVITIES.map((activity) => `
 
 $('#find-team-activity').addEventListener('change', updateFindTeamModalPositions);
 
-$('#btn-open-find-team').addEventListener('click', () => {
+function openFindTeamModal() {
   if (!currentUser) {
     setAuthMode(false);
     $('#auth-modal').showModal();
@@ -551,7 +549,9 @@ $('#btn-open-find-team').addEventListener('click', () => {
 
   $('#find-team-form-message').hidden = true;
   $('#find-team-modal').showModal();
-});
+}
+
+$('#btn-open-find-team')?.addEventListener('click', openFindTeamModal);
 
 $('#btn-close-find-team').addEventListener('click', () => $('#find-team-modal').close());
 $('#btn-cancel-find-team').addEventListener('click', () => $('#find-team-modal').close());
