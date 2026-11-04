@@ -1,33 +1,33 @@
 /* =============================================
-   SNAKE · JUEGO DE LA SEMANA 1
-   Una culebra con los colores de Python se come los bugs del código.
-   Cada bug vale 10 puntos, la hace crecer y la acelera un poquito.
-   Chocar con la pared o contigo misma termina la partida.
+   SNAKE · WEEKLY GAME 1
+   A snake in Python's colors eats the bugs in the code.
+   Each bug is worth 10 points, makes it grow and speeds it up a little.
+   Hitting a wall or yourself ends the run.
 
-   El tablero mide lo mismo en todas las pantallas (20 × 15 casillas) y la velocidad no depende
-   del computador, para que los puntajes de la tabla se puedan comparar.
-   Este archivo solo lleva la partida y la dibuja: la consola (juego-semana.js) le pasa
-   los controles, pone el sonido y guarda el puntaje.
+   The board is the same on every screen (20 × 15 cells) and the speed does not depend
+   on the computer, so leaderboard scores are comparable.
+   This file only runs the game and draws it: the console (weekly-game.js) passes it
+   the controls, plays the sound and saves the score.
    ============================================= */
 
 const SNAKE = {
-  columnas: 20,
-  filas: 15,
-  lado: 8,                 // pixeles de cada casilla: el tablero mide 160 × 120 pixeles y se escala a la pantalla
-  largoInicial: 4,
-  puntosBug: 10,
-  intervaloInicial: 150,   // milisegundos por paso al empezar…
-  intervaloMinimo: 70,     // …y lo más rápido que llega a ir
-  aceleracion: 3,          // milisegundos menos por cada bug
-  duracionChoque: 800,     // lo que parpadea la culebra al chocar
+  columns: 20,
+  rows: 15,
+  cell: 8,                 // pixels per cell: the board is 160 × 120 pixels and scales to the screen
+  startLength: 4,
+  bugPoints: 10,
+  startInterval: 150,   // milliseconds per step at the start…
+  minInterval: 70,     // …and the fastest it gets
+  speedup: 3,          // milliseconds less per bug
+  crashDuration: 800,     // how long the snake blinks after crashing
 };
 
-// Dibujos de 8 × 8 pixeles, con el mismo formato de pixeles.js (cada letra es un color de la paleta).
-// También se usan en la pantalla de inicio de la consola con dibujarPixeles().
-const SPRITES_SNAKE = {
+// 8 × 8 pixel drawings, in the same format as pixel-art.js (each letter is a palette color).
+// Also used on the console's start screen through drawPixelArt().
+const SNAKE_SPRITES = {
   bug: {
-    paleta: { l: '#c9d2dc', r: '#8f1d2c', R: '#e5484d', W: '#ffd6d9' },
-    filas: [
+    palette: { l: '#c9d2dc', r: '#8f1d2c', R: '#e5484d', W: '#ffd6d9' },
+    rows: [
       '.l....l.',
       '..l..l..',
       '..rrrr..',
@@ -38,10 +38,10 @@ const SPRITES_SNAKE = {
       'l.RRRR.l',
     ],
   },
-  // Cabeza mirando a la derecha; para las otras direcciones se gira
-  cabeza: {
-    paleta: { H: '#3776ab', W: '#ffffff', k: '#0b1426' },
-    filas: [
+  // Head looking right; it is rotated for the other directions
+  head: {
+    palette: { H: '#3776ab', W: '#ffffff', k: '#0b1426' },
+    rows: [
       '.HHHHH..',
       'HHHWWHH.',
       'HHHWkHHH',
@@ -54,341 +54,339 @@ const SPRITES_SNAKE = {
   },
 };
 
-// Colores del cuerpo: se alternan el azul y el amarillo de Python (claro y su sombra)
-const COLORES_CUERPO = [
-  { claro: '#3776ab', sombra: '#255783' },
-  { claro: '#ffd43b', sombra: '#d9a400' },
+// Body colors: Python's blue and yellow alternate (light and its shadow)
+const BODY_COLORS = [
+  { light: '#3776ab', shadow: '#255783' },
+  { light: '#ffd43b', shadow: '#d9a400' },
 ];
-const FONDO_TABLERO = ['#0c1629', '#0f1b31'];
+const BOARD_COLORS = ['#0c1629', '#0f1b31'];
 
-const VECTORES = {
-  arriba: [0, -1],
-  abajo: [0, 1],
-  izquierda: [-1, 0],
-  derecha: [1, 0],
+const VECTORS = {
+  up: [0, -1],
+  down: [0, 1],
+  left: [-1, 0],
+  right: [1, 0],
 };
-const OPUESTA = { arriba: 'abajo', abajo: 'arriba', izquierda: 'derecha', derecha: 'izquierda' };
+const OPPOSITE = { up: 'down', down: 'up', left: 'right', right: 'left' };
 
-// Teclado: flechas o WASD
-const TECLAS_SNAKE = {
-  ArrowUp: 'arriba', KeyW: 'arriba',
-  ArrowDown: 'abajo', KeyS: 'abajo',
-  ArrowLeft: 'izquierda', KeyA: 'izquierda',
-  ArrowRight: 'derecha', KeyD: 'derecha',
+// Keyboard: arrows or WASD
+const SNAKE_KEYS = {
+  ArrowUp: 'up', KeyW: 'up',
+  ArrowDown: 'down', KeyS: 'down',
+  ArrowLeft: 'left', KeyA: 'left',
+  ArrowRight: 'right', KeyD: 'right',
 };
 
-/* lienzo: el <canvas> de la pantalla.
-   avisos: { alCambiarPuntaje(puntaje), alTerminar(puntaje, gano), sonar(nombre) }
-   Devuelve los controles de la partida. */
-function crearSnake(lienzo, avisos = {}) {
-  const ctx = lienzo.getContext('2d');
-  const anchoTablero = SNAKE.columnas * SNAKE.lado;
-  const altoTablero = SNAKE.filas * SNAKE.lado;
-  const avisar = (nombre, ...datos) => avisos[nombre]?.(...datos);
+/* canvas: the screen's <canvas>.
+   events: { onScoreChange(score), onEnd(score, won), playSound(name) }
+   Returns the run's controls. */
+function createSnake(canvas, events = {}) {
+  const ctx = canvas.getContext('2d');
+  const boardWidth = SNAKE.columns * SNAKE.cell;
+  const boardHeight = SNAKE.rows * SNAKE.cell;
+  const emit = (name, ...args) => events[name]?.(...args);
 
-  let escala = 1;          // pixeles reales del lienzo por cada pixel del tablero
-  let estado = 'listo';    // 'listo' | 'jugando' | 'pausa' | 'fin'
-  let culebra, direccion, giros, bug, puntaje, intervalo, flotantes;
-  let acumulado = 0;
-  let ultimoTiempo = 0;
-  let finEn = 0;           // momento del choque, para el parpadeo
-  let cuadro = 0;          // id de requestAnimationFrame
+  let scale = 1;          // real canvas pixels per board pixel
+  let state = 'ready';    // 'ready' | 'playing' | 'paused' | 'over'
+  let snake, direction, turns, bug, score, interval, floaters;
+  let accumulated = 0;
+  let lastTime = 0;
+  let endedAt = 0;           // moment of the crash, for the blinking
+  let frame = 0;          // requestAnimationFrame id
 
-  /* ---------- Partida ---------- */
+  /* ---------- Run ---------- */
 
-  function preparar() {
-    const y = Math.floor(SNAKE.filas / 2);
-    const x = Math.floor(SNAKE.columnas / 2) - 3;
-    culebra = Array.from({ length: SNAKE.largoInicial }, (_, i) => ({ x: x - i, y }));
-    direccion = 'derecha';
-    giros = [];
-    bug = null;
-    puntaje = 0;
-    intervalo = SNAKE.intervaloInicial;
-    flotantes = [];
-    bug = casillaLibre();
-    avisar('alCambiarPuntaje', 0);
+  function reset() {
+    const y = Math.floor(SNAKE.rows / 2);
+    const x = Math.floor(SNAKE.columns / 2) - 3;
+    snake = Array.from({ length: SNAKE.startLength }, (_, i) => ({ x: x - i, y }));
+    direction = 'right';
+    turns = [];
+    score = 0;
+    interval = SNAKE.startInterval;
+    floaters = [];
+    bug = freeCell();
+    emit('onScoreChange', 0);
   }
 
-  // Una casilla al azar donde no haya culebra (null si el tablero está lleno)
-  function casillaLibre() {
-    const ocupadas = new Set(culebra.map(({ x, y }) => `${x},${y}`));
+  // A random cell with no snake on it (null if the board is full)
+  function freeCell() {
+    const occupied = new Set(snake.map(({ x, y }) => `${x},${y}`));
 
-    const libres = [];
-    for (let y = 0; y < SNAKE.filas; y++) {
-      for (let x = 0; x < SNAKE.columnas; x++) {
-        if (!ocupadas.has(`${x},${y}`)) libres.push({ x, y });
+    const free = [];
+    for (let y = 0; y < SNAKE.rows; y++) {
+      for (let x = 0; x < SNAKE.columns; x++) {
+        if (!occupied.has(`${x},${y}`)) free.push({ x, y });
       }
     }
-    return libres.length ? libres[Math.floor(Math.random() * libres.length)] : null;
+    return free.length ? free[Math.floor(Math.random() * free.length)] : null;
   }
 
-  function paso(ahora) {
-    if (giros.length) direccion = giros.shift();
-    const [dx, dy] = VECTORES[direccion];
-    const nueva = { x: culebra[0].x + dx, y: culebra[0].y + dy };
-    const comeBug = bug && nueva.x === bug.x && nueva.y === bug.y;
+  function step(now) {
+    if (turns.length) direction = turns.shift();
+    const [dx, dy] = VECTORS[direction];
+    const next = { x: snake[0].x + dx, y: snake[0].y + dy };
+    const eatsBug = bug && next.x === bug.x && next.y === bug.y;
 
-    // Si no crece, la cola se mueve en este mismo paso: se puede entrar a la casilla que deja libre
-    const cuerpo = comeBug ? culebra : culebra.slice(0, -1);
-    const fuera = nueva.x < 0 || nueva.y < 0 || nueva.x >= SNAKE.columnas || nueva.y >= SNAKE.filas;
-    if (fuera || cuerpo.some(({ x, y }) => x === nueva.x && y === nueva.y)) {
-      terminar(ahora, false);
+    // If it does not grow, the tail moves on this same step: the cell it leaves can be entered
+    const body = eatsBug ? snake : snake.slice(0, -1);
+    const outside = next.x < 0 || next.y < 0 || next.x >= SNAKE.columns || next.y >= SNAKE.rows;
+    if (outside || body.some(({ x, y }) => x === next.x && y === next.y)) {
+      finish(now, false);
       return;
     }
 
-    culebra.unshift(nueva);
-    if (!comeBug) culebra.pop();
+    snake.unshift(next);
+    if (!eatsBug) snake.pop();
 
-    if (comeBug) {
-      sumar(SNAKE.puntosBug, nueva, ahora);
-      intervalo = Math.max(SNAKE.intervaloMinimo, intervalo - SNAKE.aceleracion);
-      avisar('sonar', 'bug');
-      bug = casillaLibre();
-      if (!bug) terminar(ahora, true);   // no queda espacio: tablero completo
+    if (eatsBug) {
+      addPoints(SNAKE.bugPoints, next, now);
+      interval = Math.max(SNAKE.minInterval, interval - SNAKE.speedup);
+      emit('playSound', 'bug');
+      bug = freeCell();
+      if (!bug) finish(now, true);   // no room left: board complete
     }
   }
 
-  function sumar(puntos, { x, y }, ahora) {
-    puntaje += puntos;
-    flotantes.push({ texto: `+${puntos}`, x: x * SNAKE.lado + SNAKE.lado / 2, y: y * SNAKE.lado, desde: ahora });
-    avisar('alCambiarPuntaje', puntaje);
+  function addPoints(points, { x, y }, now) {
+    score += points;
+    floaters.push({ text: `+${points}`, x: x * SNAKE.cell + SNAKE.cell / 2, y: y * SNAKE.cell, since: now });
+    emit('onScoreChange', score);
   }
 
-  function terminar(ahora, gano) {
-    estado = 'fin';
-    finEn = ahora;
-    giros = [];
-    avisar('sonar', gano ? 'record' : 'fin');
-    avisar('alTerminar', puntaje, gano);
+  function finish(now, won) {
+    state = 'over';
+    endedAt = now;
+    turns = [];
+    emit('playSound', won ? 'record' : 'over');
+    emit('onEnd', score, won);
   }
 
-  /* ---------- Bucle: los pasos van a intervalo fijo y el dibujo a cada cuadro ---------- */
+  /* ---------- Loop: steps run at a fixed interval, drawing on every frame ---------- */
 
-  function bucle(ahora) {
-    const animandoChoque = estado === 'fin' && ahora - finEn < SNAKE.duracionChoque;
-    if (estado !== 'jugando' && !animandoChoque) {
-      cuadro = 0;
-      dibujar(ahora);
+  function loop(now) {
+    const animatingCrash = state === 'over' && now - endedAt < SNAKE.crashDuration;
+    if (state !== 'playing' && !animatingCrash) {
+      frame = 0;
+      draw(now);
       return;
     }
 
-    if (estado === 'jugando') {
-      acumulado += Math.min(ahora - ultimoTiempo, 250);   // si la pestaña se trabó, no da saltos enormes
-      ultimoTiempo = ahora;
-      while (acumulado >= intervalo && estado === 'jugando') {
-        acumulado -= intervalo;
-        paso(ahora);
+    if (state === 'playing') {
+      accumulated += Math.min(now - lastTime, 250);   // if the tab froze, avoid huge jumps
+      lastTime = now;
+      while (accumulated >= interval && state === 'playing') {
+        accumulated -= interval;
+        step(now);
       }
     }
-    dibujar(ahora);
-    cuadro = requestAnimationFrame(bucle);
+    draw(now);
+    frame = requestAnimationFrame(loop);
   }
 
-  function arrancarBucle() {
-    ultimoTiempo = performance.now();
-    acumulado = 0;
-    if (!cuadro) cuadro = requestAnimationFrame(bucle);
+  function startLoop() {
+    lastTime = performance.now();
+    accumulated = 0;
+    if (!frame) frame = requestAnimationFrame(loop);
   }
 
-  /* ---------- Dibujo ---------- */
+  /* ---------- Drawing ---------- */
 
-  // Rectángulo en pixeles del tablero; se redondea a pixeles reales para que los bordes queden nítidos
-  function rect(x, y, ancho, alto, color) {
-    const x0 = Math.round(x * escala);
-    const y0 = Math.round(y * escala);
+  // Rectangle in board pixels; rounded to real pixels to keep the edges sharp
+  function rect(x, y, width, height, color) {
+    const x0 = Math.round(x * scale);
+    const y0 = Math.round(y * scale);
     ctx.fillStyle = color;
-    ctx.fillRect(x0, y0, Math.round((x + ancho) * escala) - x0, Math.round((y + alto) * escala) - y0);
+    ctx.fillRect(x0, y0, Math.round((x + width) * scale) - x0, Math.round((y + height) * scale) - y0);
   }
 
-  // girar: convierte (x, y) del dibujo original a la dirección que se quiere
-  function sprite({ paleta, filas }, x0, y0, girar = (x, y) => [x, y], colorFijo = null) {
-    filas.forEach((fila, y) => {
-      [...fila].forEach((letra, x) => {
-        if (!paleta[letra]) return;
-        const [gx, gy] = girar(x, y);
-        rect(x0 + gx, y0 + gy, 1, 1, colorFijo && letra === 'H' ? colorFijo : paleta[letra]);
+  // rotate: converts (x, y) of the original drawing to the wanted direction
+  function sprite({ palette, rows }, x0, y0, turn = (x, y) => [x, y], fixedColor = null) {
+    rows.forEach((row, y) => {
+      [...row].forEach((letter, x) => {
+        if (!palette[letter]) return;
+        const [gx, gy] = turn(x, y);
+        rect(x0 + gx, y0 + gy, 1, 1, fixedColor && letter === 'H' ? fixedColor : palette[letter]);
       });
     });
   }
 
-  const GIROS = {
-    derecha: (x, y) => [x, y],
-    izquierda: (x, y) => [7 - x, y],
-    abajo: (x, y) => [7 - y, x],
-    arriba: (x, y) => [y, 7 - x],
+  const ROTATIONS = {
+    right: (x, y) => [x, y],
+    left: (x, y) => [7 - x, y],
+    down: (x, y) => [7 - y, x],
+    up: (x, y) => [y, 7 - x],
   };
 
-  function dibujar(ahora = performance.now()) {
-    if (!culebra) return;
-    const L = SNAKE.lado;
+  function draw(now = performance.now()) {
+    if (!snake) return;
+    const L = SNAKE.cell;
 
-    // Tablero a cuadros muy suaves
-    for (let y = 0; y < SNAKE.filas; y++) {
-      for (let x = 0; x < SNAKE.columnas; x++) {
-        rect(x * L, y * L, L, L, FONDO_TABLERO[(x + y) % 2]);
+    // Very soft checkered board
+    for (let y = 0; y < SNAKE.rows; y++) {
+      for (let x = 0; x < SNAKE.columns; x++) {
+        rect(x * L, y * L, L, L, BOARD_COLORS[(x + y) % 2]);
       }
     }
 
-    // El bug se mueve un poquito, como si caminara
+    // The bug moves a little, as if walking
     if (bug) {
-      const meneo = estado === 'jugando' && Math.floor(ahora / 220) % 2 ? 1 : 0;
-      sprite(SPRITES_SNAKE.bug, bug.x * L, bug.y * L - meneo * 0.5);
+      const wiggle = state === 'playing' && Math.floor(now / 220) % 2 ? 1 : 0;
+      sprite(SNAKE_SPRITES.bug, bug.x * L, bug.y * L - wiggle * 0.5);
     }
 
-    dibujarCulebra(ahora);
-    dibujarFlotantes(ahora);
+    drawSnake(now);
+    drawFloaters(now);
   }
 
-  function dibujarCulebra(ahora) {
-    // Al chocar parpadea en rojo y blanco
-    const chocada = estado === 'fin' && ahora - finEn < SNAKE.duracionChoque;
-    const colorChoque = chocada ? (Math.floor((ahora - finEn) / 100) % 2 ? '#ffffff' : '#ff5c5c') : null;
-    const L = SNAKE.lado;
+  function drawSnake(now) {
+    // After crashing it blinks red and white
+    const crashed = state === 'over' && now - endedAt < SNAKE.crashDuration;
+    const crashColor = crashed ? (Math.floor((now - endedAt) / 100) % 2 ? '#ffffff' : '#ff5c5c') : null;
+    const L = SNAKE.cell;
 
-    // Del final a la cabeza, para que la cabeza quede encima
-    for (let i = culebra.length - 1; i >= 1; i--) {
-      const parte = culebra[i];
-      const siguiente = culebra[i - 1];          // la parte que va delante (hacia la cabeza)
-      const color = COLORES_CUERPO[i % 2];
-      const claro = colorChoque || color.claro;
-      const sombra = colorChoque || color.sombra;
-      const esCola = i === culebra.length - 1;
-      const borde = esCola ? 2 : 1;               // la cola es más delgada
-      const px = parte.x * L;
-      const py = parte.y * L;
+    // From tail to head, so the head ends up on top
+    for (let i = snake.length - 1; i >= 1; i--) {
+      const part = snake[i];
+      const ahead = snake[i - 1];          // the part in front (towards the head)
+      const color = BODY_COLORS[i % 2];
+      const light = crashColor || color.light;
+      const shadow = crashColor || color.shadow;
+      const isTail = i === snake.length - 1;
+      const inset = isTail ? 2 : 1;               // the tail is thinner
+      const px = part.x * L;
+      const py = part.y * L;
 
-      rect(px + borde, py + borde, L - 2 * borde, L - 2 * borde, claro);
-      rect(px + borde, py + L - borde - 1, L - 2 * borde, 1, sombra);
+      rect(px + inset, py + inset, L - 2 * inset, L - 2 * inset, light);
+      rect(px + inset, py + L - inset - 1, L - 2 * inset, 1, shadow);
 
-      // Puente hasta la parte de adelante, para que el cuerpo se vea seguido
-      const dx = siguiente.x - parte.x;
-      const dy = siguiente.y - parte.y;
-      if (dx === 1) rect(px + L - borde, py + borde, borde + 1, L - 2 * borde, claro);
-      if (dx === -1) rect(px - 1, py + borde, borde + 1, L - 2 * borde, claro);
-      if (dy === 1) rect(px + borde, py + L - borde, L - 2 * borde, borde + 1, claro);
-      if (dy === -1) rect(px + borde, py - 1, L - 2 * borde, borde + 1, claro);
+      // Bridge to the part in front, so the body looks continuous
+      const dx = ahead.x - part.x;
+      const dy = ahead.y - part.y;
+      if (dx === 1) rect(px + L - inset, py + inset, inset + 1, L - 2 * inset, light);
+      if (dx === -1) rect(px - 1, py + inset, inset + 1, L - 2 * inset, light);
+      if (dy === 1) rect(px + inset, py + L - inset, L - 2 * inset, inset + 1, light);
+      if (dy === -1) rect(px + inset, py - 1, L - 2 * inset, inset + 1, light);
     }
 
-    const cabeza = culebra[0];
-    const hx = cabeza.x * L;
-    const hy = cabeza.y * L;
+    const head = snake[0];
+    const hx = head.x * L;
+    const hy = head.y * L;
 
-    // La lengua sale y entra mientras se mueve
-    if (estado === 'jugando' && Math.floor(ahora / 260) % 3 === 0) {
-      const LENGUA = {
-        derecha: [hx + L, hy + 3.5, 3, 1],
-        izquierda: [hx - 3, hy + 3.5, 3, 1],
-        abajo: [hx + 3.5, hy + L, 1, 3],
-        arriba: [hx + 3.5, hy - 3, 1, 3],
+    // The tongue flicks in and out while moving
+    if (state === 'playing' && Math.floor(now / 260) % 3 === 0) {
+      const TONGUE = {
+        right: [hx + L, hy + 3.5, 3, 1],
+        left: [hx - 3, hy + 3.5, 3, 1],
+        down: [hx + 3.5, hy + L, 1, 3],
+        up: [hx + 3.5, hy - 3, 1, 3],
       };
-      rect(...LENGUA[direccion], '#ff5c7a');
+      rect(...TONGUE[direction], '#ff5c7a');
     }
 
-    sprite(SPRITES_SNAKE.cabeza, hx, hy, GIROS[direccion], colorChoque);
+    sprite(SNAKE_SPRITES.head, hx, hy, ROTATIONS[direction], crashColor);
   }
 
-  function dibujarFlotantes(ahora) {
-    const DURACION = 650;
-    flotantes = flotantes.filter((f) => ahora - f.desde < DURACION);
-    if (!flotantes.length) return;
+  function drawFloaters(now) {
+    const DURATION = 650;
+    floaters = floaters.filter((f) => now - f.since < DURATION);
+    if (!floaters.length) return;
 
     ctx.save();
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
-    ctx.font = `${Math.round(6 * escala)}px 'Press Start 2P', monospace`;
-    for (const f of flotantes) {
-      const avance = (ahora - f.desde) / DURACION;
-      ctx.globalAlpha = 1 - avance * avance;
+    ctx.font = `${Math.round(6 * scale)}px 'Press Start 2P', monospace`;
+    for (const f of floaters) {
+      const progress = (now - f.since) / DURATION;
+      ctx.globalAlpha = 1 - progress * progress;
       ctx.fillStyle = '#ffffff';
-      ctx.fillText(f.texto, f.x * escala, (f.y - 1 - avance * 7) * escala);
+      ctx.fillText(f.text, f.x * scale, (f.y - 1 - progress * 7) * scale);
     }
     ctx.restore();
   }
 
-  /* ---------- Lo que usa la consola ---------- */
+  /* ---------- What the console uses ---------- */
 
-  // El lienzo tiene tantos pixeles como la pantalla (también en pantallas de alta densidad)
-  function redimensionar() {
-    const ancho = lienzo.clientWidth;
-    if (!ancho) return;
-    const densidad = window.devicePixelRatio || 1;
-    lienzo.width = Math.round(ancho * densidad);
-    lienzo.height = Math.round((ancho * altoTablero / anchoTablero) * densidad);
-    escala = lienzo.width / anchoTablero;
+  // The canvas has as many pixels as the screen (also on high density screens)
+  function resize() {
+    const width = canvas.clientWidth;
+    if (!width) return;
+    const density = window.devicePixelRatio || 1;
+    canvas.width = Math.round(width * density);
+    canvas.height = Math.round((width * boardHeight / boardWidth) * density);
+    scale = canvas.width / boardWidth;
     ctx.imageSmoothingEnabled = false;
-    dibujar();
+    draw();
   }
 
-  function iniciar() {
-    preparar();
-    estado = 'jugando';
-    avisar('sonar', 'inicio');
-    arrancarBucle();
+  function start() {
+    reset();
+    state = 'playing';
+    emit('playSound', 'start');
+    startLoop();
   }
 
-  function pausar() {
-    if (estado !== 'jugando') return;
-    estado = 'pausa';
+  function pause() {
+    if (state !== 'playing') return;
+    state = 'paused';
   }
 
-  function reanudar() {
-    if (estado !== 'pausa') return;
-    estado = 'jugando';
-    arrancarBucle();
+  function resume() {
+    if (state !== 'paused') return;
+    state = 'playing';
+    startLoop();
   }
 
-  // Los giros se guardan en fila (máximo 3) para que dos teclas rápidas no se pierdan.
-  // No se puede devolver sobre sí misma.
-  function girar(nueva) {
-    if (estado !== 'jugando' || !VECTORES[nueva]) return;
-    const anterior = giros.length ? giros[giros.length - 1] : direccion;
-    if (nueva === anterior || nueva === OPUESTA[anterior] || giros.length >= 3) return;
-    giros.push(nueva);
+  // Turns are queued (3 at most) so two quick keys are not lost.
+  // It cannot turn back on itself.
+  function turn(next) {
+    if (state !== 'playing' || !VECTORS[next]) return;
+    const previous = turns.length ? turns[turns.length - 1] : direction;
+    if (next === previous || next === OPPOSITE[previous] || turns.length >= 3) return;
+    turns.push(next);
   }
 
-  // codigo: KeyboardEvent.code. Devuelve true si la tecla es del juego (la consola no la usa para nada más)
-  function tecla(codigo, presionada) {
-    const direccion = TECLAS_SNAKE[codigo];
-    if (!direccion) return false;
-    if (presionada) girar(direccion);
+  // code: KeyboardEvent.code. Returns true if the key belongs to the game (the console then ignores it)
+  function key(code, pressed) {
+    const direction = SNAKE_KEYS[code];
+    if (!direction) return false;
+    if (pressed) turn(direction);
     return true;
   }
 
-  // La cruceta y el deslizar del dedo: gira al apretar (soltar no hace nada)
-  function mando(boton, presionado) {
-    if (presionado) girar(boton);
+  // The d-pad and swiping: turns on press (release does nothing)
+  function press(button, pressed) {
+    if (pressed) turn(button);
   }
 
-  preparar();
+  reset();
 
   return {
-    get estado() { return estado; },
-    get puntaje() { return puntaje; },
-    iniciar,
-    pausar,
-    reanudar,
-    girar,
-    tecla,
-    mando,
-    redimensionar,
-    dibujar,
+    get state() { return state; },
+    get score() { return score; },
+    start,
+    pause,
+    resume,
+    key,
+    press,
+    resize,
+    draw,
   };
 }
 
 
-/* ---------- La ficha del juego para la consola ---------- */
+/* ---------- The game's cartridge for the console ---------- */
 
-const JUEGO_SNAKE = {
+const SNAKE_CARTRIDGE = {
   id: 'snake',
-  nombre: 'Snake',
-  marcador: 'puntos',
-  crear: (lienzo, avisos) => crearSnake(lienzo, avisos),
-  portada: {
-    texto: 'Atrapa los bugs y no choques',
-    items: () => `<span class="capa__item"><span class="capa__sprite">${dibujarPixeles(SPRITES_SNAKE.bug)}</span>10 pts</span>`,
-    ayudaTeclado: 'Flechas o WASD · P pausa · M sonido',
-    ayudaTactil: 'Cruceta o desliza el dedo',
+  name: 'Snake',
+  scoring: 'points',
+  create: (canvas, events) => createSnake(canvas, events),
+  splash: {
+    text: 'Atrapa los bugs y no choques',
+    items: () => `<span class="overlay__item"><span class="overlay__sprite">${drawPixelArt(SNAKE_SPRITES.bug)}</span>10 pts</span>`,
+    keyboardHelp: 'Flechas o WASD · P pausa · M sonido',
+    touchHelp: 'Cruceta o desliza el dedo',
   },
-  fin: { titulo: 'Fin del juego', sinPuntos: 'Ni un bug esta vez. ¡Otra!' },
+  end: { title: 'Fin del juego', noPoints: 'Ni un bug esta vez. ¡Otra!' },
 };

@@ -1,12 +1,12 @@
 /* =============================================
-   DIBUJOS SVG
-   Íconos, monstruos de los ponentes, escudo y el monstruo del Carnet de Asustador.
-   Los íconos usan "currentColor", así que su color se cambia con CSS (color: ...).
+   SVG DRAWINGS
+   Icons, speaker monsters, the crest and the Scarer ID card monster.
+   Icons use "currentColor", so CSS sets their color (color: ...).
    ============================================= */
 
-const ICONOS = {
-  // Ojo con cuernos: la marca de la página
-  ojo: `<svg viewBox="0 0 24 24" aria-hidden="true">
+const ICONS = {
+  // Eye with horns: the site's mark
+  eye: `<svg viewBox="0 0 24 24" aria-hidden="true">
     <path d="M7.5 7.5 5 2.5l5 3.6M16.5 7.5l2.5-5-5 3.6" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
     <ellipse cx="12" cy="14" rx="10" ry="7" fill="none" stroke="currentColor" stroke-width="2.4"/>
     <circle cx="12" cy="14" r="3.8" fill="currentColor"/>
@@ -16,47 +16,47 @@ const ICONOS = {
     <path d="M12 21s-7-6.3-7-12a7 7 0 0 1 14 0c0 5.7-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/>
   </svg>`,
 
-  simultanea: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  overlap: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M7 4 3 8l4 4M3 8h14M17 12l4 4-4 4M21 16H7"/>
   </svg>`,
 
-  flecha: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  arrow: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M5 12h14M13 6l6 6-6 6"/>
   </svg>`,
 
-  calendario: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  calendar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/>
   </svg>`,
 
-  reloj: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
   </svg>`,
 
-  // Un ícono por tipo de actividad (campo icono de TIPOS en data.js)
-  microfono: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  // One icon per activity type (icon field of ACTIVITY_TYPES in data.js)
+  microphone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/>
   </svg>`,
-  taller: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  workshop: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <rect x="4" y="4.5" width="16" height="11" rx="1.5"/><path d="M2 19.5h20M10 8.5 8 10l2 1.5M14 8.5l2 1.5-2 1.5"/>
   </svg>`,
-  trofeo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  trophy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v3.5M8 20.5h8M9.5 17.5h5"/>
   </svg>`,
-  personas: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  people: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <circle cx="9" cy="8" r="3"/><path d="M3.5 19.5a5.5 5.5 0 0 1 11 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14a4.5 4.5 0 0 1 5 4.5"/>
   </svg>`,
 
-  // Carnet: tarjeta con una persona y dos renglones (botón "ver carnet" del Sustómetro)
-  carnet: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  // ID card: a card with a person and two lines (the Scare Meter "ver carnet" button)
+  idCard: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <rect x="2.5" y="5" width="19" height="14" rx="2.5"/><circle cx="8.5" cy="11" r="2"/><path d="M5.5 16c.7-1.4 1.8-2 3-2s2.3.6 3 2M14.5 10h4M14.5 13.5h3"/>
   </svg>`,
 
-  // Íconos grandes de las tarjetas de competencias
-  lupa: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+  // Big icons on the competition cards
+  magnifier: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
     <circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6"/>
   </svg>`,
 
-  codigo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  code: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M8 6 2.5 12 8 18M16 6l5.5 6-5.5 6M14 3.5l-4 17"/>
   </svg>`,
 
@@ -64,9 +64,9 @@ const ICONOS = {
     <path d="M5 0h2v2H5zM4 2h2v3H4zM6 3h2v1H6zM2 2h2v1H2zM1 3h1v1H1zM6 5h2v1H6zM7 6h1v2H7zM8 8h1v1H8zM3 5h2v1H3zM2 6h1v2H2zM1 8h1v1H1z"/>
   </svg>`,
 
-  balon: `<svg viewBox="0 0 24 24" aria-hidden="true">
-    <defs><clipPath id="balon-borde"><circle cx="12" cy="12" r="9.5"/></clipPath></defs>
-    <g clip-path="url(#balon-borde)" fill="currentColor">
+  ball: `<svg viewBox="0 0 24 24" aria-hidden="true">
+    <defs><clipPath id="ball-edge"><circle cx="12" cy="12" r="9.5"/></clipPath></defs>
+    <g clip-path="url(#ball-edge)" fill="currentColor">
       <circle cx="12" cy="2.5" r="3.6"/><circle cx="21" cy="9.1" r="3.6"/><circle cx="17.6" cy="19.7" r="3.6"/>
       <circle cx="6.4" cy="19.7" r="3.6"/><circle cx="3" cy="9.1" r="3.6"/>
     </g>
@@ -75,16 +75,16 @@ const ICONOS = {
     <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/>
   </svg>`,
 
-  control: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  gamepad: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M6.5 7.5h11a4.5 4.5 0 0 1 4.4 5.4l-.8 4a2.8 2.8 0 0 1-4.8 1.3L14.5 16h-5l-1.8 2.2a2.8 2.8 0 0 1-4.8-1.3l-.8-4a4.5 4.5 0 0 1 4.4-5.4z"/>
     <path d="M7.5 10.5v4M5.5 12.5h4"/>
     <circle cx="16" cy="11.5" r=".6"/><circle cx="18" cy="13.5" r=".6"/>
   </svg>`,
 };
 
-// Monstruo de un ojo que asoma desde abajo. Si es un misterio, el ojo muestra un "?".
-function dibujarMonstruo(color, esMisterio) {
-  const ojo = esMisterio
+// One-eyed monster peeking from below. If it is a mystery, the eye shows a "?".
+function drawMonster(color, isMystery) {
+  const eye = isMystery
     ? `<text x="60" y="67.5" text-anchor="middle" font-family="Alfa Slab One, serif" font-size="26" fill="#2a2f36">?</text>`
     : `<circle cx="60" cy="60" r="9.5" fill="#1f7fd1"/>
        <circle cx="60" cy="60" r="4.5" fill="#05080c"/>
@@ -96,27 +96,27 @@ function dibujarMonstruo(color, esMisterio) {
     <path d="M14 106V66q0-38 46-38t46 38v40z" fill="${color}" stroke="rgba(0,0,0,.35)" stroke-width="2.5"/>
     <g fill="rgba(0,0,0,.13)"><circle cx="28" cy="72" r="5"/><circle cx="94" cy="82" r="7"/><circle cx="88" cy="45" r="3.5"/></g>
     <circle cx="60" cy="58" r="19" fill="#fff" stroke="#2a2f36" stroke-width="2.5"/>
-    ${ojo}
+    ${eye}
     <path d="M45 85q15 9 30 0" fill="none" stroke="#2a2f36" stroke-width="3" stroke-linecap="round"/>
   </svg>`;
 }
 
-// Escudo de la Semana: laureles, cuernos, un "26" tipo uniforme universitario y una cinta
-function dibujarEscudo() {
-  // Hojas de laurel del lado izquierdo, repartidas sobre un arco.
-  // El lado derecho es el mismo laurel reflejado (scale(-1 1)).
-  let hojas = '';
+// Week crest: laurels, horns, a varsity-style "26" and a ribbon
+function drawCrest() {
+  // Laurel leaves on the left side, spread along an arc.
+  // The right side is the same laurel mirrored (scale(-1 1)).
+  let leaves = '';
   for (let i = 0; i < 9; i++) {
-    const angulo = 116 + i * 14;
-    const x = (100 + 80 * Math.cos(angulo * Math.PI / 180)).toFixed(1);
-    const y = (104 + 80 * Math.sin(angulo * Math.PI / 180)).toFixed(1);
-    hojas += `<ellipse cx="${x}" cy="${y}" rx="11.5" ry="4.6" transform="rotate(${angulo + 128} ${x} ${y})"/>`;
+    const angle = 116 + i * 14;
+    const x = (100 + 80 * Math.cos(angle * Math.PI / 180)).toFixed(1);
+    const y = (104 + 80 * Math.sin(angle * Math.PI / 180)).toFixed(1);
+    leaves += `<ellipse cx="${x}" cy="${y}" rx="11.5" ry="4.6" transform="rotate(${angle + 128} ${x} ${y})"/>`;
   }
 
   return `<svg viewBox="0 0 200 200" aria-hidden="true">
     <g fill="#2a2f36">
-      <g>${hojas}</g>
-      <g transform="translate(200 0) scale(-1 1)">${hojas}</g>
+      <g>${leaves}</g>
+      <g transform="translate(200 0) scale(-1 1)">${leaves}</g>
     </g>
     <g fill="#efe3c4" stroke="#2a2f36" stroke-width="3" stroke-linejoin="round">
       <path d="M64 50c-6-12-12-20-21-26 14 1 24 9 30 20z"/>
@@ -136,10 +136,10 @@ function dibujarEscudo() {
 }
 
 
-/* ---------- Monstruo del Carnet de Asustador ---------- */
+/* ---------- Scarer ID card monster ---------- */
 
-// Opción de cada parte cuando el monstruo no la trae (o trae una que ya no existe)
-const MONSTRUO_POR_DEFECTO = {
+// Option for each part when the monster has none (or one that no longer exists).
+const DEFAULT_MONSTER = {
   estilo: 'masculino',
   cuerpo: 'manchas',
   color: '#1667c2',
@@ -149,11 +149,11 @@ const MONSTRUO_POR_DEFECTO = {
   accesorio: 'ninguno',
 };
 
-// El dibujo de cada opción, por parte (las opciones son las de CATALOGO_MONSTRUO en auth.js).
-// Cada dibujo recibe el color del monstruo y si es Asustadora, y devuelve sus trazos SVG.
-// Para agregar una opción basta con sumarla aquí y en el catálogo.
-const PARTES_MONSTRUO = {
-  // Cuernos o lo que lleve en la cabeza (va detrás del cuerpo)
+// The drawing for each option, per part (the options are those of MONSTER_CATALOG in auth.js).
+// Each drawing receives the monster's color and whether it is feminine, and returns its SVG shapes.
+// To add an option, add it here and in the catalog.
+const MONSTER_PARTS = {
+  // Horns or whatever it wears on its head (goes behind the body)
   cuernos: {
     toro: () => `
       <path d="M36 38C26 26 18 16 12 6c16 2 28 12 34 26z" fill="#efe3c4" stroke="#2a2f36" stroke-width="2.4" stroke-linejoin="round"/>
@@ -188,9 +188,9 @@ const PARTES_MONSTRUO = {
       <ellipse cx="96" cy="36" rx="6" ry="9" transform="rotate(22 96 36)" fill="#ff9eb5"/>`,
   },
 
-  // Silueta del cuerpo y su textura
+  // Body silhouette and texture
   cuerpo: {
-    // Clásico peludo tipo Sulley
+    // Classic furry, Sulley style
     manchas: (color) => `
       <path d="M14 106V64q0-38 46-38t46 38v42z" fill="${color}" stroke="#2a2f36" stroke-width="2.6"/>
       <g fill="rgba(0,0,0,.15)">
@@ -222,7 +222,7 @@ const PARTES_MONSTRUO = {
       </g>`,
   },
 
-  // La Asustadora lleva rubor en las mejillas
+  // The feminine style has blush on the cheeks
   estilo: {
     masculino: () => '',
     femenino: () => `
@@ -230,26 +230,26 @@ const PARTES_MONSTRUO = {
       <ellipse cx="90" cy="70" rx="6.5" ry="3.6" fill="rgba(255,105,140,.45)"/>`,
   },
 
-  // Ojos. Algunos cambian según el estilo: pestañas para la Asustadora, cejas para el Asustador.
+  // Eyes. Some change with the style: eyelashes for feminine, eyebrows for masculine.
   ojos: {
-    ciclope: (color, esFemenino) => `
-      ${esFemenino
+    ciclope: (color, isFeminine) => `
+      ${isFeminine
         ? '<path d="M42 43 L35 36 M49 39 L45 31 M71 39 L75 31 M78 43 L85 36" stroke="#2a2f36" stroke-width="2.6" stroke-linecap="round"/>'
         : '<path d="M42 36 Q60 41 78 36" fill="none" stroke="#2a2f36" stroke-width="3.2" stroke-linecap="round"/>'}
       <circle cx="60" cy="56" r="18.5" fill="#fff" stroke="#2a2f36" stroke-width="2.5"/>
       <circle cx="60" cy="56" r="9.5" fill="#1f7fd1"/>
       <circle cx="60" cy="56" r="4.5" fill="#05080c"/>
       <circle cx="56" cy="52" r="2.6" fill="#fff"/>`,
-    doble: (color, esFemenino) => `
-      ${esFemenino
+    doble: (color, isFeminine) => `
+      ${isFeminine
         ? '<path d="M31 45 L25 39 M37 42 L34 35 M83 42 L86 35 M89 45 L95 39" stroke="#2a2f36" stroke-width="2.4" stroke-linecap="round"/>'
         : '<path d="M31 40 L52 43 M89 40 L68 43" stroke="#2a2f36" stroke-width="3" stroke-linecap="round"/>'}
       <circle cx="44" cy="56" r="12.5" fill="#fff" stroke="#2a2f36" stroke-width="2.4"/>
       <circle cx="44" cy="56" r="6" fill="#1f7fd1"/><circle cx="44" cy="56" r="2.8" fill="#05080c"/><circle cx="41.8" cy="53.5" r="1.7" fill="#fff"/>
       <circle cx="76" cy="56" r="12.5" fill="#fff" stroke="#2a2f36" stroke-width="2.4"/>
       <circle cx="76" cy="56" r="6" fill="#1f7fd1"/><circle cx="76" cy="56" r="2.8" fill="#05080c"/><circle cx="73.8" cy="53.5" r="1.7" fill="#fff"/>`,
-    triple: (color, esFemenino) => `
-      ${esFemenino
+    triple: (color, isFeminine) => `
+      ${isFeminine
         ? '<path d="M24 47 L19 42 M96 47 L101 42 M60 33 L60 27" stroke="#2a2f36" stroke-width="2.3" stroke-linecap="round"/>'
         : ''}
       <circle cx="36" cy="58" r="10" fill="#fff" stroke="#2a2f36" stroke-width="2.2"/>
@@ -303,7 +303,7 @@ const PARTES_MONSTRUO = {
       <line x1="60" y1="85" x2="60" y2="92" stroke="#d23c5a" stroke-width="1.6" stroke-linecap="round"/>`,
   },
 
-  // Accesorios universitarios
+  // College accessories
   accesorio: {
     ninguno: () => '',
     gorra: () => `
@@ -334,28 +334,35 @@ const PARTES_MONSTRUO = {
   },
 };
 
-// Dibuja el monstruo del Carnet de Asustador.
-// monstruo dice qué opción lleva cada parte, por ejemplo { cuerpo: 'rayas', ojos: 'triple', color: '#2f9e5b' }.
-function dibujarMonstruoPersonalizado(monstruo = {}) {
-  const elegido = { ...MONSTRUO_POR_DEFECTO, ...monstruo };
-  const esFemenino = elegido.estilo === 'femenino';
+// Anyone can store any text as their monster's color, and it ends up inside style and SVG attributes.
+function monsterColor(monster) {
+  return /^#[0-9a-f]{6}$/i.test(monster?.color) ? monster.color : DEFAULT_MONSTER.color;
+}
 
-  // La Asustadora "al natural" lleva moño
-  if (esFemenino && elegido.accesorio === 'ninguno') elegido.accesorio = 'mono';
+// Draws the Scarer ID card monster.
+// monster says which option each part uses, for example { cuerpo: 'rayas', ojos: 'triple', color: '#2f9e5b' }.
+function drawCustomMonster(monster = {}) {
+  const chosen = { ...DEFAULT_MONSTER, ...monster };
+  const color = monsterColor(monster);
+  const isFeminine = chosen.estilo === 'femenino';
 
-  const dibujar = (parte) => {
-    const dibujos = PARTES_MONSTRUO[parte];
-    const dibujo = dibujos[elegido[parte]] || dibujos[MONSTRUO_POR_DEFECTO[parte]];
-    return dibujo(elegido.color, esFemenino);
+  // The feminine style "al natural" wears a bow
+  if (isFeminine && chosen.accesorio === 'ninguno') chosen.accesorio = 'mono';
+
+  const draw = (part) => {
+    const drawings = MONSTER_PARTS[part];
+    // hasOwn: a stored value like '__proto__' must not reach a non-function and break the whole table
+    const option = Object.hasOwn(drawings, chosen[part]) ? chosen[part] : DEFAULT_MONSTER[part];
+    return drawings[option](color, isFeminine);
   };
 
-  // De atrás hacia adelante: cada parte se pinta encima de la anterior
+  // Back to front: each part paints over the previous one
   return `<svg viewBox="0 0 120 100" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-    ${dibujar('cuernos')}
-    ${dibujar('cuerpo')}
-    ${dibujar('estilo')}
-    ${dibujar('ojos')}
-    ${dibujar('boca')}
-    ${dibujar('accesorio')}
+    ${draw('cuernos')}
+    ${draw('cuerpo')}
+    ${draw('estilo')}
+    ${draw('ojos')}
+    ${draw('boca')}
+    ${draw('accesorio')}
   </svg>`;
 }

@@ -1,146 +1,144 @@
 /* =============================================
-   LÓGICA DE LA PÁGINA
-   Toma los datos de data.js y arma cada sección.
+   PAGE LOGIC
+   Takes the data from data.js and builds each section.
    ============================================= */
 
 // '09:30' → 9.5
-function enHoras(hora) {
-  const [horas, minutos] = hora.split(':').map(Number);
-  return horas + minutos / 60;
+function toHours(time) {
+  const [hours, minutes] = time.split(':').map(Number);
+  return hours + minutes / 60;
 }
 
-// Quita tildes y mayúsculas para que "futbol" encuentre "Fútbol"
-function normalizar(texto) {
-  return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-}
+// Removes accents and capitals so "futbol" finds "Fútbol"
+const normalize = (text) => stripAccents(text).toLowerCase();
 
 
-/* ---------- Portada ---------- */
+/* ---------- Hero ---------- */
 
-function pintarPortada() {
-  $('#portada-dias').innerHTML = DIAS
-    .map((dia) => `<li>${dia.corto}${dia.fecha ? `<small>${dia.fecha}</small>` : ''}</li>`)
+function renderHero() {
+  $('#hero-days').innerHTML = DAYS
+    .map((day) => `<li>${day.short}${day.date ? `<small>${day.date}</small>` : ''}</li>`)
     .join('');
 }
 
 
-/* ---------- Ponentes ---------- */
+/* ---------- Speakers ---------- */
 
-function pintarPonentes() {
-  $('#ponentes-miniaturas').innerHTML = PONENTES.map((ponente, indice) => `
-    <button class="miniatura" data-indice="${indice}">
-      <span class="miniatura__foto">${retratoDePonente(ponente)}</span>
-      <span class="miniatura__nombre">${ponente.nombre || 'Por anunciar'}</span>
+function renderSpeakers() {
+  $('#speakers-thumbnails').innerHTML = SPEAKERS.map((speaker, index) => `
+    <button class="thumbnail" data-index="${index}">
+      <span class="thumbnail__photo">${speakerPortrait(speaker)}</span>
+      <span class="thumbnail__name">${speaker.name || 'Por anunciar'}</span>
     </button>
   `).join('');
 
-  $('#ponentes-miniaturas').addEventListener('click', (evento) => {
-    const boton = evento.target.closest('.miniatura');
-    if (boton) mostrarCarnet(Number(boton.dataset.indice));
+  $('#speakers-thumbnails').addEventListener('click', (event) => {
+    const button = event.target.closest('.thumbnail');
+    if (button) showIdCard(Number(button.dataset.index));
   });
 
-  // La rotación se pausa mientras el mouse o el foco del teclado están sobre los ponentes.
-  // Al salir vuelve a contar desde cero, así el carnet elegido se ve el tiempo completo.
-  const seccion = $('#ponentes');
-  seccion.addEventListener('mouseenter', pausarCarnets);
-  seccion.addEventListener('mouseleave', rotarCarnets);
-  seccion.addEventListener('focusin', pausarCarnets);
-  seccion.addEventListener('focusout', rotarCarnets);
+  // Rotation pauses while the mouse or keyboard focus is on the speakers.
+  // On leaving it counts from zero again, so the chosen ID card shows for its full time.
+  const section = $('#ponentes');
+  section.addEventListener('mouseenter', pauseIdCards);
+  section.addEventListener('mouseleave', rotateIdCards);
+  section.addEventListener('focusin', pauseIdCards);
+  section.addEventListener('focusout', rotateIdCards);
 
-  mostrarCarnet(0);
-  rotarCarnets();
+  showIdCard(0);
+  rotateIdCards();
 }
 
-// Cada SEGUNDOS_POR_CARNET pasa solo al siguiente ponente (no rota si la persona pidió menos movimiento)
-const SEGUNDOS_POR_CARNET = 7;
-let carnetActual = 0;
-let temporizadorCarnets;
+// Every SECONDS_PER_IDCARD it moves on to the next speaker (no rotation if the person asked for less motion)
+const SECONDS_PER_IDCARD = 7;
+let currentIdCard = 0;
+let idCardTimer;
 
-function rotarCarnets() {
-  pausarCarnets();
+function rotateIdCards() {
+  pauseIdCards();
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  temporizadorCarnets = setInterval(() => {
-    mostrarCarnet((carnetActual + 1) % PONENTES.length);
-  }, SEGUNDOS_POR_CARNET * 1000);
+  idCardTimer = setInterval(() => {
+    showIdCard((currentIdCard + 1) % SPEAKERS.length);
+  }, SECONDS_PER_IDCARD * 1000);
 }
 
-function pausarCarnets() {
-  clearInterval(temporizadorCarnets);
+function pauseIdCards() {
+  clearInterval(idCardTimer);
 }
 
-function mostrarCarnet(indice) {
-  const ponente = PONENTES[indice];
-  carnetActual = indice;
+function showIdCard(index) {
+  const speaker = SPEAKERS[index];
+  currentIdCard = index;
 
-  $$('.miniatura').forEach((boton, i) => boton.setAttribute('aria-pressed', i === indice));
+  $$('.thumbnail').forEach((button, i) => button.setAttribute('aria-pressed', i === index));
 
-  // Si el ponente tiene una actividad, el carnet lleva a la página de esa actividad
-  const actividad = ACTIVIDADES.find((a) => a.ponente === ponente.id);
-  if (!actividad) {
-    cambiarCarnet(carnetDePonente(ponente));
+  // If the speaker has an activity, the ID card links to that activity's page
+  const activity = ACTIVITIES.find((a) => a.speaker === speaker.id);
+  if (!activity) {
+    swapIdCard(speakerIdCard(speaker));
     return;
   }
 
-  const tipo = TIPOS[actividad.tipo].singular.toLowerCase();
-  cambiarCarnet(`
-    <a class="carnet-enlace" href="${enlaceActividad(actividad.id)}" aria-label="Ver ${tipo}: ${actividad.titulo}">
-      ${carnetDePonente(ponente)}
-      <span class="carnet-enlace__texto">Ver su ${tipo} ${ICONOS.flecha}</span>
+  const type = ACTIVITY_TYPES[activity.type].singular.toLowerCase();
+  swapIdCard(`
+    <a class="idcard-link" href="${activityLink(activity.id)}" aria-label="Ver ${type}: ${activity.title}">
+      ${speakerIdCard(speaker)}
+      <span class="idcard-link__text">Ver su ${type} ${ICONS.arrow}</span>
     </a>
   `);
 }
 
-// Carnet tipo credencial universitaria. Si el ponente aún no se ha anunciado, sale "Clasificado",
-// y si su participación no está confirmada, "Por confirmar".
-// --letras ajusta el tamaño del nombre para que quepa en el carnet.
-function carnetDePonente(ponente) {
-  const esMisterio = !ponente.nombre;
-  const nombre = ponente.nombre || '· · ·';
-  let sello = '';
-  if (esMisterio) sello = '<span class="carnet__sello">Clasificado</span>';
-  else if (ponente.porConfirmar) sello = '<span class="carnet__sello carnet__sello--pendiente">Por confirmar</span>';
+// College-style ID card. A speaker not announced yet shows "Clasificado",
+// and an unconfirmed one, "Por confirmar".
+// --letters adjusts the name's size so it fits on the card.
+function speakerIdCard(speaker) {
+  const isMystery = !speaker.name;
+  const name = speaker.name || '· · ·';
+  let stamp = '';
+  if (isMystery) stamp = '<span class="idcard__stamp">Clasificado</span>';
+  else if (speaker.unconfirmed) stamp = '<span class="idcard__stamp idcard__stamp--pending">Por confirmar</span>';
 
   return `
-    <article class="carnet ${esMisterio ? 'carnet--misterio' : ''}">
-      <div class="carnet__escudo">${dibujarEscudo()}</div>
-      <div class="carnet__marca">
-        <span class="carnet__semana">Semana</span>
-        <span class="carnet__sistemas">— de sistemas —</span>
+    <article class="idcard ${isMystery ? 'idcard--mystery' : ''}">
+      <div class="idcard__crest">${drawCrest()}</div>
+      <div class="idcard__brand">
+        <span class="idcard__week">Semana</span>
+        <span class="idcard__systems">— de sistemas —</span>
       </div>
-      <div class="carnet__nombre" style="--letras: ${nombre.length}">${nombre}</div>
-      <div class="carnet__cargo">${ponente.cargo}</div>
-      <div class="carnet__franja">${ponente.credencial}</div>
-      <div class="carnet__foto">
-        ${retratoDePonente(ponente)}
-        ${sello}
+      <div class="idcard__name" style="--letters: ${name.length}">${name}</div>
+      <div class="idcard__role">${speaker.role}</div>
+      <div class="idcard__band">${speaker.credential}</div>
+      <div class="idcard__photo">
+        ${speakerPortrait(speaker)}
+        ${stamp}
       </div>
     </article>
   `;
 }
 
-// El carnet que está sale despacio hacia la izquierda y el nuevo entra desde la derecha.
-// turnoCarnet evita que un cambio viejo pise a uno más nuevo si se hace clic muy seguido.
-let turnoCarnet = 0;
+// The current ID card slides out slowly to the left and the new one comes in from the right.
+// idCardTurn keeps an old change from overwriting a newer one on quick clicks.
+let idCardTurn = 0;
 
-function cambiarCarnet(html) {
-  const contenedor = $('#ponentes-carnet');
-  const anterior = contenedor.firstElementChild;
-  const turno = ++turnoCarnet;
+function swapIdCard(html) {
+  const container = $('#speakers-idcard');
+  const previous = container.firstElementChild;
+  const turn = ++idCardTurn;
 
-  if (!anterior || matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    contenedor.innerHTML = html;
+  if (!previous || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    container.innerHTML = html;
     return;
   }
 
-  anterior.getAnimations().forEach((animacion) => animacion.cancel());
-  anterior.animate(
+  previous.getAnimations().forEach((animation) => animation.cancel());
+  previous.animate(
     [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateX(-40px)' }],
     { duration: 600, easing: 'ease-in', fill: 'forwards' },
   );
   setTimeout(() => {
-    if (turno !== turnoCarnet) return;
-    contenedor.innerHTML = html;
-    contenedor.firstElementChild.animate(
+    if (turn !== idCardTurn) return;
+    container.innerHTML = html;
+    container.firstElementChild.animate(
       [{ opacity: 0, transform: 'translateX(40px)' }, { opacity: 1, transform: 'none' }],
       { duration: 900, easing: 'ease-out' },
     );
@@ -148,473 +146,473 @@ function cambiarCarnet(html) {
 }
 
 
-/* ---------- Horario ---------- */
+/* ---------- Schedule ---------- */
 
-// El horario se guarda en sessionStorage (dura mientras la pestaña esté abierta) para que,
-// al entrar a una actividad y volver, siga como estaba: mismo día, pestaña, búsqueda o vista de semana.
-const CLAVE_HORARIO = 'horario';
+// The schedule is kept in sessionStorage (lasts while the tab is open) so that, on opening an
+// activity and coming back, it stays as it was: same day, tab, search or week view.
+const SCHEDULE_KEY = 'schedule';
 
-function leerHorarioGuardado() {
+function readSavedSchedule() {
   try {
-    const guardado = JSON.parse(sessionStorage.getItem(CLAVE_HORARIO)) || {};
-    // Si cambiaron los datos y ese día o esa pestaña ya no existen, se usan los de siempre
-    if (!buscarDia(guardado.dia)) delete guardado.dia;
-    if (guardado.tipo !== 'todo' && !TIPOS[guardado.tipo]) delete guardado.tipo;
-    return guardado;
+    const saved = JSON.parse(sessionStorage.getItem(SCHEDULE_KEY)) || {};
+    // If the data changed and that day or tab no longer exists, the defaults are used
+    if (!findDay(saved.day)) delete saved.day;
+    if (saved.type !== 'all' && !ACTIVITY_TYPES[saved.type]) delete saved.type;
+    return saved;
   } catch {
-    return {};   // el navegador no deja usar sessionStorage: el horario arranca como siempre
+    return {};   // the browser blocks sessionStorage: the schedule starts as usual
   }
 }
 
-function guardarHorario() {
+function saveSchedule() {
   try {
-    sessionStorage.setItem(CLAVE_HORARIO, JSON.stringify(estado));
+    sessionStorage.setItem(SCHEDULE_KEY, JSON.stringify(schedule));
   } catch {
-    // sin sessionStorage el horario funciona igual, solo que no se recuerda
+    // without sessionStorage the schedule works the same, it just is not remembered
   }
 }
 
-// Lo que la persona tiene elegido en el horario
-const estado = {
-  dia: DIAS[0].id,   // día seleccionado
-  tipo: 'todo',      // pestaña: 'todo' o una clave de TIPOS
-  busqueda: '',      // texto del buscador
-  verSemana: false,  // true = cuadrícula con toda la semana
-  ...leerHorarioGuardado(),
+// What the person has chosen in the schedule
+const schedule = {
+  day: DAYS[0].id,   // selected day
+  type: 'all',       // tab: 'all' or a key of ACTIVITY_TYPES
+  search: '',        // search box text
+  weekView: false,   // true = grid with the whole week
+  ...readSavedSchedule(),
 };
 
-// Crea los botones del horario y les pone sus eventos (se llama una sola vez)
-function prepararHorario() {
-  $('#horario-dias').innerHTML = DIAS.map((dia, i) => `
-    <button class="dia" data-dia="${dia.id}">
-      <strong>${dia.corto}</strong>
-      <span>${dia.fecha || `Día ${i + 1}`}</span>
+// Creates the schedule buttons and wires their events (called only once)
+function prepareSchedule() {
+  $('#schedule-days').innerHTML = DAYS.map((day, i) => `
+    <button class="day" data-day="${day.id}">
+      <strong>${day.short}</strong>
+      <span>${day.date || `Día ${i + 1}`}</span>
     </button>
   `).join('');
 
-  const pestanas = [{ id: 'todo', nombre: 'Todo', color: '#0a2c52' }];
-  for (const [id, tipo] of Object.entries(TIPOS)) {
-    pestanas.push({ id, nombre: tipo.plural, color: tipo.color, icono: tipo.icono });
+  const tabs = [{ id: 'all', name: 'Todo', color: '#0a2c52' }];
+  for (const [id, type] of Object.entries(ACTIVITY_TYPES)) {
+    tabs.push({ id, name: type.plural, color: type.color, icon: type.icon });
   }
-  // "Todo" lleva un puntito; cada tipo, su icono en su color
-  $('#horario-pestanas').innerHTML = pestanas.map((pestana) => `
-    <button class="pestana" data-tipo="${pestana.id}" style="--color: ${pestana.color}">
-      ${pestana.icono ? ICONOS[pestana.icono] : ''}${pestana.nombre} <span class="pestana__cuenta"></span>
+  // "Todo" has a dot; each type, its icon in its color
+  $('#schedule-tabs').innerHTML = tabs.map((tab) => `
+    <button class="tab" data-type="${tab.id}" style="--color: ${tab.color}">
+      ${tab.icon ? ICONS[tab.icon] : ''}${tab.name} <span class="tab__count"></span>
     </button>
   `).join('');
 
-  $('#horario-dias').addEventListener('click', (evento) => {
-    const boton = evento.target.closest('.dia');
-    if (!boton) return;
-    estado.dia = boton.dataset.dia;
-    estado.verSemana = false;
-    pintarHorario();
+  $('#schedule-days').addEventListener('click', (event) => {
+    const button = event.target.closest('.day');
+    if (!button) return;
+    schedule.day = button.dataset.day;
+    schedule.weekView = false;
+    renderSchedule();
   });
 
-  $('#horario-pestanas').addEventListener('click', (evento) => {
-    const boton = evento.target.closest('.pestana');
-    if (!boton) return;
-    estado.tipo = boton.dataset.tipo;
-    pintarHorario();
+  $('#schedule-tabs').addEventListener('click', (event) => {
+    const button = event.target.closest('.tab');
+    if (!button) return;
+    schedule.type = button.dataset.type;
+    renderSchedule();
   });
 
-  $('#buscador').value = estado.busqueda;   // la búsqueda guardada, si había una
-  $('#buscador').addEventListener('input', (evento) => {
-    estado.busqueda = evento.target.value.trim();
-    pintarHorario();
+  $('#search-input').value = schedule.search;   // the saved search, if there was one
+  $('#search-input').addEventListener('input', (event) => {
+    schedule.search = event.target.value.trim();
+    renderSchedule();
   });
 
-  $('#ver-semana').addEventListener('click', () => {
-    estado.verSemana = !estado.verSemana;
-    pintarHorario();
+  $('#week-toggle').addEventListener('click', () => {
+    schedule.weekView = !schedule.weekView;
+    renderSchedule();
   });
 }
 
-// Vuelve a dibujar el horario según el estado actual (y lo guarda para cuando vuelva)
-function pintarHorario() {
-  guardarHorario();
+// Redraws the schedule from the current state (and saves it for coming back)
+function renderSchedule() {
+  saveSchedule();
 
-  // Paso 1: filtrar por día y búsqueda. Al buscar o ver la semana se usan los tres días.
-  const usarTodosLosDias = estado.busqueda || estado.verSemana;
-  const filtradas = ACTIVIDADES.filter((actividad) =>
-    (usarTodosLosDias || actividad.dia === estado.dia) && coincideConBusqueda(actividad));
+  // Step 1: filter by day and search. Searching or the week view use all three days.
+  const useAllDays = schedule.search || schedule.weekView;
+  const filtered = ACTIVITIES.filter((activity) =>
+    (useAllDays || activity.day === schedule.day) && matchesSearch(activity));
 
-  // Paso 2: filtrar por la pestaña elegida
-  const visibles = filtradas.filter((actividad) => estado.tipo === 'todo' || actividad.tipo === estado.tipo);
+  // Step 2: filter by the chosen tab
+  const visible = filtered.filter((activity) => schedule.type === 'all' || activity.type === schedule.type);
 
-  actualizarBotones(filtradas);
-  actualizarTitulo(visibles.length);
+  updateButtons(filtered);
+  updateTitle(visible.length);
 
-  $('#horario-lista').hidden = estado.verSemana;
-  $('#horario-semana').hidden = !estado.verSemana;
+  $('#schedule-list').hidden = schedule.weekView;
+  $('#schedule-week').hidden = !schedule.weekView;
 
-  if (estado.verSemana) {
-    pintarSemana(visibles);
+  if (schedule.weekView) {
+    renderWeek(visible);
   } else {
-    pintarLista(visibles);
+    renderList(visible);
   }
 }
 
-function coincideConBusqueda(actividad) {
-  if (!estado.busqueda) return true;
+function matchesSearch(activity) {
+  if (!schedule.search) return true;
 
-  const ponente = buscarPonente(actividad.ponente);
-  const texto = [
-    actividad.titulo,
-    TIPOS[actividad.tipo].plural,
-    buscarDia(actividad.dia).nombre,
-    ponente?.nombre,
-    ponente?.cargo,
-    buscarGrupo(actividad.organiza)?.nombre,
-    actividad.lugar,
+  const speaker = findSpeaker(activity.speaker);
+  const text = [
+    activity.title,
+    ACTIVITY_TYPES[activity.type].plural,
+    findDay(activity.day).name,
+    speaker?.name,
+    speaker?.role,
+    findGroup(activity.organizer)?.name,
+    activity.place,
   ].filter(Boolean).join(' ');
 
-  return normalizar(texto).includes(normalizar(estado.busqueda));
+  return normalize(text).includes(normalize(schedule.search));
 }
 
-// Marca el día, la pestaña y el botón "Semana" activos, y cuenta las actividades de cada pestaña
-function actualizarBotones(filtradas) {
-  $$('.dia').forEach((boton) => {
-    const activo = !estado.busqueda && !estado.verSemana && boton.dataset.dia === estado.dia;
-    boton.setAttribute('aria-pressed', activo);
+// Marks the active day, tab and "Semana" button, and counts the activities on each tab
+function updateButtons(filtered) {
+  // Scoped: the login dialog's tabs also use .day
+  $$('#schedule-days .day').forEach((button) => {
+    const active = !schedule.search && !schedule.weekView && button.dataset.day === schedule.day;
+    button.setAttribute('aria-pressed', active);
   });
 
-  $$('.pestana').forEach((boton) => {
-    const tipo = boton.dataset.tipo;
-    const cuantas = filtradas.filter((actividad) => tipo === 'todo' || actividad.tipo === tipo).length;
-    boton.querySelector('.pestana__cuenta').textContent = `(${cuantas})`;
-    boton.setAttribute('aria-pressed', tipo === estado.tipo);
-    boton.classList.toggle('pestana--vacia', cuantas === 0);
+  $$('.tab').forEach((button) => {
+    const type = button.dataset.type;
+    const count = filtered.filter((activity) => type === 'all' || activity.type === type).length;
+    button.querySelector('.tab__count').textContent = `(${count})`;
+    button.setAttribute('aria-pressed', type === schedule.type);
+    button.classList.toggle('tab--empty', count === 0);
   });
 
-  $('#ver-semana').setAttribute('aria-pressed', estado.verSemana);
+  $('#week-toggle').setAttribute('aria-pressed', schedule.weekView);
 }
 
-function actualizarTitulo(cantidad) {
-  const actividades = `${cantidad} ${cantidad === 1 ? 'actividad' : 'actividades'}`;
-  let titulo;
-  let subtitulo;
+function updateTitle(count) {
+  const activities = `${count} ${count === 1 ? 'actividad' : 'actividades'}`;
+  const scheduled = `${activities} ${count === 1 ? 'programada' : 'programadas'}`;
+  let title;
+  let subtitle;
 
-  if (estado.busqueda) {
-    titulo = `Resultados para “${estado.busqueda}”`;
-    subtitulo = `${actividades} en toda la semana`;
-  } else if (estado.verSemana) {
-    titulo = 'Toda la semana';
-    subtitulo = `${actividades} programadas`;
+  if (schedule.search) {
+    title = `Resultados para “${schedule.search}”`;
+    subtitle = `${activities} en toda la semana`;
+  } else if (schedule.weekView) {
+    title = 'Toda la semana';
+    subtitle = scheduled;
   } else {
-    const dia = buscarDia(estado.dia);
-    const numero = DIAS.indexOf(dia) + 1;
-    titulo = `Día ${numero} — ${dia.nombre}${dia.fecha ? `, ${dia.fecha}` : ''}`;
-    subtitulo = `${actividades} programadas`;
+    const day = findDay(schedule.day);
+    const number = DAYS.indexOf(day) + 1;
+    title = `Día ${number} — ${day.name}${day.date ? `, ${day.date}` : ''}`;
+    subtitle = scheduled;
   }
 
-  $('#horario-titulo').textContent = titulo;
-  $('#horario-subtitulo').textContent = subtitulo;
+  $('#schedule-title').textContent = title;
+  $('#schedule-subtitle').textContent = subtitle;
 }
 
 
-/* ---------- Horario: vista de lista ---------- */
+/* ---------- Schedule: list view ---------- */
 
-function pintarLista(actividades) {
-  if (actividades.length === 0) {
-    $('#horario-lista').innerHTML = `
-      <li class="horario__vacio">${ICONOS.ojo} Ningún monstruo por aquí. Prueba otra búsqueda o pestaña.</li>
+function renderList(activities) {
+  if (activities.length === 0) {
+    $('#schedule-list').innerHTML = `
+      <li class="schedule__empty">${ICONS.eye} Ningún monstruo por aquí. Prueba otra búsqueda o pestaña.</li>
     `;
     return;
   }
 
-  $('#horario-lista').innerHTML = actividades.map(tarjetaDeActividad).join('');
+  $('#schedule-list').innerHTML = activities.map(activityCard).join('');
 }
 
-function tarjetaDeActividad(actividad) {
-  const tipo = TIPOS[actividad.tipo];
-  const ponente = buscarPonente(actividad.ponente);
-  const grupo = buscarGrupo(actividad.organiza);
-  const simultaneas = buscarSimultaneas(actividad);
+function activityCard(activity) {
+  const type = ACTIVITY_TYPES[activity.type];
+  const speaker = findSpeaker(activity.speaker);
+  const group = findGroup(activity.organizer);
+  const overlapping = findOverlapping(activity);
 
-  // Al buscar se mezclan los tres días, así que se muestra el día de cada actividad
-  const dia = estado.busqueda ? `${buscarDia(actividad.dia).nombre} · ` : '';
+  // Searching mixes all three days, so each activity shows its day
+  const day = schedule.search ? `${findDay(activity.day).name} · ` : '';
 
-  const detalles = [];
-  if (ponente) {
-    detalles.push(`<span><span class="avatar">${retratoDePonente(ponente)}</span>${ponente.nombre || 'Por anunciar'}</span>`);
+  const details = [];
+  if (speaker) {
+    details.push(`<span><span class="avatar">${speakerPortrait(speaker)}</span>${speaker.name || 'Por anunciar'}</span>`);
   }
-  if (grupo) {
-    detalles.push(`<span>${logoDeGrupo(grupo)}Organiza ${grupo.nombre}</span>`);
+  if (group) {
+    details.push(`<span>${groupLogo(group)}Organiza ${group.name}</span>`);
   }
-  if (actividad.lugar) {
-    detalles.push(`<span>${ICONOS.pin}${actividad.lugar}</span>`);
+  if (activity.place) {
+    details.push(`<span>${ICONS.pin}${activity.place}</span>`);
   }
-  if (simultaneas.length > 0) {
-    const nombres = simultaneas.map((otra) => otra.titulo).join(' y ');
-    detalles.push(`<span class="actividad__simultanea">${ICONOS.simultanea}A la vez que ${nombres}</span>`);
+  if (overlapping.length > 0) {
+    const names = overlapping.map((other) => other.title).join(' y ');
+    details.push(`<span class="activity__overlap">${ICONS.overlap}A la vez que ${names}</span>`);
   }
 
-  // La tarjeta lleva el color de su tipo (no el propio de cada competencia) para que el tipo se reconozca.
-  // El enlace del título cubre toda la tarjeta (ver .actividad__titulo a::after en el CSS)
+  // The card uses its type's color (not each competition's own) so the type is recognized.
+  // The title link covers the whole card (see .activity__title a::after in the CSS)
   return `
-    <li class="actividad" style="--color: ${tipo.color}; --fondo: ${tipo.fondo}">
-      <span class="actividad__tipo">${ICONOS[tipo.icono]}${tipo.singular}</span>
-      <h4 class="actividad__titulo"><a href="${enlaceActividad(actividad.id)}">${actividad.titulo}</a></h4>
-      <p class="actividad__hora">${dia}${actividad.inicio} – ${actividad.fin}</p>
-      <div class="actividad__detalles">${detalles.join('')}</div>
-      <span class="actividad__ver">Ver detalles ${ICONOS.flecha}</span>
+    <li class="activity" style="--color: ${type.color}; --bg: ${type.bg}">
+      <span class="activity__type">${ICONS[type.icon]}${type.singular}</span>
+      <h4 class="activity__title"><a href="${activityLink(activity.id)}">${activity.title}</a></h4>
+      <p class="activity__time">${day}${activity.start} – ${activity.end}</p>
+      <div class="activity__details">${details.join('')}</div>
+      <span class="activity__more">Ver detalles ${ICONS.arrow}</span>
     </li>
   `;
 }
 
 
-/* ---------- Horario: vista semanal ---------- */
+/* ---------- Schedule: week view ---------- */
 
-function pintarSemana(visibles) {
-  const idsVisibles = visibles.map((actividad) => actividad.id);
-  const primeraHora = Math.floor(Math.min(...ACTIVIDADES.map((a) => enHoras(a.inicio))));
-  const ultimaHora = Math.ceil(Math.max(...ACTIVIDADES.map((a) => enHoras(a.fin))));
+function renderWeek(visible) {
+  const visibleIds = visible.map((activity) => activity.id);
+  const firstHour = Math.floor(Math.min(...ACTIVITIES.map((a) => toHours(a.start))));
+  const lastHour = Math.ceil(Math.max(...ACTIVITIES.map((a) => toHours(a.end))));
 
-  let horas = '';
-  for (let hora = primeraHora; hora < ultimaHora; hora++) {
-    horas += `<span>${hora}:00</span>`;
+  let hours = '';
+  for (let hour = firstHour; hour < lastHour; hour++) {
+    hours += `<span>${hour}:00</span>`;
   }
 
-  // Una columna por día, con sus actividades repartidas en carriles
-  const columnas = DIAS.map((dia) => {
-    const delDia = ACTIVIDADES.filter((actividad) => actividad.dia === dia.id);
-    const bloques = repartirEnCarriles(delDia)
-      .map((actividad) => bloqueDeActividad(actividad, primeraHora, idsVisibles.includes(actividad.id)))
+  // One column per day, with its activities spread into lanes
+  const columns = DAYS.map((day) => {
+    const ofTheDay = ACTIVITIES.filter((activity) => activity.day === day.id);
+    const blocks = assignLanes(ofTheDay)
+      .map((activity) => activityBlock(activity, firstHour, visibleIds.includes(activity.id)))
       .join('');
-    return `<div class="semana__columna">${bloques}</div>`;
+    return `<div class="week-grid__column">${blocks}</div>`;
   }).join('');
 
-  $('#horario-semana').innerHTML = `
-    <div class="semana__rejilla">
-      <div class="semana__cabecera"></div>
-      ${DIAS.map((dia) => `<div class="semana__cabecera">${dia.nombre}</div>`).join('')}
-      <div class="semana__horas">${horas}</div>
-      ${columnas}
+  $('#schedule-week').innerHTML = `
+    <div class="week-grid__grid">
+      <div class="week-grid__header"></div>
+      ${DAYS.map((day) => `<div class="week-grid__header">${day.name}</div>`).join('')}
+      <div class="week-grid__hours">${hours}</div>
+      ${columns}
     </div>
   `;
 }
 
-// Bloque de una actividad en la cuadrícula. Las que no pasan los filtros salen atenuadas.
-// Las variables --desde, --dura, --carril y --carriles ubican el bloque (ver .bloque en el CSS).
-function bloqueDeActividad(actividad, primeraHora, esVisible) {
-  const tipo = TIPOS[actividad.tipo];
-  const atenuado = esVisible ? '' : 'bloque--atenuado';
-  const angosto = actividad.carriles > 1 ? 'bloque--angosto' : '';   // comparte la hora con otra
-  const posicion = `
-    --desde: ${enHoras(actividad.inicio) - primeraHora};
-    --dura: ${enHoras(actividad.fin) - enHoras(actividad.inicio)};
-    --carril: ${actividad.carril};
-    --carriles: ${actividad.carriles};`;
+// An activity's block on the grid. Those that do not pass the filters look dimmed.
+// The --from, --span, --lane and --lanes variables place the block (see .block in the CSS).
+function activityBlock(activity, firstHour, isVisible) {
+  const type = ACTIVITY_TYPES[activity.type];
+  const dimmed = isVisible ? '' : 'block--dimmed';
+  const narrow = activity.lanes > 1 ? 'block--narrow' : '';   // shares the time with another one
+  const position = `
+    --from: ${toHours(activity.start) - firstHour};
+    --span: ${toHours(activity.end) - toHours(activity.start)};
+    --lane: ${activity.lane};
+    --lanes: ${activity.lanes};`;
 
   return `
-    <a class="bloque ${atenuado} ${angosto}" href="${enlaceActividad(actividad.id)}" title="${actividad.titulo}"
-      style="--color: ${tipo.color}; --fondo: ${tipo.fondo}; ${posicion}">
-      <strong>${actividad.titulo}</strong>
-      <span class="bloque__lugar">${ICONOS.pin}${actividad.lugar || 'Por confirmar'}</span>
-      <span>${actividad.inicio} – ${actividad.fin}</span>
+    <a class="block ${dimmed} ${narrow}" href="${activityLink(activity.id)}" title="${activity.title}"
+      style="--color: ${type.color}; --bg: ${type.bg}; ${position}">
+      <strong>${activity.title}</strong>
+      <span class="block__place">${ICONS.pin}${activity.place || 'Por confirmar'}</span>
+      <span>${activity.start} – ${activity.end}</span>
     </a>
   `;
 }
 
-// Si dos actividades se cruzan, se ponen lado a lado en "carriles" para que no se tapen.
-// Solo se dividen las que se cruzan: el día se parte en grupos de actividades encadenadas
-// por sus horas, y cada grupo tiene sus propios carriles. Una actividad sola ocupa todo el ancho.
-function repartirEnCarriles(actividades) {
-  const resultado = [];
-  let grupo = [];
-  let carrilLibreDesde = []; // hora en que queda libre cada carril del grupo
-  let finDelGrupo = '';      // hora en que termina la última actividad del grupo
+// Activities that overlap go side by side in "lanes" so they do not cover each other.
+// Only those that overlap are split: the day is cut into groups of activities chained by
+// their times, and each group has its own lanes. An activity alone takes the full width.
+function assignLanes(activities) {
+  const result = [];
+  let group = [];
+  let laneFreeAt = [];   // time at which each lane of the group becomes free
+  let groupEnd = '';     // time at which the group's last activity ends
 
-  // Cuando se cierra un grupo ya se sabe cuántos carriles usó: todas sus actividades se dividen igual
-  const cerrarGrupo = () => {
-    grupo.forEach((actividad) => resultado.push({ ...actividad, carriles: carrilLibreDesde.length }));
-    grupo = [];
-    carrilLibreDesde = [];
+  // When a group closes its lane count is known: all its activities split the same way
+  const closeGroup = () => {
+    group.forEach((activity) => result.push({ ...activity, lanes: laneFreeAt.length }));
+    group = [];
+    laneFreeAt = [];
   };
 
-  const enOrden = [...actividades].sort((a, b) => a.inicio.localeCompare(b.inicio));
-  for (const actividad of enOrden) {
-    if (actividad.inicio >= finDelGrupo) cerrarGrupo(); // no se cruza con nada del grupo: empieza otro
+  const sorted = [...activities].sort((a, b) => a.start.localeCompare(b.start));
+  for (const activity of sorted) {
+    if (activity.start >= groupEnd) closeGroup();   // overlaps nothing in the group: another one starts
 
-    let carril = carrilLibreDesde.findIndex((hora) => hora <= actividad.inicio);
-    if (carril === -1) carril = carrilLibreDesde.length; // ninguno libre: se abre otro
-    carrilLibreDesde[carril] = actividad.fin;
-    grupo.push({ ...actividad, carril });
-    if (actividad.fin > finDelGrupo) finDelGrupo = actividad.fin;
+    let lane = laneFreeAt.findIndex((time) => time <= activity.start);
+    if (lane === -1) lane = laneFreeAt.length;   // none free: open another
+    laneFreeAt[lane] = activity.end;
+    group.push({ ...activity, lane });
+    if (activity.end > groupEnd) groupEnd = activity.end;
   }
-  cerrarGrupo();
+  closeGroup();
 
-  return resultado;
+  return result;
 }
 
 
-/* ---------- Competencias ---------- */
+/* ---------- Competitions ---------- */
 
-function pintarCompetencias() {
-  const competencias = ACTIVIDADES.filter((actividad) => actividad.tipo === 'competencia');
+function renderCompetitions() {
+  const competitions = ACTIVITIES.filter((activity) => activity.type === 'competition');
 
-  $('#competencias-lista').innerHTML = competencias.map((actividad) => {
-    const dia = buscarDia(actividad.dia);
-    const grupo = buscarGrupo(actividad.organiza);
+  $('#competitions-list').innerHTML = competitions.map((activity) => {
+    const day = findDay(activity.day);
+    const group = findGroup(activity.organizer);
     return `
-      <a class="competencia" href="${enlaceActividad(actividad.id)}" style="--color: ${actividad.color}">
-        <span class="competencia__imagen">
-          <span class="competencia__dia">${dia.corto}</span>
-          ${ICONOS[actividad.icono]}
+      <a class="competition" href="${activityLink(activity.id)}" style="--color: ${activity.color}">
+        <span class="competition__image">
+          <span class="competition__day">${day.short}</span>
+          ${ICONS[activity.icon]}
         </span>
-        <span class="competencia__titulo">${ICONOS.ojo}${actividad.titulo}</span>
-        <span class="competencia__hora">${dia.nombre} · ${actividad.inicio} – ${actividad.fin}</span>
-        <span class="competencia__resumen">${actividad.resumen}</span>
-        ${grupo ? `<span class="competencia__organiza">${logoDeGrupo(grupo)}Organiza ${grupo.nombre}</span>` : ''}
+        <span class="competition__title">${ICONS.eye}${activity.title}</span>
+        <span class="competition__time">${day.name} · ${activity.start} – ${activity.end}</span>
+        <span class="competition__summary">${activity.summary}</span>
+        ${group ? `<span class="competition__organizer">${groupLogo(group)}Organiza ${group.name}</span>` : ''}
       </a>
     `;
   }).join('');
 }
 
 
-/* ---------- Grupos estudiantiles ---------- */
+/* ---------- Student groups ---------- */
 
-// --letras ajusta el tamaño del nombre para que quepa en el banderín.
-// Si el grupo tiene logo, va como un parche redondo sobre el palo.
-// Si tiene enlace, el banderín es un link que abre su página en otra pestaña.
-function pintarGrupos() {
-  $('#grupos-lista').innerHTML = GRUPOS.map((grupo) => {
-    const etiqueta = grupo.enlace ? 'a' : 'span';
-    const destino = grupo.enlace ? `href="${grupo.enlace}" target="_blank" rel="noopener"` : '';
+// --letters adjusts the name's size so it fits on the pennant.
+// A group with a logo gets it as a round patch on the pole.
+// A group with a link makes the pennant a link that opens its page in another tab.
+function renderGroups() {
+  $('#groups-list').innerHTML = GROUPS.map((group) => {
+    const tag = group.link ? 'a' : 'span';
+    const target = group.link ? `href="${group.link}" target="_blank" rel="noopener"` : '';
     return `
-      <li class="grupo" style="--color: ${grupo.color}; --letras: ${grupo.nombre.length}">
-        <${etiqueta} class="banderin ${grupo.logo ? 'banderin--con-logo' : ''}" ${destino}>
-          <span class="banderin__tela"><span class="banderin__nombre">${grupo.nombre}</span></span>
-          ${grupo.logo ? `<img class="banderin__logo" src="${grupo.logo}" alt="Logo de ${grupo.nombre}">` : ''}
-        </${etiqueta}>
-        <span class="grupo__tipo">${grupo.tipo}</span>
+      <li class="group" style="--color: ${group.color}; --letters: ${group.name.length}">
+        <${tag} class="pennant ${group.logo ? 'pennant--with-logo' : ''}" ${target}>
+          <span class="pennant__cloth"><span class="pennant__name">${group.name}</span></span>
+          ${group.logo ? `<img class="pennant__logo" src="${group.logo}" alt="Logo de ${group.name}">` : ''}
+        </${tag}>
+        <span class="group__type">${group.type}</span>
       </li>
     `;
   }).join('');
 }
 
 
+/* ---------- Gallery ---------- */
 
+const isVideo = (item) => item.file.endsWith('.mp4');
 
-/* ---------- Galería ---------- */
+// Two rows that scroll by themselves in opposite directions; the second starts halfway through the list.
+// Each row carries its photos twice in a row: the animation reaches the middle and restarts
+// with no visible jump (see .gallery__track in the CSS). The copies and the second row are hidden
+// from screen readers and the keyboard, so each photo is announced only once.
+function renderGallery() {
+  const indexes = GALLERY.map((_, i) => i);
+  const middle = Math.ceil(GALLERY.length / 2);
+  const rows = [indexes, [...indexes.slice(middle), ...indexes.slice(0, middle)]];
 
-const esVideo = (item) => item.archivo.endsWith('.mp4');
+  const photos = (order, hidden) => order.map((i) => galleryPhoto(i, hidden)).join('');
 
-// Dos filas que pasan solas en sentidos contrarios; la segunda empieza por la mitad de la lista.
-// Cada fila lleva sus fotos dos veces seguidas: la animación llega a la mitad y vuelve al inicio
-// sin que se note el salto (ver .galeria__pista en el CSS). Las copias y la segunda fila se ocultan
-// a lectores de pantalla y al teclado, para que cada foto se anuncie una sola vez.
-function pintarGaleria() {
-  const indices = GALERIA.map((_, i) => i);
-  const mitad = Math.ceil(GALERIA.length / 2);
-  const filas = [indices, [...indices.slice(mitad), ...indices.slice(0, mitad)]];
-
-  const fotos = (orden, oculta) => orden.map((i) => fotoDeGaleria(i, oculta)).join('');
-
-  $('#galeria-carrusel').innerHTML = filas.map((orden, f) => `
-    <div class="galeria__fila">
-      <div class="galeria__pista">
-        <ul class="galeria__grupo" ${f > 0 ? 'aria-hidden="true"' : ''}>${fotos(orden, f > 0)}</ul>
-        <ul class="galeria__grupo" aria-hidden="true">${fotos(orden, true)}</ul>
+  $('#gallery-carousel').innerHTML = rows.map((order, r) => `
+    <div class="gallery__row">
+      <div class="gallery__track">
+        <ul class="gallery__group" ${r > 0 ? 'aria-hidden="true"' : ''}>${photos(order, r > 0)}</ul>
+        <ul class="gallery__group" aria-hidden="true">${photos(order, true)}</ul>
       </div>
     </div>
   `).join('');
 
-  $('#galeria-cuadricula').innerHTML = fotos(indices, false);
+  $('#gallery-grid').innerHTML = photos(indexes, false);
 
-  $('#galeria').addEventListener('click', (evento) => {
-    const foto = evento.target.closest('.galeria__foto');
-    if (foto) abrirVisor(Number(foto.dataset.indice));
+  $('#galeria').addEventListener('click', (event) => {
+    const photo = event.target.closest('.gallery__photo');
+    if (photo) openViewer(Number(photo.dataset.index));
   });
 
-  $('#galeria-ver-todo').addEventListener('click', () => {
-    const verTodo = $('#galeria-cuadricula').hidden;
-    $('#galeria-cuadricula').hidden = !verTodo;
-    $('#galeria-carrusel').hidden = verTodo;
-    $('#galeria-ver-todo').setAttribute('aria-pressed', verTodo);
-    $('#galeria-ver-todo-texto').textContent = verTodo ? 'Ver carrusel' : 'Ver todo';
+  $('#gallery-toggle').addEventListener('click', () => {
+    const showAll = $('#gallery-grid').hidden;
+    $('#gallery-grid').hidden = !showAll;
+    $('#gallery-carousel').hidden = showAll;
+    $('#gallery-toggle').setAttribute('aria-pressed', showAll);
+    $('#gallery-toggle-text').textContent = showAll ? 'Ver carrusel' : 'Ver todo';
   });
 
-  vigilarVideos();
+  watchVideos();
 }
 
-function fotoDeGaleria(indice, oculta) {
-  const item = GALERIA[indice];
-  const medio = esVideo(item)
-    ? `<video src="${item.archivo}" poster="${item.portada || ''}" muted loop playsinline preload="metadata"
+function galleryPhoto(index, hidden) {
+  const item = GALLERY[index];
+  const media = isVideo(item)
+    ? `<video src="${item.file}" poster="${item.poster || ''}" muted loop playsinline preload="metadata"
         disablepictureinpicture disableremoteplayback></video>`
-    : `<img src="${item.archivo}" alt="" loading="lazy">`;
+    : `<img src="${item.file}" alt="" loading="lazy">`;
   return `
     <li>
-      <button class="galeria__foto" data-indice="${indice}" aria-label="Ampliar: ${item.texto}" ${oculta ? 'tabindex="-1"' : ''}>
-        ${medio}
+      <button class="gallery__photo" data-index="${index}" aria-label="Ampliar: ${item.text}" ${hidden ? 'tabindex="-1"' : ''}>
+        ${media}
       </button>
     </li>
   `;
 }
 
-// Los videos de la galería solo se reproducen mientras se ven en pantalla
-// (y nunca solos si la persona pidió menos movimiento: se ven al ampliarlos).
-function vigilarVideos() {
+// Gallery videos only play while on screen
+// (and never by themselves if the person asked for less motion: they play when enlarged).
+function watchVideos() {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  const vigilante = new IntersectionObserver((entradas) => {
-    entradas.forEach(({ target: video, isIntersecting }) => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(({ target: video, isIntersecting }) => {
       if (isIntersecting) video.play().catch(() => {});
       else video.pause();
     });
   });
-  $$('.galeria video').forEach((video) => vigilante.observe(video));
+  $$('.gallery video').forEach((video) => observer.observe(video));
 }
 
 
-/* ---------- Galería: visor ---------- */
+/* ---------- Gallery: viewer ---------- */
 
-let fotoEnVisor = 0;
+let viewerPhoto = 0;
 
-function abrirVisor(indice) {
-  fotoEnVisor = (indice + GALERIA.length) % GALERIA.length;   // de la última pasa a la primera y al revés
-  const item = GALERIA[fotoEnVisor];
+function openViewer(index) {
+  viewerPhoto = (index + GALLERY.length) % GALLERY.length;   // from the last it goes to the first and back
+  const item = GALLERY[viewerPhoto];
 
-  $('#visor-medio').innerHTML = esVideo(item)
-    ? `<video src="${item.archivo}" poster="${item.portada || ''}" controls autoplay muted loop playsinline
-        disablepictureinpicture disableremoteplayback aria-label="${item.texto}"></video>`
-    : `<img src="${item.archivo}" alt="${item.texto}">`;
-  $('#visor-cuenta').textContent = `${fotoEnVisor + 1} / ${GALERIA.length}`;
+  $('#viewer-media').innerHTML = isVideo(item)
+    ? `<video src="${item.file}" poster="${item.poster || ''}" controls autoplay muted loop playsinline
+        disablepictureinpicture disableremoteplayback aria-label="${item.text}"></video>`
+    : `<img src="${item.file}" alt="${item.text}">`;
+  $('#viewer-count').textContent = `${viewerPhoto + 1} / ${GALLERY.length}`;
 
-  if (!$('#visor').open) $('#visor').showModal();
+  if (!$('#viewer').open) $('#viewer').showModal();
 }
 
-$('#visor-anterior').addEventListener('click', () => abrirVisor(fotoEnVisor - 1));
-$('#visor-siguiente').addEventListener('click', () => abrirVisor(fotoEnVisor + 1));
-$('#visor-cerrar').addEventListener('click', () => $('#visor').close());
+$('#viewer-prev').addEventListener('click', () => openViewer(viewerPhoto - 1));
+$('#viewer-next').addEventListener('click', () => openViewer(viewerPhoto + 1));
+$('#viewer-close').addEventListener('click', () => $('#viewer').close());
 
-// El visor ocupa toda la pantalla: si el clic no cayó en la foto ni en un botón, se cierra
-$('#visor').addEventListener('click', (evento) => {
-  if (evento.target === $('#visor')) $('#visor').close();
+// The viewer takes the whole screen: a click that missed the photo and the buttons closes it
+$('#viewer').addEventListener('click', (event) => {
+  if (event.target === $('#viewer')) $('#viewer').close();
 });
 
-// Flechas del teclado para pasar (salvo en la barra del video, donde adelantan o atrasan)
-$('#visor').addEventListener('keydown', (evento) => {
-  if (evento.target.tagName === 'VIDEO') return;
-  if (evento.key === 'ArrowLeft') abrirVisor(fotoEnVisor - 1);
-  if (evento.key === 'ArrowRight') abrirVisor(fotoEnVisor + 1);
+// Keyboard arrows move on (except on the video bar, where they seek)
+$('#viewer').addEventListener('keydown', (event) => {
+  if (event.target.tagName === 'VIDEO') return;
+  if (event.key === 'ArrowLeft') openViewer(viewerPhoto - 1);
+  if (event.key === 'ArrowRight') openViewer(viewerPhoto + 1);
 });
 
-// Al cerrar se quita el medio para que un video no siga sonando
-$('#visor').addEventListener('close', () => {
-  $('#visor-medio').innerHTML = '';
+// On closing the media is removed so a video does not keep playing
+$('#viewer').addEventListener('close', () => {
+  $('#viewer-media').innerHTML = '';
 });
 
 
-/* ---------- Arranque ---------- */
+/* ---------- Startup ---------- */
 
-pintarPortada();
-pintarPonentes();
-prepararHorario();
-pintarHorario();
-pintarCompetencias();
-pintarGrupos();
-pintarGaleria();
-$('#pie-escudo').innerHTML = dibujarEscudo();
+renderHero();
+renderSpeakers();
+prepareSchedule();
+renderSchedule();
+renderCompetitions();
+renderGroups();
+renderGallery();
+$('#footer-crest').innerHTML = drawCrest();

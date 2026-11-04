@@ -11,20 +11,20 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Cinzel:wght@600;700&family=Graduate&family=Press+Start+2P&family=Share+Tech+Mono&display=swap" crossorigin>
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="pagina-sustometro">
+<body class="scare-meter-page">
 
-  <!-- CABECERA -->
-  <header class="sustometro-portada foto foto--auditorio">
-    <div class="contenedor sustometro-nav">
-      <a class="volver" href="index.html">
+  <!-- HEADER -->
+  <header class="scare-meter-hero photo-bg photo-bg--auditorium">
+    <div class="container scare-meter-nav">
+      <a class="back-link" href="index.html">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
         Volver al inicio
       </a>
 
-      <!-- Barra de sesión arriba a la derecha -->
-      <div class="sesion-barra-nav" id="sesion-barra">
-        <button class="portada__boton portada__boton--sesion" id="btn-abrir-auth" type="button">
-          <span id="sesion-texto">Iniciar sesión</span>
+      <!-- Session bar, top right -->
+      <div class="session-bar-nav">
+        <button class="hero__button hero__button--session" id="btn-open-auth" type="button">
+          <span id="session-text">Iniciar sesión</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
           </svg>
@@ -32,57 +32,57 @@
       </div>
     </div>
 
-    <!-- Mismo estilo que la cabecera de una actividad: dibujos pixel art y título.
-         sustometro.js pone los dibujos. -->
-    <div class="contenedor sustometro-portada__contenido">
-      <div class="evento-portada__adornos" id="sustometro-adornos"></div>
-      <h1 class="evento-portada__titulo">Sustómetro</h1>
-      <p class="sustometro-portada__intro">
+    <!-- Same style as an activity header: pixel art drawings and title.
+         scare-meter.js adds the drawings. -->
+    <div class="container scare-meter-hero__content">
+      <div class="event-hero__decorations" id="scare-meter-decorations"></div>
+      <h1 class="event-hero__title">Sustómetro</h1>
+      <p class="scare-meter-hero__intro">
         Aquí no hay puestos, hay sustos. Quien va de líder deja el tanque lleno hasta arriba y, a medida que bajas en la tabla, el nivel desciende. Toca a una persona para ver sus puntos en el tanque, o el botón del carnet para ver su carnet.
       </p>
-      <a class="enlace-juego" href="#juego-semana">
-        <span class="enlace-juego__flecha" aria-hidden="true">▶</span>
-        Juego de la semana: <strong id="enlace-juego-nombre">Snake</strong>
+      <a class="game-link" href="#juego-semana">
+        <span class="game-link__arrow" aria-hidden="true">▶</span>
+        Juego de la semana: <strong id="game-link-name">Snake</strong>
       </a>
     </div>
   </header>
 
-  <!-- CUERPO PRINCIPAL EN 2 COLUMNAS -->
-  <main class="sustometro-main">
-    <div class="contenedor sustometro-layout">
+  <!-- MAIN BODY, 2 COLUMNS -->
+  <main class="scare-meter-main">
+    <div class="container scare-meter-layout">
 
-      <!-- COLUMNA IZQUIERDA: EL TANQUE DE SUSTOS MONSTERS INC ESTILO SISTEMAS -->
-      <section class="sustometro-col-tanque" aria-label="Visualizador del Tanque de Sustos">
-        <div class="tanque-sticky-wrapper">
-          <div class="estacion-tanque">
+      <!-- LEFT COLUMN: THE SCARE TANK -->
+      <section class="scare-meter-col-tank" aria-label="Visualizador del Tanque de Sustos">
+        <div class="tank-sticky-wrapper">
+          <div class="tank-station">
 
-            <!-- EL TANQUE DE SUSTOS -->
-            <div class="tanque-sustos" id="tanque-sustos">
-              <!-- ASA Y VÁLVULA SUPERIOR -->
-              <div class="tanque__asa-bloque">
-                <div class="tanque__valvula">
-                  <span class="valvula__boquilla"></span>
-                  <span class="valvula__acople"></span>
+            <!-- THE SCARE TANK -->
+            <div class="scare-tank">
+              <!-- TOP HANDLE AND VALVE -->
+              <div class="tank__handle-block">
+                <div class="tank__valve">
+                  <span class="valve__nozzle"></span>
+                  <span class="valve__coupling"></span>
                 </div>
-                <div class="tanque__asa">
-                  <div class="tanque__asa-hueco"></div>
+                <div class="tank__handle">
+                  <div class="tank__handle-hole"></div>
                 </div>
               </div>
 
-              <!-- CÚPULA AMARILLA -->
-              <div class="tanque__cupula"></div>
+              <!-- YELLOW DOME -->
+              <div class="tank__dome"></div>
 
-              <!-- COLLAR NEGRO SUPERIOR -->
-              <div class="tanque__collar tanque__collar--superior">
-                <span class="collar__ranura"></span>
-                <span class="collar__ranura"></span>
-                <span class="collar__ranura"></span>
+              <!-- UPPER BLACK COLLAR -->
+              <div class="tank__collar tank__collar--upper">
+                <span class="collar__slot"></span>
+                <span class="collar__slot"></span>
+                <span class="collar__slot"></span>
               </div>
 
-              <!-- CUERPO AMARILLO INDUSTRIAL CON DETALLES DE SISTEMAS -->
-              <div class="tanque__cuerpo">
-                <!-- PISTAS DE CIRCUITOS DE SISTEMAS (ESTILO SISTEMAS) -->
-                <svg class="tanque__circuitos" viewBox="0 0 260 260" preserveAspectRatio="none" aria-hidden="true">
+              <!-- INDUSTRIAL YELLOW BODY -->
+              <div class="tank__body">
+                <!-- CIRCUIT TRACES -->
+                <svg class="tank__circuits" viewBox="0 0 260 260" preserveAspectRatio="none" aria-hidden="true">
                   <path d="M 25 25 H 70 L 90 45 V 90 L 70 110 H 15" stroke="rgba(0,0,0,0.22)" stroke-width="2.5" fill="none"/>
                   <circle cx="25" cy="25" r="3.5" fill="rgba(0,0,0,0.35)"/>
                   <circle cx="15" cy="110" r="3.5" fill="rgba(0,0,0,0.35)"/>
@@ -100,9 +100,9 @@
                   <circle cx="245" cy="155" r="3.5" fill="rgba(0,0,0,0.35)"/>
                 </svg>
 
-                <!-- STICKERS DE INGENIERÍA DE SISTEMAS: cada uno con su borde blanco de troquel -->
-                <div class="tanque__stickers" aria-hidden="true">
-                  <!-- Sticker 1: Python (dos serpientes, una girada 180°) -->
+                <!-- SYSTEMS ENGINEERING STICKERS: each one has a white die-cut border -->
+                <div class="tank__stickers" aria-hidden="true">
+                  <!-- Sticker 1: Python (two snakes, one rotated 180°) -->
                   <div class="sticker sticker--python" data-sticker="python" title="Python">
                     <svg viewBox="0 0 100 100" class="sticker__svg">
                       <rect x="4" y="4" width="92" height="92" rx="24" fill="#ffffff" stroke="#dfe3e8" stroke-width="2"/>
@@ -134,7 +134,7 @@
                     </svg>
                   </div>
 
-                  <!-- Sticker 3: Git (rombo con una rama) -->
+                  <!-- Sticker 3: Git (diamond with a branch) -->
                   <div class="sticker sticker--git" data-sticker="git" title="Git">
                     <svg viewBox="0 0 100 100" class="sticker__svg">
                       <rect x="17" y="17" width="66" height="66" rx="14" transform="rotate(45 50 50)" fill="#ffffff" stroke="#dfe3e8" stroke-width="2"/>
@@ -149,7 +149,7 @@
                     </svg>
                   </div>
 
-                  <!-- Sticker 4: Ventana de terminal -->
+                  <!-- Sticker 4: Terminal window -->
                   <div class="sticker sticker--terminal" data-sticker="terminal" title="Terminal">
                     <svg viewBox="0 0 110 84" class="sticker__svg">
                       <rect x="4" y="4" width="102" height="76" rx="14" fill="#ffffff" stroke="#dfe3e8" stroke-width="2"/>
@@ -175,91 +175,91 @@
                   </div>
                 </div>
 
-                <!-- VISOR METÁLICO CENTRAL CON GRADUACIÓN Y LÍQUIDO -->
-                <div class="tanque__visor">
-                  <!-- Tornillos en esquinas del marco -->
-                  <span class="visor__tornillo visor__tornillo--tl"></span>
-                  <span class="visor__tornillo visor__tornillo--tr"></span>
-                  <span class="visor__tornillo visor__tornillo--bl"></span>
-                  <span class="visor__tornillo visor__tornillo--br"></span>
+                <!-- CENTRAL METAL GAUGE WITH SCALE AND LIQUID -->
+                <div class="tank__gauge">
+                  <!-- Screws in the frame corners -->
+                  <span class="gauge__screw gauge__screw--tl"></span>
+                  <span class="gauge__screw gauge__screw--tr"></span>
+                  <span class="gauge__screw gauge__screw--bl"></span>
+                  <span class="gauge__screw gauge__screw--br"></span>
 
-                  <!-- Escala de graduación lateral -->
-                  <div class="visor__escala" aria-hidden="true">
-                    <span class="escala__signo escala__signo--mas">+</span>
-                    <span class="escala__marca" style="--p: 100%"></span>
-                    <span class="escala__marca" style="--p: 75%"></span>
-                    <span class="escala__marca" style="--p: 50%"></span>
-                    <span class="escala__marca" style="--p: 25%"></span>
-                    <span class="escala__marca" style="--p: 0%"></span>
-                    <span class="escala__signo escala__signo--menos">-</span>
+                  <!-- Side scale -->
+                  <div class="gauge__scale" aria-hidden="true">
+                    <span class="scale__sign scale__sign--plus">+</span>
+                    <span class="scale__mark" style="--p: 100%"></span>
+                    <span class="scale__mark" style="--p: 75%"></span>
+                    <span class="scale__mark" style="--p: 50%"></span>
+                    <span class="scale__mark" style="--p: 25%"></span>
+                    <span class="scale__mark" style="--p: 0%"></span>
+                    <span class="scale__sign scale__sign--minus">-</span>
                   </div>
 
-                  <!-- Tubo de cristal y líquido rojo/ámbar de susto -->
-                  <div class="visor__tubo" id="tanque-tubo">
-                    <div class="visor__liquido" id="tanque-liquido" style="height: 0%;">
-                      <div class="visor__ola"></div>
-                      <div class="visor__luz"></div>
-                      <span class="visor__burbuja"></span>
-                      <span class="visor__burbuja"></span>
-                      <span class="visor__burbuja"></span>
+                  <!-- Glass tube and red/amber scare liquid -->
+                  <div class="gauge__tube">
+                    <div class="gauge__liquid" id="tank-liquid" style="height: 0%;">
+                      <div class="gauge__wave"></div>
+                      <div class="gauge__light"></div>
+                      <span class="gauge__bubble"></span>
+                      <span class="gauge__bubble"></span>
+                      <span class="gauge__bubble"></span>
                     </div>
 
-                    <!-- Cápsulas / Segmentos de medición como en Monsters Inc -->
-                    <div class="visor__camaras" aria-hidden="true">
-                      <span class="camara__segmento"></span>
-                      <span class="camara__segmento"></span>
-                      <span class="camara__segmento"></span>
-                      <span class="camara__segmento"></span>
-                      <span class="camara__segmento"></span>
+                    <!-- Measuring chambers -->
+                    <div class="gauge__chambers" aria-hidden="true">
+                      <span class="chamber__segment"></span>
+                      <span class="chamber__segment"></span>
+                      <span class="chamber__segment"></span>
+                      <span class="chamber__segment"></span>
+                      <span class="chamber__segment"></span>
                     </div>
 
-                    <div class="visor__vidrio-reflejo" aria-hidden="true"></div>
+                    <div class="gauge__glass-glare" aria-hidden="true"></div>
                   </div>
                 </div>
 
-                <!-- PANTALLA: nombre y puntos de la persona seleccionada -->
-                <div class="tanque__hud">
-                  <span class="hud__nombre" id="hud-nombre">Cargando…</span>
-                  <span class="hud__puntos" id="hud-puntos">0 <small>pts</small></span>
-                  <button type="button" class="hud__admin-btn" id="btn-admin-modificar-puntos" hidden title="Modificar puntos (Supervisor)">
+                <!-- SCREEN: name and points of the selected person -->
+                <div class="tank__hud">
+                  <span class="hud__name" id="hud-name">Cargando…</span>
+                  <span class="hud__points" id="hud-points">0 <small>pts</small></span>
+                  <button type="button" class="hud__admin-btn" id="btn-admin-edit-points" hidden title="Modificar puntos (Supervisor)">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     <span>Editar puntos</span>
                   </button>
                 </div>
               </div>
 
-              <!-- COLLAR NEGRO INFERIOR -->
-              <div class="tanque__collar tanque__collar--inferior">
-                <span class="collar__ranura"></span>
-                <span class="collar__ranura"></span>
-                <span class="collar__ranura"></span>
+              <!-- LOWER BLACK COLLAR -->
+              <div class="tank__collar tank__collar--lower">
+                <span class="collar__slot"></span>
+                <span class="collar__slot"></span>
+                <span class="collar__slot"></span>
               </div>
 
-              <!-- BASE AMARILLA BISELADA -->
-              <div class="tanque__base">
-                <div class="tanque__base-pie"></div>
+              <!-- BEVELED YELLOW BASE -->
+              <div class="tank__base">
+                <div class="tank__base-foot"></div>
               </div>
             </div>
 
-            <!-- LECTURA DE TEXTO ACCESIBLE -->
-            <p class="tanque-lectura" id="sustometro-lectura" aria-live="polite">
+            <!-- ACCESSIBLE TEXT READOUT -->
+            <p class="tank-reading" id="scare-meter-reading" aria-live="polite">
               Consultando la red de asustadores de la facultad…
             </p>
           </div>
         </div>
       </section>
 
-      <!-- COLUMNA DERECHA: TABLA / LISTA DE ASUSTADORES -->
-      <section class="sustometro-col-ranking" aria-label="Lista de Asustadores">
-        <div class="ranking-tarjeta">
-          <div class="ranking-tarjeta__cabecera">
-            <h2 class="ranking-tarjeta__titulo">Asustadores Registrados</h2>
-            <span class="ranking-tarjeta__badge" id="ranking-contador">Cargando…</span>
+      <!-- RIGHT COLUMN: LIST OF SCARERS -->
+      <section class="scare-meter-col-ranking" aria-label="Lista de Asustadores">
+        <div class="ranking-card">
+          <div class="ranking-card__header">
+            <h2 class="ranking-card__title">Asustadores Registrados</h2>
+            <span class="ranking-card__badge" id="ranking-count">Cargando…</span>
           </div>
 
-          <ol class="ranking-lista" id="sustometro-lista">
-            <li class="ranking-vacio">
-              <span class="ranking-cargando-spinner"></span>
+          <ol class="ranking-list" id="scare-meter-list">
+            <li class="ranking-empty">
+              <span class="ranking-spinner"></span>
               <p>Conectando con Supabase…</p>
             </li>
           </ol>
@@ -268,366 +268,366 @@
 
     </div>
 
-    <!-- JUEGO DE LA SEMANA: consola retro y su tabla de récords.
-         La consola la maneja js/juego-semana.js y cada juego va en su propio archivo (js/snake.js).
-         Los textos de los letreros los pone la ficha del juego de la semana. -->
-    <section class="contenedor juego-semana" id="juego-semana" aria-labelledby="juego-semana-titulo">
-      <div class="consola" id="consola" data-estado="listo">
+    <!-- WEEKLY GAME: retro console and its leaderboard.
+         js/weekly-game.js runs the console and each game has its own file (js/snake.js).
+         The overlay texts come from the current game's cartridge. -->
+    <section class="container weekly-game" id="juego-semana" aria-labelledby="weekly-game-title">
+      <div class="console" id="console" data-state="ready">
 
-        <!-- Letrero de arriba, con luces como de maquinita, y los botones para cambiar de semana
-             (los pone juego-semana.js; las semanas bloqueadas solo las abren los supervisores) -->
-        <div class="consola__marquesina">
-          <h2 class="consola__titulo" id="juego-semana-titulo">Juego de la semana</h2>
-          <div class="consola__semanas" id="consola-semanas" role="group" aria-label="Semana"></div>
-          <p class="consola__semana-aviso" id="semana-aviso" role="status" aria-live="polite" hidden></p>
+        <!-- Top sign with arcade lights and the buttons to change week
+             (added by weekly-game.js; only supervisors can open locked weeks) -->
+        <div class="console__marquee">
+          <h2 class="console__title" id="weekly-game-title">Juego de la semana</h2>
+          <div class="console__weeks" id="console-weeks" role="group" aria-label="Semana"></div>
+          <p class="console__week-notice" id="week-notice" role="status" aria-live="polite" hidden></p>
         </div>
 
-        <!-- Marco negro de la pantalla -->
-        <div class="consola__bisel">
-          <div class="consola__bisel-barra" aria-hidden="true">
-            <span class="consola__led"></span>
-            <span>Cartucho · <span id="consola-cartucho">Snake</span></span>
-            <span class="consola__marca">8 bits · Sistemas</span>
+        <!-- Black frame around the screen -->
+        <div class="console__bezel">
+          <div class="console__bezel-bar" aria-hidden="true">
+            <span class="console__led"></span>
+            <span>Cartucho · <span id="console-cartridge">Snake</span></span>
+            <span class="console__brand">8 bits · Sistemas</span>
           </div>
 
-          <div class="consola__pantalla" id="consola-pantalla" tabindex="0"
+          <div class="console__screen" id="console-screen" tabindex="0"
             aria-label="Pantalla del juego. Espacio para empezar, P para pausar.">
-            <div class="consola__hud" aria-hidden="true">
-              <span><span id="hud-etiqueta">PTS</span> <strong id="consola-pts">0000</strong></span>
-              <span class="consola__hud-sonido" id="consola-sonido">♪ ON</span>
-              <span>REC <strong id="consola-rec">0000</strong></span>
+            <div class="console__hud" aria-hidden="true">
+              <span><span id="hud-label">PTS</span> <strong id="console-score">0000</strong></span>
+              <span class="console__hud-sound" id="console-sound">♪ ON</span>
+              <span>REC <strong id="console-record">0000</strong></span>
             </div>
 
-            <div class="consola__tablero">
-              <canvas class="consola__lienzo" id="consola-lienzo" width="160" height="120" role="img"
+            <div class="console__board">
+              <canvas class="console__canvas" id="console-canvas" width="160" height="120" role="img"
                 aria-label="Pantalla del juego"></canvas>
 
-              <!-- Letreros encima del tablero: se ve uno u otro según data-estado de la consola -->
-              <div class="capa capa--inicio">
-                <p class="capa__titulo" id="inicio-titulo"></p>
-                <p class="capa__texto" id="inicio-texto"></p>
-                <div class="capa__items" id="inicio-items"></div>
-                <p class="capa__estado capa__estado--aviso" id="inicio-aviso" role="alert" hidden></p>
-                <p class="capa__parpadeo"><span class="solo-teclado">Clic o Espacio</span><span class="solo-tactil">Presiona A</span></p>
-                <p class="capa__ayuda"><span class="solo-teclado" id="ayuda-teclado"></span><span class="solo-tactil" id="ayuda-tactil"></span></p>
+              <!-- Overlays on top of the board: the console's data-state decides which one shows -->
+              <div class="overlay overlay--start">
+                <p class="overlay__title" id="start-title"></p>
+                <p class="overlay__text" id="start-text"></p>
+                <div class="overlay__items" id="start-items"></div>
+                <p class="overlay__status overlay__status--notice" id="start-notice" role="alert" hidden></p>
+                <p class="overlay__blink"><span class="keyboard-only">Clic o Espacio</span><span class="touch-only">Presiona A</span></p>
+                <p class="overlay__help"><span class="keyboard-only" id="keyboard-help"></span><span class="touch-only" id="touch-help"></span></p>
               </div>
 
-              <div class="capa capa--cargando" role="status">
-                <p class="capa__titulo capa__titulo--cargando">Cargando</p>
-                <div class="capa__barra" aria-hidden="true"><span id="carga-barra"></span></div>
-                <p class="capa__texto" id="carga-texto">0%</p>
+              <div class="overlay overlay--loading" role="status">
+                <p class="overlay__title overlay__title--loading">Cargando</p>
+                <div class="overlay__bar" aria-hidden="true"><span id="load-bar"></span></div>
+                <p class="overlay__text" id="load-text">0%</p>
               </div>
 
-              <div class="capa capa--pausa">
-                <p class="capa__titulo">Pausa</p>
-                <p class="capa__parpadeo"><span class="solo-teclado">Espacio para seguir</span><span class="solo-tactil">A para seguir</span></p>
+              <div class="overlay overlay--paused">
+                <p class="overlay__title">Pausa</p>
+                <p class="overlay__blink"><span class="keyboard-only">Espacio para seguir</span><span class="touch-only">A para seguir</span></p>
               </div>
 
-              <div class="capa capa--fin">
-                <p class="capa__titulo capa__titulo--fin" id="fin-titulo">Fin del juego</p>
-                <p class="capa__puntaje"><span id="fin-etiqueta">Puntaje</span> <strong id="fin-puntaje">0000</strong></p>
-                <p class="capa__detalle" id="fin-detalle" hidden></p>
-                <p class="capa__estado" id="fin-estado" role="status" aria-live="polite"></p>
-                <button class="capa__boton" id="fin-sesion" type="button" hidden>Ingresar</button>
-                <p class="capa__parpadeo"><span class="solo-teclado">Espacio para otra</span><span class="solo-tactil">A para otra</span></p>
+              <div class="overlay overlay--over">
+                <p class="overlay__title overlay__title--over" id="end-title">Fin del juego</p>
+                <p class="overlay__score"><span id="end-label">Puntaje</span> <strong id="end-score">0000</strong></p>
+                <p class="overlay__detail" id="end-detail" hidden></p>
+                <p class="overlay__status" id="end-status" role="status" aria-live="polite"></p>
+                <button class="overlay__button" id="end-login" type="button" hidden>Ingresar</button>
+                <p class="overlay__blink"><span class="keyboard-only">Espacio para otra</span><span class="touch-only">A para otra</span></p>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Controles: cruceta, parlante, botones A / B y, debajo, Start -->
-        <div class="consola__mandos">
-          <div class="cruceta" role="group" aria-label="Cruceta">
-            <button class="cruceta__boton cruceta__boton--arriba" type="button" data-direccion="arriba" aria-label="Arriba"></button>
-            <button class="cruceta__boton cruceta__boton--izquierda" type="button" data-direccion="izquierda" aria-label="Izquierda"></button>
-            <span class="cruceta__centro" aria-hidden="true"></span>
-            <button class="cruceta__boton cruceta__boton--derecha" type="button" data-direccion="derecha" aria-label="Derecha"></button>
-            <button class="cruceta__boton cruceta__boton--abajo" type="button" data-direccion="abajo" aria-label="Abajo"></button>
+        <!-- Controls: d-pad, speaker, A / B buttons and, below them, Start -->
+        <div class="console__controls">
+          <div class="dpad" role="group" aria-label="Cruceta">
+            <button class="dpad__button dpad__button--up" type="button" data-direction="up" aria-label="Arriba"></button>
+            <button class="dpad__button dpad__button--left" type="button" data-direction="left" aria-label="Izquierda"></button>
+            <span class="dpad__center" aria-hidden="true"></span>
+            <button class="dpad__button dpad__button--right" type="button" data-direction="right" aria-label="Derecha"></button>
+            <button class="dpad__button dpad__button--down" type="button" data-direction="down" aria-label="Abajo"></button>
           </div>
 
-          <div class="consola__parlante" aria-hidden="true">
+          <div class="console__speaker" aria-hidden="true">
             <span></span><span></span><span></span><span></span><span></span><span></span>
           </div>
 
-          <div class="consola__botones">
-            <div class="consola__boton-grupo consola__boton-grupo--b" id="boton-b-grupo" hidden>
-              <button class="consola__boton consola__boton--b" id="boton-b" type="button" aria-label="B">B</button>
-              <span class="consola__boton-texto" id="boton-b-texto" aria-hidden="true"></span>
+          <div class="console__buttons">
+            <div class="console__button-group console__button-group--b" id="button-b-group" hidden>
+              <button class="console__button console__button--b" id="button-b" type="button" aria-label="B">B</button>
+              <span class="console__button-label" id="button-b-label" aria-hidden="true"></span>
             </div>
-            <div class="consola__boton-grupo consola__boton-grupo--a">
-              <button class="consola__boton consola__boton--a" id="boton-a" type="button" aria-label="A: jugar o pausar">A</button>
-              <span class="consola__boton-texto" id="boton-a-texto" aria-hidden="true">Jugar</span>
+            <div class="console__button-group console__button-group--a">
+              <button class="console__button console__button--a" id="button-a" type="button" aria-label="A: jugar o pausar">A</button>
+              <span class="console__button-label" id="button-a-label" aria-hidden="true">Jugar</span>
             </div>
           </div>
 
-          <!-- Start, como en las consolas de bolsillo: jugar o pausar en todos los juegos -->
-          <div class="consola__menu">
-            <div class="consola__menu-grupo">
-              <button class="consola__pastilla" id="boton-start" type="button" aria-label="Start: jugar o pausar"></button>
-              <span class="consola__boton-texto" aria-hidden="true">Start</span>
+          <!-- Start, as on handheld consoles: play or pause in every game -->
+          <div class="console__menu">
+            <div class="console__menu-group">
+              <button class="console__pill" id="button-start" type="button" aria-label="Start: jugar o pausar"></button>
+              <span class="console__button-label" aria-hidden="true">Start</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Tabla de récords del juego de la semana (el mejor puntaje de cada persona) -->
-      <aside class="ranking-tarjeta records" aria-labelledby="records-titulo">
-        <div class="ranking-tarjeta__cabecera">
-          <h3 class="ranking-tarjeta__titulo" id="records-titulo">Récords</h3>
-          <span class="ranking-tarjeta__badge" id="records-juego">Snake</span>
+      <!-- Leaderboard of the weekly game (each person's best score) -->
+      <aside class="ranking-card records" aria-labelledby="records-title">
+        <div class="ranking-card__header">
+          <h3 class="ranking-card__title" id="records-title">Récords</h3>
+          <span class="ranking-card__badge" id="records-game">Snake</span>
         </div>
-        <ol class="records__lista" id="records-lista">
-          <li class="ranking-vacio"><span class="ranking-cargando-spinner"></span></li>
+        <ol class="records__list" id="records-list">
+          <li class="ranking-empty"><span class="ranking-spinner"></span></li>
         </ol>
-        <div class="records__mio" id="records-mio"></div>
+        <div class="records__mine" id="records-mine"></div>
       </aside>
     </section>
   </main>
 
-  <!-- PIE DE PÁGINA -->
-  <footer class="pie">
-    <!-- CÓDIGOS: se canjean por títulos para el carnet (js/codigos.js) -->
-    <div class="codigos" id="codigos">
-      <p class="seccion-titulo__antetitulo">Easter eggs y premios</p>
-      <h2 class="codigos__titulo">¿Tienes un código?</h2>
-      <p class="codigos__intro">Cada vez que ganes un código (por encontrar un easter egg, por una competencia…) escríbelo aquí para desbloquear un título nuevo. Luego lo eliges en <strong>Editar carnet</strong>.</p>
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <!-- CODES: redeemed for ID card titles (js/codes.js) -->
+    <div class="codes" id="codigos">
+      <p class="section-title__eyebrow">Easter eggs y premios</p>
+      <h2 class="codes__title">¿Tienes un código?</h2>
+      <p class="codes__intro">Cada vez que ganes un código (por encontrar un easter egg, por una competencia…) escríbelo aquí para desbloquear un título nuevo. Luego lo eliges en <strong>Editar carnet</strong>.</p>
 
-      <form class="codigos__form" id="codigos-form" autocomplete="off">
-        <label class="codigos__campo">
-          <span class="codigos__etiqueta">Código</span>
-          <input type="text" id="codigos-entrada" placeholder="Escribe tu código" maxlength="40"
+      <form class="codes__form" id="codes-form" autocomplete="off">
+        <label class="codes__field">
+          <span class="codes__label">Código</span>
+          <input type="text" id="codes-input" placeholder="Escribe tu código" maxlength="40"
             autocomplete="off" autocapitalize="characters" spellcheck="false">
         </label>
-        <button class="codigos__boton" id="codigos-boton" type="submit">
+        <button class="codes__button" id="codes-button" type="submit">
           <span>Canjear</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
       </form>
 
-      <div class="codigos__mensaje" id="codigos-mensaje" role="status" aria-live="polite" hidden>
-        <span id="codigos-mensaje-texto"></span>
-        <button class="codigos__accion" id="codigos-accion" type="button" hidden></button>
+      <div class="codes__message" id="codes-message" role="status" aria-live="polite" hidden>
+        <span id="codes-message-text"></span>
+        <button class="codes__action" id="codes-action" type="button" hidden></button>
       </div>
 
-      <div class="codigos__coleccion-caja">
-        <p class="codigos__cuenta" id="codigos-cuenta"></p>
-        <div class="codigos__progreso" id="codigos-progreso" hidden><span></span></div>
-        <ul class="codigos__coleccion" id="codigos-coleccion"></ul>
+      <div class="codes__collection-box">
+        <p class="codes__count" id="codes-count"></p>
+        <div class="codes__progress" id="codes-progress" hidden><span></span></div>
+        <ul class="codes__collection" id="codes-collection"></ul>
       </div>
     </div>
 
-    <a class="pie__instagram" href="https://www.instagram.com/sistemasunalmed/" target="_blank" rel="noopener"
+    <a class="site-footer__instagram" href="https://www.instagram.com/sistemasunalmed/" target="_blank" rel="noopener"
       title="Instagram de la representación de Ingeniería de Sistemas">
-      <span class="pie__escudo" id="pie-escudo"></span>
-      <span class="pie__usuario">
+      <span class="site-footer__crest" id="footer-crest"></span>
+      <span class="site-footer__handle">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg>
         @sistemasunalmed
       </span>
     </a>
     <p>Semana de Sistemas · Facultad de Minas · Medellín</p>
-    <p class="pie__autores">Web hecha por <strong>Santiago Escobar Arias</strong> y <strong>Jerónimo Hoyos Botero</strong></p>
+    <p class="site-footer__authors">Web hecha por <strong>Santiago Escobar Arias</strong> y <strong>Jerónimo Hoyos Botero</strong></p>
   </footer>
 
-  <!-- MODAL DE INICIO DE SESIÓN / CARNET DE ASUSTADOR -->
+  <!-- LOGIN MODAL / SCARER ID CARD -->
   <dialog class="auth-modal" id="auth-modal">
-    <div class="auth-modal__caja">
-      <button class="auth-modal__cerrar" id="btn-cerrar-auth" type="button" aria-label="Cerrar ventana">✕</button>
+    <div class="auth-modal__box">
+      <button class="auth-modal__close" id="btn-close-auth" type="button" aria-label="Cerrar ventana">✕</button>
 
-      <div class="auth-modal__cabecera">
-        <div class="auth-modal__ojo" id="auth-icono-ojo"></div>
-        <p class="seccion-titulo__antetitulo">Facultad de Minas · UNAL</p>
-        <h2 class="auth-modal__titulo" id="auth-titulo">Acceso</h2>
+      <div class="auth-modal__header">
+        <div class="auth-modal__eye" id="auth-eye-icon"></div>
+        <p class="section-title__eyebrow">Facultad de Minas · UNAL</p>
+        <h2 class="auth-modal__title" id="auth-title">Acceso</h2>
       </div>
 
-      <!-- Vista cuando NO ha iniciado sesión -->
-      <div id="auth-vista-formulario">
-        <div class="horario__dias auth-modal__tabs" role="tablist">
-          <button class="dia" id="tab-login" type="button" aria-pressed="true">
+      <!-- View when NOT logged in -->
+      <div id="auth-form-view">
+        <div class="schedule__days auth-modal__tabs">
+          <button class="day" id="tab-login" type="button" aria-pressed="true">
             <strong>Ingresar</strong>
           </button>
-          <button class="dia" id="tab-registro" type="button" aria-pressed="false">
+          <button class="day" id="tab-signup" type="button" aria-pressed="false">
             <strong>Crear Carnet</strong>
           </button>
         </div>
 
-        <!-- Creador en vivo del Carnet de Asustador (estilo videojuego) -->
-        <div class="creador-carnet" id="creador-carnet" hidden>
-          <div class="ponentes__carnet creador-carnet__preview" id="preview-carnet-registro"></div>
-          <button class="boton-semana boton-descargar" data-carnet="#preview-carnet-registro" type="button">
+        <!-- Live builder for the Scarer ID card (video game style) -->
+        <div class="idcard-builder" id="idcard-builder" hidden>
+          <div class="speakers__idcard idcard-builder__preview" id="signup-idcard-preview"></div>
+          <button class="week-button download-button" data-idcard="#signup-idcard-preview" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
             <span>Descargar carnet</span>
           </button>
 
-          <div class="creador-carnet__controles">
-            <div class="creador-carnet__barra-top">
-              <span class="creador-carnet__subtitulo">Personaliza tu monstruo</span>
-              <button type="button" class="btn-aleatorio" id="btn-monstruo-random">
+          <div class="idcard-builder__controls">
+            <div class="idcard-builder__top-bar">
+              <span class="idcard-builder__subtitle">Personaliza tu monstruo</span>
+              <button type="button" class="random-button" id="btn-random-monster">
                 Aleatorio
               </button>
             </div>
 
-            <div class="selector-arcade" data-prop="estilo">
-              <span class="selector-arcade__label">Estilo</span>
-              <div class="selector-arcade__control">
-                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
-                <span class="selector-arcade__valor" id="val-estilo">Asustador</span>
-                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+            <div class="arcade-selector" data-prop="estilo">
+              <span class="arcade-selector__label">Estilo</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-estilo">Asustador</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
               </div>
             </div>
 
-            <div class="selector-arcade" data-prop="cuerpo">
-              <span class="selector-arcade__label">Cuerpo</span>
-              <div class="selector-arcade__control">
-                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
-                <span class="selector-arcade__valor" id="val-cuerpo">Peludo Manchas</span>
-                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+            <div class="arcade-selector" data-prop="cuerpo">
+              <span class="arcade-selector__label">Cuerpo</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-cuerpo">Peludo Manchas</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
               </div>
             </div>
 
-            <div class="selector-arcade" data-prop="color">
-              <span class="selector-arcade__label">Color</span>
-              <div class="selector-arcade__control">
-                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
-                <span class="selector-arcade__valor">
-                  <span class="selector-arcade__dot" id="dot-color"></span>
+            <div class="arcade-selector" data-prop="color">
+              <span class="arcade-selector__label">Color</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value">
+                  <span class="arcade-selector__dot" id="dot-color"></span>
                   <span id="val-color">Azul Sulley</span>
                 </span>
-                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
               </div>
             </div>
 
-            <div class="selector-arcade" data-prop="ojos">
-              <span class="selector-arcade__label">Ojos</span>
-              <div class="selector-arcade__control">
-                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
-                <span class="selector-arcade__valor" id="val-ojos">1 Ojo Cíclope</span>
-                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+            <div class="arcade-selector" data-prop="ojos">
+              <span class="arcade-selector__label">Ojos</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-ojos">1 Ojo Cíclope</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
               </div>
             </div>
 
-            <div class="selector-arcade" data-prop="cuernos">
-              <span class="selector-arcade__label">Cabeza</span>
-              <div class="selector-arcade__control">
-                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
-                <span class="selector-arcade__valor" id="val-cuernos">Cuernos Toro</span>
-                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+            <div class="arcade-selector" data-prop="cuernos">
+              <span class="arcade-selector__label">Cabeza</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-cuernos">Cuernos Toro</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
               </div>
             </div>
 
-            <div class="selector-arcade" data-prop="boca">
-              <span class="selector-arcade__label">Boca</span>
-              <div class="selector-arcade__control">
-                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
-                <span class="selector-arcade__valor" id="val-boca">Colmillos</span>
-                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+            <div class="arcade-selector" data-prop="boca">
+              <span class="arcade-selector__label">Boca</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-boca">Colmillos</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
               </div>
             </div>
 
-            <div class="selector-arcade" data-prop="accesorio">
-              <span class="selector-arcade__label">Detalle</span>
-              <div class="selector-arcade__control">
-                <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Anterior">‹</button>
-                <span class="selector-arcade__valor" id="val-accesorio">Al Natural</span>
-                <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Siguiente">›</button>
+            <div class="arcade-selector" data-prop="accesorio">
+              <span class="arcade-selector__label">Detalle</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-accesorio">Al Natural</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
               </div>
             </div>
           </div>
         </div>
 
         <form class="auth-form" id="auth-form">
-          <label class="auth-campo" id="campo-nombre" hidden>
+          <label class="auth-field" id="name-field" hidden>
             <span>Nombre en tu carnet</span>
-            <input type="text" id="auth-nombre" placeholder="Ej. Santiago Escobar" maxlength="28" autocomplete="name">
+            <input type="text" id="auth-name" placeholder="Ej. Santiago Escobar" maxlength="28" autocomplete="name">
           </label>
 
-          <label class="auth-campo">
+          <label class="auth-field">
             <span>Correo institucional</span>
-            <input type="email" id="auth-correo" placeholder="usuario@unal.edu.co" required autocomplete="email">
+            <input type="email" id="auth-email" placeholder="usuario@unal.edu.co" required autocomplete="email">
           </label>
 
-          <label class="auth-campo">
+          <label class="auth-field">
             <span>Contraseña</span>
-            <input type="password" id="auth-clave" placeholder="Mínimo 6 caracteres" minlength="6" required autocomplete="current-password">
+            <input type="password" id="auth-password" placeholder="Mínimo 6 caracteres" minlength="6" required autocomplete="current-password">
           </label>
 
-          <p class="auth-mensaje" id="auth-mensaje" hidden></p>
+          <p class="auth-message" id="auth-message" hidden></p>
 
-          <button class="portada__boton auth-form__submit" id="auth-submit" type="submit">
-            <span id="auth-submit-texto">Entrar</span>
+          <button class="hero__button auth-form__submit" id="auth-submit" type="submit">
+            <span id="auth-submit-text">Entrar</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </button>
         </form>
       </div>
 
-      <!-- Vista cuando YA inició sesión -->
-      <div class="auth-perfil" id="auth-vista-perfil" hidden>
-        <div class="ponentes__carnet creador-carnet__preview" id="perfil-carnet-final"></div>
-        <div class="auth-perfil__acciones">
-          <button class="boton-semana boton-descargar" data-carnet="#perfil-carnet-final" type="button">
+      <!-- View when logged in -->
+      <div class="auth-profile" id="auth-profile-view" hidden>
+        <div class="speakers__idcard idcard-builder__preview" id="profile-idcard"></div>
+        <div class="auth-profile__actions">
+          <button class="week-button download-button" data-idcard="#profile-idcard" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
             <span>Descargar carnet</span>
           </button>
-          <button class="boton-semana boton-editar" id="btn-editar-carnet" type="button">
+          <button class="week-button edit-button" id="btn-edit-idcard" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
             Editar carnet
           </button>
         </div>
-        <p class="auth-perfil__correo" id="perfil-correo"></p>
-        <button class="boton-semana auth-perfil__salir" id="btn-cerrar-sesion" type="button">
+        <p class="auth-profile__email" id="profile-email"></p>
+        <button class="week-button auth-profile__logout" id="btn-logout" type="button">
           Cerrar sesión
         </button>
       </div>
 
-      <!-- Vista para EDITAR el carnet: nombre, título (uno de los desbloqueados) y monstruo.
-           El selector del monstruo (#creador-carnet) se mueve aquí desde el formulario al editar. -->
-      <div class="auth-edicion" id="auth-vista-edicion" hidden>
+      <!-- View to EDIT the ID card: name, title (one of the unlocked ones) and monster.
+           The monster selector (#idcard-builder) moves here from the form while editing. -->
+      <div class="auth-edit" id="auth-edit-view" hidden>
         <div class="auth-form">
-          <label class="auth-campo">
+          <label class="auth-field">
             <span>Nombre en tu carnet</span>
-            <input type="text" id="edit-nombre" maxlength="28" autocomplete="name">
+            <input type="text" id="edit-name" maxlength="28" autocomplete="name">
           </label>
 
-          <div class="selector-arcade" id="selector-titulo">
-            <span class="selector-arcade__label">Título</span>
-            <div class="selector-arcade__control">
-              <button type="button" class="selector-arcade__flecha" data-dir="-1" aria-label="Título anterior">‹</button>
-              <span class="selector-arcade__valor" id="val-titulo" aria-live="polite"></span>
-              <button type="button" class="selector-arcade__flecha" data-dir="1" aria-label="Título siguiente">›</button>
+          <div class="arcade-selector" id="title-selector">
+            <span class="arcade-selector__label">Título</span>
+            <div class="arcade-selector__control">
+              <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Título anterior">‹</button>
+              <span class="arcade-selector__value" id="val-title" aria-live="polite"></span>
+              <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Título siguiente">›</button>
             </div>
           </div>
-          <p class="auth-edicion__nota" id="edit-titulos-nota"></p>
+          <p class="auth-edit__note" id="edit-titles-note"></p>
         </div>
 
-        <div id="edit-creador-montaje"></div>
+        <div id="edit-builder-mount"></div>
 
-        <p class="auth-mensaje" id="edit-mensaje" hidden></p>
-        <div class="auth-edicion__botones">
-          <button class="boton-semana auth-edicion__cancelar" id="btn-cancelar-edicion" type="button">Cancelar</button>
-          <button class="portada__boton auth-form__submit auth-edicion__guardar" id="btn-guardar-edicion" type="button">Guardar cambios</button>
+        <p class="auth-message" id="edit-message" hidden></p>
+        <div class="auth-edit__buttons">
+          <button class="week-button auth-edit__cancel" id="btn-cancel-edit" type="button">Cancelar</button>
+          <button class="hero__button auth-form__submit auth-edit__save" id="btn-save-edit" type="button">Guardar cambios</button>
         </div>
       </div>
     </div>
   </dialog>
 
-  <!-- VENTANA CON EL CARNET DE UNA PERSONA DE LA TABLA (sustometro.js la llena) -->
-  <dialog class="auth-modal auth-modal--registro" id="carnet-modal" aria-labelledby="carnet-modal-titulo">
-    <div class="auth-modal__caja">
-      <button class="auth-modal__cerrar" id="btn-cerrar-carnet" type="button" aria-label="Cerrar ventana">✕</button>
+  <!-- DIALOG WITH THE ID CARD OF A PERSON FROM THE TABLE (filled by scare-meter.js) -->
+  <dialog class="auth-modal auth-modal--signup" id="idcard-modal" aria-labelledby="idcard-modal-title">
+    <div class="auth-modal__box">
+      <button class="auth-modal__close" id="btn-close-idcard" type="button" aria-label="Cerrar ventana">✕</button>
 
-      <div class="auth-modal__cabecera">
-        <h2 class="auth-modal__titulo" id="carnet-modal-titulo">Carnet</h2>
+      <div class="auth-modal__header">
+        <h2 class="auth-modal__title" id="idcard-modal-title">Carnet</h2>
       </div>
 
-      <div class="auth-perfil">
-        <div class="aviso-payaso" id="carnet-modal-aviso-payaso" hidden>
-          <span class="aviso-payaso__icono">🤡🎪</span>
-          <div class="aviso-payaso__cuerpo">
+      <div class="auth-profile">
+        <div class="clown-notice" id="idcard-modal-clown-notice" hidden>
+          <span class="clown-notice__icon">🤡🎪</span>
+          <div class="clown-notice__body">
             <strong>¡HAY UN PAYASO INTENTANDO ARRUINAR LA FIESTA!</strong>
             <p>Este usuario fue descubierto intentando inyectar puntos desde la consola del navegador. Su carnet ha sido degradado públicamente a Licencia de Payaso y está sancionado con Shadowban permanente.</p>
           </div>
         </div>
-        <div class="ponentes__carnet creador-carnet__preview" id="carnet-modal-carnet"></div>
-        <button class="boton-semana boton-descargar" data-carnet="#carnet-modal-carnet" type="button">
+        <div class="speakers__idcard idcard-builder__preview" id="idcard-modal-idcard"></div>
+        <button class="week-button download-button" data-idcard="#idcard-modal-idcard" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
           <span>Descargar carnet</span>
         </button>
@@ -635,63 +635,63 @@
     </div>
   </dialog>
 
-  <!-- VENTANA DEL EASTER EGG DE LOS STICKERS (sustometro.js la llena y le pone los stickers) -->
-  <dialog class="auth-modal easter-egg" id="easter-egg-modal" aria-labelledby="easter-egg-titulo">
-    <div class="auth-modal__caja easter-egg__caja">
-      <button class="auth-modal__cerrar" id="btn-cerrar-easter-egg" type="button" aria-label="Cerrar ventana">✕</button>
-      <!-- El GIF del gato con los stickers pegados en las esquinas. El GIF se carga al abrir la ventana. -->
-      <div class="easter-egg__foto">
+  <!-- STICKER EASTER EGG DIALOG (scare-meter.js fills it and adds the stickers) -->
+  <dialog class="auth-modal easter-egg" id="easter-egg-modal" aria-labelledby="easter-egg-title">
+    <div class="auth-modal__box easter-egg__box">
+      <button class="auth-modal__close" id="btn-close-easter-egg" type="button" aria-label="Cerrar ventana">✕</button>
+      <!-- The cat GIF with stickers in the corners. The GIF loads when the dialog opens. -->
+      <div class="easter-egg__photo">
         <img class="easter-egg__gif" id="easter-egg-gif" alt="">
         <div class="easter-egg__stickers" id="easter-egg-stickers" aria-hidden="true"></div>
       </div>
-      <h2 class="auth-modal__titulo easter-egg__titulo" id="easter-egg-titulo"></h2>
-      <div id="easter-egg-premio">
-        <p class="easter-egg__texto">Fuiste la primera persona en encontrar el easter egg. Escríbele al representante y mándale este código:</p>
-        <strong class="easter-egg__codigo" id="easter-egg-codigo"></strong>
+      <h2 class="auth-modal__title easter-egg__title" id="easter-egg-title"></h2>
+      <div id="easter-egg-prize">
+        <p class="easter-egg__text">Fuiste la primera persona en encontrar el easter egg. Escríbele al representante y mándale este código:</p>
+        <strong class="easter-egg__code" id="easter-egg-code"></strong>
       </div>
     </div>
   </dialog>
 
-  <!-- VENTANA PARA MODIFICAR PUNTOS (SUPERVISOR DE SUSTOS) -->
-  <dialog class="auth-modal modal-admin-puntos" id="puntos-modal" aria-labelledby="puntos-modal-titulo">
-    <div class="auth-modal__caja">
-      <button class="auth-modal__cerrar" id="btn-cerrar-puntos-modal" type="button" aria-label="Cerrar ventana">✕</button>
+  <!-- DIALOG TO EDIT POINTS (SUPERVISOR) -->
+  <dialog class="auth-modal admin-points-modal" id="points-modal" aria-labelledby="points-modal-title">
+    <div class="auth-modal__box">
+      <button class="auth-modal__close" id="btn-close-points" type="button" aria-label="Cerrar ventana">✕</button>
 
-      <div class="auth-modal__cabecera">
-        <span class="puntos-modal__badge">Supervisor de Sustos</span>
-        <h2 class="auth-modal__titulo" id="puntos-modal-titulo">Ajustar Puntos</h2>
+      <div class="auth-modal__header">
+        <span class="points-modal__badge">Supervisor de Sustos</span>
+        <h2 class="auth-modal__title" id="points-modal-title">Ajustar Puntos</h2>
       </div>
 
-      <div class="puntos-modal__cuerpo">
-        <div class="puntos-modal__usuario">
-          <div class="puntos-modal__avatar" id="puntos-modal-avatar"></div>
-          <div class="puntos-modal__info">
-            <strong class="puntos-modal__nombre" id="puntos-modal-nombre"></strong>
-            <span class="puntos-modal__correo" id="puntos-modal-correo"></span>
+      <div class="points-modal__body">
+        <div class="points-modal__user">
+          <div class="points-modal__avatar" id="points-modal-avatar"></div>
+          <div class="points-modal__info">
+            <strong class="points-modal__name" id="points-modal-name"></strong>
+            <span class="points-modal__email" id="points-modal-email"></span>
           </div>
         </div>
 
-        <div class="puntos-modal__editor">
-          <label for="puntos-modal-input" class="puntos-modal__label">Puntos de susto acumulados</label>
-          <div class="puntos-modal__input-fila">
-            <input type="number" id="puntos-modal-input" min="0" max="99999" step="1" class="puntos-modal__input" placeholder="0">
-            <span class="puntos-modal__unidad">PTS</span>
+        <div class="points-modal__editor">
+          <label for="points-modal-input" class="points-modal__label">Puntos de susto acumulados</label>
+          <div class="points-modal__input-row">
+            <input type="number" id="points-modal-input" min="0" max="99999" step="1" class="points-modal__input" placeholder="0">
+            <span class="points-modal__unit">PTS</span>
           </div>
 
-          <div class="puntos-modal__atajos" aria-label="Ajuste rápido">
-            <button type="button" class="puntos-modal__btn-atajo" data-sumar="10">+10</button>
-            <button type="button" class="puntos-modal__btn-atajo" data-sumar="50">+50</button>
-            <button type="button" class="puntos-modal__btn-atajo" data-sumar="100">+100</button>
-            <button type="button" class="puntos-modal__btn-atajo" data-sumar="-10">-10</button>
-            <button type="button" class="puntos-modal__btn-atajo" data-sumar="-50">-50</button>
+          <div class="points-modal__shortcuts" aria-label="Ajuste rápido">
+            <button type="button" class="points-modal__shortcut" data-add="10">+10</button>
+            <button type="button" class="points-modal__shortcut" data-add="50">+50</button>
+            <button type="button" class="points-modal__shortcut" data-add="100">+100</button>
+            <button type="button" class="points-modal__shortcut" data-add="-10">-10</button>
+            <button type="button" class="points-modal__shortcut" data-add="-50">-50</button>
           </div>
         </div>
 
-        <p class="auth-mensaje" id="puntos-modal-mensaje" hidden></p>
+        <p class="auth-message" id="points-modal-message" hidden></p>
 
-        <div class="puntos-modal__acciones">
-          <button type="button" class="boton-semana" id="btn-cancelar-puntos-modal">Cancelar</button>
-          <button type="button" class="portada__boton auth-form__submit" id="btn-guardar-puntos-modal">
+        <div class="points-modal__actions">
+          <button type="button" class="week-button" id="btn-cancel-points">Cancelar</button>
+          <button type="button" class="hero__button auth-form__submit" id="btn-save-points">
             <span>Guardar puntos</span>
           </button>
         </div>
@@ -699,16 +699,16 @@
     </div>
   </dialog>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
   <script src="js/data.js"></script>
-  <script src="js/iconos.js"></script>
-  <script src="js/comun.js"></script>
-  <script src="js/pixeles.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/pixel-art.js"></script>
   <script src="js/auth.js"></script>
-  <script src="js/codigos.js"></script>
-  <script src="js/sustometro.js"></script>
+  <script src="js/codes.js"></script>
+  <script src="js/scare-meter.js"></script>
   <script src="js/snake.js"></script>
-  <script src="js/juego-semana.js"></script>
+  <script src="js/weekly-game.js"></script>
 </body>
 </html>

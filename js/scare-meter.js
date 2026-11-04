@@ -1,0 +1,497 @@
+/* =============================================
+   SCARE METER (SUSTÓMETRO) - THE SCARE TANK
+   Shows in real time everyone registered in Supabase (table 'perfiles')
+   with their custom avatar, real points and the interactive Scare Tank.
+   ============================================= */
+
+const tankLiquid = $('#tank-liquid');
+const hudName = $('#hud-name');
+const hudPoints = $('#hud-points');
+const rankingCount = $('#ranking-count');
+const list = $('#scare-meter-list');
+const reading = $('#scare-meter-reading');
+
+let scarers = [];
+// The person chosen with a click. Their id is kept (not their place) so they stay chosen
+// when the table redraws because someone signed up or earned points.
+let chosenId = null;
+
+// Whether the logged-in user has unlocked the Supervisor de Sustos title
+function isCurrentSupervisor() {
+  return Boolean(currentUser) && unlockedTitles(currentUser).some((title) => title.id === 'supervisor');
+}
+
+// Real percentage from the person's points against the goal (100) or the highest score
+function percentOf(points, maxPoints) {
+  return Math.min(100, Math.round((points / maxPoints) * 100));
+}
+
+const maxPointsOf = (people) => Math.max(100, ...people.map(scarePoints));
+
+// What the page shows for a person: clowns hiding behind binary names appear under their real identity
+function personView(person) {
+  const clown = isClown(person.correo, person.nombre, person);
+  const alias = clown && isLargoAlias(person.correo, person.nombre);
+  return {
+    clown,
+    points: scarePoints(person),
+    handle: alias ? 'imlargo' : handleOf(person.correo),
+    name: alias ? 'Juan Carlos Largo' : (person.nombre || 'Estudiante UNAL').trim(),
+  };
+}
+
+// Their ID card title: for the logged-in person their session wins, otherwise the one on their table monster
+function personTitle(person) {
+  const isMine = currentUser && (person.id === currentUser.id || person.correo === currentUser.email);
+  const id = (isMine && currentUser.user_metadata?.titulo) || person.monstruo?.titulo || person.titulo;
+  return findTitle(id) || BASE_TITLE;
+}
+
+// Selects a scarer and fills or empties the Scare Tank with an animation
+function selectScarer(index) {
+  if (!scarers.length) return;
+
+  const person = scarers[index];
+  chosenId = person.id;
+  const { clown, points, handle, name } = personView(person);
+
+  // Liquid level in the tank (0% with 0 points)
+  tankLiquid.style.height = `${percentOf(points, maxPointsOf(scarers))}%`;
+
+  // Tank screen: name and points
+  hudName.textContent = clown ? `🤡 ${name} [PAYASO]` : name;
+  hudPoints.innerHTML = `${points} <small>pts</small>`;
+
+  // Supervisor button on the HUD
+  $('#btn-admin-edit-points').hidden = !isCurrentSupervisor();
+
+  // Mark the selected card in the list
+  $$('.scarer-card').forEach((card, i) => {
+    card.setAttribute('aria-pressed', i === index ? 'true' : 'false');
+  });
+
+  // Readout below the tank (screen readers announce it too)
+  // The points are already on the tank screen: only a message goes here
+  if (clown) {
+    writeReading('🤡 ¡HAY UN PAYASO INTENTANDO ARRUINAR LA FIESTA! Shadowban permanente por juego sucio.', name, handle);
+  } else if (points === 0) {
+    writeReading('¡Participa en las competencias para llenar el tanque de sustos!', name, handle);
+  } else if (index === 0) {
+    writeReading('¡Lidera la tabla del Sustómetro!', name, handle);
+  } else {
+    writeReading(`Va en el puesto ${index + 1} de la tabla del Sustómetro.`, name, handle);
+  }
+}
+
+// Name and user on their own line, and the message below.
+// Built with textContent rather than innerHTML because each person types their own name.
+function writeReading(message, name, handle) {
+  const parts = [];
+  if (name) parts.push(Object.assign(document.createElement('strong'), { textContent: name }));
+  if (handle) parts.push(Object.assign(document.createElement('small'), { textContent: `@${handle}` }));
+  parts.push(message);
+  reading.replaceChildren(...parts);
+}
+
+// What the ID card button says for each place
+const IDCARD_BUTTON_TITLES = {
+  gold: 'Ver carnet dorado (1° puesto)',
+  silver: 'Ver carnet plateado (2° puesto)',
+  bronze: 'Ver carnet de bronce (3° puesto)',
+};
+
+// Draws the scarer cards in the right column
+function renderRanking(people) {
+  scarers = people;
+  const total = people.length;
+
+  rankingCount.textContent = `${total} ${total === 1 ? 'Asustador Registrado' : 'Asustadores Registrados'}`;
+
+  if (total === 0) {
+    tankLiquid.style.height = '0%';
+    hudName.textContent = 'Esperando asustadores';
+    hudPoints.innerHTML = '0 <small>pts</small>';
+
+    list.innerHTML = `
+      <li class="ranking-empty">
+        <div class="ranking-empty__box">
+          <svg class="ranking-empty__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <h3>El Tanque de Sustos está listo</h3>
+          <p>Aún no hay asustadores registrados. Sé la primera persona en emitir tu Carnet de Asustador.</p>
+          <button class="hero__button hero__button--session" id="btn-signup-empty" type="button">
+            Crear mi Carnet
+          </button>
+        </div>
+      </li>
+    `;
+
+    reading.textContent = 'Aún no hay asustadores registrados.';
+
+    $('#btn-signup-empty').addEventListener('click', () => {
+      setAuthMode(true);
+      $('#auth-modal').showModal();
+    });
+    return;
+  }
+
+  const allPoints = people.map(scarePoints);
+  const maxPoints = maxPointsOf(people);
+  const tiers = pointTiers(allPoints);
+  // The same person as before (or first place if nobody was chosen yet)
+  const chosen = Math.max(0, people.findIndex((p) => p.id === chosenId));
+  const isSupervisor = isCurrentSupervisor();
+
+  list.innerHTML = people.map((person, i) => {
+    const { clown, points, handle } = personView(person);
+    const percent = percentOf(points, maxPoints);
+    const monster = person.monstruo || {};
+    const avatarColor = clown ? '#ff0033' : monsterColor(monster);
+
+    const title = personTitle(person);
+    const text = titleText(title, monster.estilo);
+    let titleTag = `<span class="scarer-card__title-tag">${text}</span>`;
+    if (clown) {
+      titleTag = `<span class="scarer-card__title-tag scarer-card__title-tag--clown">🤡 Payaso</span>`;
+    } else if (title.id === 'debugger') {
+      titleTag = `<span class="scarer-card__title-tag scarer-card__title-tag--debugger"><span class="glitch-text" data-text="${text}">${text}</span></span>`;
+    } else if (title.id === 'terror-nocturno') {
+      titleTag = `<span class="scarer-card__title-tag scarer-card__title-tag--nocturnal">${text}</span>`;
+    }
+
+    const medal = clown ? null : medalFor(points, allPoints);
+    let rank = i + 1;
+    if (clown) rank = '🤡';
+    else if (!tiers.length) rank = 1;
+    else if (points > 0) rank = tiers.indexOf(points) + 1;
+
+    const modifier = clown ? 'clown' : medal;
+    const cardClass = modifier ? `scarer-card--${modifier}` : '';
+    const rankClass = `scarer-card__rank--${modifier || 'normal'}`;
+    const idCardClass = modifier ? `scarer-item__idcard--${modifier}` : '';
+    const idCardTitle = clown ? 'Ver Licencia de Payaso 🤡' : IDCARD_BUTTON_TITLES[medal] ?? 'Ver carnet';
+
+    const adminButton = isSupervisor
+      ? `<button type="button" class="scarer-item__admin-pts" data-index="${i}" aria-label="Modificar puntos" title="Modificar puntos de ${escapeHtml(person.nombre || 'asustador')}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>`
+      : '';
+
+    return `
+      <li class="scarer-item ${isSupervisor ? 'scarer-item--supervisor' : ''}">
+        <button type="button" class="scarer-card ${cardClass}" data-index="${i}" aria-pressed="${i === chosen ? 'true' : 'false'}">
+          <div class="scarer-card__rank ${rankClass}">
+            <span>${rank}</span>
+          </div>
+
+          <div class="scarer-card__avatar" style="border-color: ${avatarColor}">
+            ${drawCustomMonster(monster)}
+          </div>
+
+          <div class="scarer-card__info">
+            <div class="scarer-card__name">
+              <span>${escapeHtml(person.nombre || 'Estudiante UNAL')}</span>
+              ${titleTag}
+            </div>
+            <div class="scarer-card__email">@${escapeHtml(handle)} · UNAL</div>
+          </div>
+
+          <div class="scarer-card__score">
+            <span class="scarer-card__pts">${points} <small>PTS</small></span>
+            <span class="scarer-card__percent">${percent}%</span>
+          </div>
+        </button>
+        <div class="scarer-item__actions">
+          ${adminButton}
+          <button type="button" class="scarer-item__idcard ${idCardClass}" data-index="${i}" aria-label="Ver carnet" title="${idCardTitle}">
+            ${ICONS.idCard}
+          </button>
+        </div>
+      </li>
+    `;
+  }).join('');
+
+  // A short wait so the tank fills with its animation
+  setTimeout(() => {
+    selectScarer(chosen);
+  }, 100);
+}
+
+// Opens the dialog with the ID card of a person from the table
+function showIdCardOf(index) {
+  const person = scarers[index];
+  const { clown, points } = personView(person);
+  const medal = clown ? null : medalFor(points, scarers.map(scarePoints));
+
+  $('#idcard-modal-title').textContent = clown ? '🤡 Licencia de Payaso' : 'Carnet';
+  $('#idcard-modal-clown-notice').hidden = !clown;
+
+  $('#idcard-modal-idcard').innerHTML = scarerIdCard(
+    person.nombre || 'Estudiante UNAL', person.correo, person.monstruo || {}, personTitle(person), medal);
+  $('#idcard-modal').showModal();
+}
+
+async function loadScareMeter() {
+  try {
+    const { data: profiles, error } = await supabaseClient
+      .from('perfiles')
+      .select('id, nombre, correo, monstruo, puntos, creado_en');
+
+    if (error) {
+      console.error('Could not load the profiles:', error);
+      showScareMeterError('No se pudo sincronizar con Supabase. Revisa las políticas RLS de lectura.');
+      return;
+    }
+
+    // Clowns count as 0 points, so they go to the bottom instead of the top
+    profiles.sort((a, b) => scarePoints(b) - scarePoints(a) || (a.creado_en || '').localeCompare(b.creado_en || ''));
+    renderRanking(profiles);
+  } catch (err) {
+    console.error('Unexpected error:', err);
+    showScareMeterError('Ocurrió un error inesperado al conectar con el servidor.');
+  }
+}
+
+function showScareMeterError(message) {
+  tankLiquid.style.height = '0%';
+  rankingCount.textContent = 'Error de Conexión';
+  hudName.textContent = 'Sin conexión';
+
+  list.innerHTML = `
+    <li class="ranking-error">
+      <div class="ranking-empty__box">
+        <svg class="ranking-empty__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <h3>Error al consultar la tabla</h3>
+        <p>${message}</p>
+        <button class="hero__button hero__button--session" onclick="loadScareMeter()" type="button">
+          Reintentar conexión
+        </button>
+      </div>
+    </li>
+  `;
+
+  reading.textContent = 'Error al consultar los asustadores.';
+}
+
+// Interaction events (click and keyboard). The chosen person stays on the tank until another is chosen.
+list.addEventListener('click', (event) => {
+  const adminButton = event.target.closest('.scarer-item__admin-pts');
+  if (adminButton) {
+    const index = Number(adminButton.dataset.index);
+    selectScarer(index);
+    openPointsModal(scarers[index]);
+    return;
+  }
+
+  const idCardButton = event.target.closest('.scarer-item__idcard');
+  if (idCardButton) {
+    const index = Number(idCardButton.dataset.index);
+    selectScarer(index);
+    showIdCardOf(index);
+    return;
+  }
+
+  const card = event.target.closest('.scarer-card');
+  if (card) {
+    selectScarer(Number(card.dataset.index));
+  }
+});
+
+list.addEventListener('focusin', (event) => {
+  const card = event.target.closest('.scarer-card');
+  if (card) {
+    selectScarer(Number(card.dataset.index));
+  }
+});
+
+$('#btn-close-idcard').addEventListener('click', () => $('#idcard-modal').close());
+
+// A click on the dark background (outside the box) closes the dialog
+$('#idcard-modal').addEventListener('click', (event) => {
+  if (event.target === $('#idcard-modal')) $('#idcard-modal').close();
+});
+
+
+/* ---------- Easter egg of the tank stickers ---------- */
+
+// Tapping the five stickers in a row in a certain order opens a dialog. The stickers give no hints
+// meanwhile. The order and the code are NOT in the page (the repository is public): Supabase's
+// reclamar_easter_egg function keeps them, and also remembers who found it first.
+// The page sends it the last five stickers tapped, comma separated, each time
+// all five are different (for example 'python,git,cpp,linux,terminal').
+const TOTAL_STICKERS = 5;
+let tappedStickers = [];
+
+$('.tank__stickers').addEventListener('click', async (event) => {
+  const sticker = event.target.closest('.sticker');
+  if (!sticker) return;
+
+  tappedStickers = [...tappedStickers, sticker.dataset.sticker].slice(-TOTAL_STICKERS);
+  if (new Set(tappedStickers).size < TOTAL_STICKERS) return;
+
+  const { data, error } = await supabaseClient.rpc('reclamar_easter_egg', { secuencia: tappedStickers.join(',') });
+  if (error) {
+    console.error('Could not check the easter egg:', error);
+    return;
+  }
+  if (data.estado === 'incorrecto') return;
+
+  tappedStickers = [];
+  showEasterEgg(data);
+});
+
+// estado comes from Supabase: 'primero' (first, with the codigo) or 'tarde' (late) if someone already found it
+function showEasterEgg({ estado, codigo }) {
+  const isFirst = estado === 'primero';
+  $('#easter-egg-modal').classList.toggle('easter-egg--late', !isFirst);
+  $('#easter-egg-title').textContent = isFirst ? 'Conocedor de la informática' : 'Alguien más lo encontró primero...';
+  $('#easter-egg-gif').src = isFirst ? 'img/programmer-cat.gif' : 'img/angry-programmer-cat.gif';
+  $('#easter-egg-gif').alt = isFirst ? 'Gato programando en un portátil' : 'Gato programador con gafas, enojado frente al portátil';
+  $('#easter-egg-prize').hidden = !isFirst;
+  $('#easter-egg-code').textContent = codigo ?? '';
+  $('#easter-egg-modal').showModal();
+}
+
+// The dialog is decorated with copies of the five tank stickers
+$('#easter-egg-stickers').append(...[...$$('.tank__stickers .sticker__svg')].map((svg) => svg.cloneNode(true)));
+
+$('#btn-close-easter-egg').addEventListener('click', () => $('#easter-egg-modal').close());
+
+$('#easter-egg-modal').addEventListener('click', (event) => {
+  if (event.target === $('#easter-egg-modal')) $('#easter-egg-modal').close();
+});
+
+// Supabase real-time subscription
+try {
+  supabaseClient
+    .channel('scare-meter-profile-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'perfiles' }, () => {
+      loadScareMeter();
+    })
+    .subscribe();
+
+  supabaseClient.auth.onAuthStateChange(() => {
+    loadScareMeter();
+  });
+} catch {
+  console.log('Realtime is not available in this client');
+}
+
+// Header: three pixel art drawings, as on an activity page
+$('#scare-meter-decorations').innerHTML = ['scareMonster', 'scareTank', 'ghost'].map((name) => drawPixelArt(PIXEL_ART[name])).join('');
+
+$('#footer-crest').innerHTML = drawCrest();
+
+/* ---------- Edit points modal (supervisor) ---------- */
+
+let personBeingEdited = null;
+
+function openPointsModal(person) {
+  if (!person || !isCurrentSupervisor()) return;
+  personBeingEdited = person;
+
+  const avatar = $('#points-modal-avatar');
+  avatar.style.borderColor = monsterColor(person.monstruo);
+  avatar.innerHTML = drawCustomMonster(person.monstruo || {});
+  $('#points-modal-name').textContent = (person.nombre || 'Estudiante UNAL').trim();
+  $('#points-modal-email').textContent = `@${handleOf(person.correo)} · UNAL`;
+  $('#points-modal-input').value = scarePoints(person);
+
+  const message = $('#points-modal-message');
+  message.hidden = true;
+  message.textContent = '';
+
+  $('#points-modal').showModal();
+}
+
+function closePointsModal() {
+  $('#points-modal').close();
+  personBeingEdited = null;
+}
+
+function showPointsError(text) {
+  const message = $('#points-modal-message');
+  message.className = 'auth-message auth-message--error';
+  message.textContent = text;
+  message.hidden = false;
+}
+
+$('#btn-close-points').addEventListener('click', closePointsModal);
+$('#btn-cancel-points').addEventListener('click', closePointsModal);
+
+$('#points-modal').addEventListener('click', (event) => {
+  if (event.target === $('#points-modal')) closePointsModal();
+});
+
+// Shortcuts to add or subtract points quickly
+$$('.points-modal__shortcut').forEach((button) => {
+  button.addEventListener('click', () => {
+    const input = $('#points-modal-input');
+    const current = parseInt(input.value, 10) || 0;
+    const delta = parseInt(button.dataset.add, 10) || 0;
+    input.value = Math.max(0, current + delta);
+  });
+});
+
+// Save the points in Supabase and refresh the ranking
+$('#btn-save-points').addEventListener('click', async () => {
+  if (!personBeingEdited) return;
+
+  const newPoints = Math.max(0, parseInt($('#points-modal-input').value, 10) || 0);
+  const button = $('#btn-save-points');
+  const buttonText = button.querySelector('span');
+
+  // A clown cannot receive points
+  if (isClown(personBeingEdited.correo, personBeingEdited.nombre, personBeingEdited)) {
+    showPointsError('🤡 Este usuario tiene Shadowban permanente por juego sucio y no puede recibir puntos.');
+    return;
+  }
+
+  button.disabled = true;
+  buttonText.textContent = 'Guardando…';
+  $('#points-modal-message').hidden = true;
+
+  try {
+    // The Supabase function checks the supervisor permission
+    const { error } = await supabaseClient.rpc('modificar_puntos', {
+      target_id: personBeingEdited.id,
+      nuevos_puntos: newPoints,
+    });
+    if (error) throw error;
+
+    await loadScareMeter();
+    closePointsModal();
+  } catch (error) {
+    console.error('Could not edit the points:', error);
+    const message = String(error?.message || '');
+    if (message.includes('Acceso denegado') || message.includes('supervisor')) {
+      showPointsError('Acceso denegado: solo quienes tengan el título Supervisor de Sustos pueden modificar puntos.');
+    } else {
+      showPointsError('No se pudo guardar en Supabase. Si aún no corriste el script de seguridad en Supabase, ejecuta supabase/seguridad-y-baneo.sql en el SQL Editor.');
+    }
+  } finally {
+    button.disabled = false;
+    buttonText.textContent = 'Guardar puntos';
+  }
+});
+
+// Admin button on the tank HUD
+$('#btn-admin-edit-points').addEventListener('click', () => {
+  const person = scarers.find((p) => p.id === chosenId) || scarers[0];
+  if (person) openPointsModal(person);
+});
+
+// Check the supervisor role again when the session changes or a title is redeemed
+document.addEventListener('idcard:session', () => {
+  if (scarers.length) renderRanking(scarers);
+  $('#btn-admin-edit-points').hidden = !isCurrentSupervisor();
+});
+
+loadScareMeter();

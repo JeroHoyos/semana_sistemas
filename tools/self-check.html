@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Self-check</title>
+</head>
+<body>
+  <!-- Open this file through a local server: it checks the logic that protects the live tables. -->
+  <pre id="result"></pre>
+  <script src="../js/data.js"></script>
+  <script src="../js/icons.js"></script>
+  <script src="../js/common.js"></script>
+  <script>
+    const failures = [];
+    const check = (name, actual, expected) => {
+      if (JSON.stringify(actual) !== JSON.stringify(expected)) failures.push(`${name}: got ${JSON.stringify(actual)}, expected ${JSON.stringify(expected)}`);
+    };
+
+    // Medals: ties share a place, nobody with points means shared gold, 0 points never earns a medal
+    check('no points', medalFor(0, [0, 0]), 'gold');
+    check('first', medalFor(50, [50, 20, 10, 5]), 'gold');
+    check('tie', medalFor(20, [50, 20, 20, 10]), 'silver');
+    check('third after tie', medalFor(10, [50, 20, 20, 10]), 'bronze');
+    check('fourth', medalFor(5, [50, 20, 10, 5]), null);
+    check('zero with others', medalFor(0, [50, 0]), null);
+
+    // Clowns: every old rule still applies, and their points never count
+    check('flag on row', isClown('a@unal.edu.co', 'Ana', { es_payaso: true }), true);
+    check('text flag on monster', isClown('a@unal.edu.co', 'Ana', { monstruo: { es_payaso: 'true' } }), true);
+    check('email', isClown('armarina@unal.edu.co', 'Ana'), true);
+    check('binary name', isClown('a@unal.edu.co', '01101100'), true);
+    check('exact name', isClown('a@unal.edu.co', 'Armarina'), true);
+    check('regular person', isClown('ana@unal.edu.co', 'Ana Gómez'), false);
+    check('clown points', scarePoints({ correo: 'imlargo@unal.edu.co', nombre: 'x', puntos: 500 }), 0);
+    check('regular points', scarePoints({ correo: 'ana@unal.edu.co', nombre: 'Ana', puntos: '40' }), 40);
+
+    // Text typed by users cannot become HTML
+    check('escape', escapeHtml(`<img src=x onerror="a('b')">&`), '&lt;img src=x onerror=&quot;a(&#39;b&#39;)&quot;&gt;&amp;');
+    check('escape empty', escapeHtml(null), '');
+
+    // Hostile monsters neither inject attributes nor break the table
+    check('bad color', monsterColor({ color: '"><script>' }), DEFAULT_MONSTER.color);
+    check('good color', monsterColor({ color: '#2f9e5b' }), '#2f9e5b');
+    check('no script in svg', drawCustomMonster({ color: '"><script>' }).includes('<script'), false);
+    check('proto part', drawCustomMonster({ cuerpo: '__proto__', ojos: 'constructor' }).startsWith('<svg'), true);
+
+    check('handle', handleOf('ana@unal.edu.co'), 'ana');
+    check('accents', stripAccents('Fútbol'), 'Futbol');
+
+    document.getElementById('result').textContent = failures.length ? `FAILED\n${failures.join('\n')}` : 'ALL PASSED';
+  </script>
+</body>
+</html>
