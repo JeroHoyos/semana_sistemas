@@ -313,23 +313,33 @@ function mostrarCarnetDe(indice) {
   $('#carnet-modal').showModal();
 }
 
-// Consulta Supabase con fallback si 'puntos' aún no existe
+// Consulta Supabase con fallback si 'puntos' o 'es_payaso' aún no existen
 async function cargarSustometro() {
   try {
     let { data: perfiles, error } = await clienteSupabase
       .from('perfiles')
-      .select('id, nombre, correo, monstruo, puntos, creado_en')
+      .select('id, nombre, correo, monstruo, puntos, es_payaso, creado_en')
       .order('puntos', { ascending: false })
       .order('creado_en', { ascending: true });
 
-    // Fallback: si aún no ejecutaron el script de la columna puntos en Supabase
-    if (error && error.message && error.message.includes('puntos')) {
+    // Fallback si aún no está la columna es_payaso o puntos
+    if (error && error.message && (error.message.includes('es_payaso') || error.message.includes('puntos'))) {
       const fallback = await clienteSupabase
         .from('perfiles')
-        .select('id, nombre, correo, monstruo, creado_en')
+        .select('id, nombre, correo, monstruo, puntos, creado_en')
+        .order('puntos', { ascending: false })
         .order('creado_en', { ascending: true });
-      perfiles = fallback.data;
-      error = fallback.error;
+      if (fallback.error && fallback.error.message && fallback.error.message.includes('puntos')) {
+        const fallbackSinPuntos = await clienteSupabase
+          .from('perfiles')
+          .select('id, nombre, correo, monstruo, creado_en')
+          .order('creado_en', { ascending: true });
+        perfiles = fallbackSinPuntos.data;
+        error = fallbackSinPuntos.error;
+      } else {
+        perfiles = fallback.data;
+        error = fallback.error;
+      }
     }
 
     // Shadowban en memoria para los tramposos: nunca pueden figurar con puntos mayores a 0
