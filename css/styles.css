@@ -15,6 +15,7 @@
    12. Student groups
    13. Gallery
    14. Weekly game
+   15. Team registration
    ========================================================= */
 
 
@@ -4848,4 +4849,268 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   .console__speaker { display: none; }
   .console__controls { grid-template-columns: auto auto; justify-content: space-between; }
   .console__brand { display: none; }
+}
+
+
+/* ---------- 15. Team registration (inscripciones.html) ---------- */
+
+.competitions__signup { margin-top: 22px; }
+
+.registration__tabs .day svg { width: 24px; height: 24px; }
+.registration__tabs .day strong { font-size: 14px; }
+
+/* The competition's facts use the activity page boxes (.event__facts) */
+.registration__summary { margin-top: 20px; }
+
+/* How many of the team spots are taken */
+.registration__bar {
+  display: block;
+  height: 6px;
+  margin-top: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--blue) var(--filled), var(--line) var(--filled));
+}
+
+.registration__text { margin-bottom: 14px; color: var(--ink-soft); }
+.registration__text strong { color: var(--navy); overflow-wrap: anywhere; }
+
+/* Team card: the banner on the left, the data on the right */
+.team {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 18px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: #f7f8fa;
+}
+.team--mine { border-color: #b9d3ef; background: #fff; }
+
+.team__banner svg {
+  width: 100%;
+  rotate: -3deg;
+  filter: drop-shadow(0 8px 8px rgba(10, 44, 82, .3));
+}
+
+.team__name {
+  font-family: var(--font-varsity);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1.2;
+  color: var(--navy);
+  overflow-wrap: anywhere;
+}
+
+.team__count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-narrow);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.team__badge {
+  flex: none;
+  padding: 1px 9px;
+  border-radius: 999px;
+  background: #dceafa;
+  color: var(--blue-dark);
+  font-family: var(--font-narrow);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.team__badge--full { background: #dff6e8; color: #1c7441; }
+
+/* One box per member, and an empty dashed box per free spot */
+.team__members {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0;
+  padding: 0;
+  list-style: none;
+  font-size: 15px;
+}
+.team__members li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 4px 10px 4px 4px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+}
+.team--mine .team__members li { background: #f7f8fa; }
+.team__members li.team__slot {
+  border: 1.5px dashed #c3ccd6;
+  background: none;
+  color: var(--gray);
+  font-size: 14px;
+}
+.team__slot .team__avatar { border-style: dashed; background: none; }
+
+.team__who { display: grid; min-width: 0; line-height: 1.2; overflow-wrap: anywhere; }
+.team__who small { font-size: 13px; color: var(--gray); }
+
+.team__avatar {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: #fff;
+  overflow: hidden;
+}
+.team__avatar svg { width: 100%; height: 100%; }
+
+.team__members .team__badge,
+.team__remove { margin-left: auto; }
+.team__remove {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: #b42340;
+}
+.team__remove:hover { background: #fde3e8; }
+
+.team__captain { font-size: 14px; color: var(--ink-soft); }
+.team__captain a { font-weight: 600; color: var(--blue); white-space: nowrap; }
+
+.team__add { display: flex; gap: 8px; margin-top: 14px; }
+.team__add input {
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+  padding: 0 16px;
+  border: 1px solid #e2e6ec;
+  border-radius: 999px;
+  background: #f3f5f8;
+  font: inherit;
+  font-size: 15px;
+}
+.team__add input:focus { outline: none; border-color: var(--blue); background: #fff; }
+
+.team__buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.team__add .week-button,
+.team__buttons .week-button { height: 42px; cursor: pointer; }
+.team__danger { border-color: #f5b6c3; background: #fff5f7; color: #b42340; }
+
+.team-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Form: the banner preview next to the fields (above them on phones).
+   On wide screens it stays in view while going down through the options. */
+.team-form {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+.team-form__preview { position: sticky; top: 20px; }
+.team-form__preview svg {
+  width: 100%;
+  rotate: -3deg;
+  filter: drop-shadow(0 14px 14px rgba(10, 44, 82, .35));
+}
+
+.team-form__letters {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid #dce2ea;
+  border-radius: 999px;
+  background: #fff;
+  font-family: var(--font-varsity);
+  font-size: 20px;
+  letter-spacing: .1em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.team-form__letters:focus { outline: none; border-color: var(--blue); }
+
+.team-form__greek { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.team-form__greek .random-button { min-width: 32px; font-size: 14px; }
+
+/* Banner designer: one group per part, with round swatches for the colors
+   and small banners (drawn with the current design) for the rest */
+.banner-pickers { display: grid; gap: 18px; margin-top: 10px; }
+.banner-picker { min-width: 0; margin: 0; padding: 0; border: 0; }
+.banner-picker legend {
+  margin-bottom: 8px;
+  padding: 0;
+  font-family: var(--font-narrow);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--navy);
+}
+.banner-picker__options { display: flex; flex-wrap: wrap; gap: 8px; }
+.banner-picker__options--tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); }
+
+.banner-picker__swatch {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--swatch);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .18);
+  transition: transform .15s, box-shadow .15s;
+}
+.banner-picker__swatch:hover { transform: scale(1.12); }
+.banner-picker__swatch[aria-pressed="true"] {
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .18), 0 0 0 3px #fff, 0 0 0 5px var(--blue);
+}
+
+.banner-picker__tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 9px 4px 7px;
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  font-family: var(--font-narrow);
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.1;
+  letter-spacing: .03em;
+  color: var(--ink-soft);
+  transition: border-color .15s, transform .15s;
+}
+.banner-picker__tile:hover { border-color: #9cc0e8; transform: translateY(-2px); }
+.banner-picker__tile[aria-pressed="true"] {
+  border-color: var(--blue);
+  background: #eef5fc;
+  color: var(--navy);
+  box-shadow: 0 0 0 1px var(--blue);
+}
+.banner-picker__thumb { width: 44px; }
+.banner-picker__thumb svg { width: 100%; filter: drop-shadow(0 3px 3px rgba(10, 44, 82, .25)); }
+
+@media (max-width: 640px) {
+  .registration__tabs .day { padding-inline: 4px; }
+  .registration__tabs .day strong { font-size: 10.5px; letter-spacing: .02em; }
+  .team-list { grid-template-columns: 1fr; }
+  .team { grid-template-columns: 72px 1fr; gap: 14px; padding: 14px; }
+  .team-form { grid-template-columns: 1fr; gap: 18px; }
+  .team-form__preview { position: static; width: 150px; margin: 0 auto; }
+  .banner-picker__options--tiles { grid-template-columns: repeat(auto-fill, minmax(66px, 1fr)); }
 }

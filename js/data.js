@@ -81,6 +81,8 @@ const GROUPS = [
 // image (in img/: shown next to the text on its page),
 // video ({ id, title } of a YouTube video: the id is what follows youtu.be/ in the link),
 // stats (list of { value, label } shown as big boxes below the text, e.g. { value: 16, label: 'jugadores' }),
+// team ({ tab, size, maxTeams }: its short name on the inscripciones.html tabs, people per team and, optionally,
+// how many teams fit; the activity takes team sign-ups. The same limits live in supabase/teams.sql: change both),
 // unconfirmed: true (shows an "Información por confirmar" notice on its page)
 // and decorations (three pixel art drawings from js/pixel-art.js for its page header; the middle one sits higher).
 const ACTIVITIES = [
@@ -106,12 +108,12 @@ const ACTIVITIES = [
     decorations: ['chat', 'chip', 'plug'] },
 
   // Thursday
-  { id: 'observacion', day: 'thu', start: '07:00', end: '10:00', type: 'competition', title: 'Carrera de observación',
+  { id: 'observacion', day: 'thu', start: '07:00', end: '10:00', type: 'competition', title: 'Carrera de observación', team: { tab: 'Observación', size: 4, maxTeams: 10 },
     icon: 'magnifier', color: '#e05a7a', summary: 'Recorre el campus resolviendo pistas antes que los demás equipos.', place: 'Hall M10',
     description: 'Una verdadera prueba de velocidad, lógica y trabajo en equipo. Recorre las estaciones distribuidas alrededor del campus resolviendo acertijos y desafíos en el menor tiempo posible.\n' +
       '¿Tiene tu equipo la destreza mental y la resistencia necesarias para llevarse la victoria?',
     decorations: ['questionMark', 'magnifier', 'map'] },
-  { id: 'maraton', day: 'thu', start: '14:00', end: '18:00', type: 'competition', title: 'Maratón de programación',
+  { id: 'maraton', day: 'thu', start: '14:00', end: '18:00', type: 'competition', title: 'Maratón de programación', team: { tab: 'Maratón', size: 3, maxTeams: 10 },
     icon: 'code', color: '#2f9e5b', summary: 'Cuatro horas de problemas algorítmicos contra el reloj.', organizer: 'unalgoritmo', place: 'Salón M7-501',
     description: 'Llega la Maratón de Programación, el evento insignia en la sede Medellín para medir el pensamiento algorítmico, la lógica y el trabajo colaborativo en equipos de tres personas frente a retos de programación.',
     rules: [
@@ -128,7 +130,7 @@ const ACTIVITIES = [
     description: 'Pon a prueba tu velocidad y resistencia en un circuito a lo largo de todo el campus. Prepárate para enfrentar los cambios de inclinación del terreno, superar cada nivel y retarte a ti mismo en una carrera con pura alma de videojuego retro.',
     image: 'img/activity-athletics.jpg',
     decorations: ['medal10', 'medal01', 'medal11'] },
-  { id: 'futbol', day: 'fri', start: '09:00', end: '11:00', type: 'competition', title: 'Torneo de fútbol',
+  { id: 'futbol', day: 'fri', start: '09:00', end: '11:00', type: 'competition', title: 'Torneo de fútbol', team: { tab: 'Fútbol', size: 5, maxTeams: 8 },
     icon: 'ball', color: '#1667c2', summary: 'Arma tu equipo y sal a la cancha.', place: 'Placa polideportiva',
     description: 'Reúne a tu equipo y demuestra tu nivel en la cancha en un torneo de eliminación directa por brackets. Avanza llave a llave, supera a tus rivales en cada partido y compite hasta alcanzar la gran final.\n' +
       'Se prestan los petos y el balón.',
