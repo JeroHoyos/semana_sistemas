@@ -1,8 +1,8 @@
 /* =============================================
    SECRET CODES
-   Hidden challenges. Only the first person who completes each one gets its title for the ID card
-   (the one in TITLES with the secret's id); whoever comes later learns that someone got there first.
-   Without a session they do nothing.
+   Hidden challenges. Only the first people who complete each one, as many as the limit of its title
+   (the one in TITLES with the secret's id), get that title for the ID card; whoever comes later learns
+   that the places are taken. Without a session they do nothing.
      konami        the Konami code (↑ ↑ ↓ ↓ ← → ← → B A) on the Scare Meter console's d-pad and buttons
                    (js/weekly-game.js notices it and calls claimSecret)
      video-futbol  the whole video on the football tournament page, without skipping
@@ -18,10 +18,13 @@ const SECRET_TITLES = {
   'video-futbol': 'Revisión del VAR',
 };
 
+// places: how many people can win the secret. title: the one won ('' if it could not be saved).
 const SECRET_TEXTS = {
-  primero: 'Fuiste la primera persona en descubrir este secreto, pero no pudimos guardar tu título. Hazlo otra vez en un rato.',
-  tarde: 'Descubriste el secreto, pero otra persona llegó antes. ¡Sigue buscando!',
-  error: 'Encontraste un secreto, pero no pudimos revisarlo. Hazlo otra vez en un rato.',
+  primero: (places, title) => (title
+    ? `Estás entre las ${places} primeras personas en descubrirlo: ganaste el título «${title}» para tu carnet.`
+    : `Estás entre las ${places} primeras personas en descubrirlo, pero no pudimos guardar tu título. Hazlo otra vez en un rato.`),
+  tarde: (places) => `Descubriste el secreto, pero ya lo encontraron las ${places} personas que podían ganarlo. ¡Sigue buscando!`,
+  error: () => 'Encontraste un secreto, pero no pudimos revisarlo. Hazlo otra vez en un rato.',
 };
 
 
@@ -104,10 +107,8 @@ function showSecret(id, estado, title = '') {
   const late = estado === 'tarde';
   $('#secret-gif').src = late ? 'img/angry-programmer-cat.gif' : 'img/programmer-cat.gif';
   $('#secret-gif').alt = late ? 'Gato programador con gafas, enojado frente al portátil' : 'Gato programando en un portátil';
-  $('#secret-title').textContent = late ? 'Alguien más lo encontró primero...' : SECRET_TITLES[id];
-  $('#secret-text').textContent = title
-    ? `Fuiste la primera persona en descubrir este secreto y ganaste el título «${title}» para tu carnet.`
-    : SECRET_TEXTS[estado];
+  $('#secret-title').textContent = late ? 'Otras personas llegaron primero...' : SECRET_TITLES[id];
+  $('#secret-text').textContent = SECRET_TEXTS[estado](findTitle(id).limit, title);
   if (!dialog.open) dialog.showModal();
 }
 
