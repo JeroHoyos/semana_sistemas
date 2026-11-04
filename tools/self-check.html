@@ -44,6 +44,13 @@
     check('no script in svg', drawCustomMonster({ color: '"><script>' }).includes('<script'), false);
     check('proto part', drawCustomMonster({ cuerpo: '__proto__', ojos: 'constructor' }).startsWith('<svg'), true);
 
+    // Hostile team banners (equipos.bandera) neither inject markup nor break the team list
+    const hostileBanner = drawBanner({ letras: '<img src=x onerror=alert(1)>', fondo: '"><script>', tinta: 'red', fuente: '__proto__', adorno: 'constructor' });
+    check('banner no tags', /<(img|script)/.test(hostileBanner), false);
+    check('banner bad colors', hostileBanner.includes(`fill="${DEFAULT_BANNER.fondo}"`) && hostileBanner.includes(`fill="${DEFAULT_BANNER.tinta}"`), true);
+    check('banner four letters', drawBanner({ letras: 'ΣΣΚΑΒ' }).includes('>ΣΣΚΑ</text>'), true);
+    check('banner good colors', drawBanner({ fondo: '#2f8f5b', tinta: '#f5c814' }).includes('fill="#f5c814"'), true);
+
     check('handle', handleOf('ana@unal.edu.co'), 'ana');
     check('accents', stripAccents('Fútbol'), 'Futbol');
 

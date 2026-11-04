@@ -37,11 +37,12 @@ Git Flow, without release branches:
 
 | Path | What it is |
 | --- | --- |
-| `index.html`, `evento.html`, `sustometro.html` | The three pages |
+| `index.html`, `evento.html`, `sustometro.html`, `inscripciones.html` | The four pages |
 | `js/data.js` | All event content (days, speakers, activities, groups, titles, gallery). Content edits go here. |
 | `js/common.js` | Shared helpers (`$`, `escapeHtml`, medals, activity lookups) |
 | `js/main.js`, `js/event.js` | Home page and activity page |
 | `js/auth.js`, `js/codes.js`, `js/scare-meter.js` | Login and ID card, title codes, Scare Meter |
+| `js/registrations.js` | Team sign-ups: captain, members by email, banners (`supabase/teams.sql`) |
 | `js/weekly-game.js` | Retro console; each game is a "cartridge" in its own file (`js/snake.js`) |
 | `js/icons.js`, `js/pixel-art.js` | SVG icons, monsters and pixel art drawings |
 | `supabase/` | SQL to run in the Supabase SQL Editor |

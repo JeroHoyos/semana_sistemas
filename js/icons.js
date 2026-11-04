@@ -366,3 +366,133 @@ function drawCustomMonster(monster = {}) {
     ${draw('accesorio')}
   </svg>`;
 }
+
+
+/* ---------- Team banner (inscripciones.html) ---------- */
+
+// Fraternity style banner: a cloth with the team's letters and a monster detail.
+// Besides its two colors (fondo and tinta, any #rrggbb), a banner picks one option of each part below.
+// The keys are stored in Supabase (equipos.bandera) and checked in supabase/teams.sql: add new ones there too.
+
+// A five-pointed star centered on x, y
+function starPath(x, y, radius) {
+  const points = Array.from({ length: 10 }, (_, i) => {
+    const angle = (i * 36 - 90) * Math.PI / 180;
+    const r = i % 2 ? radius * .45 : radius;
+    return `${(x + r * Math.cos(angle)).toFixed(1)} ${(y + r * Math.sin(angle)).toFixed(1)}`;
+  });
+  return `M${points.join('L')}z`;
+}
+
+// Checkerboard squares of 20 for the "cuadros" pattern
+const CHECKER_SQUARES = Array.from({ length: 48 }, (_, i) => [i % 6, Math.floor(i / 6)])
+  .filter(([x, y]) => (x + y) % 2)
+  .map(([x, y]) => `M${x * 20} ${y * 20}h20v20h-20z`).join('');
+
+const BANNER_OPTIONS = {
+  // Outline of the cloth
+  forma: {
+    golondrina: { label: 'Golondrina', path: 'M0 0h120v150l-60-32-60 32z' },
+    punta: { label: 'Punta', path: 'M0 0h120v118l-60 32-60-32z' },
+    recta: { label: 'Recta', path: 'M0 0h120v150H0z' },
+    ondas: { label: 'Ondas', path: 'M0 0h120v140q-15 12-30 0t-30 0-30 0-30 0z' },
+  },
+  // Drawn over the cloth color, in a lighter or darker shade of it
+  estampado: {
+    liso: { label: 'Liso', draw: () => '' },
+    rayas: { label: 'Rayas', draw: () => '<path d="M15 0v150M45 0v150M75 0v150M105 0v150" stroke="#000" stroke-opacity=".13" stroke-width="13"/>' },
+    franja: { label: 'Franja', draw: () => '<path d="M-10 18 130 128" stroke="#fff" stroke-opacity=".3" stroke-width="28"/>' },
+    manchas: { label: 'Manchas', draw: () => `<g fill="#000" fill-opacity=".14">
+      <circle cx="16" cy="22" r="9"/><circle cx="98" cy="26" r="12"/><circle cx="66" cy="12" r="5"/><circle cx="10" cy="76" r="7"/>
+      <circle cx="108" cy="80" r="8"/><circle cx="30" cy="112" r="11"/><circle cx="92" cy="118" r="7"/><circle cx="60" cy="104" r="4"/></g>` },
+    cuadros: { label: 'Cuadros', draw: () => `<path d="${CHECKER_SQUARES}" fill="#000" fill-opacity=".1"/>` },
+  },
+  // Receives the outline and the letters' color
+  borde: {
+    ninguno: { label: 'Sin borde', draw: () => '' },
+    ribete: { label: 'Ribete', draw: (shape, ink) => `<path d="${shape}" fill="none" stroke="${ink}" stroke-width="10"/>` },
+    costura: { label: 'Costura', draw: (shape) => `<path d="${shape}" fill="none" stroke="#fff" stroke-opacity=".85" stroke-width="2"
+      stroke-dasharray="5 4" transform="translate(6 7.5) scale(.9)"/>` },
+  },
+  // Line around the letters, like college jerseys
+  contorno: {
+    ninguno: { label: 'Sin contorno', color: null },
+    blanco: { label: 'Blanco', color: '#ffffff' },
+    negro: { label: 'Negro', color: '#17181b' },
+  },
+  // scale: wide fonts get smaller letters so four still fit
+  fuente: {
+    varsity: { label: 'Universitaria', family: 'Graduate, serif', weight: 400, scale: 1 },
+    bloque: { label: 'Bloque', family: 'Alfa Slab One, serif', weight: 400, scale: 1 },
+    griega: { label: 'Griega', family: 'Cinzel, serif', weight: 700, scale: 1 },
+    terror: { label: 'Terror', family: 'Creepster, cursive', weight: 400, scale: 1.2 },
+    pixel: { label: 'Pixel', family: "'Press Start 2P', monospace", weight: 400, scale: .7 },
+    circo: { label: 'Circo', family: 'Rye, serif', weight: 400, scale: .9 },
+  },
+  // Monster detail around the letters. Receives the letters' color.
+  adorno: {
+    ninguno: { label: 'Ninguno', draw: () => '' },
+    cuernos: { label: 'Cuernos', draw: (ink) => `<g fill="${ink}">
+      <path d="M41 44c-7-6-10-15-8-24 5 6 10 11 17 15z"/>
+      <path d="M79 44c7-6 10-15 8-24-5 6-10 11-17 15z"/></g>` },
+    antenas: { label: 'Antenas', draw: (ink) => `<g fill="${ink}">
+      <path d="M50 44q-4-14-12-22M70 44q4-14 12-22" fill="none" stroke="${ink}" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="37" cy="21" r="5"/><circle cx="83" cy="21" r="5"/></g>` },
+    ojo: { label: 'Ojo', draw: (ink) => `
+      <path d="M38 33q22-18 44 0-22 18-44 0z" fill="#fff" stroke="${ink}" stroke-width="3"/>
+      <circle cx="60" cy="33" r="6.5" fill="${ink}"/>
+      <circle cx="60" cy="33" r="3" fill="#17181b"/>` },
+    corona: { label: 'Corona', draw: (ink) => `<path d="M42 42l3-22 9 10 6-14 6 14 9-10 3 22z" fill="${ink}"/>` },
+    estrellas: { label: 'Estrellas', draw: (ink) => `<path d="${starPath(36, 30, 7)}${starPath(60, 22, 9)}${starPath(84, 30, 7)}" fill="${ink}"/>` },
+    baba: { label: 'Baba', draw: (ink) => `<path fill="${ink}" d="M0 0h120v7H0z
+      M10 6v10a4 4 0 0 0 8 0V6zM33 6v18a4 4 0 0 0 8 0V6zM56 6v7a4 4 0 0 0 8 0V6zM80 6v15a4 4 0 0 0 8 0V6zM101 6v9a4 4 0 0 0 8 0V6z"/>` },
+    colmillos: { label: 'Colmillos', draw: (ink) => `<g fill="#fff" stroke="${ink}" stroke-width="2.5" stroke-linejoin="round">
+      <path d="M43 92h12l-6 16z"/><path d="M65 92h12l-6 16z"/></g>` },
+    garras: { label: 'Garras', draw: (ink) => `<path fill="${ink}" d="M38 112l19-25 4 1-17 25zM51 113l19-25 4 1-17 25zM64 114l19-25 4 1-17 25z"/>` },
+  },
+};
+
+const DEFAULT_BANNER = {
+  letras: '?', fondo: '#1667c2', tinta: '#ffffff',
+  forma: 'golondrina', estampado: 'liso', borde: 'ninguno', contorno: 'ninguno', fuente: 'varsity', adorno: 'ninguno',
+};
+
+// Anyone can store any text in their banner, and it ends up inside SVG attributes
+const hexColorOr = (value, fallback) => (/^#[0-9a-f]{6}$/i.test(value) ? value : fallback);
+
+// The chosen option of a part, or the default one if it is missing or unknown.
+// hasOwn: a stored value like '__proto__' must not reach a non-option and break the list.
+function bannerOption(banner, part) {
+  const options = BANNER_OPTIONS[part];
+  return options[Object.hasOwn(options, banner[part]) ? banner[part] : DEFAULT_BANNER[part]];
+}
+
+// Each banner clips its cloth with its own id, so several can share a page
+let bannerCount = 0;
+
+// banner: { letras, fondo, tinta, forma, estampado, borde, contorno, fuente, adorno }, as stored in equipos.bandera
+function drawBanner(banner = {}) {
+  const letters = [...String(banner.letras || DEFAULT_BANNER.letras)].slice(0, 4);
+  const background = hexColorOr(banner.fondo, DEFAULT_BANNER.fondo);
+  const ink = hexColorOr(banner.tinta, DEFAULT_BANNER.tinta);
+  const [shape, pattern, border, outline, font, adornment] =
+    ['forma', 'estampado', 'borde', 'contorno', 'fuente', 'adorno'].map((part) => bannerOption(banner, part));
+  const size = [64, 52, 40, 31][letters.length - 1] * font.scale;
+  const stroke = outline.color
+    ? `stroke="${outline.color}" stroke-width="${(size * .12).toFixed(1)}" stroke-linejoin="round" paint-order="stroke"`
+    : '';
+  const clip = `banner-cloth-${++bannerCount}`;
+
+  return `<svg viewBox="0 0 120 150" aria-hidden="true">
+    <clipPath id="${clip}"><path d="${shape.path}"/></clipPath>
+    <g clip-path="url(#${clip})">
+      <path d="${shape.path}" fill="${background}"/>
+      ${pattern.draw()}
+      <path d="M0 0h120v6H0z" fill="#000" opacity=".12"/>
+      ${border.draw(shape.path, ink)}
+    </g>
+    <text x="60" y="82" text-anchor="middle" font-family="${font.family}" font-weight="${font.weight}"
+      font-size="${size.toFixed(1)}" fill="${ink}" ${stroke}>${escapeHtml(letters.join(''))}</text>
+    ${adornment.draw(ink)}
+  </svg>`;
+}

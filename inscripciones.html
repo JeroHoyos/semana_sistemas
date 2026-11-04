@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inscripciones · Semana de Sistemas</title>
+  <meta name="description" content="Inscribe tu equipo para la carrera de observación, la maratón de programación o el torneo de fútbol de la Semana de Sistemas.">
+  <link rel="icon" href="img/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Cinzel:wght@600;700&family=Creepster&family=Graduate&family=Press+Start+2P&family=Rye&display=swap" crossorigin>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="scare-meter-hero photo-bg photo-bg--auditorium">
+    <div class="container scare-meter-nav">
+      <a class="back-link" href="index.html#competencias">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        Volver al inicio
+      </a>
+
+      <!-- Session bar, top right -->
+      <div class="session-bar-nav">
+        <button class="hero__button hero__button--session" id="btn-open-auth" type="button">
+          <span id="session-text">Iniciar sesión</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="container scare-meter-hero__content">
+      <div class="event-hero__decorations" id="registration-decorations"></div>
+      <h1 class="event-hero__title">Inscripciones</h1>
+      <p class="scare-meter-hero__intro">
+        Arma tu equipo y hazle su bandera. Quien crea el equipo queda de capitán: deja su celular e inscribe a los demás con el correo de su carnet.
+      </p>
+    </div>
+  </header>
+
+  <main class="event container">
+    <article class="event__card">
+      <!-- One tab per competition with teams (registrations.js fills it) -->
+      <div class="schedule__days registration__tabs" id="registration-tabs"></div>
+      <div class="registration__summary" id="registration-summary"></div>
+
+      <h2 class="event__subtitle">Tu equipo</h2>
+      <div id="my-team"></div>
+      <p class="auth-message" id="team-message" hidden></p>
+
+      <!-- Create or edit the team: name, phone and banner -->
+      <form class="team-form" id="team-form" hidden>
+        <div class="team-form__preview" id="banner-preview"></div>
+
+        <div class="auth-form">
+          <label class="auth-field">
+            <span>Nombre del equipo</span>
+            <input type="text" id="team-name" minlength="2" maxlength="30" required placeholder="Ej. Oozma Kappa">
+          </label>
+
+          <label class="auth-field">
+            <span>Celular del capitán</span>
+            <input type="tel" id="team-phone" maxlength="20" required placeholder="Ej. 300 123 4567" autocomplete="tel">
+          </label>
+
+          <div class="idcard-builder__controls" id="banner-builder">
+            <div class="idcard-builder__top-bar">
+              <span class="idcard-builder__subtitle">Diseña tu bandera</span>
+              <button class="random-button" id="btn-random-banner" type="button">Aleatorio</button>
+            </div>
+            <fieldset class="banner-picker">
+              <legend>Letras</legend>
+              <input class="team-form__letters" id="banner-letters" maxlength="4" required placeholder="Ej. OK" aria-label="Letras de la bandera">
+              <div class="team-form__greek" id="greek-letters" aria-label="Letras griegas"></div>
+            </fieldset>
+            <div class="banner-pickers" id="banner-pickers"></div>
+          </div>
+
+          <p class="auth-message" id="team-form-message" hidden></p>
+          <div class="auth-edit__buttons">
+            <button class="week-button auth-edit__cancel" id="btn-cancel-team" type="button">Cancelar</button>
+            <button class="hero__button auth-form__submit auth-edit__save" id="btn-save-team" type="submit">Guardar equipo</button>
+          </div>
+        </div>
+      </form>
+
+      <h2 class="event__subtitle">Equipos inscritos</h2>
+      <ul class="team-list" id="team-list"></ul>
+    </article>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <a class="site-footer__instagram" href="https://www.instagram.com/sistemasunalmed/" target="_blank" rel="noopener"
+      title="Instagram de la representación de Ingeniería de Sistemas">
+      <span class="site-footer__crest" id="footer-crest"></span>
+      <span class="site-footer__handle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg>
+        @sistemasunalmed
+      </span>
+    </a>
+    <p>Semana de Sistemas · Facultad de Minas · Medellín</p>
+    <p class="site-footer__authors">Web hecha por <strong>Santiago Escobar Arias</strong> y <strong>Jerónimo Hoyos Botero</strong></p>
+  </footer>
+
+  <!-- LOGIN MODAL / SCARER ID CARD -->
+  <dialog class="auth-modal" id="auth-modal">
+    <div class="auth-modal__box">
+      <button class="auth-modal__close" id="btn-close-auth" type="button" aria-label="Cerrar ventana">✕</button>
+
+      <div class="auth-modal__header">
+        <div class="auth-modal__eye" id="auth-eye-icon"></div>
+        <p class="section-title__eyebrow">Facultad de Minas · UNAL</p>
+        <h2 class="auth-modal__title" id="auth-title">Acceso</h2>
+      </div>
+
+      <!-- View when NOT logged in -->
+      <div id="auth-form-view">
+        <div class="schedule__days auth-modal__tabs">
+          <button class="day" id="tab-login" type="button" aria-pressed="true">
+            <strong>Ingresar</strong>
+          </button>
+          <button class="day" id="tab-signup" type="button" aria-pressed="false">
+            <strong>Crear Carnet</strong>
+          </button>
+        </div>
+
+        <!-- Live builder for the Scarer ID card (video game style) -->
+        <div class="idcard-builder" id="idcard-builder" hidden>
+          <div class="speakers__idcard idcard-builder__preview" id="signup-idcard-preview"></div>
+          <button class="week-button download-button" data-idcard="#signup-idcard-preview" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+            <span>Descargar carnet</span>
+          </button>
+
+          <div class="idcard-builder__controls">
+            <div class="idcard-builder__top-bar">
+              <span class="idcard-builder__subtitle">Personaliza tu monstruo</span>
+              <button type="button" class="random-button" id="btn-random-monster">
+                Aleatorio
+              </button>
+            </div>
+
+            <div class="arcade-selector" data-prop="estilo">
+              <span class="arcade-selector__label">Estilo</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-estilo">Asustador</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+
+            <div class="arcade-selector" data-prop="cuerpo">
+              <span class="arcade-selector__label">Cuerpo</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-cuerpo">Peludo Manchas</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+
+            <div class="arcade-selector" data-prop="color">
+              <span class="arcade-selector__label">Color</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value">
+                  <span class="arcade-selector__dot" id="dot-color"></span>
+                  <span id="val-color">Azul Sulley</span>
+                </span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+
+            <div class="arcade-selector" data-prop="ojos">
+              <span class="arcade-selector__label">Ojos</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-ojos">1 Ojo Cíclope</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+
+            <div class="arcade-selector" data-prop="cuernos">
+              <span class="arcade-selector__label">Cabeza</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-cuernos">Cuernos Toro</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+
+            <div class="arcade-selector" data-prop="boca">
+              <span class="arcade-selector__label">Boca</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-boca">Colmillos</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+
+            <div class="arcade-selector" data-prop="accesorio">
+              <span class="arcade-selector__label">Detalle</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-accesorio">Al Natural</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <form class="auth-form" id="auth-form">
+          <label class="auth-field" id="name-field" hidden>
+            <span>Nombre en tu carnet</span>
+            <input type="text" id="auth-name" placeholder="Ej. Santiago Escobar" maxlength="28" autocomplete="name">
+          </label>
+
+          <label class="auth-field">
+            <span>Correo institucional</span>
+            <input type="email" id="auth-email" placeholder="usuario@unal.edu.co" required autocomplete="email">
+          </label>
+
+          <label class="auth-field">
+            <span>Contraseña</span>
+            <input type="password" id="auth-password" placeholder="Mínimo 6 caracteres" minlength="6" required autocomplete="current-password">
+          </label>
+
+          <p class="auth-message" id="auth-message" hidden></p>
+
+          <button class="hero__button auth-form__submit" id="auth-submit" type="submit">
+            <span id="auth-submit-text">Entrar</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </form>
+      </div>
+
+      <!-- View when logged in -->
+      <div class="auth-profile" id="auth-profile-view" hidden>
+        <div class="speakers__idcard idcard-builder__preview" id="profile-idcard"></div>
+        <div class="auth-profile__actions">
+          <button class="week-button download-button" data-idcard="#profile-idcard" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+            <span>Descargar carnet</span>
+          </button>
+          <button class="week-button edit-button" id="btn-edit-idcard" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+            Editar carnet
+          </button>
+        </div>
+        <p class="auth-profile__email" id="profile-email"></p>
+        <button class="week-button auth-profile__logout" id="btn-logout" type="button">
+          Cerrar sesión
+        </button>
+      </div>
+
+      <!-- View to EDIT the ID card: name, title (one of the unlocked ones) and monster.
+           The monster selector (#idcard-builder) moves here from the form while editing. -->
+      <div class="auth-edit" id="auth-edit-view" hidden>
+        <div class="auth-form">
+          <label class="auth-field">
+            <span>Nombre en tu carnet</span>
+            <input type="text" id="edit-name" maxlength="28" autocomplete="name">
+          </label>
+
+          <div class="arcade-selector" id="title-selector">
+            <span class="arcade-selector__label">Título</span>
+            <div class="arcade-selector__control">
+              <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Título anterior">‹</button>
+              <span class="arcade-selector__value" id="val-title" aria-live="polite"></span>
+              <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Título siguiente">›</button>
+            </div>
+          </div>
+          <p class="auth-edit__note" id="edit-titles-note"></p>
+        </div>
+
+        <div id="edit-builder-mount"></div>
+
+        <p class="auth-message" id="edit-message" hidden></p>
+        <div class="auth-edit__buttons">
+          <button class="week-button auth-edit__cancel" id="btn-cancel-edit" type="button">Cancelar</button>
+          <button class="hero__button auth-form__submit auth-edit__save" id="btn-save-edit" type="button">Guardar cambios</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/pixel-art.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/registrations.js"></script>
+</body>
+</html>
