@@ -39,8 +39,8 @@ function renderInfo() {
   $('#event-info').innerHTML = [
     noticeSection(),
     factsSection(),
-    descriptionSection(),
     registrationSection(),
+    descriptionSection(),
     videoSection(activity.video),
     rulesSection(activity.rules),
     speakerSection(findSpeaker(activity.speaker)),
@@ -109,26 +109,29 @@ function statBoxes(stats) {
   `;
 }
 
-// Team or individual registration call to action
+// Team or individual registration call to action. The button goes before its note and right after
+// the facts: nothing of variable height above it, so it sits in the same place on every competition.
 function registrationSection() {
   if (activity.team) {
     return `
-      <h2 class="event__subtitle">Inscripciones</h2>
-      <p class="event__bio">
-        Equipos de hasta ${activity.team.size} personas${activity.team.maxTeams ? `, con cupo para ${activity.team.maxTeams} equipos` : ''}.
-        Quien crea el equipo queda de capitán e inscribe a los demás con el correo de su carnet.
-      </p>
-      <a class="hero__button auth-form__submit" href="inscripciones.html?id=${activity.id}">Inscribir equipo ${ICONS.arrow}</a>
+      <div class="event__signup">
+        <a class="hero__button auth-form__submit" href="inscripciones.html?id=${activity.id}">Inscribir equipo ${ICONS.arrow}</a>
+        <p class="event__bio">
+          Equipos de hasta ${activity.team.size} personas${activity.team.maxTeams ? `, con cupo para ${activity.team.maxTeams} equipos` : ''}.
+          Quien crea el equipo queda de capitán e inscribe a los demás con el correo de su carnet.
+        </p>
+      </div>
     `;
   }
   if (activity.individual) {
     return `
-      <h2 class="event__subtitle">Inscripciones</h2>
-      <p class="event__bio">
-        Inscripción individual con cupo para ${activity.individual.max} participantes.
-        Solo necesitas tener tu carnet e ingresar tu número de celular.
-      </p>
-      <a class="hero__button auth-form__submit" href="inscripciones.html?id=${activity.id}">Inscribirme ${ICONS.arrow}</a>
+      <div class="event__signup">
+        <a class="hero__button auth-form__submit" href="inscripciones.html?id=${activity.id}">Inscribirme ${ICONS.arrow}</a>
+        <p class="event__bio">
+          Inscripción individual con cupo para ${activity.individual.max} participantes.
+          Solo necesitas tener tu carnet e ingresar tu número de celular.
+        </p>
+      </div>
     `;
   }
   return '';
