@@ -56,14 +56,20 @@ as $$
   select p_juego in ('doom', 'defrag');
 $$;
 
--- Supervisor (admin): has the 'supervisor' title in their account (user_metadata.titulos),
--- the same way the page checks it (isCurrentSupervisor in js/scare-meter.js)
-create or replace function public.juego_es_supervisor()
+-- Supervisor (admin): marked by hand in app_metadata, which only the database can change.
+-- The 'supervisor' title lives in user_metadata, which anyone can edit from the browser console:
+-- it only shows the buttons on the page (isCurrentSupervisor in js/scare-meter.js).
+-- modificar_puntos (Scare Meter) asks this function too. To make someone a supervisor:
+--   update auth.users set raw_app_meta_data = raw_app_meta_data || '{"supervisor": true}'
+--   where lower(email) = 'correo@unal.edu.co';
+create or replace function public.es_supervisor()
 returns boolean
 language sql
 stable
+security definer
+set search_path = public
 as $$
-  select coalesce(auth.jwt() -> 'user_metadata' -> 'titulos', '[]'::jsonb) ? 'supervisor';
+  select coalesce((select (raw_app_meta_data ->> 'supervisor')::boolean from auth.users where id = auth.uid()), false);
 $$;
 
 
@@ -87,6 +93,11 @@ begin
     raise exception 'Inicia sesión para guardar tu puntaje';
   end if;
 
+  -- Sanctioned accounts (clowns, perfiles.es_payaso) do not enter the table
+  if exists (select 1 from perfiles where id = v_usuario and es_payaso) then
+    raise exception 'Seguridad: Tu cuenta tiene un Shadowban activo y no puede registrar récords.';
+  end if;
+
   -- What can be achieved in each game. When a new game arrives, add it here.
   case p_juego
     -- Snake: 300 cells and the snake starts with 4, at 10 points per bug → at most 2,960
@@ -107,12 +118,18 @@ begin
       raise exception 'Juego desconocido: %', p_juego;
   end case;
 
-  if juego_bloqueado(p_juego) and not juego_es_supervisor() then
+  if juego_bloqueado(p_juego) and not es_supervisor() then
     raise exception 'Semana bloqueada';
   end if;
 
+  -- The page only sends possible results, so an impossible one comes from the console: the account
+  -- becomes a clown. It returns instead of raising an error, because an error would undo the update.
   if p_puntaje is null or p_puntaje < v_minimo or p_puntaje > v_maximo or p_puntaje % v_multiplo <> 0 then
-    raise exception 'Puntaje no válido';
+    update perfiles
+       set es_payaso = true,
+           monstruo = jsonb_set(coalesce(monstruo, '{}'::jsonb), '{es_payaso}', 'true'::jsonb)
+     where id = v_usuario;
+    return json_build_object('error', '🤡 Trampa detectada: tu cuenta ahora tiene Licencia de Payaso.');
   end if;
 
   select mejor_puntaje into v_anterior
@@ -167,6 +184,7 @@ as $$
   from puntajes_juego j
   left join perfiles p on p.id = j.usuario_id
   where j.juego = p_juego and j.mejor_puntaje > 0
+    and not coalesce(p.es_payaso, false)   -- clowns do not show
   order by j.mejor_puntaje desc, j.partidas asc, j.logrado_en asc
   limit least(greatest(coalesce(p_limite, 10), 1), 50);
 $$;
