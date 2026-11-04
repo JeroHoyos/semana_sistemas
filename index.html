@@ -352,6 +352,36 @@
     </div>
   </dialog>
 
+  <!-- REWARD MODAL: VETERAN REWARD -->
+  <dialog class="auth-modal reward-modal" id="reward-modal" aria-labelledby="reward-modal-title">
+    <div class="auth-modal__box reward-modal__box">
+      <button class="auth-modal__close" id="btn-close-reward" type="button" aria-label="Cerrar ventana">✕</button>
+
+      <!-- Stage 1: Closed gift -->
+      <div id="reward-stage-closed" class="reward-stage">
+        <div class="reward-icon-box">🎁</div>
+        <p class="section-title__eyebrow">¡Recompensa Exclusiva!</p>
+        <h2 class="auth-modal__title reward-modal__title" id="reward-modal-title">Recompensa Recibida</h2>
+        <p class="reward-desc">Por haberte registrado en la plataforma, has recibido un artículo exclusivo para tu carnet de asustador.</p>
+        <button class="hero__button reward-btn" id="btn-open-reward" type="button">
+          <span>Abrir Recompensa</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+
+      <!-- Stage 2: Unlocked item -->
+      <div id="reward-stage-opened" class="reward-stage" hidden>
+        <div class="reward-unlocked-preview" id="reward-item-preview"></div>
+        <div class="reward-badge">👕 ITEM EXCLUSIVO DESBLOQUEADO</div>
+        <h3 class="reward-item-name">Camiseta UNAL</h3>
+        <p class="reward-desc">¡Se ha añadido a tu inventario! Ya puedes equipársela a tu monstruo en cualquier momento desde <strong>Editar carnet</strong>.</p>
+        <button class="hero__button reward-btn" id="btn-claim-reward" type="button">
+          <span>¡Equipar en mi carnet!</span>
+        </button>
+      </div>
+    </div>
+  </dialog>
+
   <!-- GALLERY VIEWER: the photo or video in large, with arrows to move on. Tapping outside closes it. -->
   <dialog class="viewer" id="viewer" aria-label="Galería">
     <figure class="viewer__figure">
@@ -375,5 +405,7 @@
   <script src="js/common.js"></script>
   <script src="js/main.js"></script>
   <script src="js/auth.js"></script>
+
+
 </body>
 </html>

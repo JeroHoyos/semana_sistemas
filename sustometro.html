@@ -264,6 +264,16 @@
             </li>
           </ol>
         </div>
+
+        <!-- CUADRO DE LOS PAYASOS (SHADOWBAN) -->
+        <div class="ranking-card ranking-card--clowns" id="clowns-card" hidden>
+          <div class="ranking-card__header ranking-card__header--clowns">
+            <h2 class="ranking-card__title">🎪 Circo de Payasos</h2>
+            <span class="ranking-card__badge ranking-card__badge--clowns">Shadowban</span>
+          </div>
+          <p class="clowns-desc">Cuentas sancionadas permanentemente por intento de inyección de código y manipulación de datos. Sus puntos están congelados en 0.</p>
+          <ul class="ranking-list ranking-list--clowns" id="clowns-list"></ul>
+        </div>
       </section>
 
     </div>
@@ -610,6 +620,36 @@
     </div>
   </dialog>
 
+  <!-- REWARD MODAL: VETERAN REWARD -->
+  <dialog class="auth-modal reward-modal" id="reward-modal" aria-labelledby="reward-modal-title">
+    <div class="auth-modal__box reward-modal__box">
+      <button class="auth-modal__close" id="btn-close-reward" type="button" aria-label="Cerrar ventana">✕</button>
+
+      <!-- Stage 1: Closed gift -->
+      <div id="reward-stage-closed" class="reward-stage">
+        <div class="reward-icon-box">🎁</div>
+        <p class="section-title__eyebrow">¡Recompensa Exclusiva!</p>
+        <h2 class="auth-modal__title reward-modal__title" id="reward-modal-title">Recompensa Recibida</h2>
+        <p class="reward-desc">Por haberte registrado en la plataforma, has recibido un artículo exclusivo para tu carnet de asustador.</p>
+        <button class="hero__button reward-btn" id="btn-open-reward" type="button">
+          <span>Abrir Recompensa</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+
+      <!-- Stage 2: Unlocked item -->
+      <div id="reward-stage-opened" class="reward-stage" hidden>
+        <div class="reward-unlocked-preview" id="reward-item-preview"></div>
+        <div class="reward-badge">👕 ITEM EXCLUSIVO DESBLOQUEADO</div>
+        <h3 class="reward-item-name">Camiseta UNAL</h3>
+        <p class="reward-desc">¡Se ha añadido a tu inventario! Ya puedes equipársela a tu monstruo en cualquier momento desde <strong>Editar carnet</strong>.</p>
+        <button class="hero__button reward-btn" id="btn-claim-reward" type="button">
+          <span>¡Equipar en mi carnet!</span>
+        </button>
+      </div>
+    </div>
+  </dialog>
+
   <!-- DIALOG WITH THE ID CARD OF A PERSON FROM THE TABLE (filled by scare-meter.js) -->
   <dialog class="auth-modal auth-modal--signup" id="idcard-modal" aria-labelledby="idcard-modal-title">
     <div class="auth-modal__box">
@@ -715,5 +755,7 @@
   <script src="js/defrag.js"></script>
   <script src="js/weekly-game.js"></script>
   <script src="js/secrets.js"></script>
+
+
 </body>
 </html>

@@ -335,6 +335,21 @@ const MONSTER_PARTS = {
       <path d="M16 60 A44 42 0 0 1 104 60" fill="none" stroke="#26303b" stroke-width="4.5"/>
       <rect x="8" y="50" width="10" height="22" rx="5" fill="#1667c2" stroke="#2a2f36" stroke-width="2.2"/>
       <rect x="102" y="50" width="10" height="22" rx="5" fill="#1667c2" stroke="#2a2f36" stroke-width="2.2"/>`,
+    camiseta: () => `
+      <g class="monster-jersey">
+        <!-- Body of jersey covering shoulders and torso -->
+        <path d="M14 68 C14 60 36 73 42 75 C48 83 72 83 78 75 C84 73 106 60 106 68 L106 100 L14 100 Z" fill="#0a2c52" stroke="#2a2f36" stroke-width="2.4" stroke-linejoin="round"/>
+        <!-- Front athletic stripe across chest -->
+        <path d="M14 83 Q60 89 106 83 L106 88 Q60 94 14 88 Z" fill="#2f9e5b"/>
+        <!-- Sporty V-collar with green & white trim -->
+        <path d="M42 75 Q60 85 78 75" fill="none" stroke="#2f9e5b" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M44 76 Q60 84 76 76" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round"/>
+        <!-- Sleeve stripes on shoulders -->
+        <path d="M14 74 L25 78 M14 79 L25 83" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M106 74 L95 78 M106 79 L95 83" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+        <!-- UNAL varsity letters in the center of the chest -->
+        <text x="60" y="96.5" text-anchor="middle" font-family="Graduate, serif" font-weight="700" font-size="8.5" fill="#ffffff" letter-spacing="0.8">UNAL</text>
+      </g>`,
   },
 };
 

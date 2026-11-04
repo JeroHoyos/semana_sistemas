@@ -13,6 +13,28 @@
 // Only institutional emails are accepted
 const UNAL_DOMAIN = '@unal.edu.co';
 
+// Cutoff timestamp for veteran rewards (exclusive University jersey item):
+// Anyone registered up to this exact moment gets the reward.
+const VETERAN_CUTOFF = '2026-11-04T17:30:00.000Z';
+
+function hasVeteranReward(user) {
+  if (!user) return false;
+  if (user.user_metadata?.recompensa_camiseta) return true;
+  const createdAt = user.created_at || user.user_metadata?.created_at;
+  if (!createdAt) return false;
+  return new Date(createdAt) <= new Date(VETERAN_CUTOFF);
+}
+
+function updateCatalogForUser(user) {
+  const hasCamiseta = MONSTER_CATALOG.accesorio.some((a) => a.value === 'camiseta');
+  const eligible = hasVeteranReward(user);
+  if (eligible && !hasCamiseta) {
+    MONSTER_CATALOG.accesorio.push({ value: 'camiseta', label: 'Camiseta UNAL' });
+  } else if (!eligible && hasCamiseta) {
+    MONSTER_CATALOG.accesorio = MONSTER_CATALOG.accesorio.filter((a) => a.value !== 'camiseta');
+  }
+}
+
 // true = "Crear Carnet" tab, false = "Ingresar" tab
 let signupMode = false;
 
@@ -135,6 +157,7 @@ function scarerIdCard(name, email, monster, title = BASE_TITLE, medal = null) {
   const isNocturnal = !clown && title?.id === 'terror-nocturno';
   const isPhenomenon = !clown && title?.id === 'video-futbol';
   const isKonami = !clown && title?.id === 'konami';
+  const isSupervisor = !clown && title?.id === 'supervisor';
 
   // Long titles split into two lines so they do not hit the photo
   let bandClass = role.length > 12 ? 'idcard__band idcard__band--long' : 'idcard__band';
@@ -142,10 +165,15 @@ function scarerIdCard(name, email, monster, title = BASE_TITLE, medal = null) {
   if (isNocturnal) bandClass += ' idcard__band--nocturnal';
   if (isPhenomenon) bandClass += ' idcard__band--phenomenon';
   if (isKonami) bandClass += ' idcard__band--konami';
+  if (isSupervisor) bandClass += ' idcard__band--supervisor';
   if (clown) bandClass += ' idcard__band--clown';
 
   const roleHtml = isDebugger
     ? `<span class="glitch-text" data-text="${role}">${role}</span>`
+    : isPhenomenon
+    ? `🇧🇷 ${role}`
+    : isSupervisor
+    ? `👑 ${role}`
     : role;
 
   const color = monsterColor(monster);
@@ -153,8 +181,10 @@ function scarerIdCard(name, email, monster, title = BASE_TITLE, medal = null) {
   const cardClass = clown ? 'idcard idcard--clown' : medalStyle?.card ?? 'idcard';
   const stamp = clown
     ? '<span class="idcard__stamp idcard__stamp--clown">🤡 LICENCIA DE PAYASO</span>'
+    : isSupervisor
+    ? '<span class="idcard__stamp idcard__stamp--supervisor">⚡ STAFF ADMIN</span>'
     : medalStyle?.stamp ?? '';
-  const photoBorder = clown ? '#ff0033' : medalStyle?.border ?? color;
+  const photoBorder = clown ? '#ff0033' : isSupervisor ? '#f59e0b' : medalStyle?.border ?? color;
 
   const brand = clown
     ? `<span class="idcard__week idcard__week--clown"><span class="idcard__tent" aria-hidden="true">🎪</span>CIRCO DE</span><span class="idcard__systems idcard__systems--clown">— PAYASOS —</span>`
@@ -174,7 +204,7 @@ function scarerIdCard(name, email, monster, title = BASE_TITLE, medal = null) {
       ${stamp}
       <div class="idcard__name">${escapeHtml(shownName)}</div>
       ${roleLine}
-      <div class="${bandClass}" style="background: ${clown ? '' : color}; --letters: ${role.length}">${roleHtml}</div>
+      <div class="${bandClass}" style="background: ${clown ? '' : color}; --letters: ${isPhenomenon ? 15 : isSupervisor ? 16 : role.length}">${roleHtml}</div>
       <div class="idcard__photo" style="border-color: ${photoBorder}">
         ${drawCustomMonster(monster || {})}
         ${nose}
@@ -254,6 +284,7 @@ function showEditMessage(text) {
 
 function enterEdit() {
   if (!currentUser || editing) return;
+  updateCatalogForUser(currentUser);
   const meta = currentUser.user_metadata || {};
 
   // The selector starts with the monster the person already has
@@ -455,6 +486,7 @@ function updateSessionUi(user) {
     // Supabase notifies again each time the tab regains focus: while the person is editing
     // the profile is not repainted on top, so they do not lose their work.
     if (!editing) showProfile(user);
+    checkVeteranReward(user);
   } else {
     leaveEdit();
     showForm();
@@ -696,6 +728,71 @@ $$('.download-button').forEach((button) => {
   button.addEventListener('click', () => downloadIdCard(button));
 });
 
+
+/* ---------- Veteran Reward (Camiseta UNAL) ---------- */
+
+function checkVeteranReward(user) {
+  if (!user || !hasVeteranReward(user)) return;
+  const seen = localStorage.getItem('recompensa_abierta_' + user.id) || user.user_metadata?.recompensa_abierta;
+  if (seen) return;
+
+  const modal = $('#reward-modal');
+  if (!modal) return;
+  $('#reward-stage-closed').hidden = false;
+  $('#reward-stage-opened').hidden = true;
+  modal.showModal();
+}
+
+// Global event delegation for reward modal (works regardless of DOM timing)
+document.addEventListener('click', async (event) => {
+  const modal = $('#reward-modal');
+  if (!modal || !modal.open) return;
+
+  // Close with X button or backdrop click
+  if (event.target.closest('#btn-close-reward') || event.target === modal) {
+    modal.close();
+    return;
+  }
+
+  // Open reward
+  const openBtn = event.target.closest('#btn-open-reward');
+  if (openBtn) {
+    $('#reward-stage-closed').hidden = true;
+    $('#reward-stage-opened').hidden = false;
+
+    const sample = { ...(currentUser?.user_metadata?.monstruo || chosenMonster()), accesorio: 'camiseta' };
+    const previewEl = $('#reward-item-preview');
+    if (previewEl) previewEl.innerHTML = drawCustomMonster(sample);
+
+    if (currentUser) {
+      localStorage.setItem('recompensa_abierta_' + currentUser.id, 'true');
+      updateCatalogForUser(currentUser);
+      await supabaseClient.auth.updateUser({
+        data: {
+          ...currentUser.user_metadata,
+          recompensa_camiseta: true,
+          recompensa_abierta: true,
+        },
+      });
+    }
+    return;
+  }
+
+  // Equip reward from modal
+  const claimBtn = event.target.closest('#btn-claim-reward');
+  if (claimBtn) {
+    modal.close();
+    if (currentUser) {
+      enterEdit();
+      const idx = MONSTER_CATALOG.accesorio.findIndex((a) => a.value === 'camiseta');
+      if (idx !== -1) {
+        monsterIndexes.accesorio = idx;
+        updatePreview();
+      }
+    }
+    return;
+  }
+});
 
 /* ---------- Startup and version control ---------- */
 

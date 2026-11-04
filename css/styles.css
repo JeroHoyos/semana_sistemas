@@ -867,12 +867,184 @@ button { font: inherit; color: inherit; cursor: pointer; }
   text-shadow: 0 0 8px rgba(192, 132, 252, 0.6);
 }
 
-/* El Fenómeno (Ronaldo Nazário): Brazil green and yellow */
+/* El Fenómeno (Ronaldo Nazário R9): Brazil Canarinha green, yellow & blue */
 .idcard__band--phenomenon {
-  background: linear-gradient(90deg, #005c25 0%, #007a33 50%, #005c25 100%) !important;
-  border-top: 1.5px solid #ffdf00;
-  border-bottom: 1.5px solid #ffdf00;
-  color: #ffdf00 !important;
+  padding-right: 42% !important;
+  background: linear-gradient(90deg, #009c3b 0%, #ffdf00 12%, #ffdf00 52%, #002776 58%, #002776 100%) !important;
+  border-top: 2px solid #009c3b !important;
+  border-bottom: 2px solid #002776 !important;
+  color: #002776 !important;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 900 !important;
+  font-size: 3.7cqw !important;
+  letter-spacing: .04em;
+  text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 0 8px rgba(255, 223, 0, 0.8);
+  box-shadow: inset 0 0 10px rgba(0, 39, 118, 0.35);
+  white-space: nowrap;
+}
+
+/* Supervisor de Sustos (Admin/Staff): Obsidian, Royal Purple & Glowing Gold */
+.idcard__band--supervisor {
+  padding-right: 42% !important;
+  background: linear-gradient(90deg, #090e17 0%, #1e1b4b 25%, #312e81 50%, #1e1b4b 75%, #090e17 100%) !important;
+  border-top: 2px solid #fbbf24 !important;
+  border-bottom: 2px solid #f59e0b !important;
+  color: #fef08a !important;
+  font-weight: 800 !important;
+  letter-spacing: .06em;
+  font-size: 3.5cqw !important;
+  line-height: 1.1;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.8), 0 0 2px #fff;
+  box-shadow: inset 0 0 14px rgba(245, 158, 11, 0.35), 0 0 10px rgba(245, 158, 11, 0.4);
+}
+
+.idcard__stamp--supervisor {
+  border-color: #f59e0b !important;
+  color: #fbbf24 !important;
+  background: rgba(15, 23, 42, 0.92) !important;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.5) !important;
+}
+
+.scarer-card__title-tag--supervisor {
+  background: linear-gradient(90deg, #1e1b4b, #312e81);
+  color: #fbbf24;
+  border: 1px solid #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+  font-weight: 700;
+}
+
+/* Circo de Payasos (Muro de Shadowban en sustometro.html) */
+.ranking-card--clowns {
+  margin-top: 24px;
+  border: 2px dashed #ff4d6d;
+  background: linear-gradient(180deg, #fff5f7 0%, #ffeef2 100%);
+}
+.ranking-card__header--clowns {
+  border-bottom: 2px dashed rgba(255, 77, 109, 0.3);
+}
+.ranking-card__badge--clowns {
+  background: #ff0033 !important;
+  color: #fff !important;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  animation: pulse-clown 2s infinite;
+}
+@keyframes pulse-clown {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .85; transform: scale(1.04); }
+}
+.clowns-desc {
+  padding: 12px 18px 0;
+  margin: 0;
+  font-size: 13px;
+  color: #8c1d34;
+  line-height: 1.4;
+}
+.ranking-list--clowns {
+  padding: 14px 18px 18px;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+.scarer-item--clown .scarer-card {
+  border: 2px solid #ff4d6d;
+  background: #fff;
+  opacity: 0.95;
+}
+
+/* Reward Modal (Recompensa de Asustador Veterano) */
+.reward-modal {
+  max-width: 480px;
+}
+.reward-modal__box {
+  text-align: center;
+  padding: 32px 24px 28px;
+}
+.reward-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.reward-icon-box {
+  font-size: 64px;
+  line-height: 1;
+  margin-bottom: 12px;
+  animation: bounce-gift 1.8s infinite ease-in-out;
+}
+@keyframes bounce-gift {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(-10px) rotate(-4deg); }
+  60% { transform: translateY(-6px) rotate(4deg); }
+}
+.reward-modal__title {
+  font-size: 26px;
+  margin: 6px 0 12px;
+}
+.reward-desc {
+  font-size: 14px;
+  color: var(--gray);
+  line-height: 1.5;
+  margin: 0 0 20px;
+  max-width: 380px;
+}
+.reward-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 200px;
+  height: 48px;
+  cursor: pointer;
+  background: var(--navy);
+  color: #fff;
+  font-family: var(--font-narrow);
+  font-weight: 700;
+  border-radius: 999px;
+  border: 0;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  box-shadow: inset 0 0 0 4px var(--navy), inset 0 0 0 6px var(--blue-bright), 0 8px 18px rgba(10, 44, 82, .4);
+}
+.reward-btn:hover {
+  transform: translateY(-2px);
+}
+.reward-unlocked-preview {
+  width: 140px;
+  height: 120px;
+  margin: 0 auto 14px;
+  background: #f1f5f9;
+  border-radius: 20px;
+  border: 2px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,.06);
+}
+.reward-unlocked-preview svg {
+  width: 100%;
+  height: 100%;
+}
+.reward-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #dff6e8;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+  font-family: var(--font-narrow);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  margin-bottom: 8px;
+}
+.reward-item-name {
+  font-family: var(--font-display);
+  font-size: 24px;
+  color: var(--navy);
+  margin: 0 0 8px;
+  text-transform: uppercase;
 }
 
 /* Maestro Konami: Nintendo red, pixel letters with a hard 8-bit shadow */
