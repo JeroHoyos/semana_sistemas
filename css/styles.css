@@ -5430,8 +5430,15 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   background: #e4effd;
 }
 
+.registration__tabs { grid-template-columns: repeat(5, 1fr); }
 .registration__tabs .day svg { width: 24px; height: 24px; }
 .registration__tabs .day strong { font-size: 14px; }
+/* Too narrow for five labels: 3 + 2 centered, six columns so the second row starts half a tab in */
+@media (max-width: 860px) {
+  .registration__tabs { grid-template-columns: repeat(6, 1fr); }
+  .registration__tabs .day { grid-column: span 2; }
+  .registration__tabs .day:nth-child(4) { grid-column: 2 / span 2; }
+}
 
 /* The competition's facts use the activity page boxes (.event__facts) */
 .registration__summary { margin-top: 20px; }
