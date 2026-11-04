@@ -80,8 +80,11 @@ function renderMyTeam() {
 
   if (!currentUser) {
     panel.innerHTML = `
-      <p class="registration__text">Inicia sesión con tu carnet para crear un equipo o ver en cuál te inscribieron.</p>
-      <button class="hero__button auth-form__submit" type="button" data-action="login">Iniciar sesión</button>
+      <p class="registration__text">Inicia sesión con tu carnet para crear un equipo, ver en cuál te inscribieron o buscar uno.</p>
+      <div class="team__actions-row">
+        <button class="hero__button auth-form__submit" type="button" data-action="login">Iniciar sesión</button>
+        <button class="hero__button hero__button--secondary" type="button" data-action="open-find-team">Buscar equipo</button>
+      </div>
     `;
     return;
   }
@@ -96,6 +99,9 @@ function renderMyTeam() {
   } else if (noSpotsLeft()) {
     panel.innerHTML = `
       <p class="registration__text">Ya se llenaron los ${shownActivity.team.maxTeams} cupos. Si un capitán te inscribe en su equipo, aparecerá aquí.</p>
+      <div class="team__actions-row">
+        <button class="hero__button hero__button--secondary" type="button" data-action="open-find-team">Buscar equipo</button>
+      </div>
     `;
   } else {
     panel.innerHTML = `
@@ -103,7 +109,10 @@ function renderMyTeam() {
         Aún no estás en un equipo de esta competencia. Crea uno y quedarás de capitán,
         o pídele a un capitán que te inscriba con tu correo <strong>${escapeHtml(currentUser.email)}</strong>.
       </p>
-      <button class="hero__button auth-form__submit" type="button" data-action="create">Crear equipo</button>
+      <div class="team__actions-row">
+        <button class="hero__button auth-form__submit" type="button" data-action="create">Crear equipo</button>
+        <button class="hero__button hero__button--secondary" type="button" data-action="open-find-team">Buscar equipo</button>
+      </div>
     `;
   }
 }
@@ -285,6 +294,8 @@ $('#my-team').addEventListener('click', (event) => {
     $('#auth-modal').showModal();
   } else if (action === 'create') {
     openTeamForm(null);
+  } else if (action === 'open-find-team') {
+    $('#btn-open-find-team')?.click();
   } else if (action === 'edit') {
     openTeamForm(myTeam());
   } else if (action === 'leave' && confirm('¿Seguro que quieres salirte del equipo?')) {
@@ -615,3 +626,9 @@ $('#footer-crest').innerHTML = drawCrest();
 render();
 loadTeams();
 loadFreeAgents();
+
+if (location.hash === '#buscando-equipo') {
+  setTimeout(() => {
+    $('#buscando-equipo')?.scrollIntoView({ behavior: 'smooth' });
+  }, 250);
+}

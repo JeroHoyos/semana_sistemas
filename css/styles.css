@@ -4869,7 +4869,37 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 
 /* ---------- 15. Team registration (inscripciones.html) ---------- */
 
-.competitions__signup { margin-top: 22px; }
+.competitions__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-top: 22px;
+}
+.competitions__actions .hero__button { margin-top: 0; }
+.competitions__find-team {
+  background: #f0f6ff;
+  color: var(--blue-dark);
+}
+.competitions__find-team:hover {
+  background: #e4effd;
+}
+
+.team__actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+.hero__button--secondary {
+  background: #f0f6ff;
+  color: var(--blue-dark);
+}
+.hero__button--secondary:hover {
+  background: #e4effd;
+}
 
 .registration__tabs .day svg { width: 24px; height: 24px; }
 .registration__tabs .day strong { font-size: 14px; }
