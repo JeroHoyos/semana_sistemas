@@ -1055,47 +1055,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
   font-weight: 700;
 }
 
-/* Circo de Payasos (Muro de Shadowban en sustometro.html) */
-.ranking-card--clowns {
-  margin-top: 24px;
-  border: 2px dashed #ff4d6d;
-  background: linear-gradient(180deg, #fff5f7 0%, #ffeef2 100%);
-}
-.ranking-card__header--clowns {
-  border-bottom: 2px dashed rgba(255, 77, 109, 0.3);
-}
-.ranking-card__badge--clowns {
-  background: #ff0033 !important;
-  color: #fff !important;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  animation: pulse-clown 2s infinite;
-}
-@keyframes pulse-clown {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: .85; transform: scale(1.04); }
-}
-.clowns-desc {
-  padding: 12px 18px 0;
-  margin: 0;
-  font-size: 13px;
-  color: #8c1d34;
-  line-height: 1.4;
-}
-.ranking-list--clowns {
-  padding: 14px 18px 18px;
-  list-style: none;
-  display: grid;
-  gap: 10px;
-  margin: 0;
-}
-.scarer-item--clown .scarer-card {
-  border: 2px solid #ff4d6d;
-  background: #fff;
-  opacity: 0.95;
-}
-
 /* Reward Modal (Recompensa de Asustador Veterano) */
 .reward-modal {
   max-width: 480px;
@@ -2530,6 +2489,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .event__facts dt svg { width: 16px; height: 16px; color: var(--blue); }
 .event__facts dd { margin: 4px 0 0; font-weight: 600; font-size: 17px; line-height: 1.3; color: var(--navy); }
 
+.event__signup {
+  margin-top: 14px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+  text-align: center;
+}
+
 .event__description { margin-top: 24px; font-size: 17px; color: var(--ink-soft); }
 .event__description p + p { margin-top: 12px; }
 
@@ -3840,6 +3806,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .scarer-card--clown .scarer-card__pts small {
   color: #e11d48 !important;
+}
+.scarer-card--clown .scarer-card__percent {
+  color: #be123c;
 }
 
 /* Place in the table; the top three in medal colors once there are points */
@@ -5483,8 +5452,15 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   background: #e4effd;
 }
 
+.registration__tabs { grid-template-columns: repeat(5, 1fr); }
 .registration__tabs .day svg { width: 24px; height: 24px; }
 .registration__tabs .day strong { font-size: 14px; }
+/* Too narrow for five labels: 3 + 2 centered, six columns so the second row starts half a tab in */
+@media (max-width: 860px) {
+  .registration__tabs { grid-template-columns: repeat(6, 1fr); }
+  .registration__tabs .day { grid-column: span 2; }
+  .registration__tabs .day:nth-child(4) { grid-column: 2 / span 2; }
+}
 
 /* The competition's facts use the activity page boxes (.event__facts) */
 .registration__summary { margin-top: 20px; }
