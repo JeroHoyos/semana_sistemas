@@ -7,6 +7,22 @@ Website for the Semana de Sistemas (Facultad de Minas, UNAL Medellín, 18–20 N
 - Follow the `ponytail` skill (`.claude/skills/ponytail/SKILL.md`) when writing code: the smallest complete change, no speculative code.
 - Follow the `ponytail-review` skill (`.claude/skills/ponytail-review/SKILL.md`) when reviewing.
 
+## Branches
+
+Git Flow, without release branches:
+
+| Branch | Purpose | Deploys to |
+| --- | --- | --- |
+| `main` | Production. Only receives merges from `develop` or `hotfix/*`. | The live site (Vercel production) |
+| `develop` | Integration: finished work waits here before going live. | Vercel preview |
+| `feature/<name>` | One piece of work. Branch from `develop`, merge back with a pull request. | Vercel preview |
+| `hotfix/<name>` | Urgent production fix. Branch from `main`, merge into `main`, then into `develop`. | Vercel preview |
+
+- Never commit directly to `main` or `develop`; open a pull request.
+- To publish, merge `develop` into `main`.
+- `feature/doom-defrag` holds the unpublished games (Doom for week 2, Defrag for week 3). To publish one, unlock it (see "Weekly game locks" below) and merge the branch into `develop`.
+- Previews use the same Supabase project as production: whatever you do on a preview writes real data.
+
 ## Language
 
 - Code is in English: identifiers, comments, CSS classes and ids, file and folder names.
