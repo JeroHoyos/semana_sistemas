@@ -124,12 +124,13 @@ function teamSection(team) {
 }
 
 // YouTube video (video field). youtube-nocookie leaves no cookies until someone presses play.
+// enablejsapi lets the page know when it plays and when it ends (js/secrets.js).
 function videoSection(video) {
   if (!video) return '';
 
   return `
     <h2 class="event__subtitle">Para entrar en calor</h2>
-    <iframe class="event__video" src="https://www.youtube-nocookie.com/embed/${video.id}"
+    <iframe class="event__video" src="https://www.youtube-nocookie.com/embed/${video.id}?enablejsapi=1"
       title="${video.title}" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
   `;
