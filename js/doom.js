@@ -1,13 +1,14 @@
 /* =============================================
    DOOM · WEEKLY GAME 2
-   The 1993 Doom, first level only: E1M1, Hangar. Whoever reaches the exit fastest wins.
+   The 1993 Doom, first level only: E1M1, Hangar. Reaching the exit gives points (see DOOM_POINTS):
+   for the enemies killed, the items picked up, the secrets found and how fast you got there.
 
    The engine is doomgeneric (GPL-2.0) compiled to WebAssembly with a few changes (games/doom/source):
    it starts on the title screen with a minimal menu (New Game only), only E1M1 exists,
-   there are no cheats, the player always runs and, on reaching the exit, it reports the level time.
-   That time is Doom's own, in tics of 1/35 s: it skips pauses and does not depend
+   there are no cheats, the player always runs and, on reaching the exit, it reports the level results.
+   The time is Doom's own, in tics of 1/35 s: it skips pauses and does not depend
    on how fast the computer is. If you die, the level (and the clock) goes back to 0.
-   The difficulty is always normal, Hurt Me Plenty, so times are comparable.
+   The difficulty is always Ultra-Violence (one above Doom's normal), so scores are comparable.
    The music is the original, played by Chocolate Doom's OPL player (as on a Sound Blaster).
 
    The data is shareware Doom (doom1.wad), which id Software allowed to be copied freely.
@@ -15,7 +16,7 @@
 
    This file gives the engine what it needs from the browser: clock, screen, keyboard, mouse,
    sound and a "disk" with doom1.wad. The console (weekly-game.js) passes it the controls
-   and saves the time. To build the engine: tools/build-doom.sh
+   and saves the points. To build the engine: tools/build-doom.sh
    ============================================= */
 
 const DOOM = {
@@ -30,6 +31,36 @@ const DOOM = {
   resultsDuration: 6000,    // ms the results screen keeps running after reaching the exit
   volume: 0.6,
 };
+
+// Points on reaching the exit, at most 1000. Enemies, items and secrets give their points by the share
+// found (half the enemies, half of 400). Time gives all its points within E1M1's par (30 s) and loses
+// 1 per second after it, so a careful run still beats a rushed one.
+const DOOM_POINTS = { kills: 400, items: 200, secrets: 200, time: 200, parSeconds: 30 };
+
+// 2345 tics → "1:07.00": minutes, seconds and hundredths
+function formatTime(tics) {
+  const hundredths = Math.floor(Math.max(0, tics) * 100 / 35);
+  const minutes = Math.floor(hundredths / 6000);
+  const seconds = Math.floor(hundredths / 100) % 60;
+  return `${minutes}:${String(seconds).padStart(2, '0')}.${String(hundredths % 100).padStart(2, '0')}`;
+}
+
+// result: what the engine reports at the exit. Returns the points and one line per factor for the end overlay.
+function doomScore({ tics, kills, totalKills, items, totalItems, secrets, totalSecrets }) {
+  const share = (found, total) => (total > 0 ? Math.min(1, found / total) : 0);
+  const extraSeconds = Math.max(0, tics / 35 - DOOM_POINTS.parSeconds);
+  const factors = [
+    ['Enemigos', `${kills}/${totalKills}`, Math.round(DOOM_POINTS.kills * share(kills, totalKills))],
+    ['Objetos', `${items}/${totalItems}`, Math.round(DOOM_POINTS.items * share(items, totalItems))],
+    ['Secretos', `${secrets}/${totalSecrets}`, Math.round(DOOM_POINTS.secrets * share(secrets, totalSecrets))],
+    ['Tiempo', formatTime(tics).slice(0, -3), Math.max(0, Math.round(DOOM_POINTS.time - extraSeconds))],
+  ];
+  return {
+    points: factors.reduce((sum, [, , points]) => sum + points, 0),
+    // The pixel font is monospaced: padding lines them up in columns
+    lines: factors.map(([name, value, points]) => `${`${name} ${value}`.padEnd(14)}+${String(points).padStart(3)}`),
+  };
+}
 
 // Doom key codes (doomkeys.h)
 const DOOM_KEY = {
@@ -456,7 +487,7 @@ async function createDoomEngine({ wasmModule, wad }, pageImports) {
 /* ---------- The run ---------- */
 
 /* canvas: the screen's <canvas>.
-   events: { onScoreChange(tics), onEnd(tics, won, detail), onStateChange(), onLoadProgress(progress),
+   events: { onScoreChange(points), onEnd(points, won, detail), onStateChange(), onLoadProgress(progress),
              onError(message), requestPause() }
    Returns the run's controls. */
 function createDoom(canvas, events = {}) {
@@ -478,8 +509,7 @@ function createDoom(canvas, events = {}) {
   let rafId = 0;            // requestAnimationFrame id
   let result = null;        // what the engine sent on reaching the exit
   let endedAt = 0;
-  let reportedTime = -1;
-  let restartPending = false;
+  let points = 0;           // only known at the exit: until then the console shows 0
   let soundOn = true;
 
   function changeState(next) {
@@ -787,17 +817,14 @@ function createDoom(canvas, events = {}) {
     }
 
     try {
-      if (engine.exports.doom_tick()) restartPending = false;
+      engine.exports.doom_tick();
     } catch (error) {
       fail(error);
       return;
     }
 
     if (newFrame) paintFrame();
-    if (state === 'playing') {
-      reportTime();
-      if (result) finish();
-    }
+    if (state === 'playing' && result) finish();
     rafId = requestAnimationFrame(loop);
   }
 
@@ -812,25 +839,17 @@ function createDoom(canvas, events = {}) {
     rafId = 0;
   }
 
-  function reportTime() {
-    if (restartPending) return;
-    const tics = engine.exports.doom_time();
-    if (tics === reportedTime) return;
-    reportedTime = tics;
-    emit('onScoreChange', tics);
-  }
-
-  // Reached the exit: the time is the level time according to Doom itself.
+  // Reached the exit: the points come from the level results according to Doom itself.
   // The engine keeps running for a while so the results screen can count up.
   function finish() {
-    const { tics, kills, totalKills, secrets, totalSecrets } = result;
+    const score = doomScore(result);
     result = null;
     releaseAll();
     state = 'over';
     endedAt = performance.now();
-    reportedTime = tics;
-    emit('onScoreChange', tics);
-    emit('onEnd', tics, true, `Enemigos ${kills}/${totalKills} · Secretos ${secrets}/${totalSecrets}`);
+    points = score.points;
+    emit('onScoreChange', points);
+    emit('onEnd', points, true, score.lines.join('\n'));
   }
 
   // The engine died (a Doom or browser error). The next run starts a new one.
@@ -914,7 +933,7 @@ function createDoom(canvas, events = {}) {
       return;
     }
     result = null;
-    reportedTime = -1;
+    points = 0;
     emit('onScoreChange', 0);
     state = 'playing';
     startLoop();
@@ -926,8 +945,7 @@ function createDoom(canvas, events = {}) {
     releaseAll();
     engine.exports.doom_restart();
     result = null;
-    restartPending = true;
-    reportedTime = -1;
+    points = 0;
     emit('onScoreChange', 0);
     state = 'playing';
     if (usesMouse) captureMouse();
@@ -990,7 +1008,7 @@ function createDoom(canvas, events = {}) {
 
   return {
     get state() { return state; },
-    get score() { return Math.max(0, reportedTime); },
+    get score() { return points; },
     start,
     pause,
     resume,
@@ -1010,12 +1028,19 @@ function createDoom(canvas, events = {}) {
 const DOOM_CARTRIDGE = {
   id: 'doom',
   name: 'Doom',
-  scoring: 'time',
+  scoring: 'points',
   create: (canvas, events) => createDoom(canvas, events),
   splash: {
-    text: 'E1M1 · Hangar, en Hurt Me Plenty. Llega a la salida lo más rápido que puedas. Si mueres, el reloj vuelve a 0.',
-    keyboardHelp: 'Flechas o WASD + mouse · Ctrl o clic dispara · Espacio abre · 1-7 armas · P pausa',
-    touchHelp: 'Cruceta camina · desliza la pantalla para girar · A dispara · B abre',
+    text: 'Llega a la salida lo antes posible',
+    keyboardHelp: 'WASD y mouse · Clic dispara · P pausa',
+    touchHelp: 'Cruceta camina · A dispara · B abre',
+  },
+  controls: {
+    keyboard: [
+      ['WASD o flechas', 'Moverse'], ['Mouse', 'Girar'], ['Clic o Ctrl', 'Disparar'], ['Espacio o E', 'Abrir'],
+      ['1 a 7', 'Armas'], ['Tab', 'Mapa'], ['P', 'Pausa'], ['M', 'Sonido'],
+    ],
+    touch: [['Cruceta', 'Caminar'], ['Deslizar la pantalla', 'Girar'], ['A', 'Disparar'], ['B', 'Abrir']],
   },
   end: { title: 'Nivel completado', success: true },
   buttons: { a: 'Disparar', b: 'Abrir' },

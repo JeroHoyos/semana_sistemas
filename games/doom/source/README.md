@@ -1,6 +1,6 @@
 # Doom for the Scare Meter console
 
-The game of week 2 is the 1993 Doom, first level only (E1M1, *Hangar*), on normal difficulty (*Hurt Me Plenty*). Whoever reaches the exit fastest wins.
+The game of week 2 is the 1993 Doom, first level only (E1M1, *Hangar*), on *Ultra-Violence* (one above the normal difficulty). Reaching the exit gives points for the enemies killed, the items picked up, the secrets found and the time (`doomScore` in `js/doom.js`).
 
 ## What is here
 
@@ -17,11 +17,11 @@ The game of week 2 is the 1993 Doom, first level only (E1M1, *Hangar*), on norma
 
 The engine is [doomgeneric](https://github.com/ozkl/doomgeneric) (based on Chocolate Doom), at commit `e257a09`. The patch:
 
-- Starts on the title screen (no demos, they would load other levels) with a minimal menu: only *New Game*, at the bottom, which starts E1M1 on *Hurt Me Plenty*. During a run the menu does not open and its shortcuts (save, load, quit…) do not work.
+- Starts on the title screen (no demos, they would load other levels) with a minimal menu: only *New Game*, at the bottom, which starts E1M1 on *Ultra-Violence*. During a run the menu does not open and its shortcuts (save, load, quit…) do not work.
 - Does not let another level load: `G_InitNew` and `G_DoLoadLevel` always use episode 1, map 1, and after the results screen it does not go on to E1M2.
 - Removes the cheats (`iddqd`, `idclip`, `idclev`…).
 - Makes the player always run, the same for everyone and also on phones.
-- On reaching the exit it calls `DG_LevelCompleted` with the level time (`leveltime`, in tics of 1/35 of a second). It is the same time Doom shows on the results screen: it skips pauses and does not depend on the computer's speed. If you die, the level and the time start over.
+- On reaching the exit it calls `DG_LevelCompleted` with the kills, items and secrets (each with its total) and the level time (`leveltime`, in tics of 1/35 of a second). It is the same time Doom shows on the results screen: it skips pauses and does not depend on the computer's speed. If you die, the level and the time start over.
 - Removes the "melt" between screens, because it is a loop that does not give control back to the browser.
 - Uses the OPL music from [Chocolate Doom](https://github.com/chocolate-doom/chocolate-doom) 3.0.1 (`i_oplmusic.c`, `midifile.c` and the Nuked OPL3 emulator): it sounds like a 1993 Sound Blaster, with the instruments in the WAD itself.
 

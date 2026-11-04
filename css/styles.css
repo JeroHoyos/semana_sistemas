@@ -4560,6 +4560,20 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   animation: blink 1s steps(1) infinite;
 }
 .overlay__help { font-size: clamp(7px, 1.7cqw, 11px); line-height: 1.7; color: #7d8bb0; }
+
+/* Pause: the game's controls in two columns, the keys in yellow. The board darkens more so they read well. */
+.overlay--paused { background: rgba(6, 10, 22, .88); }
+.overlay__controls {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: clamp(4px, 1.3cqw, 9px) clamp(10px, 3cqw, 22px);
+  margin: 0;
+  font-size: clamp(7px, 1.8cqw, 11px);
+  line-height: 1.3;
+  text-align: left;
+}
+.overlay__controls dt { text-align: right; color: #ffd23f; }
+.overlay__controls dd { margin: 0; color: #c9d2dc; }
 .overlay__score { font-size: clamp(9px, 2.5cqw, 15px); color: #c9d2dc; }
 .overlay__score strong {
   display: block;
@@ -4581,8 +4595,8 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 }
 .overlay__status--record { color: #ffd23f; animation: blink .5s steps(1) 6; }
 .overlay__status--notice { color: #ff8a8a; }
-/* One more line with run details (Doom: enemies and secrets) */
-.overlay__detail { font-size: clamp(7px, 1.8cqw, 11px); line-height: 1.6; color: #7d8bb0; }
+/* More lines with run details (Doom: the points of each factor, one per line and lined up in columns) */
+.overlay__detail { font-size: clamp(7px, 1.8cqw, 11px); line-height: 1.6; color: #7d8bb0; white-space: pre; text-align: left; }
 .overlay__button {
   padding: clamp(7px, 1.8cqw, 12px) clamp(12px, 3cqw, 20px);
   border: 0;
@@ -4602,6 +4616,7 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 @media (hover: none) and (pointer: coarse) {
   .console .keyboard-only { display: none; }
   .console .touch-only { display: inline; }
+  .console .overlay__controls.touch-only { display: grid; }
 }
 
 /* Controls */
