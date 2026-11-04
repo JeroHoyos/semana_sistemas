@@ -14,7 +14,7 @@
 // Title of the dialog when the person is the first
 const SECRET_TITLES = {
   konami: 'Código Konami',
-  'video-futbol': '¡Hincha hasta el final!',
+  'video-futbol': 'Revisión del VAR',
 };
 
 const SECRET_TEXTS = {
