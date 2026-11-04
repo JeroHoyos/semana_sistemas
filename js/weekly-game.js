@@ -6,7 +6,7 @@
    Each week has its game (WEEKS, below) and it changes with the buttons on the top sign.
    A locked week does not open yet: only supervisors (admins) can play it, to test it.
 
-   Each game brings its cartridge (SNAKE_CARTRIDGE in snake.js):
+   Each game brings its cartridge (SNAKE_CARTRIDGE in snake.js, DOOM_CARTRIDGE in doom.js, DEFRAG_CARTRIDGE in defrag.js):
      id, name               how it is saved in Supabase and how it shows
      scoring                'points' (highest wins) or 'time' (in tics of 1/35 s; lowest wins)
      create(canvas, events) builds the run
@@ -28,6 +28,8 @@
 // To open a week: remove locked here and remove its game from juego_bloqueado() in the SQL.
 const WEEKS = [
   { ...SNAKE_CARTRIDGE, week: 1 },
+  { ...DOOM_CARTRIDGE, week: 2, locked: true },
+  { ...DEFRAG_CARTRIDGE, week: 3, locked: true },
 ];
 
 const gameConsole = $('#console');
