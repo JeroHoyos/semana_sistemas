@@ -23,7 +23,7 @@ const SECRET_TEXTS = {
   primero: (places, title) => (title
     ? `Estás entre las ${places} primeras personas en descubrirlo: ganaste el título «${title}» para tu carnet.`
     : `Estás entre las ${places} primeras personas en descubrirlo, pero no pudimos guardar tu título. Hazlo otra vez en un rato.`),
-  tarde: (places) => `Descubriste el secreto, pero ya lo encontraron las ${places} personas que podían ganarlo. ¡Sigue buscando!`,
+  tarde: (places) => `Descubriste el secreto, pero ya lo encontraron las ${places} personas que podían ganarlo.`,
   error: () => 'Encontraste un secreto, pero no pudimos revisarlo. Hazlo otra vez en un rato.',
 };
 
