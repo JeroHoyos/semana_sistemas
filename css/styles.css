@@ -668,18 +668,25 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 
 .carnet--payaso .carnet__marca {
+  top: 4%;
   color: #9f1239;
 }
 
+/* "CIRCO DE" es más largo que "SEMANA": con su tamaño de letra se partía en tres renglones */
 .carnet__semana--payaso {
   color: #e11d48 !important;
+  font-size: 6.4cqw;
   font-weight: 800;
-  letter-spacing: .08em;
+  letter-spacing: .04em;
+  white-space: nowrap;
 }
 
 .carnet__sistemas--payaso {
+  margin-top: 1.2cqw;
   color: #be123c !important;
   font-weight: 700;
+  letter-spacing: .2em;
+  white-space: nowrap;
 }
 
 .carnet--payaso .carnet__nombre {
@@ -693,24 +700,34 @@ button { font: inherit; color: inherit; cursor: pointer; }
   letter-spacing: .06em;
 }
 
+/* En un solo renglón y centrada debajo del nombre (va del 4% al 56%, antes de la foto) */
 .carnet__franja--payaso {
+  justify-content: center;
+  padding: 0 44% 0 4%;
   background: repeating-linear-gradient(45deg, #e11d48, #e11d48 12px, #f59e0b 12px, #f59e0b 24px) !important;
   color: #ffffff !important;
+  font-size: 3.6cqw;
   font-weight: 900 !important;
+  line-height: 1;
+  white-space: nowrap;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8) !important;
-  letter-spacing: .12em !important;
+  letter-spacing: .06em !important;
   border-top: 2px solid #ffffff;
   border-bottom: 2px solid #ffffff;
 }
 
+/* Entre la marca y la foto, centrado con la marca (el translate del sello base se conserva) */
 .carnet__sello--payaso {
+  left: 69.5%;
+  top: 31%;
   border-color: #e11d48 !important;
   background: linear-gradient(135deg, #fff1f2, #ffe4e6) !important;
   color: #be123c !important;
+  font-size: 2.5cqw;
   font-weight: 800;
-  letter-spacing: .12em;
+  letter-spacing: .08em;
   box-shadow: 0 2px 8px rgba(225, 29, 72, 0.25), inset 0 0 0 1px #fff;
-  transform: rotate(-6deg);
+  transform: translate(-50%, -50%) rotate(-3deg);
   z-index: 2;
 }
 
@@ -719,7 +736,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   top: 71%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 24px;
+  font-size: 5cqw;
   line-height: 1;
   z-index: 10;
   pointer-events: none;
@@ -753,6 +770,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   border-radius: 14px;
   padding: 14px 18px;
   margin-bottom: 18px;
+  text-align: left;
   box-shadow: 0 6px 18px -4px rgba(244, 63, 94, 0.35);
   animation: aviso-payaso-shake 5s ease-in-out infinite;
 }
@@ -765,13 +783,23 @@ button { font: inherit; color: inherit; cursor: pointer; }
   98% { transform: translateX(3px); }
 }
 
+/* Rebote propio: nariz-rebote trae el translate(-50%, -50%) de la nariz y sacaba el icono del aviso */
 .aviso-payaso__icono {
-  font-size: 32px;
-  flex-shrink: 0;
-  animation: nariz-rebote 1.5s infinite;
+  flex: none;
+  font-size: 30px;
+  line-height: 1;
+  white-space: nowrap;
+  animation: aviso-payaso-rebote 1.5s ease-in-out infinite;
+}
+
+@keyframes aviso-payaso-rebote {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
 }
 
 .aviso-payaso__cuerpo {
+  flex: 1;
+  min-width: 0;
   font-size: 13px;
   line-height: 1.4;
   color: #881337;
@@ -789,6 +817,23 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .aviso-payaso__cuerpo p {
   margin: 0;
   color: #9f1239;
+}
+
+/* En el celular no alcanza el ancho para el icono al lado del texto */
+@media (max-width: 480px) {
+  .aviso-payaso {
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px;
+    text-align: center;
+  }
+  .aviso-payaso__cuerpo { flex: none; }
+}
+
+/* En la ventana de la tabla el título queda a la altura de la X de cerrar: "Licencia de Payaso" no cabe a su tamaño normal */
+#carnet-modal:has(.carnet--payaso) .auth-modal__titulo {
+  padding-inline: 36px;
+  font-size: clamp(20px, 6vw, 27px);
 }
 
 /* ---------- Efecto Glitch para Debugger ---------- */
@@ -4181,7 +4226,7 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
 /* ---------- 14. Juego de la semana (sustometro.html) ----------
    Consola retro con el juego de la semana (js/juego-semana.js) y su tabla de récords al lado.
    El letrero que se ve encima de la pantalla lo decide data-estado de .consola:
-   listo (inicio), jugando (ninguno), pausa o fin. */
+   listo (inicio), cargando, jugando (ninguno), pausa o fin. */
 
 @keyframes parpadear {
   50% { opacity: 0; }
@@ -4244,6 +4289,7 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
   color: #fff;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
 }
 .consola::before {
@@ -4303,16 +4349,52 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
   color: #ffd23f;
   text-shadow: 3px 3px 0 #b5370f, 0 0 14px rgba(255, 210, 63, .5);
 }
+/* Botones de semana: la elegida en rojo; las bloqueadas llevan candado y, para quien no es supervisor, se ven apagadas */
+.consola__semanas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
 .consola__semana {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 6px 9px 5px;
+  border: 0;
   border-radius: 6px;
-  background: #e5484d;
-  color: #fff;
+  background: #283252;
+  color: #9aa6c8;
   font-family: 'Press Start 2P', monospace;
   font-size: 9px;
   letter-spacing: .06em;
   text-transform: uppercase;
-  box-shadow: 0 3px 0 #8f1d2c;
+  box-shadow: 0 3px 0 #141a2e;
+  cursor: pointer;
+  transition: background .15s, color .15s, translate .06s, box-shadow .06s;
+}
+.consola__semana:hover { background: #34406a; color: #fff; }
+.consola__semana:active { translate: 0 2px; box-shadow: 0 1px 0 #141a2e; }
+.consola__semana:focus-visible { outline: 2px solid #ffd23f; outline-offset: 2px; }
+.consola__semana[aria-pressed="true"] { background: #e5484d; color: #fff; box-shadow: 0 3px 0 #8f1d2c; }
+.consola__semana[aria-pressed="true"]:active { box-shadow: 0 1px 0 #8f1d2c; }
+.consola__semana[aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
+.consola__semana[aria-disabled="true"]:hover { background: #283252; color: #9aa6c8; }
+.consola__semana[aria-disabled="true"]:active { translate: none; box-shadow: 0 3px 0 #141a2e; }
+.consola__candado { flex: none; width: 9px; height: 11px; margin-top: -2px; }
+.consola__semana--bloqueada:not([aria-disabled="true"]) .consola__candado { color: #ffd23f; }
+
+/* "Semana 2 bloqueada · muy pronto" al tocar una semana cerrada */
+.consola__semana-aviso {
+  flex-basis: 100%;
+  margin: 0;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  line-height: 1.6;
+  letter-spacing: .06em;
+  text-align: center;
+  text-transform: uppercase;
+  color: #ffd23f;
 }
 
 /* Marco negro alrededor de la pantalla */
@@ -4347,6 +4429,11 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
   box-shadow: 0 0 8px #7ee081;
 }
 .consola[data-estado="pausa"] .consola__led { background: #ffd23f; box-shadow: 0 0 8px #ffd23f; }
+.consola[data-estado="cargando"] .consola__led {
+  background: #ffd23f;
+  box-shadow: 0 0 8px #ffd23f;
+  animation: parpadear .5s steps(1) infinite;
+}
 .consola[data-estado="fin"] .consola__led { background: #ff5c5c; box-shadow: 0 0 8px #ff5c5c; }
 
 /* Pantalla de tubo: los tamaños de letra se miden con su ancho (cqw) */
@@ -4361,7 +4448,7 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
   cursor: pointer;
 }
 .consola__pantalla:focus-visible { box-shadow: 0 0 0 2px #04060c, 0 0 0 5px #ffd23f; }
-/* Mientras se juega, deslizar el dedo sobre la pantalla gira la culebra en vez de mover la página */
+/* Mientras se juega, deslizar el dedo sobre la pantalla es parte del juego (gira) en vez de mover la página */
 .consola[data-estado="jugando"] .consola__pantalla { cursor: none; touch-action: none; }
 
 /* Rayas de televisor viejo y bordes más oscuros, encima de todo */
@@ -4401,6 +4488,8 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
   height: auto;
   aspect-ratio: 4 / 3;
 }
+/* Cada semana tiene su lienzo; solo se ve el de la semana elegida */
+.consola__lienzo[hidden] { display: none; }
 
 /* Letreros sobre el tablero */
 .capa {
@@ -4420,12 +4509,15 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
   color: #fff;
 }
 .consola[data-estado="listo"] .capa--inicio,
+.consola[data-estado="cargando"] .capa--cargando,
 .consola[data-estado="pausa"] .capa--pausa,
 .consola[data-estado="fin"] .capa--fin { display: flex; }
 /* Antes de empezar el tablero casi no se ve, para que la culebra quieta no se confunda con el letrero */
-.capa--inicio { background: rgba(6, 10, 22, .9); }
-/* El letrero de fin espera a que la culebra termine de parpadear */
-.consola[data-estado="fin"] .capa--fin { animation: capa-aparece .25s .8s both; }
+.capa--inicio,
+.capa--cargando { background: rgba(6, 10, 22, .9); }
+/* El letrero de fin espera a que el juego termine su animación (Snake parpadea; Doom muestra sus resultados).
+   La espera la pone juego-semana.js según el juego. */
+.consola[data-estado="fin"] .capa--fin { animation: capa-aparece .25s var(--espera-fin, .8s) both; }
 @keyframes capa-aparece {
   from { opacity: 0; }
 }
@@ -4441,11 +4533,34 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
   color: #ff5c5c;
   text-shadow: .5cqw .5cqw 0 #5c1020, 0 0 2.4cqw rgba(255, 92, 92, .45);
 }
-.capa__texto { font-size: clamp(8px, 2.2cqw, 14px); line-height: 1.6; color: #c9d2dc; }
+/* Terminar el nivel es ganar (Doom): mismo tamaño, en verde */
+.capa__titulo--exito {
+  color: #7ee081;
+  text-shadow: .5cqw .5cqw 0 #1d5c2a, 0 0 2.4cqw rgba(126, 224, 129, .45);
+}
+.capa__titulo--cargando { font-size: clamp(14px, 4.4cqw, 28px); }
+.capa__texto { max-width: 92%; font-size: clamp(8px, 2.2cqw, 14px); line-height: 1.6; color: #c9d2dc; }
 .capa__items {
   display: flex;
   gap: clamp(14px, 5cqw, 36px);
   font-size: clamp(8px, 2.2cqw, 14px);
+}
+.capa__items:empty { display: none; }
+
+/* Barra de carga (Doom baja unos 4,5 MB la primera vez) */
+.capa__barra {
+  width: min(70%, 320px);
+  height: clamp(10px, 2.6cqw, 18px);
+  padding: 2px;
+  border: 2px solid #7d8bb0;
+  border-radius: 3px;
+}
+.capa__barra span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: repeating-linear-gradient(90deg, #7ee081 0 8px, #4fb85a 8px 10px);
+  transition: width .15s linear;
 }
 .capa__item { display: inline-flex; align-items: center; gap: clamp(6px, 1.6cqw, 12px); }
 .capa__sprite { --px: clamp(2px, .75cqw, 5px); display: block; }
@@ -4476,6 +4591,9 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
   color: #c9d2dc;
 }
 .capa__estado--record { color: #ffd23f; animation: parpadear .5s steps(1) 6; }
+.capa__estado--aviso { color: #ff8a8a; }
+/* Una línea más con datos de la partida (Doom: enemigos y secretos) */
+.capa__detalle { font-size: clamp(7px, 1.8cqw, 11px); line-height: 1.6; color: #7d8bb0; }
 .capa__boton {
   padding: clamp(7px, 1.8cqw, 12px) clamp(12px, 3cqw, 20px);
   border: 0;
@@ -4517,6 +4635,7 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
     'izquierda centro derecha'
     '.         abajo  .      ';
   filter: drop-shadow(0 5px 0 rgba(0, 0, 0, .35));
+  touch-action: none;   /* el dedo se puede deslizar sobre la cruceta sin mover la página */
 }
 .cruceta__boton,
 .cruceta__centro {
@@ -4525,7 +4644,7 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
   padding: 0;
   background: #1a1f2b;
 }
-.cruceta__boton { touch-action: manipulation; }
+.cruceta__boton { touch-action: none; }
 .cruceta__boton--arriba { grid-area: arriba; border-radius: 8px 8px 0 0; }
 .cruceta__boton--abajo { grid-area: abajo; border-radius: 0 0 8px 8px; }
 .cruceta__boton--izquierda { grid-area: izquierda; border-radius: 8px 0 0 8px; }
@@ -4539,7 +4658,8 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
   background: #12151e;
   box-shadow: inset 0 2px 3px rgba(0, 0, 0, .6);
 }
-.cruceta__boton:active { background: #11141c; }
+.cruceta__boton:active,
+.cruceta__boton--apretado { background: #11141c; }
 .cruceta__boton:focus-visible { z-index: 1; outline: 3px solid #ffd23f; outline-offset: 2px; }
 
 /* Flechita de cada brazo de la cruceta */
@@ -4581,6 +4701,7 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
   gap: 8px;
 }
 .consola__boton-grupo--b { margin-top: 28px; }
+.consola__boton-grupo[hidden] { display: none; }   /* Snake no usa B */
 .consola__boton {
   width: 56px;
   height: 56px;
@@ -4590,12 +4711,11 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
   font-size: 14px;
   color: rgba(0, 0, 0, .42);
   box-shadow: inset 0 3px 0 rgba(255, 255, 255, .35), inset 0 -4px 0 rgba(0, 0, 0, .22), 0 5px 0 rgba(0, 0, 0, .35);
-  touch-action: manipulation;
+  touch-action: none;   /* se pueden mantener apretados (en Doom, A dispara mientras se mantenga) */
   transition: translate .06s, box-shadow .06s, filter .15s;
 }
 .consola__boton--a { background: #e5484d; }
 .consola__boton--b { background: #f5a524; }
-.consola__boton--b[aria-pressed="false"] { filter: saturate(.2) brightness(.75); }
 .consola__boton:active {
   translate: 0 3px;
   box-shadow: inset 0 3px 0 rgba(255, 255, 255, .25), inset 0 -2px 0 rgba(0, 0, 0, .22), 0 2px 0 rgba(0, 0, 0, .35);
@@ -4609,6 +4729,47 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
   text-transform: uppercase;
   color: rgba(255, 255, 255, .62);
 }
+
+/* Start: pastilla inclinada debajo de los demás controles.
+   El botón es más grande que la pastilla que se ve, para atinarle fácil con el dedo. */
+.consola__menu {
+  grid-column: 1 / -1;
+  justify-self: center;
+  display: flex;
+  gap: 22px;
+}
+.consola__menu-grupo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.consola__menu .consola__boton-texto { font-size: 10px; }
+.consola__pastilla {
+  position: relative;
+  width: 58px;
+  height: 30px;
+  border: 0;
+  padding: 0;
+  background: none;
+  touch-action: manipulation;
+}
+.consola__pastilla::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 50%;
+  height: 12px;
+  margin-top: -6px;
+  border-radius: 999px;
+  background: #1a1f2b;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, .12), 0 3px 0 rgba(0, 0, 0, .35);
+  transform: rotate(-20deg);
+  transition: translate .06s, box-shadow .06s, opacity .15s;
+}
+.consola__pastilla:active::before { translate: 0 2px; box-shadow: inset 0 2px 0 rgba(255, 255, 255, .08), 0 1px 0 rgba(0, 0, 0, .35); }
+.consola__pastilla:focus-visible { outline: 3px solid #ffd23f; outline-offset: 1px; border-radius: 8px; }
 
 /* Tabla de récords: la tarjeta blanca del ranking, más compacta */
 .records { padding: 26px 22px 22px; }
@@ -4684,6 +4845,7 @@ a.banderin:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; bord
   .consola__marquesina { margin-bottom: 10px; padding: 16px 10px; border-radius: 12px; gap: 8px 10px; }
   .consola__titulo { font-size: 12px; }
   .consola__semana { font-size: 8px; }
+  .consola__semana-aviso { font-size: 7px; }
   .consola__bisel { padding: 8px 8px 10px; border-radius: 14px; }
   .consola__bisel-barra { gap: 8px; margin-bottom: 7px; font-size: 9px; letter-spacing: .14em; }
   .consola__mandos { gap: 10px; margin-top: 18px; padding: 0; }

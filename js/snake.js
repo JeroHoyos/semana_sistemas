@@ -1,5 +1,5 @@
 /* =============================================
-   SNAKE · JUEGO DE LA SEMANA (SEMANA 1)
+   SNAKE · JUEGO DE LA SEMANA 1
    Una culebra con los colores de Python se come los bugs del código.
    Cada bug vale 10 puntos, la hace crecer y la acelera un poquito.
    Chocar con la pared o contigo misma termina la partida.
@@ -68,6 +68,14 @@ const VECTORES = {
   derecha: [1, 0],
 };
 const OPUESTA = { arriba: 'abajo', abajo: 'arriba', izquierda: 'derecha', derecha: 'izquierda' };
+
+// Teclado: flechas o WASD
+const TECLAS_SNAKE = {
+  ArrowUp: 'arriba', KeyW: 'arriba',
+  ArrowDown: 'abajo', KeyS: 'abajo',
+  ArrowLeft: 'izquierda', KeyA: 'izquierda',
+  ArrowRight: 'derecha', KeyD: 'derecha',
+};
 
 /* lienzo: el <canvas> de la pantalla.
    avisos: { alCambiarPuntaje(puntaje), alTerminar(puntaje, gano), sonar(nombre) }
@@ -339,6 +347,19 @@ function crearSnake(lienzo, avisos = {}) {
     giros.push(nueva);
   }
 
+  // codigo: KeyboardEvent.code. Devuelve true si la tecla es del juego (la consola no la usa para nada más)
+  function tecla(codigo, presionada) {
+    const direccion = TECLAS_SNAKE[codigo];
+    if (!direccion) return false;
+    if (presionada) girar(direccion);
+    return true;
+  }
+
+  // La cruceta y el deslizar del dedo: gira al apretar (soltar no hace nada)
+  function mando(boton, presionado) {
+    if (presionado) girar(boton);
+  }
+
   preparar();
 
   return {
@@ -348,7 +369,26 @@ function crearSnake(lienzo, avisos = {}) {
     pausar,
     reanudar,
     girar,
+    tecla,
+    mando,
     redimensionar,
     dibujar,
   };
 }
+
+
+/* ---------- La ficha del juego para la consola ---------- */
+
+const JUEGO_SNAKE = {
+  id: 'snake',
+  nombre: 'Snake',
+  marcador: 'puntos',
+  crear: (lienzo, avisos) => crearSnake(lienzo, avisos),
+  portada: {
+    texto: 'Atrapa los bugs y no choques',
+    items: () => `<span class="capa__item"><span class="capa__sprite">${dibujarPixeles(SPRITES_SNAKE.bug)}</span>10 pts</span>`,
+    ayudaTeclado: 'Flechas o WASD · P pausa · M sonido',
+    ayudaTactil: 'Cruceta o desliza el dedo',
+  },
+  fin: { titulo: 'Fin del juego', sinPuntos: 'Ni un bug esta vez. ¡Otra!' },
+};

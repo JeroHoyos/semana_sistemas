@@ -269,14 +269,17 @@
     </div>
 
     <!-- JUEGO DE LA SEMANA: consola retro y su tabla de récords.
-         La consola la maneja js/juego-semana.js y el juego va en su propio archivo (esta semana js/snake.js). -->
+         La consola la maneja js/juego-semana.js y cada juego va en su propio archivo (js/snake.js).
+         Los textos de los letreros los pone la ficha del juego de la semana. -->
     <section class="contenedor juego-semana" id="juego-semana" aria-labelledby="juego-semana-titulo">
       <div class="consola" id="consola" data-estado="listo">
 
-        <!-- Letrero de arriba, con luces como de maquinita -->
+        <!-- Letrero de arriba, con luces como de maquinita, y los botones para cambiar de semana
+             (los pone juego-semana.js; las semanas bloqueadas solo las abren los supervisores) -->
         <div class="consola__marquesina">
           <h2 class="consola__titulo" id="juego-semana-titulo">Juego de la semana</h2>
-          <span class="consola__semana" id="consola-semana">Semana 1</span>
+          <div class="consola__semanas" id="consola-semanas" role="group" aria-label="Semana"></div>
+          <p class="consola__semana-aviso" id="semana-aviso" role="status" aria-live="polite" hidden></p>
         </div>
 
         <!-- Marco negro de la pantalla -->
@@ -288,26 +291,31 @@
           </div>
 
           <div class="consola__pantalla" id="consola-pantalla" tabindex="0"
-            aria-label="Pantalla del juego. Espacio para empezar o pausar, flechas para moverte.">
+            aria-label="Pantalla del juego. Espacio para empezar, P para pausar.">
             <div class="consola__hud" aria-hidden="true">
-              <span>PTS <strong id="consola-pts">0000</strong></span>
+              <span><span id="hud-etiqueta">PTS</span> <strong id="consola-pts">0000</strong></span>
               <span class="consola__hud-sonido" id="consola-sonido">♪ ON</span>
               <span>REC <strong id="consola-rec">0000</strong></span>
             </div>
 
             <div class="consola__tablero">
               <canvas class="consola__lienzo" id="consola-lienzo" width="160" height="120" role="img"
-                aria-label="Tablero del juego"></canvas>
+                aria-label="Pantalla del juego"></canvas>
 
               <!-- Letreros encima del tablero: se ve uno u otro según data-estado de la consola -->
               <div class="capa capa--inicio">
-                <p class="capa__titulo">Snake</p>
-                <p class="capa__texto">Atrapa los bugs y no choques</p>
-                <div class="capa__items">
-                  <span class="capa__item"><span class="capa__sprite" id="consola-ayuda-bug"></span>10 pts</span>
-                </div>
+                <p class="capa__titulo" id="inicio-titulo"></p>
+                <p class="capa__texto" id="inicio-texto"></p>
+                <div class="capa__items" id="inicio-items"></div>
+                <p class="capa__estado capa__estado--aviso" id="inicio-aviso" role="alert" hidden></p>
                 <p class="capa__parpadeo"><span class="solo-teclado">Clic o Espacio</span><span class="solo-tactil">Presiona A</span></p>
-                <p class="capa__ayuda"><span class="solo-teclado">Flechas o WASD · P pausa · M sonido</span><span class="solo-tactil">Cruceta o desliza el dedo</span></p>
+                <p class="capa__ayuda"><span class="solo-teclado" id="ayuda-teclado"></span><span class="solo-tactil" id="ayuda-tactil"></span></p>
+              </div>
+
+              <div class="capa capa--cargando" role="status">
+                <p class="capa__titulo capa__titulo--cargando">Cargando</p>
+                <div class="capa__barra" aria-hidden="true"><span id="carga-barra"></span></div>
+                <p class="capa__texto" id="carga-texto">0%</p>
               </div>
 
               <div class="capa capa--pausa">
@@ -316,8 +324,9 @@
               </div>
 
               <div class="capa capa--fin">
-                <p class="capa__titulo capa__titulo--fin">Fin del juego</p>
-                <p class="capa__puntaje">Puntaje <strong id="fin-puntaje">0000</strong></p>
+                <p class="capa__titulo capa__titulo--fin" id="fin-titulo">Fin del juego</p>
+                <p class="capa__puntaje"><span id="fin-etiqueta">Puntaje</span> <strong id="fin-puntaje">0000</strong></p>
+                <p class="capa__detalle" id="fin-detalle" hidden></p>
                 <p class="capa__estado" id="fin-estado" role="status" aria-live="polite"></p>
                 <button class="capa__boton" id="fin-sesion" type="button" hidden>Ingresar</button>
                 <p class="capa__parpadeo"><span class="solo-teclado">Espacio para otra</span><span class="solo-tactil">A para otra</span></p>
@@ -326,7 +335,7 @@
           </div>
         </div>
 
-        <!-- Controles: cruceta, parlante y botones A / B -->
+        <!-- Controles: cruceta, parlante, botones A / B y, debajo, Start -->
         <div class="consola__mandos">
           <div class="cruceta" role="group" aria-label="Cruceta">
             <button class="cruceta__boton cruceta__boton--arriba" type="button" data-direccion="arriba" aria-label="Arriba"></button>
@@ -341,13 +350,21 @@
           </div>
 
           <div class="consola__botones">
-            <div class="consola__boton-grupo consola__boton-grupo--b">
-              <button class="consola__boton consola__boton--b" id="boton-b" type="button" aria-pressed="true" aria-label="B: sonido">B</button>
-              <span class="consola__boton-texto" aria-hidden="true">Sonido</span>
+            <div class="consola__boton-grupo consola__boton-grupo--b" id="boton-b-grupo" hidden>
+              <button class="consola__boton consola__boton--b" id="boton-b" type="button" aria-label="B">B</button>
+              <span class="consola__boton-texto" id="boton-b-texto" aria-hidden="true"></span>
             </div>
             <div class="consola__boton-grupo consola__boton-grupo--a">
               <button class="consola__boton consola__boton--a" id="boton-a" type="button" aria-label="A: jugar o pausar">A</button>
-              <span class="consola__boton-texto" aria-hidden="true">Jugar</span>
+              <span class="consola__boton-texto" id="boton-a-texto" aria-hidden="true">Jugar</span>
+            </div>
+          </div>
+
+          <!-- Start, como en las consolas de bolsillo: jugar o pausar en todos los juegos -->
+          <div class="consola__menu">
+            <div class="consola__menu-grupo">
+              <button class="consola__pastilla" id="boton-start" type="button" aria-label="Start: jugar o pausar"></button>
+              <span class="consola__boton-texto" aria-hidden="true">Start</span>
             </div>
           </div>
         </div>
