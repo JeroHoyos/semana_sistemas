@@ -14,6 +14,8 @@ let shownActivity = TEAM_ACTIVITIES.find((activity) => activity.id === new URLSe
 
 let teams = null;        // every team of every competition (rows from equipos_inscritos); null until loaded
 let loadFailed = false;
+let freeAgents = null;   // players looking for a team; null until loaded
+let loadFreeAgentsFailed = false;
 
 const teamsShown = () => (teams || []).filter((team) => team.actividad === shownActivity.id);
 const myTeam = () => teamsShown().find((team) => team.miembros?.some((member) => member.id === currentUser?.id));
@@ -36,6 +38,7 @@ function render() {
   renderSummary();
   renderMyTeam();
   renderTeamList();
+  renderFreeAgents();
 }
 
 function renderTabs() {
@@ -111,6 +114,67 @@ function renderTeamList() {
   if (!teams) html = `<li class="registration__text">${loadingText()}</li>`;
   else if (!shown.length) html = '<li class="registration__text">Aún no hay equipos. ¡Inscribe el primero!</li>';
   $('#team-list').innerHTML = html;
+}
+
+function renderFreeAgents() {
+  const list = $('#free-agents-list');
+  const btn = $('#btn-open-find-team');
+  if (!list) return;
+
+  const inThisList = freeAgents?.find((agent) => agent.usuario_id === currentUser?.id);
+  if (btn) {
+    btn.textContent = inThisList ? 'Editar mis datos' : 'Buscar equipo';
+  }
+
+  if (!freeAgents) {
+    list.innerHTML = `<li class="registration__text">${loadFreeAgentsFailed ? 'No se pudo cargar la lista.' : 'Cargando lista…'}</li>`;
+    return;
+  }
+
+  if (!freeAgents.length) {
+    list.innerHTML = '<li class="registration__text">Aún no hay personas buscando equipo en esta competencia. ¡Sé el primero en anotarte!</li>';
+    return;
+  }
+
+  list.innerHTML = freeAgents.map((agent) => {
+    const isMe = agent.usuario_id === currentUser?.id;
+    const cleanPhone = (agent.celular || '').replace(/\D/g, '');
+    const waUrl = cleanPhone ? `https://wa.me/57${cleanPhone.replace(/^57/, '')}` : null;
+    const phoneDisplay = agent.celular
+      ? `<div class="free-agent__contacts">
+           <a class="whatsapp-button" href="${waUrl}" target="_blank" rel="noopener">
+             ${ICONS.whatsapp}
+             <span>WhatsApp</span>
+           </a>
+           <a class="phone-link" href="tel:${escapeHtml(agent.celular)}">${escapeHtml(agent.celular)}</a>
+         </div>`
+      : '<span class="free-agent__anon">Inicia sesión para ver el contacto</span>';
+
+    const positions = (Array.isArray(agent.posiciones) ? agent.posiciones : [])
+      .map((pos) => `<span class="position-badge">${escapeHtml(pos)}</span>`)
+      .join('');
+
+    const leaveBtn = isMe
+      ? '<button class="week-button team__danger free-agent__leave-btn" type="button" data-action="leave-free-agent">Salirme de la lista</button>'
+      : '';
+
+    return `
+      <li class="free-agent-card ${isMe ? 'free-agent-card--me' : ''}">
+        <span class="team__avatar">${drawCustomMonster(agent.monstruo || {})}</span>
+        <div class="free-agent-card__info">
+          <div class="free-agent-card__top">
+            <span class="team__who">${escapeHtml(agent.nombre)}<small>@${escapeHtml(agent.usuario)}</small></span>
+            ${isMe ? '<span class="team__badge">Tú</span>' : ''}
+          </div>
+          ${positions ? `<div class="free-agent-card__positions">${positions}</div>` : ''}
+          <div class="free-agent-card__actions">
+            ${phoneDisplay}
+            ${leaveBtn}
+          </div>
+        </div>
+      </li>
+    `;
+  }).join('');
 }
 
 // A team with its banner, members (and an empty row per free spot) and the captain's phone.
@@ -189,6 +253,14 @@ async function loadTeams() {
   render();
 }
 
+async function loadFreeAgents() {
+  const { data, error } = await supabaseClient.rpc('personas_buscando_equipo', { p_actividad: shownActivity.id });
+  if (error) console.error('Could not load the free agents:', error);
+  loadFreeAgentsFailed = Boolean(error);
+  freeAgents = error ? null : data;
+  renderFreeAgents();
+}
+
 // Calls a function from teams.sql (its errors already come in Spanish) and reads the teams again
 async function changeTeam(button, name, params, success) {
   $('#team-message').hidden = true;
@@ -199,7 +271,7 @@ async function changeTeam(button, name, params, success) {
     showMessage($('#team-message'), translateError(error));
     return;
   }
-  await loadTeams();
+  await Promise.all([loadTeams(), loadFreeAgents()]);
   showMessage($('#team-message'), success, false);
 }
 
@@ -240,7 +312,10 @@ $('#registration-tabs').addEventListener('click', (event) => {
   history.replaceState(null, '', `?id=${shownActivity.id}`);
   closeTeamForm();
   $('#team-message').hidden = true;
+  $('#free-agents-message').hidden = true;
+  freeAgents = null;
   render();
+  loadFreeAgents();
 });
 
 
@@ -296,6 +371,7 @@ $('#greek-letters').innerHTML = GREEK_LETTERS.map((letter) => `<button class="ra
 // team: the team to edit, or null to create one.
 // The defaults fill any part a banner saved before that part existed.
 function openTeamForm(team) {
+  const isEditing = Boolean(team);
   banner = team
     ? { ...DEFAULT_BANNER, ...team.bandera }
     : { ...DEFAULT_BANNER, letras: '', fondo: BANNER_CHOICES.fondo[0].value, tinta: BANNER_CHOICES.tinta[0].value };
@@ -306,6 +382,28 @@ function openTeamForm(team) {
   $('#team-message').hidden = true;
   $('#my-team').hidden = true;
   $('#team-form').hidden = false;
+
+  const membersBox = $('#team-form-members-box');
+  const membersInputs = $('#team-form-member-inputs');
+  if (isEditing) {
+    membersBox.hidden = true;
+    membersInputs.innerHTML = '';
+  } else {
+    membersBox.hidden = false;
+    const { size } = shownActivity.team;
+    let slotsHtml = '';
+    for (let i = 2; i <= size; i++) {
+      const isRequired = i <= 3;
+      slotsHtml += `
+        <label class="auth-field">
+          <span>Integrante ${i} ${isRequired ? '<strong class="team-form__required">(Obligatorio)</strong>' : '<span class="team-form__optional">(Opcional)</span>'}</span>
+          <input type="email" class="team-form__member-email" placeholder="correo@unal.edu.co" ${isRequired ? 'required' : ''} autocomplete="email">
+        </label>
+      `;
+    }
+    membersInputs.innerHTML = slotsHtml;
+  }
+
   updateBanner();
 }
 
@@ -361,11 +459,39 @@ $('#team-form').addEventListener('submit', async (event) => {
   button.disabled = true;
   $('#team-form-message').hidden = true;
 
+  const isEditing = Boolean(myTeam());
+  let memberEmails = [];
+
+  if (!isEditing) {
+    const inputs = Array.from($$('#team-form-member-inputs input[type="email"]'));
+    memberEmails = inputs.map((input) => input.value.trim().toLowerCase()).filter(Boolean);
+
+    if (memberEmails.length < 2) {
+      showMessage($('#team-form-message'), 'Debes ingresar al menos 2 integrantes más (mínimo 3 personas con el capitán).');
+      button.disabled = false;
+      return;
+    }
+
+    if (currentUser?.email && memberEmails.includes(currentUser.email.toLowerCase())) {
+      showMessage($('#team-form-message'), 'No te incluyas en los integrantes; tú ya quedas como capitán con tu cuenta.');
+      button.disabled = false;
+      return;
+    }
+
+    const uniqueEmails = new Set(memberEmails);
+    if (uniqueEmails.size !== memberEmails.length) {
+      showMessage($('#team-form-message'), 'No puedes repetir el mismo correo dos veces.');
+      button.disabled = false;
+      return;
+    }
+  }
+
   const { error } = await supabaseClient.rpc('guardar_equipo', {
     p_actividad: shownActivity.id,
     p_nombre: $('#team-name').value,
     p_celular: $('#team-phone').value,
     p_bandera: { ...banner, letras: banner.letras.trim() },
+    p_miembros: memberEmails,
   });
   button.disabled = false;
   if (error) {
@@ -373,8 +499,103 @@ $('#team-form').addEventListener('submit', async (event) => {
     return;
   }
   closeTeamForm();
-  await loadTeams();
+  await Promise.all([loadTeams(), loadFreeAgents()]);
   showMessage($('#team-message'), '¡Equipo guardado!', false);
+});
+
+
+/* ---------- Free agents pool (Bolsa de jugadores) ---------- */
+
+function updateFindTeamModalPositions() {
+  const isFutbol = $('#find-team-activity').value === 'futbol';
+  $('#find-team-positions-box').hidden = !isFutbol;
+}
+
+$('#find-team-activity').innerHTML = TEAM_ACTIVITIES.map((activity) => `
+  <option value="${activity.id}">${escapeHtml(activity.team.tab)}</option>
+`).join('');
+
+$('#find-team-activity').addEventListener('change', updateFindTeamModalPositions);
+
+$('#btn-open-find-team').addEventListener('click', () => {
+  if (!currentUser) {
+    setAuthMode(false);
+    $('#auth-modal').showModal();
+    return;
+  }
+  if (myTeam()) {
+    alert('Ya haces parte de un equipo en esta competencia. Si deseas buscar equipo, salte primero de tu equipo actual.');
+    return;
+  }
+
+  $('#find-team-activity').value = shownActivity.id;
+  updateFindTeamModalPositions();
+
+  const existing = freeAgents?.find((agent) => agent.usuario_id === currentUser.id);
+  $('#find-team-phone').value = existing?.celular || '';
+  const positions = existing?.posiciones || [];
+  for (const checkbox of $$('#find-team-positions-box input[type="checkbox"]')) {
+    checkbox.checked = positions.includes(checkbox.value);
+  }
+
+  $('#find-team-form-message').hidden = true;
+  $('#find-team-modal').showModal();
+});
+
+$('#btn-close-find-team').addEventListener('click', () => $('#find-team-modal').close());
+$('#btn-cancel-find-team').addEventListener('click', () => $('#find-team-modal').close());
+
+$('#find-team-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const button = $('#btn-save-find-team');
+  button.disabled = true;
+  $('#find-team-form-message').hidden = true;
+
+  const activity = $('#find-team-activity').value;
+  const phone = $('#find-team-phone').value;
+  let positions = [];
+  if (activity === 'futbol') {
+    positions = Array.from($$('#find-team-positions-box input[type="checkbox"]:checked')).map((cb) => cb.value);
+  }
+
+  const { error } = await supabaseClient.rpc('anotarse_busqueda_equipo', {
+    p_actividad: activity,
+    p_celular: phone,
+    p_posiciones: positions,
+  });
+
+  button.disabled = false;
+  if (error) {
+    showMessage($('#find-team-form-message'), translateError(error));
+    return;
+  }
+
+  $('#find-team-modal').close();
+  if (activity !== shownActivity.id) {
+    shownActivity = findActivity(activity);
+    history.replaceState(null, '', `?id=${shownActivity.id}`);
+    render();
+    await Promise.all([loadTeams(), loadFreeAgents()]);
+  } else {
+    await loadFreeAgents();
+  }
+  showMessage($('#free-agents-message'), '¡Te anotaste en la lista para buscar equipo!', false);
+});
+
+$('#free-agents-list').addEventListener('click', async (event) => {
+  const button = event.target.closest('[data-action="leave-free-agent"]');
+  if (!button) return;
+  if (!confirm('¿Seguro que quieres salirte de la lista de búsqueda de equipo?')) return;
+
+  button.disabled = true;
+  const { error } = await supabaseClient.rpc('salir_busqueda_equipo', { p_actividad: shownActivity.id });
+  button.disabled = false;
+  if (error) {
+    showMessage($('#free-agents-message'), translateError(error));
+    return;
+  }
+  await loadFreeAgents();
+  showMessage($('#free-agents-message'), 'Saliste de la lista de búsqueda de equipo.', false);
 });
 
 
@@ -385,9 +606,12 @@ $('#team-form').addEventListener('submit', async (event) => {
 document.addEventListener('idcard:session', () => {
   if (!currentUser) closeTeamForm();
   loadTeams();
+  loadFreeAgents();
 });
 
 $('#registration-decorations').innerHTML = ['magnifier', 'computer', 'ball'].map((name) => drawPixelArt(PIXEL_ART[name])).join('');
+$('#find-team-eye-icon').innerHTML = drawPixelArt(PIXEL_ART.magnifier);
 $('#footer-crest').innerHTML = drawCrest();
 render();
 loadTeams();
+loadFreeAgents();

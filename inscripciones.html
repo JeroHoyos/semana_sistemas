@@ -66,6 +66,14 @@
             <input type="tel" id="team-phone" maxlength="20" required placeholder="Ej. 300 123 4567" autocomplete="tel">
           </label>
 
+          <div class="team-form__members-box" id="team-form-members-box">
+            <span class="team-form__members-title">Integrantes (mínimo 3 personas con el capitán)</span>
+            <p class="team-form__hint">
+              Ingresa el correo UNAL de al menos 2 integrantes más. Deben haber creado previamente su carnet en la página.
+            </p>
+            <div class="team-form__members-fields" id="team-form-member-inputs"></div>
+          </div>
+
           <div class="idcard-builder__controls" id="banner-builder">
             <div class="idcard-builder__top-bar">
               <span class="idcard-builder__subtitle">Diseña tu bandera</span>
@@ -89,6 +97,24 @@
 
       <h2 class="event__subtitle">Equipos inscritos</h2>
       <ul class="team-list" id="team-list"></ul>
+
+      <!-- Free agents pool: players looking for a team -->
+      <section class="free-agents" id="free-agents-section">
+        <div class="free-agents__header">
+          <div>
+            <h2 class="event__subtitle">Buscando equipo</h2>
+            <p class="registration__text">
+              ¿No tienes equipo o te faltan personas para completar el tuyo? Anótate en la lista para que te contacten, o escríbeles directamente por WhatsApp.
+            </p>
+          </div>
+          <button class="hero__button auth-form__submit free-agents__cta" id="btn-open-find-team" type="button">
+            Buscar equipo
+          </button>
+        </div>
+
+        <p class="auth-message" id="free-agents-message" hidden></p>
+        <ul class="free-agents__list" id="free-agents-list"></ul>
+      </section>
     </article>
   </main>
 
@@ -284,6 +310,61 @@
           <button class="hero__button auth-form__submit auth-edit__save" id="btn-save-edit" type="button">Guardar cambios</button>
         </div>
       </div>
+    </div>
+  </dialog>
+
+  <!-- FIND TEAM MODAL / ANOTARSE EN BUSCA DE EQUIPO -->
+  <dialog class="auth-modal" id="find-team-modal">
+    <div class="auth-modal__box">
+      <button class="auth-modal__close" id="btn-close-find-team" type="button" aria-label="Cerrar ventana">✕</button>
+
+      <div class="auth-modal__header">
+        <div class="auth-modal__eye" id="find-team-eye-icon"></div>
+        <p class="section-title__eyebrow">Bolsa de Jugadores · UNAL</p>
+        <h2 class="auth-modal__title">Buscar equipo</h2>
+      </div>
+
+      <form class="auth-form" id="find-team-form">
+        <label class="auth-field">
+          <span>Competencia</span>
+          <select id="find-team-activity" class="auth-field__input auth-field__select" required></select>
+        </label>
+
+        <label class="auth-field">
+          <span>Número de celular / WhatsApp</span>
+          <input type="tel" id="find-team-phone" maxlength="20" required placeholder="Ej. 300 123 4567" autocomplete="tel">
+        </label>
+
+        <!-- Soccer positions: only shown when competition is 'futbol' -->
+        <div class="find-team__positions" id="find-team-positions-box" hidden>
+          <span class="auth-field__label">Posición o posiciones en las que juegas</span>
+          <div class="position-checkboxes">
+            <label class="position-checkbox">
+              <input type="checkbox" name="posicion" value="Portero">
+              <span>🧤 Portero</span>
+            </label>
+            <label class="position-checkbox">
+              <input type="checkbox" name="posicion" value="Defensa">
+              <span>🛡️ Defensa</span>
+            </label>
+            <label class="position-checkbox">
+              <input type="checkbox" name="posicion" value="Mediocampista">
+              <span>⚡ Mediocampista</span>
+            </label>
+            <label class="position-checkbox">
+              <input type="checkbox" name="posicion" value="Delantero">
+              <span>⚽ Delantero</span>
+            </label>
+          </div>
+        </div>
+
+        <p class="auth-message" id="find-team-form-message" hidden></p>
+
+        <div class="auth-edit__buttons">
+          <button class="week-button auth-edit__cancel" id="btn-cancel-find-team" type="button">Cancelar</button>
+          <button class="hero__button auth-form__submit auth-edit__save" id="btn-save-find-team" type="submit">Anotarme</button>
+        </div>
+      </form>
     </div>
   </dialog>
 
