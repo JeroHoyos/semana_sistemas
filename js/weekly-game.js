@@ -765,9 +765,12 @@ function renderEmptyRecords(title, text) {
     </li>`;
 }
 
-// Places with ties: the same result shares a place (1, 2, 2, 4…)
+// Places: on the same result, whoever played fewer games goes first (ranking_juego sorts them so);
+// with the same games too, they share the place (1, 2, 2, 4…)
 function placesWithTies(rows) {
-  return rows.map((row) => rows.findIndex((other) => other.mejor_puntaje === row.mejor_puntaje) + 1);
+  return rows.map((row) => rows.findIndex((other) => (
+    other.mejor_puntaje === row.mejor_puntaje && other.partidas === row.partidas
+  )) + 1);
 }
 
 function renderRecords(rows) {
@@ -846,12 +849,12 @@ async function renderMyRecord(game) {
     return;
   }
 
-  // Place = how many people have a better result, plus one
+  // Place = how many people have a better result (or the same in fewer games), plus one
   const { count } = await supabaseClient
     .from('puntajes_juego')
     .select('usuario_id', { count: 'exact', head: true })
     .eq('juego', game.id)
-    .gt('mejor_puntaje', row.mejor_puntaje);
+    .or(`mejor_puntaje.gt.${row.mejor_puntaje},and(mejor_puntaje.eq.${row.mejor_puntaje},partidas.lt.${row.partidas})`);
   if (game !== cartridge) return;
 
   const meta = currentUser.user_metadata || {};
