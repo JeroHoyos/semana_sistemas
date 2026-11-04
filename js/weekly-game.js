@@ -143,7 +143,7 @@ const sound = {
   },
 };
 
-// Sound switches on and off with the M key
+// Sound switches on and off with the M key, or with B in games that do not use it (Snake)
 function renderSound() {
   $('#console-sound').textContent = sound.on ? '♪ ON' : '♪ OFF';
   runs.forEach((r) => r.setSound?.(sound.on));
@@ -617,7 +617,7 @@ function konamiStep(input) {
 
 /* ---------- A and B buttons, and Start ----------
    If the game brings buttons (Doom, Defrag), while playing A and B belong to the game and count while held.
-   If not (Snake), A starts or pauses and B does nothing (it stays: the Konami code needs it).
+   If not (Snake), A starts or pauses and B turns the sound on and off.
    Start always starts or pauses. */
 
 const gameButtonReleases = [];
@@ -659,7 +659,9 @@ function connectButton(element, button, consoleAction) {
 }
 
 connectButton($('#button-a'), 'a', mainButton);
-connectButton($('#button-b'), 'b');
+connectButton($('#button-b'), 'b', () => {
+  if (!cartridge.buttons) sound.toggle();
+});
 $('#button-start').addEventListener('click', mainButton);
 
 // On pausing, ending or changing week the d-pad and buttons are released (the finger may stay on them)
@@ -943,11 +945,11 @@ function dressConsole() {
   $('#end-title').classList.toggle('overlay__title--success', Boolean(end.success));
   $('#end-label').textContent = capitalize(scoring.name);
 
-  // A and B: if they belong to the game they are named after what they do; if not, A is Jugar and B has no name
+  // A and B: if they belong to the game they are named after what they do; if not, A is Jugar and B is Sonido
   $('#button-a-label').textContent = buttons?.a || 'Jugar';
   $('#button-a').setAttribute('aria-label', buttons ? `A: ${buttons.a.toLowerCase()}` : 'A: jugar o pausar');
-  $('#button-b-label').textContent = buttons?.b || '';
-  $('#button-b').setAttribute('aria-label', buttons ? `B: ${buttons.b.toLowerCase()}` : 'B');
+  $('#button-b-label').textContent = buttons?.b || 'Sonido';
+  $('#button-b').setAttribute('aria-label', buttons ? `B: ${buttons.b.toLowerCase()}` : 'B: sonido');
 }
 
 
