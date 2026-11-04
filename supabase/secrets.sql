@@ -2,12 +2,13 @@
 -- SECRET CODES (js/secrets.js)
 -- Run once in Supabase → SQL Editor. It is safe to run again.
 --
--- Hidden challenges on the site. Only the first person who completes each one gets its code
--- (to send to the representative); whoever comes later learns that someone got there first:
+-- Hidden challenges on the site. Only the first person who completes each one wins (the page gives
+-- them the secret's title); whoever comes later learns that someone got there first:
 --   'konami'        the Konami code on the Scare Meter console (d-pad and buttons)
 --   'video-futbol'  the whole video on the football tournament page
 --
--- The codes are NOT in this file (the repository is public). Insert them by hand, once:
+-- Each secret also keeps a code, which the page used to show to the winner and no longer does.
+-- The column still needs a value. The codes are NOT in this file (the repository is public). Insert them by hand, once:
 --   insert into public.secretos (id, codigo, segundos) values
 --     ('konami', 'EL CODIGO', 0),
 --     ('video-futbol', 'EL OTRO CODIGO', 240);
