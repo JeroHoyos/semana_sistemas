@@ -4705,7 +4705,6 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   gap: 8px;
 }
 .console__button-group--b { margin-top: 28px; }
-.console__button-group[hidden] { display: none; }   /* Snake does not use B */
 .console__button {
   width: 56px;
   height: 56px;

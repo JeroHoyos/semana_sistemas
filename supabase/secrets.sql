@@ -4,7 +4,7 @@
 --
 -- Hidden challenges on the site. Only the first person who completes each one gets its code
 -- (to send to the representative); whoever comes later learns that someone got there first:
---   'konami'        the Konami code on the keyboard, on any page
+--   'konami'        the Konami code on the Scare Meter console (d-pad and buttons)
 --   'video-futbol'  the whole video on the football tournament page
 --
 -- The codes are NOT in this file (the repository is public). Insert them by hand, once:

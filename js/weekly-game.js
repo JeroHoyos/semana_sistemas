@@ -557,7 +557,9 @@ function pressDpad(next) {
     if (!next.has(direction)) run.press(direction, false);
   }
   for (const direction of next) {
-    if (!dpadPressed.has(direction)) run.press(direction, true);
+    if (dpadPressed.has(direction)) continue;
+    run.press(direction, true);
+    konamiStep(direction);
   }
   dpadPressed = next;
   $$('.dpad__button').forEach((button) => {
@@ -590,13 +592,33 @@ $$('.dpad__button').forEach((button) => {
     if (event.detail !== 0) return;   // detail 0 = click made with the keyboard
     run.press(button.dataset.direction, true);
     run.press(button.dataset.direction, false);
+    konamiStep(button.dataset.direction);
   });
 });
 
 
+/* ---------- Konami code on the console's own controls ----------
+   ↑ ↑ ↓ ↓ ← → ← → B A with the d-pad and the buttons (the keyboard's arrows do not count).
+   js/secrets.js gives the prize. The A that completes it does not start or pause the game. */
+
+const KONAMI = ['up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'b', 'a'];
+let konamiInputs = [];
+
+// Returns true when this input completes the code
+function konamiStep(input) {
+  konamiInputs = [...konamiInputs, input].slice(-KONAMI.length);
+  if (konamiInputs.join() !== KONAMI.join()) return false;
+  konamiInputs = [];
+  pauseIfPlaying();
+  claimSecret('konami');
+  return true;
+}
+
+
 /* ---------- A and B buttons, and Start ----------
    If the game brings buttons (Doom, Defrag), while playing A and B belong to the game and count while held.
-   If not (Snake), A starts or pauses and B does not show. Start always starts or pauses. */
+   If not (Snake), A starts or pauses and B does nothing (it stays: the Konami code needs it).
+   Start always starts or pauses. */
 
 const gameButtonReleases = [];
 
@@ -622,6 +644,7 @@ function connectButton(element, button, consoleAction) {
   element.addEventListener('lostpointercapture', releaseButton);
 
   element.addEventListener('click', (event) => {
+    if (konamiStep(button)) return;
     if (isForGame()) {
       if (event.detail === 0) {   // with the keyboard: one tap
         run.press(button, true);
@@ -920,10 +943,9 @@ function dressConsole() {
   $('#end-title').classList.toggle('overlay__title--success', Boolean(end.success));
   $('#end-label').textContent = capitalize(scoring.name);
 
-  // A and B: if they belong to the game they are named after what they do; if not, A is Jugar and B does not show
+  // A and B: if they belong to the game they are named after what they do; if not, A is Jugar and B has no name
   $('#button-a-label').textContent = buttons?.a || 'Jugar';
   $('#button-a').setAttribute('aria-label', buttons ? `A: ${buttons.a.toLowerCase()}` : 'A: jugar o pausar');
-  $('#button-b-group').hidden = !buttons;
   $('#button-b-label').textContent = buttons?.b || '';
   $('#button-b').setAttribute('aria-label', buttons ? `B: ${buttons.b.toLowerCase()}` : 'B');
 }

@@ -2,15 +2,14 @@
    SECRET CODES
    Hidden challenges. Only the first person who completes each one gets its code, to send to the
    representative for the prize; whoever comes later learns that someone got there first.
-     konami        the Konami code on the keyboard (↑ ↑ ↓ ↓ ← → ← → B A), on any page
+     konami        the Konami code (↑ ↑ ↓ ↓ ← → ← → B A) on the Scare Meter console's d-pad and buttons
+                   (js/weekly-game.js notices it and calls claimSecret)
      video-futbol  the whole video on the football tournament page, without skipping
 
    The codes are not in the page or the repository: Supabase keeps them and remembers who found
    each one (supabase/secrets.sql). It also checks that the video took as long as it lasts,
    because anything checked here can be faked.
    ============================================= */
-
-const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
 
 // Title of the dialog when the person is the first
 const SECRET_TITLES = {
@@ -100,20 +99,6 @@ function showSecret(id, estado, codigo = '') {
   $('#secret-login').hidden = estado !== 'sin-sesion';
   if (!dialog.open) dialog.showModal();
 }
-
-
-/* ---------- Konami code: the last keys pressed, on any page ---------- */
-
-let lastKeys = [];
-
-document.addEventListener('keydown', (event) => {
-  if (event.target.closest?.('input, textarea, select, [contenteditable]')) return;
-  lastKeys = [...lastKeys, event.code].slice(-KONAMI.length);
-  if (lastKeys.join() === KONAMI.join()) {
-    lastKeys = [];
-    claimSecret('konami');
-  }
-});
 
 
 /* ---------- The football video, watched to the end ----------

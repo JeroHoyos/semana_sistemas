@@ -44,7 +44,7 @@ Git Flow, without release branches:
 | `js/supabase.js` | The Supabase client, shared by every page that uses it (load it right after supabase-js) |
 | `js/auth.js`, `js/codes.js`, `js/scare-meter.js` | Login and ID card, title codes, Scare Meter |
 | `js/registrations.js` | Team sign-ups: captain, members by email, banners (`supabase/teams.sql`) |
-| `js/secrets.js` | Secret challenges (Konami code, the whole football video): the first gets a code (`supabase/secrets.sql`) |
+| `js/secrets.js` | Secret challenges (Konami code on the Scare Meter console, the whole football video): the first gets a code (`supabase/secrets.sql`) |
 | `js/weekly-game.js` | Retro console; each game is a "cartridge" in its own file (`js/snake.js`) |
 | `js/icons.js`, `js/pixel-art.js` | SVG icons, monsters and pixel art drawings |
 | `games/doom/` | `doom.wasm` (committed build output), `doom1.wad`, engine sources in `source/` |
