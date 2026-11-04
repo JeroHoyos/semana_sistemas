@@ -30,6 +30,9 @@
     check('email', isClown('armarina@unal.edu.co', 'Ana'), true);
     check('binary name', isClown('a@unal.edu.co', '01101100'), true);
     check('exact name', isClown('a@unal.edu.co', 'Armarina'), true);
+    check('name inside', isClown('a@unal.edu.co', 'Juan Armarina'), true);
+    check('argenis email', isClown('argenis.marin@unal.edu.co', 'Ana'), true);
+    check('argenis name', isClown('x@unal.edu.co', 'Argenis Marín'), true);
     check('regular person', isClown('ana@unal.edu.co', 'Ana Gómez'), false);
     check('clown points', scarePoints({ correo: 'imlargo@unal.edu.co', nombre: 'x', puntos: 500 }), 0);
     check('regular points', scarePoints({ correo: 'ana@unal.edu.co', nombre: 'Ana', puntos: '40' }), 40);

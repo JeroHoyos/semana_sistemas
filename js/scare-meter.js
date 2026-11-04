@@ -236,9 +236,13 @@ function showIdCardOf(index) {
 
 async function loadScareMeter() {
   try {
-    const { data: profiles, error } = await supabaseClient
-      .from('perfiles')
-      .select('id, nombre, correo, monstruo, puntos, creado_en');
+    // es_payaso marks sanctioned accounts (isClown reads it). Without that column the query fails,
+    // so it is asked again without it.
+    const columns = 'id, nombre, correo, monstruo, puntos, creado_en';
+    let { data: profiles, error } = await supabaseClient.from('perfiles').select(`${columns}, es_payaso`);
+    if (error?.message?.includes('es_payaso')) {
+      ({ data: profiles, error } = await supabaseClient.from('perfiles').select(columns));
+    }
 
     if (error) {
       console.error('Could not load the profiles:', error);

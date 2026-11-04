@@ -5,22 +5,18 @@
 
 // Project version: whenever it changes, users' browsers close old sessions
 // automatically, to avoid stale JWTs or stale data.
-const PROJECT_VERSION = 'v2026.11.03-164619';
+const PROJECT_VERSION = 'v2026.11.03-201304';
 
 // Accounts sanctioned with a Shadowban and the Clown Licence for cheating or injecting points.
-// A fragment matches anywhere in the text: that is how it catches binary aliases such as 01101100.
-const CLOWN_EMAIL_FRAGMENTS = ['armarina', 'largo', '01101100', '01101001'];
-const CLOWN_NAME_FRAGMENTS = ['largo', '01101100', '01101001'];
+// A fragment matches anywhere in the email or the name: that is how it catches binary aliases such as 01101100.
+const CLOWN_FRAGMENTS = ['armarina', 'argenis', 'largo', '01101100', '01101001'];
 
 // extra: a row from 'perfiles', or a monster. Both can carry the es_payaso flag set in the database.
 function isClown(email, name = '', extra = null) {
   if ([extra?.es_payaso, extra?.monstruo?.es_payaso].some((flag) => flag === true || flag === 'true')) return true;
 
-  const cleanEmail = String(email || '').toLowerCase().trim();
-  const cleanName = String(name || '').toLowerCase().trim();
-  return ['armarina', 'armarina@unal.edu.co'].includes(cleanName)
-    || CLOWN_EMAIL_FRAGMENTS.some((fragment) => cleanEmail.includes(fragment))
-    || CLOWN_NAME_FRAGMENTS.some((fragment) => cleanName.includes(fragment));
+  const texts = [email, name].map((text) => String(text || '').toLowerCase());
+  return texts.some((text) => CLOWN_FRAGMENTS.some((fragment) => text.includes(fragment)));
 }
 
 // One sanctioned person hides behind binary names: the page shows their real identity instead.
