@@ -1,15 +1,15 @@
 /* =============================================
    SECRET CODES
-   Hidden challenges. Only the first person who completes each one gets its code, to send to the
-   representative for the prize, and its title for the ID card (the one in TITLES with the secret's id);
-   whoever comes later learns that someone got there first. Without a session they do nothing.
+   Hidden challenges. Only the first people who complete each one, as many as the limit of its title
+   (the one in TITLES with the secret's id), get that title for the ID card; whoever comes later learns
+   that the places are taken. Without a session they do nothing.
      konami        the Konami code (↑ ↑ ↓ ↓ ← → ← → B A) on the Scare Meter console's d-pad and buttons
                    (js/weekly-game.js notices it and calls claimSecret)
      video-futbol  the whole video on the football tournament page, without skipping
 
-   The codes are not in the page or the repository: Supabase keeps them and remembers who found
-   each one (supabase/secrets.sql). It also checks that the video took as long as it lasts,
-   because anything checked here can be faked.
+   Supabase remembers who found each one (supabase/secrets.sql). It also checks that the video took
+   as long as it lasts, because anything checked here can be faked. It still answers with a code
+   (secretos.codigo), which the page no longer shows.
    ============================================= */
 
 // Title of the dialog when the person is the first
@@ -18,10 +18,13 @@ const SECRET_TITLES = {
   'video-futbol': 'Revisión del VAR',
 };
 
+// places: how many people can win the secret. title: the one won ('' if it could not be saved).
 const SECRET_TEXTS = {
-  primero: 'Fuiste la primera persona en descubrir este secreto. Escríbele al representante y mándale este código:',
-  tarde: 'Descubriste el secreto, pero otra persona llegó antes. ¡Sigue buscando!',
-  error: 'Encontraste un secreto, pero no pudimos revisarlo. Hazlo otra vez en un rato.',
+  primero: (places, title) => (title
+    ? `Estás entre las ${places} primeras personas en descubrirlo: ganaste el título «${title}» para tu carnet.`
+    : `Estás entre las ${places} primeras personas en descubrirlo, pero no pudimos guardar tu título. Hazlo otra vez en un rato.`),
+  tarde: (places) => `Descubriste el secreto, pero ya lo encontraron las ${places} personas que podían ganarlo. ¡Sigue buscando!`,
+  error: () => 'Encontraste un secreto, pero no pudimos revisarlo. Hazlo otra vez en un rato.',
 };
 
 
@@ -50,7 +53,7 @@ async function claimSecret(id) {
       }
     }
     // 'incompleto': according to Supabase the video did not take as long as it lasts (sped up or faked)
-    if (data.estado !== 'incompleto') showSecret(id, data.estado, data.codigo, title);
+    if (data.estado !== 'incompleto') showSecret(id, data.estado, title);
   } finally {
     claiming = false;
   }
@@ -87,7 +90,6 @@ function secretDialog() {
       <div class="easter-egg__photo"><img class="easter-egg__gif" id="secret-gif" alt=""></div>
       <h2 class="auth-modal__title easter-egg__title" id="secret-title"></h2>
       <p class="easter-egg__text" id="secret-text"></p>
-      <strong class="easter-egg__code" id="secret-code"></strong>
     </div>`;
   document.body.append(dialog);
 
@@ -98,19 +100,15 @@ function secretDialog() {
   return dialog;
 }
 
-// estado: 'primero' (with the code and the title, '' if it could not be saved), 'tarde' (someone found it first)
+// estado: 'primero' (with the title, '' if it could not be saved), 'tarde' (someone found it first)
 // or 'error' (Supabase did not answer)
-function showSecret(id, estado, codigo = '', title = '') {
+function showSecret(id, estado, title = '') {
   const dialog = secretDialog();
   const late = estado === 'tarde';
   $('#secret-gif').src = late ? 'img/angry-programmer-cat.gif' : 'img/programmer-cat.gif';
   $('#secret-gif').alt = late ? 'Gato programador con gafas, enojado frente al portátil' : 'Gato programando en un portátil';
-  $('#secret-title').textContent = late ? 'Alguien más lo encontró primero...' : SECRET_TITLES[id];
-  $('#secret-text').textContent = title
-    ? `Fuiste la primera persona en descubrir este secreto y ganaste el título «${title}» para tu carnet. Además, escríbele al representante y mándale este código:`
-    : SECRET_TEXTS[estado];
-  $('#secret-code').textContent = codigo || '';
-  $('#secret-code').hidden = !codigo;
+  $('#secret-title').textContent = late ? 'Otras personas llegaron primero...' : SECRET_TITLES[id];
+  $('#secret-text').textContent = SECRET_TEXTS[estado](findTitle(id).limit, title);
   if (!dialog.open) dialog.showModal();
 }
 

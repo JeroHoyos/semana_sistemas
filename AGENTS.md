@@ -64,6 +64,7 @@ Scripts are classic `<script>` tags sharing globals, so the load order in each H
 - **User text:** every text a person types (names, emails) goes through `escapeHtml` before reaching `innerHTML`. Monster colors go through `monsterColor`.
 - **Supabase keys:** the anon key in `js/supabase.js` is public by design. Never add the `service_role` key.
 - **Browser checks are not security:** the clown ban, title limits and the supervisor check in JavaScript can be bypassed. Supabase policies and functions must enforce anything that matters.
+- **Supervisors:** each person can edit their own `user_metadata` (titles included) from the browser, so Supabase never trusts it. Its functions ask `es_supervisor()`, which reads `app_metadata.supervisor`, set by hand with SQL (`supabase/weekly-game.sql` says how).
 - **Title codes:** the plain-text code never goes in the repo. Run `node tools/hash-code.js "CODE"` and store the hash in `codeHash` in `TITLES`.
 - **Version bump:** changing `PROJECT_VERSION` in `js/data.js` (or running `tools/bump-version.js`) signs every user out.
 - **Weekly game locks:** to open a locked week, remove `locked` from its entry in `WEEKS` (`js/weekly-game.js`) and remove its game from `juego_bloqueado()` in the SQL, then run the SQL again.
