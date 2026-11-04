@@ -731,7 +731,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* Between the brand and the photo, centered with the brand (keeps the base stamp's translate) */
 .idcard__stamp--clown {
   left: 69.5%;
-  top: 31%;
+  top: 32.5%;
   border-color: #e11d48 !important;
   background: linear-gradient(135deg, #fff1f2, #ffe4e6) !important;
   color: #be123c !important;
