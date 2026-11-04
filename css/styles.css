@@ -692,7 +692,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .idcard--clown .idcard__name {
   color: #881337 !important;
-  text-decoration: underline wavy #e11d48;
 }
 
 .idcard__role--clown {
