@@ -10,6 +10,7 @@
   <script src="../js/data.js"></script>
   <script src="../js/icons.js"></script>
   <script src="../js/common.js"></script>
+  <script src="../js/doom.js"></script>
   <script>
     const failures = [];
     const check = (name, actual, expected) => {
@@ -46,6 +47,15 @@
     check('good color', monsterColor({ color: '#2f9e5b' }), '#2f9e5b');
     check('no script in svg', drawCustomMonster({ color: '"><script>' }).includes('<script'), false);
     check('proto part', drawCustomMonster({ cuerpo: '__proto__', ojos: 'constructor' }).startsWith('<svg'), true);
+
+    // Doom points (they go to the leaderboard, which accepts 1 to 1000)
+    const doomRun = (seconds, kills, items, secrets) => doomScore({
+      tics: seconds * 35, kills, totalKills: 6, items, totalItems: 37, secrets, totalSecrets: 3 });
+    check('doom perfect', doomRun(30, 6, 37, 3).points, 1000);
+    check('doom empty and slow', doomRun(300, 0, 0, 0).points, 0);
+    check('doom mixed', doomRun(60, 3, 0, 1).points, 200 + 0 + 67 + 170);
+    check('doom no secrets in level', doomScore({ tics: 0, kills: 0, totalKills: 0, items: 0, totalItems: 0, secrets: 0, totalSecrets: 0 }).points, 200);
+    check('doom lines add up', doomRun(45, 2, 10, 0).lines.length, 4);
 
     check('handle', handleOf('ana@unal.edu.co'), 'ana');
     check('accents', stripAccents('Fútbol'), 'Futbol');

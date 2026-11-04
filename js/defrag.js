@@ -4,11 +4,8 @@
    each complete row is freed. Four rows at once are a ¡Defrag!
    The run ends when memory fills up to the top.
 
-   Points (the same ones that go to the leaderboard):
-     1 row 100 · 2 rows 300 · 3 rows 500 · 4 rows (¡Defrag!) 800, multiplied by the level
-     two Defrags in a row (no smaller clears between them): the second is worth 1.5 times
-     combo rows (one piece after another): + 50 × combo × level
-     soft drop: 1 point per cell · hard drop: 2 points per cell
+   Points (the same ones that go to the leaderboard): each row cleared is worth 50, whatever the level
+   or how many go at once. Dropping a piece gives nothing, so every score is a multiple of 50.
    Every 10 rows the level goes up: pieces fall faster and the music speeds up.
 
    Pieces come from a bag of all seven (no long droughts of the one you need), rotate with
@@ -100,7 +97,7 @@ const DEFRAG_KICKS = {
   },
 };
 
-const DEFRAG_ROW_POINTS = [0, 100, 300, 500, 800];
+const DEFRAG_ROW_POINTS = 50;
 const DEFRAG_ROW_NAMES = ['', '1 FILA', 'DOBLE', 'TRIPLE', '¡DEFRAG!'];
 
 // Keyboard: arrows or WASD to move, up (or X) rotates, Z rotates back, Space drops and C (or Shift) holds
@@ -406,7 +403,7 @@ function createDefrag(canvas, events = {}) {
   let well;                // rows × columns: null or the letter of the piece that left that block
   let piece;               // { type, rotation, x, y } the falling piece (null while rows are removed)
   let queue, held, canHold;
-  let score, rowsCleared, level, combo, backToBack;
+  let score, rowsCleared, level;
   let fallTime = 0;           // ms accumulated towards the next falling cell
   let lockTime = 0;          // ms it has been on the floor
   let resets = 0;       // times its floor time was given back
@@ -535,7 +532,6 @@ function createDefrag(canvas, events = {}) {
     if (to > from) {
       trail = { cells: cellsOf(piece), rows: to - from, type: piece.type, from: performance.now() };
       piece.y = to;
-      addPoints(2 * (to - from));
     }
     audio.sfx('drop');
     lockPiece(performance.now(), true);
@@ -573,7 +569,6 @@ function createDefrag(canvas, events = {}) {
       clearing = { rows: fullRows, from: now };
       audio.sfx('rows', fullRows.length);
     } else {
-      combo = -1;
       if (!dropped) audio.sfx('lock');
       nextPiece();
     }
@@ -583,24 +578,7 @@ function createDefrag(canvas, events = {}) {
   function scoreRows(fullRows, now) {
     const count = fullRows.length;
     const lines = [DEFRAG_ROW_NAMES[count]];
-    let points = DEFRAG_ROW_POINTS[count] * level;
-
-    if (count === 4) {
-      if (backToBack) {
-        points = points * 3 / 2;
-        lines.push('SEGUIDO');
-      }
-      backToBack = true;
-    } else {
-      backToBack = false;
-    }
-
-    combo++;
-    if (combo > 0) {
-      points += 50 * combo * level;
-      lines.push(`COMBO ${combo}`);
-    }
-
+    const points = DEFRAG_ROW_POINTS * count;
     addPoints(points);
     lines.push(`+${points}`);
     rowsCleared += count;
@@ -655,8 +633,6 @@ function createDefrag(canvas, events = {}) {
     score = 0;
     rowsCleared = 0;
     level = 1;
-    combo = -1;
-    backToBack = false;
     clearing = null;
     trail = null;
     floaters = [];
@@ -708,7 +684,6 @@ function createDefrag(canvas, events = {}) {
         fallTime = 0;
         break;
       }
-      if (softDrop) addPoints(1);
     }
 
     if (onFloor()) {
@@ -758,7 +733,7 @@ function createDefrag(canvas, events = {}) {
     if (action === 'down') {
       softDrop = true;
       fallTime = 0;
-      if (hasPiece() && fall()) addPoints(1);
+      if (hasPiece()) fall();
       return;
     }
     if (!hasPiece()) return;
@@ -872,22 +847,13 @@ function createDefrag(canvas, events = {}) {
     if (fill > 0) rect(LEFT_CENTER - 21, 110, 42 * fill, 5, fillColor);
     text(`${Math.round(fill * 100)}%`, LEFT_CENTER, 120, 5, fillColor);
 
-    // Right: the next three and, if any, the combo and back-to-back Defrag
+    // Right: the next three
     text('SIGUE', RIGHT_CENTER, 12, 5, label);
     box(RIGHT_CENTER - 24, 19, 48, 67);
     queue.slice(0, 3).forEach((type, i) => {
       if (i === 0) centeredPiece(type, RIGHT_CENTER, 31.5, L);
       else centeredPiece(type, RIGHT_CENTER, 37 + i * 16.5, 5, 0.85);
     });
-
-    if (state !== 'ready' && combo > 0) {
-      text('COMBO', RIGHT_CENTER, 95, 5, label);
-      text(String(combo), RIGHT_CENTER, 103, 7, '#ffd23f');
-    }
-    if (state !== 'ready' && backToBack) {
-      text('DEFRAG', RIGHT_CENTER, 117, 5, '#ffd23f');
-      text('SEGUIDO', RIGHT_CENTER, 124, 4, label);
-    }
   }
 
   function drawWell(now) {
@@ -1080,10 +1046,17 @@ const DEFRAG_CARTRIDGE = {
   scoring: 'points',
   create: (canvas, events) => createDefrag(canvas, events),
   splash: {
-    text: 'Acomoda los fragmentos que caen: cada fila completa se libera. Cuatro filas de una vez son un ¡Defrag!',
-    items: () => `<span class="overlay__item"><span class="overlay__sprite">${drawPixelArt(defragSprite('I'))}</span>800 pts</span>`,
-    keyboardHelp: 'Flechas o WASD · Arriba o X gira · Z al revés · Espacio suelta · C guarda · P pausa · M sonido',
-    touchHelp: 'Cruceta mueve · Arriba suelta · A o tocar la pantalla gira · B guarda',
+    text: 'Completa filas y libera la memoria',
+    items: () => `<span class="overlay__item"><span class="overlay__sprite">${drawPixelArt(defragSprite('I'))}</span>50 pts</span>`,
+    keyboardHelp: 'Flechas o WASD · Espacio suelta · P pausa',
+    touchHelp: 'Cruceta mueve · A gira · B guarda',
+  },
+  controls: {
+    keyboard: [
+      ['Flechas o WASD', 'Mover'], ['Arriba o X', 'Girar'], ['Z', 'Girar al otro lado'], ['Abajo', 'Bajar'],
+      ['Espacio', 'Soltar'], ['C o Shift', 'Guardar'], ['P', 'Pausa'], ['M', 'Sonido'],
+    ],
+    touch: [['Cruceta', 'Mover'], ['Arriba', 'Soltar'], ['A o tocar', 'Girar'], ['B', 'Guardar']],
   },
   end: { title: 'Memoria llena', noPoints: 'Ni un punto esta vez. ¡Otra!' },
   buttons: { a: 'Girar', b: 'Guardar' },
