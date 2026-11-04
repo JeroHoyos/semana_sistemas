@@ -202,7 +202,7 @@ function updatePreview() {
   const monster = chosenMonster();
   if (!editing) {
     $('#signup-idcard-preview').innerHTML =
-      scarerIdCard($('#auth-name').value, $('#auth-email').value, monster);
+      scarerIdCard($('#auth-name').value, $('#auth-email')?.value || 'estudiante@unal.edu.co', monster);
     return;
   }
 
@@ -242,7 +242,7 @@ $('#btn-random-monster').addEventListener('click', () => {
 });
 
 $('#auth-name').addEventListener('input', updatePreview);
-$('#auth-email').addEventListener('input', updatePreview);
+if ($('#auth-email')) $('#auth-email').addEventListener('input', updatePreview);
 $('#edit-name').addEventListener('input', updatePreview);
 
 
@@ -309,8 +309,7 @@ async function syncProfile(name, monster) {
 
   const { error: updateError } = await supabaseClient
     .from('perfiles')
-    .update({ nombre: name, monstruo: monster })
-    .eq('id', currentUser.id);
+    .upsert({ id: currentUser.id, nombre: name, monstruo: monster, correo: currentUser.email }, { onConflict: 'id' });
   if (updateError) console.warn('Could not sync the profile:', updateError);
 }
 
@@ -378,10 +377,10 @@ function setAuthMode(isSignup) {
   $('#auth-modal').classList.toggle('auth-modal--signup', isSignup);
   $('#idcard-builder').hidden = !isSignup;
   $('#name-field').hidden = !isSignup;
-  $('#auth-name').required = isSignup;
+  if ($('#auth-info-login')) $('#auth-info-login').hidden = isSignup;
 
   $('#auth-title').textContent = isSignup ? 'Carnet de Asustador' : 'Acceso';
-  $('#auth-submit-text').textContent = isSignup ? 'Emitir mi Carnet' : 'Entrar';
+  $('#auth-submit-text').textContent = isSignup ? 'Emitir carnet con correo UNAL' : 'Iniciar sesión con correo UNAL';
   hideAuthMessage();
 
   if (isSignup) updatePreview();
@@ -406,6 +405,48 @@ function updateSessionUi(user) {
   currentUser = user;
   $('#btn-open-auth').classList.toggle('hero__button--signed-in', Boolean(user));
   if (user) {
+    // Enforce institutional domain strictly
+    if (!user.email?.toLowerCase().endsWith(UNAL_DOMAIN)) {
+      supabaseClient.auth.signOut().then(() => {
+        alert('Acceso restringido: Solo se permiten cuentas institucionales @unal.edu.co');
+      });
+      return;
+    }
+
+    // Check for pending monster from signup or initialize first-time OAuth profile
+    const pendingRaw = localStorage.getItem('semana_sistemas_pending_monster');
+    let pending = null;
+    if (pendingRaw) {
+      try { pending = JSON.parse(pendingRaw); } catch (_) {}
+      localStorage.removeItem('semana_sistemas_pending_monster');
+    }
+
+    const existingMonster = user.user_metadata?.monstruo;
+    if (!existingMonster || pending) {
+      const fullName = (pending?.name || user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0]).trim();
+      const monster = pending?.monster || chosenMonster();
+      const title = BASE_TITLE;
+      const titleIds = [title.id];
+      const updatedMonster = { ...monster, titulo: title.id, titulos: titleIds };
+
+      supabaseClient.auth.updateUser({
+        data: {
+          ...user.user_metadata,
+          full_name: fullName,
+          monstruo: updatedMonster,
+          titulo: title.id,
+          titulos: titleIds,
+        },
+      }).then(({ data, error }) => {
+        if (!error && data?.user) {
+          syncProfile(fullName, updatedMonster);
+          currentUser = data.user;
+          if (!editing) showProfile(data.user);
+        }
+      });
+      return;
+    }
+
     // If the person chose or unlocked titles in their account that are not on their monster in the table,
     // they are synced to 'perfiles' so the global count and the Scare Meter stay up to date.
     const titleId = user.user_metadata?.titulo;
@@ -556,37 +597,49 @@ async function logIn({ email, password }) {
   $('#auth-modal').close();
 }
 
-// Form submit: creates the ID card or logs in, depending on the chosen tab
-$('#auth-form').addEventListener('submit', async (event) => {
-  event.preventDefault();
+// Triggers Google Workspace / SmartKey OAuth for @unal.edu.co accounts
+async function signInWithSmartKey() {
   hideAuthMessage();
 
-  const fields = {
-    name: $('#auth-name').value.trim(),
-    email: $('#auth-email').value.trim().toLowerCase(),
-    password: $('#auth-password').value,
-  };
-
-  if (!fields.email.endsWith(UNAL_DOMAIN)) {
-    showAuthMessage(`Usa tu correo institucional terminado en ${UNAL_DOMAIN}`);
-    return;
-  }
-
-  // While Supabase answers, the button is disabled and says "Cargando…"
   const button = $('#auth-submit');
   const buttonText = $('#auth-submit-text');
   const originalText = buttonText.textContent;
   button.disabled = true;
-  buttonText.textContent = 'Cargando…';
+  buttonText.textContent = 'Conectando con SmartKey…';
 
   try {
-    await (signupMode ? createIdCard(fields) : logIn(fields));
+    if (signupMode) {
+      const chosenName = $('#auth-name').value.trim();
+      try {
+        localStorage.setItem('semana_sistemas_pending_monster', JSON.stringify({
+          name: chosenName,
+          monster: chosenMonster(),
+        }));
+      } catch (_) {}
+    }
+
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        queryParams: {
+          hd: 'unal.edu.co',
+          prompt: 'select_account',
+        },
+        redirectTo: window.location.origin + window.location.pathname,
+      },
+    });
+    if (error) throw error;
   } catch (error) {
     showAuthMessage(translateError(error));
-  } finally {
     button.disabled = false;
     buttonText.textContent = originalText;
   }
+}
+
+// Form submit: initiates login or signup via SmartKey
+$('#auth-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  await signInWithSmartKey();
 });
 
 $('#btn-logout').addEventListener('click', async () => {
@@ -681,6 +734,9 @@ async function syncSessionVersion() {
 syncSessionVersion().finally(() => {
   supabaseClient.auth.getSession().then(({ data: { session } }) => {
     updateSessionUi(session?.user ?? null);
+    if (window.location.hash.includes('access_token=') || window.location.search.includes('code=')) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
   });
 
   supabaseClient.auth.onAuthStateChange((_event, session) => {
