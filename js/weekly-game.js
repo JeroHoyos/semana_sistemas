@@ -440,7 +440,7 @@ weeksContainer.addEventListener('click', (event) => {
   if (!game || game === cartridge) return;
 
   if (!canPlay(game)) {
-    showWeekNotice(`Semana ${game.week} bloqueada · muy pronto`);
+    showWeekNotice('Muy pronto');
     sound.play('locked');
     return;
   }
