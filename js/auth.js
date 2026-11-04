@@ -8,12 +8,7 @@
    in accounts (user_metadata.monstruo, titulo, titulos). Renaming them needs a database migration.
    ============================================= */
 
-// This is Supabase's public (anon) key: it is made to live in the browser.
-// The rules configured in Supabase are what protect the data. Never put the service_role key here.
-const SUPABASE_URL = 'https://uwcdgpxdiigllqhhmyss.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3Y2RncHhkaWlnbGxxaGhteXNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MDc4ODUsImV4cCI6MjEwODI4Mzg4NX0.NuHGfN7un_7Qxg_uosrxtYcUouK593WdmQLrg9mjHjs';
-
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// supabaseClient comes from js/supabase.js
 
 // Only institutional emails are accepted
 const UNAL_DOMAIN = '@unal.edu.co';
@@ -105,13 +100,6 @@ let currentUser = null;
 // The usual title (the "free" one in TITLES, data.js): everyone has it
 const BASE_TITLE = TITLES.find((title) => title.free) || TITLES[0];
 
-const findTitle = (id) => TITLES.find((title) => title.id === id);
-
-// How a title reads according to the monster's style (Asustador / Asustadora, Rey / Reina…)
-function titleText(title, style) {
-  return style === 'femenino' && title.feminine ? title.feminine : title.name;
-}
-
 // The titles a person has: the free ones and those redeemed with a code.
 // Stored in their account as a list of ids (user_metadata.titulos); an id no longer in TITLES is ignored.
 function unlockedTitles(user) {
@@ -145,11 +133,13 @@ function scarerIdCard(name, email, monster, title = BASE_TITLE, medal = null) {
   const role = clown ? 'TRAMPOSO DE CIRCO' : titleText(title, monster?.estilo);
   const isDebugger = !clown && title?.id === 'debugger';
   const isNocturnal = !clown && title?.id === 'terror-nocturno';
+  const isPhenomenon = !clown && title?.id === 'video-futbol';
 
   // Long titles split into two lines so they do not hit the photo
   let bandClass = role.length > 12 ? 'idcard__band idcard__band--long' : 'idcard__band';
   if (isDebugger) bandClass += ' idcard__band--glitch';
   if (isNocturnal) bandClass += ' idcard__band--nocturnal';
+  if (isPhenomenon) bandClass += ' idcard__band--phenomenon';
   if (clown) bandClass += ' idcard__band--clown';
 
   const roleHtml = isDebugger

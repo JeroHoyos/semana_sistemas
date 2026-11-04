@@ -143,7 +143,7 @@ const sound = {
   },
 };
 
-// Sound switches on and off with the M key
+// Sound switches on and off with the M key, or with B in games that do not use it (Snake)
 function renderSound() {
   $('#console-sound').textContent = sound.on ? '♪ ON' : '♪ OFF';
   runs.forEach((r) => r.setSound?.(sound.on));
@@ -440,7 +440,7 @@ weeksContainer.addEventListener('click', (event) => {
   if (!game || game === cartridge) return;
 
   if (!canPlay(game)) {
-    showWeekNotice(`Semana ${game.week} bloqueada · muy pronto`);
+    showWeekNotice('Muy pronto');
     sound.play('locked');
     return;
   }
@@ -557,7 +557,9 @@ function pressDpad(next) {
     if (!next.has(direction)) run.press(direction, false);
   }
   for (const direction of next) {
-    if (!dpadPressed.has(direction)) run.press(direction, true);
+    if (dpadPressed.has(direction)) continue;
+    run.press(direction, true);
+    konamiStep(direction);
   }
   dpadPressed = next;
   $$('.dpad__button').forEach((button) => {
@@ -590,13 +592,33 @@ $$('.dpad__button').forEach((button) => {
     if (event.detail !== 0) return;   // detail 0 = click made with the keyboard
     run.press(button.dataset.direction, true);
     run.press(button.dataset.direction, false);
+    konamiStep(button.dataset.direction);
   });
 });
 
 
+/* ---------- Konami code on the console's own controls ----------
+   ↑ ↑ ↓ ↓ ← → ← → B A with the d-pad and the buttons (the keyboard's arrows do not count).
+   js/secrets.js gives the prize. The A that completes it does not start or pause the game. */
+
+const KONAMI = ['up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'b', 'a'];
+let konamiInputs = [];
+
+// Returns true when this input completes the code
+function konamiStep(input) {
+  konamiInputs = [...konamiInputs, input].slice(-KONAMI.length);
+  if (konamiInputs.join() !== KONAMI.join()) return false;
+  konamiInputs = [];
+  pauseIfPlaying();
+  claimSecret('konami');
+  return true;
+}
+
+
 /* ---------- A and B buttons, and Start ----------
    If the game brings buttons (Doom, Defrag), while playing A and B belong to the game and count while held.
-   If not (Snake), A starts or pauses and B does not show. Start always starts or pauses. */
+   If not (Snake), A starts or pauses and B turns the sound on and off.
+   Start always starts or pauses. */
 
 const gameButtonReleases = [];
 
@@ -622,6 +644,7 @@ function connectButton(element, button, consoleAction) {
   element.addEventListener('lostpointercapture', releaseButton);
 
   element.addEventListener('click', (event) => {
+    if (konamiStep(button)) return;
     if (isForGame()) {
       if (event.detail === 0) {   // with the keyboard: one tap
         run.press(button, true);
@@ -636,7 +659,9 @@ function connectButton(element, button, consoleAction) {
 }
 
 connectButton($('#button-a'), 'a', mainButton);
-connectButton($('#button-b'), 'b');
+connectButton($('#button-b'), 'b', () => {
+  if (!cartridge.buttons) sound.toggle();
+});
 $('#button-start').addEventListener('click', mainButton);
 
 // On pausing, ending or changing week the d-pad and buttons are released (the finger may stay on them)
@@ -920,12 +945,11 @@ function dressConsole() {
   $('#end-title').classList.toggle('overlay__title--success', Boolean(end.success));
   $('#end-label').textContent = capitalize(scoring.name);
 
-  // A and B: if they belong to the game they are named after what they do; if not, A is Jugar and B does not show
+  // A and B: if they belong to the game they are named after what they do; if not, A is Jugar and B is Sonido
   $('#button-a-label').textContent = buttons?.a || 'Jugar';
   $('#button-a').setAttribute('aria-label', buttons ? `A: ${buttons.a.toLowerCase()}` : 'A: jugar o pausar');
-  $('#button-b-group').hidden = !buttons;
-  $('#button-b-label').textContent = buttons?.b || '';
-  $('#button-b').setAttribute('aria-label', buttons ? `B: ${buttons.b.toLowerCase()}` : 'B');
+  $('#button-b-label').textContent = buttons?.b || 'Sonido';
+  $('#button-b').setAttribute('aria-label', buttons ? `B: ${buttons.b.toLowerCase()}` : 'B: sonido');
 }
 
 

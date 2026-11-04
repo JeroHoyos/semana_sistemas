@@ -867,6 +867,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
   text-shadow: 0 0 8px rgba(192, 132, 252, 0.6);
 }
 
+/* El Fenómeno (Ronaldo Nazário): Brazil green and yellow */
+.idcard__band--phenomenon {
+  background: linear-gradient(90deg, #005c25 0%, #007a33 50%, #005c25 100%) !important;
+  border-top: 1.5px solid #ffdf00;
+  border-bottom: 1.5px solid #ffdf00;
+  color: #ffdf00 !important;
+}
+
 .glitch-text {
   position: relative;
   display: inline-block;
@@ -3490,6 +3498,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
   box-shadow: 0 0 8px rgba(168, 85, 247, 0.25);
 }
 
+.scarer-card__title-tag--phenomenon {
+  background: #006428;
+  border-color: #ffdf00;
+  color: #ffdf00;
+}
+
 .scarer-card__title-tag--clown {
   background: #ffe4e6 !important;
   color: #be123c !important;
@@ -4246,7 +4260,7 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 .title-item--locked .title-item__name { color: #8a95a3; }
 .title-item--locked .title-item__desc { color: var(--gray); font-style: italic; }
 
-/* Special titles: Debugger (cyan terminal) and Terror Nocturno (purple) */
+/* Special titles: Debugger (cyan terminal), Terror Nocturno (purple) and El Fenómeno (Brazil green) */
 .title-item--debugger { background: #071820; box-shadow: inset 0 0 0 1.5px rgba(0, 240, 255, .35); }
 .title-item--debugger.title-item--in-use { box-shadow: inset 0 0 0 2px #00f0ff, 0 0 18px -4px rgba(0, 240, 255, .55); }
 .title-item--debugger .title-item__icon { background: #0d2a33; color: #00f0ff; box-shadow: 0 0 10px rgba(0, 240, 255, .4); }
@@ -4259,6 +4273,13 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 .title-item--nocturnal .title-item__name { color: #f3e8ff; text-shadow: 0 0 8px rgba(192, 132, 252, .6); }
 .title-item--nocturnal .title-item__desc { color: #d8c3f5; }
 .title-item--nocturnal .title-item__status { background: #c084fc; color: #1a0b2e; }
+
+.title-item--phenomenon { background: linear-gradient(120deg, #004d1f, #007a33); box-shadow: inset 0 0 0 1.5px rgba(255, 223, 0, .45); }
+.title-item--phenomenon.title-item--in-use { box-shadow: inset 0 0 0 2px #ffdf00, 0 0 18px -4px rgba(255, 223, 0, .6); }
+.title-item--phenomenon .title-item__icon { background: #002776; color: #ffdf00; box-shadow: 0 0 10px rgba(255, 223, 0, .4); }
+.title-item--phenomenon .title-item__name { color: #ffdf00; }
+.title-item--phenomenon .title-item__desc { color: #d9f2c4; }
+.title-item--phenomenon .title-item__status { background: #ffdf00; color: #004d1f; }
 
 @media (max-width: 520px) {
   .codes { padding: 26px 18px 22px; }
@@ -4761,7 +4782,6 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   gap: 8px;
 }
 .console__button-group--b { margin-top: 28px; }
-.console__button-group[hidden] { display: none; }   /* Snake does not use B */
 .console__button {
   width: 56px;
   height: 56px;

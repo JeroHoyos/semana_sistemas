@@ -20,7 +20,7 @@ Git Flow, without release branches:
 
 - Never commit directly to `main` or `develop`; open a pull request.
 - To publish, merge `develop` into `main`.
-- `feature/doom-defrag` holds the unpublished games (Doom for week 2, Defrag for week 3). To publish one, unlock it (see "Weekly game locks" below) and merge the branch into `develop`.
+- Doom (week 2) and Defrag (week 3) are already in `main`, locked to supervisors. To open one, unlock it (see "Weekly game locks" below).
 - Previews use the same Supabase project as production: whatever you do on a preview writes real data.
 
 ## Language
@@ -41,8 +41,10 @@ Git Flow, without release branches:
 | `js/data.js` | All event content (days, speakers, activities, groups, titles, gallery). Content edits go here. |
 | `js/common.js` | Shared helpers (`$`, `escapeHtml`, medals, activity lookups) |
 | `js/main.js`, `js/event.js` | Home page and activity page |
+| `js/supabase.js` | The Supabase client, shared by every page that uses it (load it right after supabase-js) |
 | `js/auth.js`, `js/codes.js`, `js/scare-meter.js` | Login and ID card, title codes, Scare Meter |
 | `js/registrations.js` | Team sign-ups: captain, members by email, banners (`supabase/teams.sql`) |
+| `js/secrets.js` | Secret challenges (Konami code on the Scare Meter console, the whole football video): the first gets a code (`supabase/secrets.sql`) |
 | `js/weekly-game.js` | Retro console; each game is a "cartridge" in its own file (`js/snake.js`) |
 | `js/icons.js`, `js/pixel-art.js` | SVG icons, monsters and pixel art drawings |
 | `games/doom/` | `doom.wasm` (committed build output), `doom1.wad`, engine sources in `source/` |
@@ -60,7 +62,7 @@ Scripts are classic `<script>` tags sharing globals, so the load order in each H
 ## Rules that are easy to break
 
 - **User text:** every text a person types (names, emails) goes through `escapeHtml` before reaching `innerHTML`. Monster colors go through `monsterColor`.
-- **Supabase keys:** the anon key in `js/auth.js` is public by design. Never add the `service_role` key.
+- **Supabase keys:** the anon key in `js/supabase.js` is public by design. Never add the `service_role` key.
 - **Browser checks are not security:** the clown ban, title limits and the supervisor check in JavaScript can be bypassed. Supabase policies and functions must enforce anything that matters.
 - **Title codes:** the plain-text code never goes in the repo. Run `node tools/hash-code.js "CODE"` and store the hash in `codeHash` in `TITLES`.
 - **Version bump:** changing `PROJECT_VERSION` in `js/data.js` (or running `tools/bump-version.js`) signs every user out.

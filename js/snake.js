@@ -390,7 +390,7 @@ const SNAKE_CARTRIDGE = {
   },
   controls: {
     keyboard: [['Flechas o WASD', 'Girar'], ['P', 'Pausa'], ['M', 'Sonido']],
-    touch: [['Cruceta', 'Girar'], ['Deslizar el dedo', 'Girar'], ['A', 'Pausa']],
+    touch: [['Cruceta', 'Girar'], ['Deslizar el dedo', 'Girar'], ['A', 'Pausa'], ['B', 'Sonido']],
   },
   end: { title: 'Fin del juego', noPoints: 'Ni un bug esta vez. ¡Otra!' },
 };

@@ -169,6 +169,8 @@ const ACTIVITIES = [
 //   description: short phrase shown under "Tus títulos" once unlocked.
 //   hint: short phrase shown below "Título secreto" while locked, to make people want to look for it.
 //   limit: how many people can hold it (checked in the browser only, see js/codes.js).
+// The titles with the id of a secret ('konami', 'video-futbol') have no code: js/secrets.js gives them
+// to the first person who finds that secret.
 const TITLES = [
   { id: 'asustador', name: 'Asustador', feminine: 'Asustadora', free: true,
     description: 'El título con el que arranca todo monstruo de la Semana.' },
@@ -188,6 +190,12 @@ const TITLES = [
     description: 'Acecha cuando se apagan las luces. Solo 5 lo tienen.',
     hint: 'Solo 5 personas podrán reclamarlo. Corre.',
     codeHash: 'c58b28118256f74718a66d20def69ac43887b5dacbc7ffcac09389da6ba38d08' },
+  { id: 'konami', name: 'Maestro Konami', feminine: 'Maestra Konami', limit: 1,
+    description: 'La primera persona en meter el código Konami en la consola.',
+    hint: 'Los gamers de la vieja escuela conocen el truco.' },
+  { id: 'video-futbol', name: 'El Fenómeno', feminine: 'La Fenómeno', limit: 1,   // after Ronaldo Nazário: Brazil green
+    description: 'La primera persona en ver completo el video del torneo de fútbol.',
+    hint: 'Hay un video que vale la pena ver hasta el final.' },
 ];
 
 // SCARE METER: fed in real time from Supabase (table 'perfiles'),
