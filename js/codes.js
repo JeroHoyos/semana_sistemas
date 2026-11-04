@@ -175,6 +175,131 @@ async function redeemCode(text) {
   return { status: 'new', title };
 }
 
+
+/* ---------- Vice City unlock animation and audio ---------- */
+
+let viceAudio = null;
+
+function playViceMusic() {
+  try {
+    if (!viceAudio) {
+      viceAudio = new Audio('audio/vice-city.mp3');
+      viceAudio.loop = true;
+      viceAudio.volume = 0.8;
+    }
+    viceAudio.currentTime = 0;
+    viceAudio.play().catch((err) => console.log('Audio autoplay info:', err));
+    updateViceAudioButton(true);
+  } catch (err) {
+    console.warn('Audio error:', err);
+  }
+}
+
+function stopViceMusic() {
+  if (viceAudio) {
+    viceAudio.pause();
+    updateViceAudioButton(false);
+  }
+}
+
+function toggleViceMusic() {
+  if (!viceAudio) {
+    playViceMusic();
+    return;
+  }
+  if (viceAudio.paused) {
+    viceAudio.play().catch(() => {});
+    updateViceAudioButton(true);
+  } else {
+    viceAudio.pause();
+    updateViceAudioButton(false);
+  }
+}
+
+function updateViceAudioButton(isPlaying) {
+  const icon = document.querySelector('#vice-audio-icon');
+  const text = document.querySelector('#vice-audio-text');
+  if (icon) icon.textContent = isPlaying ? '🔊' : '🔇';
+  if (text) text.textContent = isPlaying ? 'Música activa' : 'Música pausada';
+}
+
+function getViceUnlockModal() {
+  let modal = document.querySelector('#vice-unlock-modal');
+  if (modal) return modal;
+
+  modal = document.createElement('dialog');
+  modal.id = 'vice-unlock-modal';
+  modal.className = 'auth-modal vice-unlock-modal';
+  modal.setAttribute('aria-labelledby', 'vice-unlock-title');
+  modal.innerHTML = `
+    <div class="auth-modal__box vice-unlock-box">
+      <button class="auth-modal__close vice-unlock-close" id="btn-close-vice-unlock" type="button" aria-label="Cerrar">✕</button>
+      <div class="vice-unlock-scanlines" aria-hidden="true"></div>
+      
+      <div class="vice-unlock-header">
+        <span class="vice-unlock-palm">🌴</span>
+        <span>DESBLOQUEO ESPECIAL</span>
+        <span class="vice-unlock-palm">🌴</span>
+      </div>
+
+      <h2 class="vice-unlock-title" id="vice-unlock-title">VICE CITY</h2>
+
+      <div class="vice-unlock-preview-wrap">
+        <div class="vice-unlock-shimmer"></div>
+        <div id="vice-unlock-preview" class="speakers__idcard"></div>
+      </div>
+
+      <p class="vice-unlock-desc">
+        ¡Has desbloqueado el diseño cromático <strong>Vice City</strong> y el título exclusivo <strong>QR Gang</strong>! Tu carnet ha sido transformado.
+      </p>
+
+      <div class="vice-unlock-actions">
+        <button type="button" class="vice-unlock-audio-btn" id="btn-toggle-vice-audio">
+          <span id="vice-audio-icon">🔊</span>
+          <span id="vice-audio-text">Música activa</span>
+        </button>
+        <button type="button" class="hero__button vice-unlock-equip-btn" id="btn-equip-vice">
+          <span>Ver mi carnet</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.append(modal);
+
+  modal.querySelector('#btn-close-vice-unlock').addEventListener('click', () => modal.close());
+  modal.addEventListener('close', () => stopViceMusic());
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.close();
+  });
+
+  modal.querySelector('#btn-toggle-vice-audio').addEventListener('click', toggleViceMusic);
+
+  modal.querySelector('#btn-equip-vice').addEventListener('click', () => {
+    modal.close();
+    if (typeof openIdCardEdit === 'function') {
+      openIdCardEdit();
+    }
+  });
+
+  return modal;
+}
+
+function showViceUnlockAnimation() {
+  const modal = getViceUnlockModal();
+  const preview = document.querySelector('#vice-unlock-preview');
+  if (preview && typeof scarerIdCard === 'function') {
+    const user = currentUser;
+    const name = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Tu Nombre';
+    const monster = { ...(user?.user_metadata?.monstruo || chosenMonster()), carnet_estilo: 'vice' };
+    const qrTitle = findTitle('qr-gang') || { id: 'qr-gang', name: 'QR Gang' };
+    const medal = typeof userMedal !== 'undefined' ? userMedal : null;
+    preview.innerHTML = scarerIdCard(name, user?.email || 'estudiante@unal.edu.co', monster, qrTitle, medal);
+  }
+  modal.showModal();
+  playViceMusic();
+}
+
 $('#codes-form').addEventListener('submit', async (event) => {
   event.preventDefault();
   const input = $('#codes-input');
@@ -224,10 +349,14 @@ $('#codes-form').addEventListener('submit', async (event) => {
     failedAttempts = 0;
     input.value = '';
     if (status === 'repeated') {
-      showCodeMessage(`Ese código ya lo canjeaste: tienes el título «${name}».`, 'info', edit);
+      if (title?.id === 'qr-gang') {
+        showViceUnlockAnimation();
+      }
+      showCodeMessage(`Ese código ya lo canjeaste: tienes el estilo Vice City y el título «${name}».`, 'info', edit);
     } else if (status === 'sold-out') {
       showCodeMessage(`¡Cupos agotados! El título «${name}» era una edición limitada de ${limit || 5} personas y ya fue reclamado en su totalidad.`, 'error');
     } else if (title?.id === 'qr-gang') {
+      showViceUnlockAnimation();
       showCodeMessage(`¡Desbloqueaste el estilo de carnet Vice City y el título «${name}»! Ya puedes activarlo en tu carnet.`, 'success', edit);
     } else {
       showCodeMessage(`¡Desbloqueaste el título «${name}»! Ya puedes ponértelo en tu carnet.`, 'success', edit);

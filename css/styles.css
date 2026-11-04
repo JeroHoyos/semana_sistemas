@@ -6179,3 +6179,247 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
     justify-content: center;
   }
 }
+
+/* =========================================================
+   VICE CITY UNLOCK MODAL & CELEBRATION ANIMATION
+   ========================================================= */
+
+.vice-unlock-modal {
+  padding: 0;
+  border: none;
+  background: transparent;
+  max-width: min(92vw, 540px);
+  width: 100%;
+  overflow: visible;
+}
+
+.vice-unlock-modal::backdrop {
+  background: radial-gradient(circle at center, rgba(32, 8, 44, 0.94) 0%, rgba(9, 3, 16, 0.98) 100%);
+  backdrop-filter: blur(8px);
+  animation: viceBackdropFade .4s ease;
+}
+
+@keyframes viceBackdropFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.vice-unlock-box {
+  position: relative;
+  overflow: hidden;
+  border-radius: 26px;
+  background:
+    radial-gradient(ellipse at 88% 12%, rgba(255, 42, 133, 0.45) 0%, transparent 48%),
+    radial-gradient(ellipse at 12% 88%, rgba(0, 229, 255, 0.22) 0%, transparent 48%),
+    linear-gradient(160deg, #180927 0%, #2a0b33 45%, #470d32 80%, #691732 100%);
+  border: 2px solid rgba(255, 42, 133, 0.7);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.15) inset,
+    0 0 40px rgba(255, 42, 133, 0.45),
+    0 0 75px rgba(56, 189, 248, 0.2),
+    0 25px 60px rgba(0, 0, 0, 0.85);
+  padding: 32px 24px 26px;
+  text-align: center;
+  color: #ffffff;
+  animation: viceCardPop .55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes viceCardPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.85) translateY(20px);
+    filter: brightness(1.6);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: brightness(1);
+  }
+}
+
+.vice-unlock-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.025) 0px,
+    rgba(255, 255, 255, 0.025) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  z-index: 1;
+}
+
+.vice-unlock-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: all .2s;
+}
+.vice-unlock-close:hover {
+  background: #ff2a85;
+  border-color: #ff2a85;
+  transform: rotate(90deg);
+}
+
+.vice-unlock-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: rgba(255, 42, 133, 0.2);
+  border: 1px solid rgba(255, 42, 133, 0.55);
+  font-family: var(--font-narrow);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: .15em;
+  color: #fed7aa;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  box-shadow: 0 0 14px rgba(255, 42, 133, 0.4);
+}
+
+.vice-unlock-palm {
+  font-size: 15px;
+  filter: drop-shadow(0 0 6px #ff2a85);
+}
+
+.vice-unlock-title {
+  margin: 0 0 16px;
+  font-family: var(--font-gta);
+  font-size: clamp(30px, 7vw, 44px);
+  line-height: 1;
+  letter-spacing: .03em;
+  color: #ffffff;
+  text-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(255, 42, 133, 0.8),
+    0 0 40px rgba(56, 189, 248, 0.55);
+}
+
+.vice-unlock-preview-wrap {
+  position: relative;
+  max-width: 360px;
+  margin: 0 auto 16px;
+  z-index: 2;
+}
+
+.vice-unlock-preview-wrap .idcard {
+  box-shadow:
+    0 0 0 2px rgba(255, 60, 172, 0.6),
+    0 0 30px rgba(255, 42, 133, 0.55),
+    0 20px 40px rgba(0, 0, 0, 0.75);
+  animation: viceCardFloat 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes viceCardFloat {
+  0% { transform: translateY(0px) rotate(-0.5deg); }
+  100% { transform: translateY(-6px) rotate(0.5deg); }
+}
+
+.vice-unlock-shimmer {
+  position: absolute;
+  inset: -6px;
+  border-radius: 18px;
+  background: linear-gradient(105deg, transparent 20%, rgba(255, 255, 255, 0.22) 50%, transparent 80%);
+  pointer-events: none;
+  z-index: 5;
+  animation: viceSweep 3.2s infinite;
+}
+
+@keyframes viceSweep {
+  0% { transform: translateX(-120%); }
+  45%, 100% { transform: translateX(120%); }
+}
+
+.vice-unlock-desc {
+  margin: 0 auto 20px;
+  max-width: 420px;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 1.45;
+  color: #f1f5f9;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+  z-index: 2;
+  position: relative;
+}
+
+.vice-unlock-desc strong {
+  color: #ff3b81;
+  text-shadow: 0 0 8px rgba(255, 59, 129, 0.6);
+}
+
+.vice-unlock-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  z-index: 2;
+  position: relative;
+}
+
+.vice-unlock-audio-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fed7aa;
+  font-family: var(--font-narrow);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: .06em;
+  cursor: pointer;
+  transition: all .2s;
+}
+.vice-unlock-audio-btn:hover {
+  background: rgba(255, 42, 133, 0.25);
+  border-color: #ff2a85;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.vice-unlock-equip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff2a85 0%, #ff6b4a 55%, #ffa347 100%);
+  color: #ffffff;
+  font-family: var(--font-varsity);
+  font-size: 14px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(255, 42, 133, 0.6), 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: all .2s;
+}
+.vice-unlock-equip-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 30px rgba(255, 42, 133, 0.9), 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+.vice-unlock-equip-btn svg {
+  width: 17px;
+  height: 17px;
+}
