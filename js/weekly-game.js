@@ -780,17 +780,21 @@ function renderRecords(rows) {
   }
 
   const places = placesWithTies(visible);
-  const MEDALS = { 1: 'gold', 2: 'silver', 3: 'bronze' };
+  recordsList.innerHTML = visible.map((row, i) => (
+    recordRow(row, places[i], currentUser && row.usuario_id === currentUser.id)
+  )).join('');
+}
 
-  recordsList.innerHTML = visible.map((row, i) => {
-    const place = places[i];
-    const medal = MEDALS[place] || 'normal';
-    const monster = row.monstruo || {};
-    const isMine = currentUser && row.usuario_id === currentUser.id;
-    const user = row.usuario ? `@${escapeHtml(row.usuario)}` : '';
-    const games = `${row.partidas} ${row.partidas === 1 ? 'partida' : 'partidas'}`;
+const MEDALS = { 1: 'gold', 2: 'silver', 3: 'bronze' };
 
-    return `
+// One row of the table: place, monster, name, user and games, and the result
+function recordRow(row, place, isMine) {
+  const medal = MEDALS[place] || 'normal';
+  const monster = row.monstruo || {};
+  const user = row.usuario ? `@${escapeHtml(row.usuario)}` : '';
+  const games = `${row.partidas} ${row.partidas === 1 ? 'partida' : 'partidas'}`;
+
+  return `
       <li class="record record--${medal} ${isMine ? 'record--mine' : ''}">
         <span class="scarer-card__rank scarer-card__rank--${medal}">${place}</span>
         <span class="scarer-card__avatar" style="border-color: ${monsterColor(monster)}">
@@ -802,10 +806,9 @@ function renderRecords(rows) {
         </span>
         <span class="record__points">${scoring.table(row.mejor_puntaje)}</span>
       </li>`;
-  }).join('');
 }
 
-// Below the table: the record and place of whoever is logged in.
+// Below the table: the row of whoever is logged in, with their place, if it is not in the table.
 // If the person changes week during the query, nothing is painted (the other query is on its way).
 async function renderMyRecord(game) {
   if (!currentUser) {
@@ -837,6 +840,12 @@ async function renderMyRecord(game) {
   onlineRecord = row.mejor_puntaje;
   renderRecord();
 
+  // Already in the table (highlighted there): nothing below
+  if (recordsList.querySelector('.record--mine')) {
+    myRecord.innerHTML = '';
+    return;
+  }
+
   // Place = how many people have a better result, plus one
   const { count } = await supabaseClient
     .from('puntajes_juego')
@@ -845,9 +854,11 @@ async function renderMyRecord(game) {
     .gt('mejor_puntaje', row.mejor_puntaje);
   if (game !== cartridge) return;
 
-  const place = typeof count === 'number' ? ` · puesto <strong>${count + 1}</strong>` : '';
+  const meta = currentUser.user_metadata || {};
+  const user = handleOf(currentUser.email);
+  const me = { nombre: meta.full_name || user, usuario: user, monstruo: meta.monstruo, ...row };
   myRecord.innerHTML = `
-    <p>Tu récord: <strong>${gameScoring.text(row.mejor_puntaje)}</strong>${place} · ${row.partidas} ${row.partidas === 1 ? 'partida' : 'partidas'}</p>`;
+    <ol class="records__list">${recordRow(me, typeof count === 'number' ? count + 1 : '–', true)}</ol>`;
 }
 
 let recordsLoading = null;

@@ -4916,6 +4916,7 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 }
 .records__mine:empty { display: none; }
 .records__mine strong { font-weight: 600; color: var(--navy); }
+.records__mine .records__list { align-self: stretch; text-align: left; }   /* your row, when it is not in the table */
 
 @media (max-width: 640px) {
   .game-link { margin-top: 18px; padding: 10px 14px; font-size: 8px; }
