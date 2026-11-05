@@ -44,6 +44,12 @@ function medalFor(points, allPoints) {
   return ['gold', 'silver', 'bronze'][tiers.indexOf(points)] ?? null;
 }
 
+// Medal from a dense rank or medal tier (1 = gold, 2 = silver, 3 = bronze, >3 = null)
+function medalForTier(tier) {
+  if (!tier || tier < 1 || tier > 3) return null;
+  return ['gold', 'silver', 'bronze'][tier - 1] ?? null;
+}
+
 // The speaker's photo if there is one; otherwise their monster (with "?" if not announced yet)
 function speakerPortrait(speaker) {
   return speaker.photo ? `<img src="${speaker.photo}" alt="">` : drawMonster(speaker.color, !speaker.name);

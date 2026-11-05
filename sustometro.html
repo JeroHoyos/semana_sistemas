@@ -276,22 +276,20 @@
             <button type="button" class="ranking-search__clear" id="btn-clear-search" aria-label="Limpiar búsqueda" hidden>✕</button>
           </div>
 
+          <div class="my-rank-banner" id="my-rank-banner" hidden></div>
+
           <ol class="ranking-list" id="scare-meter-list">
             <li class="ranking-empty">
               <span class="ranking-spinner"></span>
               <p>Conectando con Supabase…</p>
             </li>
           </ol>
-        </div>
 
-        <!-- CUADRO DE LOS PAYASOS (SHADOWBAN) -->
-        <div class="ranking-card ranking-card--clowns" id="clowns-card" hidden>
-          <div class="ranking-card__header ranking-card__header--clowns">
-            <h2 class="ranking-card__title">🎪 Circo de Payasos</h2>
-            <span class="ranking-card__badge ranking-card__badge--clowns">Shadowban</span>
+          <div class="ranking-more" id="ranking-more-box" hidden>
+            <button type="button" class="hero__button hero__button--outline ranking-more__btn" id="btn-load-more">
+              Ver más
+            </button>
           </div>
-          <p class="clowns-desc">Cuentas sancionadas permanentemente por intento de inyección de código y manipulación de datos. Sus puntos están congelados en 0.</p>
-          <ul class="ranking-list ranking-list--clowns" id="clowns-list"></ul>
         </div>
       </section>
 

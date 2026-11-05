@@ -121,15 +121,12 @@ let blockedUntil = 0;
 // Asks the database in real time how many people have unlocked a limited title
 async function countRedemptions(titleId) {
   try {
-    const { data: profiles, error } = await supabaseClient
-      .from('perfiles')
-      .select('id, monstruo');
-    if (error || !profiles) return 0;
-
-    return profiles.filter(({ monstruo }) => {
-      const titles = Array.isArray(monstruo?.titulos) ? monstruo.titulos : [];
-      return titles.includes(titleId) || monstruo?.titulo === titleId;
-    }).length;
+    const { data, error } = await supabaseClient.rpc('contar_canjes', { p_titulo: titleId });
+    if (error) {
+      console.warn('Could not count redemptions via RPC:', error);
+      return 0;
+    }
+    return Number(data) || 0;
   } catch (err) {
     console.warn('Could not count redemptions:', err);
     return 0;

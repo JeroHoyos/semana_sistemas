@@ -25,6 +25,22 @@
     check('fourth', medalFor(5, [50, 20, 10, 5]), null);
     check('zero with others', medalFor(0, [50, 0]), null);
 
+    // Medal by position/tier (RPC mi_puesto_sustometro output)
+    check('medal tier 1', medalForTier(1), 'gold');
+    check('medal tier 2', medalForTier(2), 'silver');
+    check('medal tier 3', medalForTier(3), 'bronze');
+    check('medal tier 4', medalForTier(4), null);
+    check('medal tier null', medalForTier(null), null);
+    check('medal tier zero', medalForTier(0), null);
+
+    // Scare Meter pagination logic
+    const nextOffset = (loaded) => loaded;
+    const hasMore = (loaded, total) => loaded < total;
+    check('page 1 next offset', nextOffset(10), 10);
+    check('page 2 next offset', nextOffset(20), 20);
+    check('has more pages when remaining', hasMore(10, 25), true);
+    check('has more pages false when all loaded', hasMore(25, 25), false);
+
     // Clowns: every old rule still applies, and their points never count
     check('flag on row', isClown('a@unal.edu.co', 'Ana', { es_payaso: true }), true);
     check('text flag on monster', isClown('a@unal.edu.co', 'Ana', { monstruo: { es_payaso: 'true' } }), true);

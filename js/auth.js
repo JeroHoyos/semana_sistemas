@@ -554,9 +554,15 @@ function updateSessionUi(user) {
 let userMedal = null;   // 'gold' | 'silver' | 'bronze' | null
 
 async function fetchUserMedal(userId) {
-  const { data: profiles } = await supabaseClient.from('perfiles').select('id, nombre, correo, monstruo, puntos');
-  const person = profiles?.find((p) => p.id === userId);
-  return person ? medalFor(scarePoints(person), profiles.map(scarePoints)) : null;
+  if (!userId) return null;
+  try {
+    const { data, error } = await supabaseClient.rpc('mi_puesto_sustometro');
+    if (error || !data || !data.length) return null;
+    return data[0].medalla || medalForTier(data[0].puesto_medalla);
+  } catch (err) {
+    console.warn('Could not fetch user medal:', err);
+    return null;
+  }
 }
 
 function showProfile(user) {

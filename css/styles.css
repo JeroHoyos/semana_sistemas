@@ -1055,47 +1055,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
   font-weight: 700;
 }
 
-/* Circo de Payasos (Muro de Shadowban en sustometro.html) */
-.ranking-card--clowns {
-  margin-top: 24px;
-  border: 2px dashed #ff4d6d;
-  background: linear-gradient(180deg, #fff5f7 0%, #ffeef2 100%);
-}
-.ranking-card__header--clowns {
-  border-bottom: 2px dashed rgba(255, 77, 109, 0.3);
-}
-.ranking-card__badge--clowns {
-  background: #ff0033 !important;
-  color: #fff !important;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  animation: pulse-clown 2s infinite;
-}
-@keyframes pulse-clown {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: .85; transform: scale(1.04); }
-}
-.clowns-desc {
-  padding: 12px 18px 0;
-  margin: 0;
-  font-size: 13px;
-  color: #8c1d34;
-  line-height: 1.4;
-}
-.ranking-list--clowns {
-  padding: 14px 18px 18px;
-  list-style: none;
-  display: grid;
-  gap: 10px;
-  margin: 0;
-}
-.scarer-item--clown .scarer-card {
-  border: 2px solid #ff4d6d;
-  background: #fff;
-  opacity: 0.95;
-}
-
 /* Reward Modal (Recompensa de Asustador Veterano) */
 .reward-modal {
   max-width: 480px;
@@ -2530,6 +2489,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .event__facts dt svg { width: 16px; height: 16px; color: var(--blue); }
 .event__facts dd { margin: 4px 0 0; font-weight: 600; font-size: 17px; line-height: 1.3; color: var(--navy); }
 
+.event__signup {
+  margin-top: 14px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+  text-align: center;
+}
+
 .event__description { margin-top: 24px; font-size: 17px; color: var(--ink-soft); }
 .event__description p + p { margin-top: 12px; }
 
@@ -3359,6 +3325,59 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: #e2e8f0;
 }
 
+/* Paginación del Sustómetro y banner de posición del usuario */
+.my-rank-banner {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  background: #f0f7ff;
+  border: 1.5px solid #bdd7f5;
+  border-radius: 20px;
+}
+.my-rank-banner__label {
+  display: block;
+  font-size: 11px;
+  font-family: var(--font-varsity);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 8px;
+}
+.my-rank-item .scarer-card {
+  box-shadow: 0 4px 14px rgba(22, 103, 194, 0.12);
+  border-color: #85b8eb;
+}
+.ranking-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+}
+.ranking-more__btn {
+  height: 42px;
+  padding: 0 24px;
+  font-size: 13px;
+  font-family: var(--font-varsity);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  border: 1.5px solid var(--blue);
+  color: var(--blue);
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.ranking-more__btn:hover {
+  background: var(--blue);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.ranking-more__btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .ranking-card__header {
   display: flex;
   align-items: center;
@@ -3802,6 +3821,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .scarer-card--clown .scarer-card__pts small {
   color: #e11d48 !important;
+}
+.scarer-card--clown .scarer-card__percent {
+  color: #be123c;
 }
 
 /* Place in the table; the top three in medal colors once there are points */
