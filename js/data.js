@@ -53,6 +53,9 @@ const SPEAKERS = [
   { id: 'daniel', name: 'Daniel Arango Sohm', role: 'Conferencista internacional', credential: 'Ponente', color: '#1667c2',
     photo: 'img/speaker-daniel-arango.jpg', link: 'https://www.linkedin.com/in/daniel-arango-sohm-352b4822a/',
     bio: 'He ganado tres veces el premio al mejor proyecto en Ingeniería de Sistemas en la EAFIT. Soy conferencista internacional y he dado charlas en Medellín JS, Python Medellín (dos veces), Medellín AI, PyCon Colombia, Python Moscow, Perú y BarNLP. Soy mitad colombiano, también tengo ascendencia alemana y rusa, y hablo ruso y alemán.' },
+  { id: 'yohan', name: 'Yohan Camilo Sánchez Meza', role: 'Líder de Producto en EBS Systems', credential: 'Ponente', color: '#c4358c',
+    photo: 'img/speaker-yohan-sanchez.jpg',
+    bio: 'Estudiante de último semestre de Ingeniería en Sistemas e Informática y Líder de Producto en EBS Systems.' },
 ];
 
 // Student groups taking part in the week. Each one shows as a pennant in its color.
@@ -67,7 +70,8 @@ const GROUPS = [
     link: 'https://aperture-systems-lab.github.io',
     description: 'Aperture es un Semillero de Investigación estudiantil donde se explora la ciencia de datos, el machine learning y la IA. Es un espacio para aprender haciendo: desarrollamos proyectos, compartimos conocimientos y conectamos esa teoría con problemas de la vida real, impulsando una comunidad colaborativa en la universidad.' },
   { id: 'turing-box', name: 'Turing Box', type: 'Grupo estudiantil', color: '#c4358c', logo: 'img/group-turing-box.jpg',
-    link: 'https://www.instagram.com/turingbox/' },
+    link: 'https://www.instagram.com/turingbox/',
+    description: 'Turing Box es un grupo estudiantil intersedes de la Universidad Nacional de Colombia que abre un espacio de pruebas (sandbox) para explorar tecnologías que no suelen estar en los currículos, como inteligencia artificial, blockchain, web3, realidad aumentada y creación de videojuegos. Funciona a través de nodos temáticos y busca crear comunidad alrededor de la tecnología con eventos, hackathons, charlas, podcasts y creación de contenidos, además de entrenar habilidades técnicas y blandas para impulsar las carreras profesionales de sus integrantes.' },
   { id: 'uneural', name: 'UNeural', type: 'Grupo estudiantil', color: '#4a4fd8', logo: 'img/group-uneural.jpg',
     link: 'https://www.instagram.com/uneuralgroup' },
 ];
@@ -103,8 +107,14 @@ const ACTIVITIES = [
       'En este taller veremos cómo crear un agente, hacerlo más capaz y llevarlo a producción. Lo haremos con LangChain, uno de los frameworks de Python más usados para construir aplicaciones y agentes con LLMs.\n' +
       '¡Ven a descubrir cómo funciona un agente!',
     decorations: ['terminal', 'robot', 'lightning'] },
-  { id: 'taller-llm', day: 'wed', start: '15:00', end: '16:00', type: 'workshop', title: 'LLM, agentes, harness, skills y MCP', organizer: 'turing-box', place: 'Aula M3-224', unconfirmed: true,
-    description: 'Un recorrido general sobre qué es un LLM, un agente, un harness, skills y MCP.',
+  { id: 'taller-llm', day: 'wed', start: '15:00', end: '16:30', type: 'workshop', title: 'Agentes de IA para todos - Todo lo que necesitas saber', speaker: 'yohan', organizer: 'turing-box', place: 'Aula M3-224',
+    description: 'La inteligencia artificial pasó de responder preguntas a ejecutar tareas: crear archivos, revisar su propio trabajo, conectarse con otras herramientas y seguir procedimientos. A esto se le llama agente. En este taller vas a entender qué hay detrás de un agente y vas a trabajar con uno en clase.',
+    rules: [
+      { title: 'Primera parte', text: 'Qué es un LLM y por qué “solo sabe lo que ve”. Cómo un chat se convierte en un agente: el bucle de pensar, actuar y verificar. Harness engineering: todo lo que rodea al modelo para que trabaje bien y de forma segura. Herramientas, MCP y skills: cómo se le dan nuevas capacidades a un agente. Opciones gratuitas, buenas prácticas y riesgos.' },
+      { title: 'Segunda parte: práctica (en parejas)', text: 'Con Gemini CLI, que es gratuito, vas a pedirle al agente que construya una pequeña app, darle reglas propias con un archivo de instrucciones, crear tu primera skill y conectarle una herramienta externa por MCP.' },
+      { title: '¿Para quién es?', text: 'Para cualquier persona con curiosidad por la IA, sepa programar o no. Las parejas se arman mezclando perfiles para que todos avancen.' },
+      { title: '¿Qué debes traer?', text: 'Computador portátil y una cuenta personal de Google (@gmail.com). Opcional: Node.js instalado (versión 20 o superior). Si no puedes instalarlo, trabajarás desde el navegador.' },
+    ],
     decorations: ['chat', 'chip', 'plug'] },
 
   // Thursday
