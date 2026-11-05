@@ -69,7 +69,7 @@ begin
       p.id,
       coalesce(nullif(trim(p.nombre::text), ''), 'Estudiante UNAL') as nombre,
       split_part(p.correo::text, '@', 1) as usuario,
-      p.monstruo::jsonb as monstruo,
+      (p.monstruo::jsonb - 'titulos') as monstruo,
       coalesce(p.puntos, 0)::integer as puntos,
       p.creado_en,
       row_number() over (order by coalesce(p.puntos, 0) desc, p.creado_en asc)::integer as posicion,
@@ -256,7 +256,7 @@ as $$
         then 'imlargo'
       else split_part(p.correo::text, '@', 1)
     end as usuario,
-    p.monstruo::jsonb as monstruo,
+    (p.monstruo::jsonb - 'titulos') as monstruo,
     0::integer as puntos,
     p.creado_en
   from public.perfiles p
