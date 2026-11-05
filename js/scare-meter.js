@@ -17,9 +17,7 @@ let scarers = [];
 let chosenId = null;
 
 // Whether the logged-in user has unlocked the Supervisor de Sustos title
-function isCurrentSupervisor() {
-  return Boolean(currentUser) && unlockedTitles(currentUser).some((title) => title.id === 'supervisor');
-}
+// isCurrentSupervisor is defined globally in js/common.js
 
 // Real percentage from the person's points against the goal (100) or the highest score
 function percentOf(points, maxPoints) {

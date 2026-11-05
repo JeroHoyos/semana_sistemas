@@ -52,64 +52,72 @@ function renderCollection() {
   const count = $('#codes-count');
   const progress = $('#codes-progress');
 
-  if (!currentUser) {
-    count.textContent = 'Inicia sesión para guardar tus títulos en tu carnet.';
-    progress.hidden = true;
-    list.innerHTML = '';
-    return;
-  }
+  if (!list || !count || !progress) return;
 
-  const unlocked = new Set(unlockedTitles(currentUser).map((title) => title.id));
-  const inUse = chosenTitleOf(currentUser).id;
-  const style = userStyle();
-  count.textContent = `Tus títulos: ${unlocked.size} de ${TITLES.length}`;
-  progress.hidden = false;
-  progress.firstElementChild.style.width = `${(unlocked.size / TITLES.length) * 100}%`;
-
-  if (isWrongCodesBlocked(currentUser.id)) {
-    showCodeMessage('Has alcanzado el límite de 3 códigos erróneos por hoy. Podrás intentar de nuevo mañana.', 'error');
-  }
-
-  list.innerHTML = TITLES.map((title) => {
-    const limited = title.limit ? `<span class="title-item__limit">Solo ${title.limit}</span>` : '';
-
-    if (!unlocked.has(title.id)) {
-      return `<li class="title-item title-item--locked">
-        <span class="title-item__icon">${LOCK_ICON}</span>
-        <span class="title-item__text">
-          <span class="title-item__name"><span class="visually-hidden">Bloqueado: </span>Título secreto ${limited}</span>
-          <span class="title-item__desc">${title.hint || 'Consigue su código para descubrirlo.'}</span>
-        </span>
-      </li>`;
+  try {
+    if (!currentUser) {
+      count.textContent = 'Inicia sesión para guardar tus títulos en tu carnet.';
+      progress.hidden = true;
+      list.innerHTML = '';
+      return;
     }
 
-    const text = titleText(title, style);
-    const isDebugger = title.id === 'debugger';
-    const isNocturnal = title.id === 'terror-nocturno';
-    const isQRGang = title.id === 'qr-gang';
-    const isFranco = title.id === 'franco-impero';
-    const used = title.id === inUse;
-    const name = isDebugger ? `<span class="glitch-text" data-text="${text}">${text}</span>` : text;
-    const classes = [
-      'title-item title-item--unlocked',
-      used ? 'title-item--in-use' : '',
-      isDebugger ? 'title-item--debugger' : '',
-      isNocturnal ? 'title-item--nocturnal' : '',
-      isQRGang ? 'title-item--qrgang' : '',
-      isFranco ? 'title-item--franco' : '',
-      title.id === 'video-futbol' ? 'title-item--phenomenon' : '',
-      title.id === 'konami' ? 'title-item--konami' : '',
-    ].filter(Boolean).join(' ');
+    const unlocked = new Set(unlockedTitles(currentUser).map((title) => title.id));
+    const inUse = chosenTitleOf(currentUser).id;
+    const style = userStyle();
+    count.textContent = `Tus títulos: ${unlocked.size} de ${TITLES.length}`;
+    progress.hidden = false;
+    if (progress.firstElementChild) {
+      progress.firstElementChild.style.width = `${(unlocked.size / TITLES.length) * 100}%`;
+    }
 
-    return `<li class="${classes}">
-      <span class="title-item__icon">${STAR_ICON}</span>
-      <span class="title-item__text">
-        <span class="title-item__name">${name} ${limited}</span>
-        ${title.description ? `<span class="title-item__desc">${title.description}</span>` : ''}
-      </span>
-      ${used ? '<span class="title-item__status">En uso</span>' : ''}
-    </li>`;
-  }).join('');
+    if (isWrongCodesBlocked(currentUser.id)) {
+      showCodeMessage('Has alcanzado el límite de 3 códigos erróneos por hoy. Podrás intentar de nuevo mañana.', 'error');
+    }
+
+    list.innerHTML = TITLES.map((title) => {
+      const limited = title.limit ? `<span class="title-item__limit">Solo ${title.limit}</span>` : '';
+
+      if (!unlocked.has(title.id)) {
+        return `<li class="title-item title-item--locked">
+          <span class="title-item__icon">${LOCK_ICON}</span>
+          <span class="title-item__text">
+            <span class="title-item__name"><span class="visually-hidden">Bloqueado: </span>Título secreto ${limited}</span>
+            <span class="title-item__desc">${title.hint || 'Consigue su código para descubrirlo.'}</span>
+          </span>
+        </li>`;
+      }
+
+      const text = titleText(title, style);
+      const isDebugger = title.id === 'debugger';
+      const isNocturnal = title.id === 'terror-nocturno';
+      const isQRGang = title.id === 'qr-gang';
+      const isFranco = title.id === 'franco-impero';
+      const used = title.id === inUse;
+      const name = isDebugger ? `<span class="glitch-text" data-text="${text}">${text}</span>` : text;
+      const classes = [
+        'title-item title-item--unlocked',
+        used ? 'title-item--in-use' : '',
+        isDebugger ? 'title-item--debugger' : '',
+        isNocturnal ? 'title-item--nocturnal' : '',
+        isQRGang ? 'title-item--qrgang' : '',
+        isFranco ? 'title-item--franco' : '',
+        title.id === 'video-futbol' ? 'title-item--phenomenon' : '',
+        title.id === 'konami' ? 'title-item--konami' : '',
+      ].filter(Boolean).join(' ');
+
+      return `<li class="${classes}">
+        <span class="title-item__icon">${STAR_ICON}</span>
+        <span class="title-item__text">
+          <span class="title-item__name">${name} ${limited}</span>
+          ${title.description ? `<span class="title-item__desc">${title.description}</span>` : ''}
+        </span>
+        ${used ? '<span class="title-item__status">En uso</span>' : ''}
+      </li>`;
+    }).join('');
+  } catch (err) {
+    console.error('Could not render titles collection:', err);
+  }
 }
 
 document.addEventListener('idcard:session', renderCollection);
@@ -131,7 +139,7 @@ function getWrongCodesToday(userId) {
 }
 
 function recordWrongCodeToday(userId) {
-  if (!userId) return 0;
+  if (!userId || isCurrentSupervisor()) return 0;
   const key = wrongCodesKey(userId);
   const count = getWrongCodesToday(userId) + 1;
   localStorage.setItem(key, String(count));
@@ -139,8 +147,7 @@ function recordWrongCodeToday(userId) {
 }
 
 function isWrongCodesBlocked(userId) {
-  if (!userId) return false;
-  if (typeof isCurrentSupervisor === 'function' && isCurrentSupervisor()) return false;
+  if (!userId || isCurrentSupervisor()) return false;
   return getWrongCodesToday(userId) >= MAX_DAILY_WRONG_CODES;
 }
 
@@ -419,63 +426,69 @@ function showFrancoUnlockAnimation() {
   modal.showModal();
 }
 
-$('#codes-form').addEventListener('submit', async (event) => {
-  event.preventDefault();
-  const input = $('#codes-input');
+const codesForm = $('#codes-form');
+if (codesForm) {
+  codesForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const input = $('#codes-input');
+    if (!input) return;
 
-  if (!normalizeCode(input.value)) {
-    showCodeMessage('Escribe tu código primero.', 'error');
-    return;
-  }
-  if (!currentUser) {
-    // The code stays typed: after logging in, pressing "Canjear" again is enough
-    showCodeMessage('Inicia sesión para canjear tu código: así el título queda guardado en tu carnet.', 'info');
-    $('#auth-modal').showModal();
-    return;
-  }
-  if (!window.crypto?.subtle) {
-    showCodeMessage('Este navegador no puede validar códigos en esta dirección. Abre la página con https.', 'error');
-    return;
-  }
-  if (Date.now() < blockedUntil) {
-    const left = Math.ceil((blockedUntil - Date.now()) / 1000);
-    showCodeMessage(`Demasiados intentos. Espera ${left} segundos y prueba de nuevo.`, 'error');
-    return;
-  }
-  if (isWrongCodesBlocked(currentUser.id)) {
-    showCodeMessage('Has alcanzado el límite de 3 códigos erróneos por hoy. Podrás intentar de nuevo mañana.', 'error');
-    return;
-  }
-
-  const button = $('#codes-button');
-  const buttonText = button.querySelector('span');
-  button.disabled = true;
-  buttonText.textContent = 'Canjeando…';
-
-  try {
-    const { status, title, limit } = await redeemCode(input.value);
-    const name = title && titleText(title, userStyle());
-    const edit = { text: 'Editar mi carnet', onClick: openIdCardEdit };
-
-    if (status === 'invalid') {
-      const failsToday = recordWrongCodeToday(currentUser.id);
-      const remaining = Math.max(0, MAX_DAILY_WRONG_CODES - failsToday);
-
-      if (failsToday >= MAX_DAILY_WRONG_CODES) {
-        showCodeMessage('Ese código no existe. Has alcanzado el límite de 3 intentos erróneos por hoy. Podrás intentar de nuevo mañana.', 'error');
-        return;
-      }
-
-      failedAttempts++;
-      if (failedAttempts >= MAX_ATTEMPTS) {
-        failedAttempts = 0;
-        blockedUntil = Date.now() + WAIT_SECONDS * 1000;
-        showCodeMessage(`Ese código no existe. Demasiados intentos: espera ${WAIT_SECONDS} segundos. Te queda${remaining === 1 ? '' : 'n'} ${remaining} intento${remaining === 1 ? '' : 's'} hoy.`, 'error');
-      } else {
-        showCodeMessage(`Ese código no existe. Revisa que esté bien escrito. Te queda${remaining === 1 ? '' : 'n'} ${remaining} intento${remaining === 1 ? '' : 's'} hoy.`, 'error');
-      }
+    if (!normalizeCode(input.value)) {
+      showCodeMessage('Escribe tu código primero.', 'error');
       return;
     }
+    if (!currentUser) {
+      // The code stays typed: after logging in, pressing "Canjear" again is enough
+      showCodeMessage('Inicia sesión para canjear tu código: así el título queda guardado en tu carnet.', 'info');
+      $('#auth-modal').showModal();
+      return;
+    }
+    if (!window.crypto?.subtle) {
+      showCodeMessage('Este navegador no puede validar códigos en esta dirección. Abre la página con https.', 'error');
+      return;
+    }
+    if (Date.now() < blockedUntil) {
+      const left = Math.ceil((blockedUntil - Date.now()) / 1000);
+      showCodeMessage(`Demasiados intentos. Espera ${left} segundos y prueba de nuevo.`, 'error');
+      return;
+    }
+    if (isWrongCodesBlocked(currentUser.id)) {
+      showCodeMessage('Has alcanzado el límite de 3 códigos erróneos por hoy. Podrás intentar de nuevo mañana.', 'error');
+      return;
+    }
+
+    const button = $('#codes-button');
+    const buttonText = button?.querySelector('span');
+    if (button) button.disabled = true;
+    if (buttonText) buttonText.textContent = 'Canjeando…';
+
+    try {
+      const { status, title, limit } = await redeemCode(input.value);
+      const name = title && titleText(title, userStyle());
+      const edit = { text: 'Editar mi carnet', onClick: openIdCardEdit };
+
+      if (status === 'invalid') {
+        const isSupervisor = isCurrentSupervisor();
+        const failsToday = recordWrongCodeToday(currentUser.id);
+        const remaining = Math.max(0, MAX_DAILY_WRONG_CODES - failsToday);
+
+        if (!isSupervisor && failsToday >= MAX_DAILY_WRONG_CODES) {
+          showCodeMessage('Ese código no existe. Has alcanzado el límite de 3 intentos erróneos por hoy. Podrás intentar de nuevo mañana.', 'error');
+          return;
+        }
+
+        failedAttempts++;
+        if (failedAttempts >= MAX_ATTEMPTS) {
+          failedAttempts = 0;
+          blockedUntil = Date.now() + WAIT_SECONDS * 1000;
+          const leftMsg = isSupervisor ? '' : ` Te queda${remaining === 1 ? '' : 'n'} ${remaining} intento${remaining === 1 ? '' : 's'} hoy.`;
+          showCodeMessage(`Ese código no existe. Demasiados intentos: espera ${WAIT_SECONDS} segundos.${leftMsg}`, 'error');
+        } else {
+          const leftMsg = isSupervisor ? '' : ` Te queda${remaining === 1 ? '' : 'n'} ${remaining} intento${remaining === 1 ? '' : 's'} hoy.`;
+          showCodeMessage(`Ese código no existe. Revisa que esté bien escrito.${leftMsg}`, 'error');
+        }
+        return;
+      }
 
     failedAttempts = 0;
     input.value = '';
@@ -514,8 +527,9 @@ $('#codes-form').addEventListener('submit', async (event) => {
     } else {
       showCodeMessage(translateError(error) || 'No se pudo guardar el título. Revisa tu conexión e intenta de nuevo.', 'error');
     }
-  } finally {
-    button.disabled = false;
-    buttonText.textContent = 'Canjear';
-  }
-});
+    } finally {
+      if (button) button.disabled = false;
+      if (buttonText) buttonText.textContent = 'Canjear';
+    }
+  });
+}

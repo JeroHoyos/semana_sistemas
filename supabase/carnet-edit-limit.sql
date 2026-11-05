@@ -35,8 +35,15 @@ begin
     raise exception 'El nombre no puede estar vacío';
   end if;
 
-  -- Check if caller is supervisor
-  if exists (select 1 from auth.users where id = v_uid and (raw_app_meta_data ->> 'supervisor')::boolean is true) then
+  -- Check if caller is supervisor (by app_metadata or supervisor title)
+  if es_supervisor() or exists (
+    select 1 from auth.users
+    where id = v_uid and (
+      (raw_app_meta_data ->> 'supervisor')::boolean is true
+      or (raw_user_meta_data -> 'titulos')::jsonb ? 'supervisor'
+      or raw_user_meta_data ->> 'titulo' = 'supervisor'
+    )
+  ) then
     v_es_admin := true;
   end if;
 
