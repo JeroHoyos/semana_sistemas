@@ -878,9 +878,43 @@ function recordRow(row, place, isMine) {
       </li>`;
 }
 
+function applyMyRecordState(state, game) {
+  const gameScoring = scoringOf(game);
+  if (!state || !state.hasScore) {
+    onlineRecord = 0;
+    myRecord.innerHTML = `<p>${gameScoring.noRecord}</p>`;
+    renderRecord();
+    return;
+  }
+
+  onlineRecord = state.row?.mejor_puntaje ?? state.mejor_puntaje ?? 0;
+  renderRecord();
+
+  if (state.inTable || recordsList.querySelector('.record--mine')) {
+    myRecord.innerHTML = '';
+    return;
+  }
+
+  const meta = currentUser.user_metadata || {};
+  const user = handleOf(currentUser.email);
+  const me = { nombre: meta.full_name || user, usuario: user, monstruo: meta.monstruo, ...state.row };
+  myRecord.innerHTML = `
+    <ol class="records__list">${recordRow(me, typeof state.count === 'number' ? state.count + 1 : '–', true)}</ol>`;
+}
+
+function saveMyRecordCache(gameId, myRecord) {
+  try {
+    const cached = readRecordsCache(gameId);
+    if (cached) {
+      cached.myRecord = myRecord;
+      localStorage.setItem(`${RECORDS_CACHE_PREFIX}${gameId}`, JSON.stringify(cached));
+    }
+  } catch (_) {}
+}
+
 // Below the table: the row of whoever is logged in, with their place, if it is not in the table.
 // If the person changes week during the query, nothing is painted (the other query is on its way).
-async function renderMyRecord(game) {
+async function renderMyRecord(game, force = false) {
   if (!currentUser) {
     onlineRecord = 0;
     myRecord.innerHTML = `
@@ -889,6 +923,14 @@ async function renderMyRecord(game) {
     myRecord.querySelector('button').addEventListener('click', openLogin);
     renderRecord();
     return;
+  }
+
+  if (!force) {
+    const cached = readRecordsCache(game.id);
+    if (cached && cached.myRecord !== undefined) {
+      applyMyRecordState(cached.myRecord, game);
+      return;
+    }
   }
 
   const gameScoring = scoringOf(game);
@@ -901,18 +943,17 @@ async function renderMyRecord(game) {
   if (game !== cartridge) return;
 
   if (error || !row || !row.mejor_puntaje) {
-    onlineRecord = 0;
-    myRecord.innerHTML = `<p>${gameScoring.noRecord}</p>`;
-    renderRecord();
+    const state = { hasScore: false };
+    saveMyRecordCache(game.id, state);
+    applyMyRecordState(state, game);
     return;
   }
 
-  onlineRecord = row.mejor_puntaje;
-  renderRecord();
-
   // Already in the table (highlighted there): nothing below
   if (recordsList.querySelector('.record--mine')) {
-    myRecord.innerHTML = '';
+    const state = { hasScore: true, inTable: true, mejor_puntaje: row.mejor_puntaje, partidas: row.partidas };
+    saveMyRecordCache(game.id, state);
+    applyMyRecordState(state, game);
     return;
   }
 
@@ -924,11 +965,9 @@ async function renderMyRecord(game) {
     .or(`mejor_puntaje.gt.${row.mejor_puntaje},and(mejor_puntaje.eq.${row.mejor_puntaje},partidas.lt.${row.partidas})`);
   if (game !== cartridge) return;
 
-  const meta = currentUser.user_metadata || {};
-  const user = handleOf(currentUser.email);
-  const me = { nombre: meta.full_name || user, usuario: user, monstruo: meta.monstruo, ...row };
-  myRecord.innerHTML = `
-    <ol class="records__list">${recordRow(me, typeof count === 'number' ? count + 1 : '–', true)}</ol>`;
+  const state = { hasScore: true, inTable: false, row, count };
+  saveMyRecordCache(game.id, state);
+  applyMyRecordState(state, game);
 }
 
 const RECORDS_CACHE_PREFIX = 'semana_sistemas_records_';
@@ -980,7 +1019,7 @@ async function loadRecords(force = false) {
     const cached = readRecordsCache(game.id);
     if (cached && Array.isArray(cached.records)) {
       renderRecords(cached.records);
-      await renderMyRecord(game);
+      await renderMyRecord(game, false);
       return;
     }
   }
@@ -1010,7 +1049,7 @@ async function loadRecords(force = false) {
       const records = data || [];
       writeRecordsCache(game.id, records);
       renderRecords(records);
-      await renderMyRecord(game);
+      await renderMyRecord(game, true);
     } finally {
       recordsLoading = null;
       if (reloadRecords) {
