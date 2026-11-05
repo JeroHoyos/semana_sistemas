@@ -973,25 +973,26 @@ async function syncSessionVersion() {
   const savedVersion = localStorage.getItem('semana_sistemas_version');
 
   if (savedVersion !== PROJECT_VERSION) {
-    const hadSession = Object.keys(localStorage).some((k) => k.startsWith('sb-') || k.includes('supabase'));
-    if (savedVersion || hadSession) {
-      try {
-        await supabaseClient.auth.signOut();
-      } catch {
-        // Ignored if the connection fails
-      }
-      for (const key of Object.keys(localStorage)) {
-        if (
-          key.startsWith('sb-') ||
-          key.includes('supabase') ||
-          key.startsWith('juego_semana_') ||
-          (key.startsWith('semana_sistemas_') && key !== 'semana_sistemas_version')
-        ) {
-          localStorage.removeItem(key);
-        }
+    try {
+      await supabaseClient.auth.signOut();
+    } catch {
+      // Ignored if the connection fails
+    }
+    for (const key of Object.keys(localStorage)) {
+      if (
+        key.startsWith('sb-') ||
+        key.includes('supabase') ||
+        key.startsWith('juego_semana_') ||
+        (key.startsWith('semana_sistemas_') && key !== 'semana_sistemas_version')
+      ) {
+        localStorage.removeItem(key);
       }
     }
+    try { sessionStorage.clear(); } catch (_) {}
     localStorage.setItem('semana_sistemas_version', PROJECT_VERSION);
+    if (savedVersion) {
+      window.location.reload();
+    }
   }
 }
 

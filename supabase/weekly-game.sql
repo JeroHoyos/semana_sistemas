@@ -204,7 +204,7 @@ as $$
     j.usuario_id,
     coalesce(nullif(trim(p.nombre::text), ''), 'Asustador') as nombre,
     split_part(coalesce(p.correo::text, ''), '@', 1)       as usuario,
-    p.monstruo::jsonb                                       as monstruo,
+    (p.monstruo::jsonb - 'titulos')                         as monstruo,
     j.mejor_puntaje,
     j.partidas
   from puntajes_juego j

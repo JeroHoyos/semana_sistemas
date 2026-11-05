@@ -540,7 +540,7 @@ function renderGallery() {
 function galleryPhoto(index, hidden) {
   const item = GALLERY[index];
   const media = isVideo(item)
-    ? `<video src="${item.file}" poster="${item.poster || ''}" muted loop playsinline preload="metadata"
+    ? `<video src="${item.file}" poster="${item.poster || ''}" muted loop playsinline preload="none"
         disablepictureinpicture disableremoteplayback></video>`
     : `<img src="${item.file}" alt="" loading="lazy">`;
   return `
@@ -563,7 +563,7 @@ function watchVideos() {
       else video.pause();
     });
   });
-  $$('.gallery video').forEach((video) => observer.observe(video));
+  $('#gallery-carousel video').forEach((video) => observer.observe(video));
 }
 
 

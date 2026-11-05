@@ -5,7 +5,7 @@
 
 // Project version: whenever it changes, users' browsers close old sessions
 // automatically, to avoid stale JWTs or stale data.
-const PROJECT_VERSION = 'v2026.11.04-231940';
+const PROJECT_VERSION = 'v2026.11.05-013103';
 
 // Accounts sanctioned with a Shadowban and the Clown Licence for cheating or injecting points.
 // A fragment matches anywhere in the email or the name: that is how it catches binary aliases such as 01101100.
