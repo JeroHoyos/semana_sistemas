@@ -99,6 +99,29 @@
     check('carnet edits blocked above limit', canEdit(3), false);
     check('supervisor bypasses carnet limit', canEdit(5, true), true);
 
+    // Scare Meter 5-hour cache logic
+    const isSustometroCacheValid = (ageMs) => ageMs < 5 * 60 * 60 * 1000;
+    check('sustometro cache valid at 1 hour', isSustometroCacheValid(1 * 3600 * 1000), true);
+    check('sustometro cache valid at 4.9 hours', isSustometroCacheValid(4.9 * 3600 * 1000), true);
+    check('sustometro cache expired at 5.1 hours', isSustometroCacheValid(5.1 * 3600 * 1000), false);
+
+    // Snake 10-minute cache & top 10 trigger logic
+    const isRecordsCacheValid = (ageMs) => ageMs < 10 * 60 * 1000;
+    check('records cache valid at 5 min', isRecordsCacheValid(5 * 60 * 1000), true);
+    check('records cache expired at 11 min', isRecordsCacheValid(11 * 60 * 1000), false);
+    const qualifiesTop10 = (records, score) => records.length < 10 || score > (records[records.length - 1]?.mejor_puntaje || 0);
+    check('qualifies top 10 when leaderboard has space', qualifiesTop10([{ mejor_puntaje: 50 }], 10), true);
+    check('qualifies top 10 when score beats 10th place', qualifiesTop10(Array(10).fill({ mejor_puntaje: 100 }), 150), true);
+    check('does not qualify top 10 when score is below 10th', qualifiesTop10(Array(10).fill({ mejor_puntaje: 100 }), 50), false);
+
+    // Daily wrong codes limit logic (max 3 failed codes per day)
+    const isCodeAttemptAllowed = (failedToday, isSupervisor = false) => isSupervisor || failedToday < 3;
+    check('code attempt allowed at 0 fails', isCodeAttemptAllowed(0), true);
+    check('code attempt allowed at 2 fails', isCodeAttemptAllowed(2), true);
+    check('code attempt blocked at 3 fails', isCodeAttemptAllowed(3), false);
+    check('code attempt blocked above 3 fails', isCodeAttemptAllowed(4), false);
+    check('supervisor bypasses code attempts limit', isCodeAttemptAllowed(5, true), true);
+
     document.getElementById('result').textContent = failures.length ? `FAILED\n${failures.join('\n')}` : 'ALL PASSED';
   </script>
 </body>

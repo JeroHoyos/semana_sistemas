@@ -278,9 +278,63 @@ function showIdCardOf(index) {
   $('#idcard-modal').showModal();
 }
 
-async function loadScareMeter() {
+const SUSTOMETRO_CACHE_KEY = 'semana_sistemas_sustometro_cache';
+const SUSTOMETRO_CACHE_TTL = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
+
+function readSustometroCache() {
+  try {
+    const raw = localStorage.getItem(SUSTOMETRO_CACHE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (!data || typeof data.timestamp !== 'number') return null;
+    if (Date.now() - data.timestamp > SUSTOMETRO_CACHE_TTL) return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+function writeSustometroCache(ranking, clowns, myRankInfo) {
+  try {
+    localStorage.setItem(SUSTOMETRO_CACHE_KEY, JSON.stringify({
+      timestamp: Date.now(),
+      ranking,
+      clowns,
+      myRankInfo,
+    }));
+  } catch (e) {
+    console.warn('Could not cache Scare Meter ranking:', e);
+  }
+}
+
+async function loadScareMeter(forceRefresh = false) {
   if (!currentUser) return; // Do not load ranking without an authenticated session
   if (isLoadingRanking) return;
+
+  const isDefaultView = !currentSearchQuery && currentLimit === PAGE_SIZE;
+
+  // Use 5-hour local cache when not searching or paginating
+  if (isDefaultView && !forceRefresh) {
+    const cached = readSustometroCache();
+    if (cached && Array.isArray(cached.ranking)) {
+      scarers = cached.ranking;
+      myRankInfo = cached.myRankInfo;
+      if (cached.ranking.length) {
+        totalFiltrados = cached.ranking[0].total_filtrados || cached.ranking.length;
+        totalGeneral = cached.ranking[0].total_general || cached.ranking.length;
+        maxGlobalPoints = Math.max(100, cached.ranking[0].max_puntos || 0);
+      } else {
+        totalFiltrados = 0;
+        totalGeneral = 0;
+      }
+      renderRanking(cached.ranking, '');
+      if (typeof renderClowns === 'function') renderClowns(cached.clowns || []);
+      updateMyRankBanner();
+      updateLoadMoreButton();
+      return;
+    }
+  }
+
   isLoadingRanking = true;
   try {
     // shortcut: max limit capped at 50 per page, increase limit or add keyset pagination if leaderboard volume requires larger viewports.
@@ -316,6 +370,10 @@ async function loadScareMeter() {
 
     if (typeof renderClowns === 'function') renderClowns(clowns || []);
     updateMyRankBanner();
+
+    if (isDefaultView && ranking) {
+      writeSustometroCache(ranking, clowns || [], myRankInfo);
+    }
   } catch (err) {
     console.error('Unexpected error:', err);
     showScareMeterError('Ocurrió un error inesperado al conectar con el servidor.');
@@ -453,7 +511,7 @@ function showScareMeterError(message) {
         </svg>
         <h3>Error al consultar la tabla</h3>
         <p>${message}</p>
-        <button class="hero__button hero__button--session" onclick="loadScareMeter()" type="button">
+        <button class="hero__button hero__button--session" onclick="loadScareMeter(true)" type="button">
           Reintentar conexión
         </button>
       </div>
@@ -552,53 +610,7 @@ $('#easter-egg-modal').addEventListener('click', (event) => {
   if (event.target === $('#easter-egg-modal')) $('#easter-egg-modal').close();
 });
 
-// Supabase real-time subscription (only active when logged in)
-let realtimeChannel = null;
-let realtimeDebounceTimer = null;
-let reloadPendingOnVisible = false;
-
-function scheduleRealtimeReload() {
-  if (!currentUser) return;
-  clearTimeout(realtimeDebounceTimer);
-  if (document.hidden) {
-    reloadPendingOnVisible = true;
-    return;
-  }
-  realtimeDebounceTimer = setTimeout(() => {
-    loadScareMeter();
-  }, 5000);
-}
-
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden && reloadPendingOnVisible) {
-    reloadPendingOnVisible = false;
-    scheduleRealtimeReload();
-  }
-});
-
-function setupScareMeterRealtime() {
-  if (realtimeChannel || !currentUser) return;
-  try {
-    realtimeChannel = supabaseClient
-      .channel('scare-meter-profile-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'perfiles' }, () => {
-        scheduleRealtimeReload();
-      })
-      .subscribe();
-  } catch (err) {
-    console.log('Realtime is not available in this client', err);
-  }
-}
-
-function teardownScareMeterRealtime() {
-  if (realtimeChannel) {
-    try {
-      supabaseClient.removeChannel(realtimeChannel);
-    } catch {}
-    realtimeChannel = null;
-  }
-}
-
+// Auth state listener: on user switch or sign out, reset cache/view
 try {
   let lastAuthUserId = currentUser?.id ?? null;
   supabaseClient.auth.onAuthStateChange((_event, session) => {
@@ -606,10 +618,8 @@ try {
     if (currentUserId !== lastAuthUserId) {
       lastAuthUserId = currentUserId;
       if (currentUserId) {
-        setupScareMeterRealtime();
         loadScareMeter();
       } else {
-        teardownScareMeterRealtime();
         scarers = [];
         totalFiltrados = 0;
         totalGeneral = 0;
@@ -703,7 +713,8 @@ $('#btn-save-points').addEventListener('click', async () => {
     });
     if (error) throw error;
 
-    await loadScareMeter();
+    localStorage.removeItem(SUSTOMETRO_CACHE_KEY);
+    await loadScareMeter(true);
     closePointsModal();
   } catch (error) {
     console.error('Could not edit the points:', error);
@@ -729,10 +740,8 @@ $('#btn-admin-edit-points').addEventListener('click', () => {
 document.addEventListener('idcard:session', () => {
   $('#btn-admin-edit-points').hidden = !isCurrentSupervisor();
   if (currentUser) {
-    setupScareMeterRealtime();
     loadScareMeter();
   } else {
-    teardownScareMeterRealtime();
     scarers = [];
     totalFiltrados = 0;
     totalGeneral = 0;
@@ -742,7 +751,6 @@ document.addEventListener('idcard:session', () => {
 });
 
 if (currentUser) {
-  setupScareMeterRealtime();
   loadScareMeter();
 }
 

@@ -442,7 +442,19 @@ async function saveScore(score, game = cartridge) {
   } else {
     writeEnd(`Tu récord sigue siendo ${gameScoring.text(data?.mejor ?? score)}.`, false, game);
   }
-  loadRecords();
+
+  // Refresh if the player entered top 10 or improved personal record
+  const cached = readRecordsCache(game.id);
+  const currentTop = cached?.records || [];
+  const minTop10 = currentTop.length < RECORDS_LIMIT ? 0 : (currentTop[currentTop.length - 1]?.mejor_puntaje || 0);
+  const entersTop10 = currentTop.length < RECORDS_LIMIT || (data?.mejor ?? score) > minTop10;
+
+  if (entersTop10 || data?.record) {
+    clearRecordsCache(game.id);
+    loadRecords(true);
+  } else {
+    loadRecords(false);
+  }
 }
 
 
@@ -919,21 +931,66 @@ async function renderMyRecord(game) {
     <ol class="records__list">${recordRow(me, typeof count === 'number' ? count + 1 : '–', true)}</ol>`;
 }
 
+const RECORDS_CACHE_PREFIX = 'semana_sistemas_records_';
+const RECORDS_CACHE_TTL = 10 * 60 * 1000; // 10 minutes in milliseconds
+
+function readRecordsCache(gameId) {
+  try {
+    const raw = localStorage.getItem(`${RECORDS_CACHE_PREFIX}${gameId}`);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (!data || typeof data.timestamp !== 'number') return null;
+    if (Date.now() - data.timestamp > RECORDS_CACHE_TTL) return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+function writeRecordsCache(gameId, records) {
+  try {
+    localStorage.setItem(`${RECORDS_CACHE_PREFIX}${gameId}`, JSON.stringify({
+      timestamp: Date.now(),
+      records,
+    }));
+  } catch (e) {
+    console.warn('Could not cache game records:', e);
+  }
+}
+
+function clearRecordsCache(gameId) {
+  try {
+    localStorage.removeItem(`${RECORDS_CACHE_PREFIX}${gameId}`);
+  } catch {}
+}
+
 let recordsLoading = null;
 let reloadRecords = false;
 
-async function loadRecords() {
+async function loadRecords(force = false) {
   if (!currentUser) {
     renderEmptyRecords('Inicia sesión', 'Inicia sesión con tu carnet para ver la tabla de récords.');
     myRecord.innerHTML = '';
     return;
   }
+  const game = cartridge;
+
+  // Use 10-minute cache if available and not forced
+  if (!force) {
+    const cached = readRecordsCache(game.id);
+    if (cached && Array.isArray(cached.records)) {
+      renderRecords(cached.records);
+      await renderMyRecord(game);
+      return;
+    }
+  }
+
   // If a notice arrives during the query (real time, save, session, week change), it queries again when done
   if (recordsLoading) {
     reloadRecords = true;
     return recordsLoading;
   }
-  const game = cartridge;
+
   recordsLoading = (async () => {
     try {
       const { data, error } = await supabaseClient.rpc('ranking_juego', {
@@ -950,20 +1007,22 @@ async function loadRecords() {
         myRecord.innerHTML = '';
         return;
       }
-      renderRecords(data || []);
+      const records = data || [];
+      writeRecordsCache(game.id, records);
+      renderRecords(records);
       await renderMyRecord(game);
     } finally {
       recordsLoading = null;
       if (reloadRecords) {
         reloadRecords = false;
-        loadRecords();
+        loadRecords(true);
       }
     }
   })();
   return recordsLoading;
 }
 
-// Real-time updates for game records (only active with a session)
+// Real-time updates for game records (refreshes if score qualifies for top 10 or cache expired)
 let gameRealtimeChannel = null;
 
 function setupGameRealtime() {
@@ -971,7 +1030,22 @@ function setupGameRealtime() {
   try {
     gameRealtimeChannel = supabaseClient
       .channel('game-score-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'puntajes_juego' }, () => loadRecords())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'puntajes_juego' }, (payload) => {
+        const gameId = cartridge?.id;
+        if (!gameId) return;
+        if (payload?.new?.juego && payload.new.juego !== gameId) return;
+
+        const newScore = Number(payload?.new?.mejor_puntaje) || 0;
+        const cached = readRecordsCache(gameId);
+        const records = cached?.records || [];
+        const minTop10 = records.length < RECORDS_LIMIT ? 0 : (records[records.length - 1]?.mejor_puntaje || 0);
+
+        // Only query Supabase if score enters top 10 or cache is missing/expired
+        if (!cached || records.length < RECORDS_LIMIT || newScore > minTop10) {
+          clearRecordsCache(gameId);
+          loadRecords(true);
+        }
+      })
       .subscribe();
   } catch {
     console.log('Real time is not available for the records table');
