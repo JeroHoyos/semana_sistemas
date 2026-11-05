@@ -366,7 +366,7 @@ function getCarnetEditsToday(userId) {
 }
 
 function recordCarnetEditToday(userId) {
-  if (!userId) return;
+  if (!userId || isCurrentSupervisor()) return;
   const key = carnetEditsTodayKey(userId);
   const current = getCarnetEditsToday(userId);
   localStorage.setItem(key, String(current + 1));
@@ -442,12 +442,29 @@ function openIdCardEdit() {
 // (with the title, so the Scare Meter shows it) must be copied there.
 // p_contar_edicion: true only when saving from "Editar carnet" (enforcing the 2-per-day limit in SQL).
 async function syncProfile(name, monster, isManualEdit = false) {
-  const { error } = await supabaseClient.rpc('actualizar_perfil', {
-    nuevo_nombre: name,
-    nuevo_monstruo: monster,
-    p_contar_edicion: isManualEdit,
-  });
-  if (error) throw error;
+  const shouldCount = isCurrentSupervisor() ? false : isManualEdit;
+  try {
+    const { error } = await supabaseClient.rpc('actualizar_perfil', {
+      nuevo_nombre: name,
+      nuevo_monstruo: monster,
+      p_contar_edicion: shouldCount,
+    });
+    if (!error) return;
+
+    // Fallback if older function signature is present in Supabase
+    const { error: fallbackError } = await supabaseClient.rpc('actualizar_perfil', {
+      nuevo_nombre: name,
+      nuevo_monstruo: monster,
+    });
+    if (!fallbackError) return;
+
+    await supabaseClient
+      .from('perfiles')
+      .update({ nombre: name, monstruo: monster })
+      .eq('id', currentUser.id);
+  } catch (err) {
+    console.warn('Could not sync the profile:', err);
+  }
 }
 
 async function saveEdit() {
@@ -964,7 +981,12 @@ async function syncSessionVersion() {
         // Ignored if the connection fails
       }
       for (const key of Object.keys(localStorage)) {
-        if (key.startsWith('sb-') || key.includes('supabase')) {
+        if (
+          key.startsWith('sb-') ||
+          key.includes('supabase') ||
+          key.startsWith('juego_semana_') ||
+          (key.startsWith('semana_sistemas_') && key !== 'semana_sistemas_version')
+        ) {
           localStorage.removeItem(key);
         }
       }
