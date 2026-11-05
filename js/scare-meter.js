@@ -30,12 +30,12 @@ const maxPointsOf = (people) => Math.max(100, ...people.map(scarePoints));
 
 // What the page shows for a person: clowns hiding behind binary names appear under their real identity
 function personView(person) {
-  const clown = isClown(person.correo, person.nombre, person);
+  const clown = Boolean(person.clown || isClown(person.correo, person.nombre, person));
   const alias = clown && isLargoAlias(person.correo, person.nombre);
   return {
     clown,
-    points: scarePoints(person),
-    handle: alias ? 'imlargo' : handleOf(person.correo),
+    points: Number(person.puntos ?? scarePoints(person)),
+    handle: alias ? 'imlargo' : (person.usuario || handleOf(person.correo)),
     name: alias ? 'Juan Carlos Largo' : (person.nombre || 'Estudiante UNAL').trim(),
   };
 }
@@ -56,7 +56,7 @@ function selectScarer(index) {
   const { clown, points, handle, name } = personView(person);
 
   // Liquid level in the tank (0% with 0 points)
-  tankLiquid.style.height = `${percentOf(points, maxPointsOf(scarers))}%`;
+  tankLiquid.style.height = `${percentOf(points, maxGlobalPoints)}%`;
 
   // Tank screen: name and points
   hudName.textContent = clown ? `🤡 ${name} [PAYASO]` : name;
@@ -100,43 +100,37 @@ const IDCARD_BUTTON_TITLES = {
   bronze: 'Ver carnet de bronce (3° puesto)',
 };
 
-let allScarers = [];
+const PAGE_SIZE = 10;
+let currentLimit = 10;
+let totalGeneral = 0;
+let totalFiltrados = 0;
+let maxGlobalPoints = 100;
+let myRankInfo = null;
 let currentSearchQuery = '';
+let searchDebounceTimer = null;
+let isLoadingRanking = false;
+let isLoadingMore = false;
 
-function applyRankingFilter() {
-  const query = currentSearchQuery.trim().toLowerCase();
-  const clearBtn = $('#btn-clear-search');
-  if (clearBtn) clearBtn.hidden = !query;
-
-  let filtered = allScarers;
-  if (query) {
-    const qClean = stripAccents(query);
-    filtered = allScarers.filter((person) => {
-      // The name on screen, so a clown behind a binary name is found under their real one
-      const view = personView(person);
-      const name = view.name.toLowerCase();
-      const nameClean = stripAccents(name);
-      const handle = view.handle.toLowerCase();
-      return nameClean.includes(qClean) || name.includes(query) || handle.includes(query);
-    });
-  }
-
-  renderRanking(filtered, query);
+function updateLoadMoreButton() {
+  const moreBox = $('#ranking-more-box');
+  if (!moreBox) return;
+  const hasMore = scarers.length < totalFiltrados && totalFiltrados > 0;
+  moreBox.hidden = !hasMore;
 }
 
 // Draws the scarer cards in the right column
 function renderRanking(people, query = '') {
   scarers = people;
-  const total = allScarers.length;
-  const filteredCount = people.length;
 
   if (query) {
-    rankingCount.textContent = `${filteredCount} de ${total} ${total === 1 ? 'Asustador' : 'Asustadores'}`;
+    rankingCount.textContent = `${totalFiltrados} de ${totalGeneral} ${totalGeneral === 1 ? 'Asustador' : 'Asustadores'}`;
   } else {
-    rankingCount.textContent = `${total} ${total === 1 ? 'Asustador Registrado' : 'Asustadores Registrados'}`;
+    rankingCount.textContent = `${totalGeneral} ${totalGeneral === 1 ? 'Asustador Registrado' : 'Asustadores Registrados'}`;
   }
 
-  if (query && filteredCount === 0) {
+  updateLoadMoreButton();
+
+  if (query && totalFiltrados === 0) {
     list.innerHTML = `
       <li class="ranking-empty">
         <div class="ranking-empty__box">
@@ -148,7 +142,7 @@ function renderRanking(people, query = '') {
     return;
   }
 
-  if (total === 0) {
+  if (totalGeneral === 0) {
     tankLiquid.style.height = '0%';
     hudName.textContent = 'Esperando asustadores';
     hudPoints.innerHTML = '0 <small>pts</small>';
@@ -179,16 +173,13 @@ function renderRanking(people, query = '') {
     return;
   }
 
-  const allPoints = allScarers.map(scarePoints);
-  const maxPoints = maxPointsOf(allScarers);
-  const tiers = pointTiers(allPoints);
-  // The same person as before (or first place if nobody was chosen yet)
+
   const chosen = Math.max(0, people.findIndex((p) => p.id === chosenId));
   const isSupervisor = isCurrentSupervisor();
 
   list.innerHTML = people.map((person, i) => {
     const { clown, points, handle, name } = personView(person);
-    const percent = percentOf(points, maxPoints);
+    const percent = percentOf(points, maxGlobalPoints);
     const monster = person.monstruo || {};
     const avatarColor = clown ? '#ff0033' : monsterColor(monster);
 
@@ -209,17 +200,17 @@ function renderRanking(people, query = '') {
       titleTag = `<span class="scarer-card__title-tag scarer-card__title-tag--supervisor">👑 Admin</span>`;
     }
 
-    const medal = clown ? null : medalFor(points, allPoints);
-    let rank = i + 1;
+    const medal = clown ? null : (person.medalla ?? medalForTier(person.puesto_medalla));
+    let rank = person.posicion || (i + 1);
     if (clown) rank = '🤡';
-    else if (!tiers.length) rank = 1;
-    else if (points > 0) rank = tiers.indexOf(points) + 1;
+    else if (person.puesto_medalla) rank = person.puesto_medalla;
 
     const modifier = clown ? 'clown' : medal;
     const cardClass = modifier ? `scarer-card--${modifier}` : '';
     const rankClass = `scarer-card__rank--${modifier || 'normal'}`;
     const idCardClass = modifier ? `scarer-item__idcard--${modifier}` : '';
     const idCardTitle = clown ? 'Ver Licencia de Payaso 🤡' : IDCARD_BUTTON_TITLES[medal] ?? 'Ver carnet';
+    const isMine = currentUser && person.id === currentUser.id;
 
     const adminButton = isSupervisor
       ? `<button type="button" class="scarer-item__admin-pts" data-index="${i}" aria-label="Modificar puntos" title="Modificar puntos de ${escapeHtml(person.nombre || 'asustador')}">
@@ -241,6 +232,7 @@ function renderRanking(people, query = '') {
           <div class="scarer-card__info">
             <div class="scarer-card__name">
               <span>${escapeHtml(name)}</span>
+              ${isMine ? '<span class="team__badge">TÚ</span>' : ''}
               ${titleTag}
             </div>
             <div class="scarer-card__email">@${escapeHtml(handle)} · ${clown ? 'TRAMPOSO DE CIRCO' : 'UNAL'}</div>
@@ -271,44 +263,174 @@ function renderRanking(people, query = '') {
 function showIdCardOf(index) {
   const person = scarers[index];
   const { clown, points } = personView(person);
-  const medal = clown ? null : medalFor(points, scarers.map(scarePoints));
+  const medal = clown ? null : (person.medalla ?? medalForTier(person.puesto_medalla));
 
   $('#idcard-modal-title').textContent = clown ? '🤡 Licencia de Payaso' : 'Carnet';
   $('#idcard-modal-clown-notice').hidden = !clown;
 
+  const emailForCard = person.correo || (person.usuario ? `${person.usuario}@unal.edu.co` : '');
   $('#idcard-modal-idcard').innerHTML = scarerIdCard(
-    person.nombre || 'Estudiante UNAL', person.correo, person.monstruo || {}, personTitle(person), medal);
+    person.nombre || 'Estudiante UNAL', emailForCard, person.monstruo || {}, personTitle(person), medal);
   $('#idcard-modal').showModal();
 }
 
 async function loadScareMeter() {
+  if (isLoadingRanking) return;
+  isLoadingRanking = true;
   try {
-    // shortcut: full table fetch capped at ~2000 rows, replace with an RPC returning top N plus user rank when perfiles exceeds ~2000 rows.
-    // es_payaso marks sanctioned accounts (isClown reads it). Without that column the query fails,
-    // so it is asked again without it.
-    const columns = 'id, nombre, correo, monstruo, puntos, creado_en';
-    let { data: profiles, error } = await supabaseClient.from('perfiles').select(`${columns}, es_payaso`);
-    if (error?.message?.includes('es_payaso')) {
-      ({ data: profiles, error } = await supabaseClient.from('perfiles').select(columns));
-    }
+    // shortcut: max limit capped at 50 per page, increase limit or add keyset pagination if leaderboard volume requires larger viewports.
+    const [{ data: ranking, error: rankingError }, { data: clowns }, myPuestoRes] = await Promise.all([
+      supabaseClient.rpc('ranking_sustometro', {
+        p_limite: currentLimit,
+        p_desplazamiento: 0,
+        p_busqueda: currentSearchQuery || null,
+      }),
+      supabaseClient.rpc('payasos_sustometro', { p_limite: 20 }),
+      currentUser ? supabaseClient.rpc('mi_puesto_sustometro') : Promise.resolve({ data: [] }),
+    ]);
 
-    if (error) {
-      console.error('Could not load the profiles:', error);
+    if (rankingError) {
+      console.error('Could not load the ranking:', rankingError);
       showScareMeterError('No se pudo sincronizar con Supabase. Revisa las políticas RLS de lectura.');
       return;
     }
 
-    // Clowns go last, below the people who also have 0 points
-    const clowns = profiles.filter((p) => isClown(p.correo, p.nombre, p));
-    const legitimate = profiles.filter((p) => !isClown(p.correo, p.nombre, p));
+    myRankInfo = (myPuestoRes?.data && myPuestoRes.data.length) ? myPuestoRes.data[0] : null;
 
-    legitimate.sort((a, b) => scarePoints(b) - scarePoints(a) || (a.creado_en || '').localeCompare(b.creado_en || ''));
-    allScarers = [...legitimate, ...clowns];
-    applyRankingFilter();
+    if (!ranking || !ranking.length) {
+      scarers = [];
+      totalFiltrados = 0;
+      if (!currentSearchQuery) totalGeneral = 0;
+      renderRanking([], currentSearchQuery);
+    } else {
+      totalFiltrados = ranking[0].total_filtrados || ranking.length;
+      totalGeneral = ranking[0].total_general || ranking.length;
+      maxGlobalPoints = Math.max(100, ranking[0].max_puntos || 0);
+      renderRanking(ranking, currentSearchQuery);
+    }
+
+    if (typeof renderClowns === 'function') renderClowns(clowns || []);
+    updateMyRankBanner();
   } catch (err) {
     console.error('Unexpected error:', err);
     showScareMeterError('Ocurrió un error inesperado al conectar con el servidor.');
+  } finally {
+    isLoadingRanking = false;
   }
+}
+
+async function loadMore() {
+  if (isLoadingMore || scarers.length >= totalFiltrados) return;
+  isLoadingMore = true;
+  const btn = $('#btn-load-more');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Cargando más…';
+  }
+
+  try {
+    const { data: newRows, error } = await supabaseClient.rpc('ranking_sustometro', {
+      p_limite: PAGE_SIZE,
+      p_desplazamiento: scarers.length,
+      p_busqueda: currentSearchQuery || null,
+    });
+
+    if (error) throw error;
+    if (newRows && newRows.length) {
+      scarers = [...scarers, ...newRows];
+      currentLimit = scarers.length;
+      renderRanking(scarers, currentSearchQuery);
+      updateMyRankBanner();
+    }
+  } catch (err) {
+    console.error('Error loading more scarers:', err);
+  } finally {
+    isLoadingMore = false;
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Ver más';
+    }
+    updateLoadMoreButton();
+  }
+}
+
+const loadMoreBtn = $('#btn-load-more');
+if (loadMoreBtn) {
+  loadMoreBtn.addEventListener('click', loadMore);
+}
+
+function updateMyRankBanner() {
+  const banner = $('#my-rank-banner');
+  if (!banner) return;
+
+  if (!currentUser || !myRankInfo || scarers.some((p) => p.id === currentUser.id)) {
+    banner.hidden = true;
+    banner.innerHTML = '';
+    return;
+  }
+
+  const name = (currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]).trim();
+  const monster = currentUser.user_metadata?.monstruo || chosenMonster();
+  const handle = handleOf(currentUser.email);
+  const title = chosenTitleOf(currentUser);
+  const points = myRankInfo.puntos || 0;
+  const percent = percentOf(points, maxGlobalPoints);
+  const medal = myRankInfo.medalla || medalForTier(myRankInfo.puesto_medalla);
+  const rank = myRankInfo.puesto_medalla || myRankInfo.posicion;
+
+  const cardModifier = medal ? `scarer-card--${medal}` : '';
+  const rankModifier = medal ? `scarer-card__rank--${medal}` : 'scarer-card__rank--normal';
+
+  banner.innerHTML = `
+    <span class="my-rank-banner__label">Tu puesto en la tabla</span>
+    <div class="scarer-item my-rank-item">
+      <button type="button" class="scarer-card ${cardModifier}" id="btn-my-rank-card" aria-pressed="${chosenId === currentUser.id ? 'true' : 'false'}">
+        <div class="scarer-card__rank ${rankModifier}">
+          <span>#${rank}</span>
+        </div>
+        <div class="scarer-card__avatar" style="border-color: ${monsterColor(monster)}">
+          ${drawCustomMonster(monster)}
+        </div>
+        <div class="scarer-card__info">
+          <div class="scarer-card__name">
+            <span>${escapeHtml(name)}</span>
+            <span class="team__badge">TÚ</span>
+            <span class="scarer-card__title-tag">${escapeHtml(titleText(title, monster.estilo))}</span>
+          </div>
+          <div class="scarer-card__email">@${escapeHtml(handle)} · UNAL</div>
+        </div>
+        <div class="scarer-card__score">
+          <span class="scarer-card__pts">${points} <small>PTS</small></span>
+          <span class="scarer-card__percent">${percent}%</span>
+        </div>
+      </button>
+    </div>
+  `;
+  banner.hidden = false;
+
+  const btn = $('#btn-my-rank-card');
+  if (btn) {
+    btn.addEventListener('click', selectMyRank);
+  }
+}
+
+function selectMyRank() {
+  if (!currentUser || !myRankInfo) return;
+  chosenId = currentUser.id;
+  const name = (currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]).trim();
+  const handle = handleOf(currentUser.email);
+  const points = myRankInfo.puntos || 0;
+
+  tankLiquid.style.height = `${percentOf(points, maxGlobalPoints)}%`;
+  hudName.textContent = name;
+  hudPoints.innerHTML = `${points} <small>pts</small>`;
+  $('#btn-admin-edit-points').hidden = !isCurrentSupervisor();
+
+  $('.scarer-card').forEach((card) => card.setAttribute('aria-pressed', 'false'));
+  const myBtn = $('#btn-my-rank-card');
+  if (myBtn) myBtn.setAttribute('aria-pressed', 'true');
+
+  writeReading(`Va en el puesto ${myRankInfo.posicion} de la tabla del Sustómetro.`, name, handle);
 }
 
 function showScareMeterError(message) {
@@ -573,8 +695,8 @@ $('#btn-admin-edit-points').addEventListener('click', () => {
 
 // Check the supervisor role again when the session changes or a title is redeemed
 document.addEventListener('idcard:session', () => {
-  if (allScarers.length) applyRankingFilter();
   $('#btn-admin-edit-points').hidden = !isCurrentSupervisor();
+  updateMyRankBanner();
 });
 
 loadScareMeter();
@@ -586,8 +708,14 @@ const clearSearchBtn = $('#btn-clear-search');
 
 if (searchInput) {
   searchInput.addEventListener('input', (e) => {
-    currentSearchQuery = e.target.value;
-    applyRankingFilter();
+    currentSearchQuery = e.target.value.trim();
+    if (clearSearchBtn) clearSearchBtn.hidden = !currentSearchQuery;
+
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => {
+      currentLimit = PAGE_SIZE;
+      loadScareMeter();
+    }, 300);
   });
 }
 
@@ -598,6 +726,8 @@ if (clearSearchBtn) {
       searchInput.focus();
     }
     currentSearchQuery = '';
-    applyRankingFilter();
+    clearSearchBtn.hidden = true;
+    currentLimit = PAGE_SIZE;
+    loadScareMeter();
   });
 }

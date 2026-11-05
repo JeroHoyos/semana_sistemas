@@ -3310,6 +3310,59 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: #e2e8f0;
 }
 
+/* Paginación del Sustómetro y banner de posición del usuario */
+.my-rank-banner {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  background: #f0f7ff;
+  border: 1.5px solid #bdd7f5;
+  border-radius: 20px;
+}
+.my-rank-banner__label {
+  display: block;
+  font-size: 11px;
+  font-family: var(--font-varsity);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 8px;
+}
+.my-rank-item .scarer-card {
+  box-shadow: 0 4px 14px rgba(22, 103, 194, 0.12);
+  border-color: #85b8eb;
+}
+.ranking-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+}
+.ranking-more__btn {
+  height: 42px;
+  padding: 0 24px;
+  font-size: 13px;
+  font-family: var(--font-varsity);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  border: 1.5px solid var(--blue);
+  color: var(--blue);
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.ranking-more__btn:hover {
+  background: var(--blue);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.ranking-more__btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .ranking-card__header {
   display: flex;
   align-items: center;
