@@ -70,7 +70,7 @@ const GROUPS = [
     link: 'https://aperture-systems-lab.github.io',
     description: 'Aperture es un Semillero de Investigación estudiantil donde se explora la ciencia de datos, el machine learning y la IA. Es un espacio para aprender haciendo: desarrollamos proyectos, compartimos conocimientos y conectamos esa teoría con problemas de la vida real, impulsando una comunidad colaborativa en la universidad.' },
   { id: 'turing-box', name: 'Turing Box', type: 'Grupo estudiantil', color: '#c4358c', logo: 'img/group-turing-box.jpg',
-    link: 'https://www.instagram.com/turingbox/',
+    link: 'https://www.instagram.com/turingbox_med/',
     description: 'Turing Box es un grupo estudiantil intersedes de la Universidad Nacional de Colombia que abre un espacio de pruebas (sandbox) para explorar tecnologías que no suelen estar en los currículos, como inteligencia artificial, blockchain, web3, realidad aumentada y creación de videojuegos. Funciona a través de nodos temáticos y busca crear comunidad alrededor de la tecnología con eventos, hackathons, charlas, podcasts y creación de contenidos, además de entrenar habilidades técnicas y blandas para impulsar las carreras profesionales de sus integrantes.' },
   { id: 'uneural', name: 'UNeural', type: 'Grupo estudiantil', color: '#4a4fd8', logo: 'img/group-uneural.jpg',
     link: 'https://www.instagram.com/uneuralgroup' },
