@@ -102,11 +102,6 @@ const ACTIVITIES = [
       'A través de ejemplos prácticos y situaciones del mundo tecnológico, reflexionaremos sobre cómo se conectan los conocimientos adquiridos en la universidad con los desafíos de la industria y qué pueden hacer los estudiantes, desde cualquier semestre, para prepararse para su futuro profesional.\n' +
       'Una invitación a mirar más allá del código y descubrir cómo construir una carrera en la que la tecnología, el criterio y las habilidades humanas trabajen juntos.',
     decorations: ['gradCap', 'helmet', 'database'] },
-  { id: 'taller-aperture', day: 'wed', start: '14:00', end: '16:00', type: 'workshop', title: 'De Prompts a Agentes: Inteligencia Artificial Agéntica con Python', organizer: 'aperture', place: 'Aula M3-224',
-    description: '¿Qué pasa cuando un LLM deja de solo responder y empieza a actuar?\n' +
-      'En este taller veremos cómo crear un agente, hacerlo más capaz y llevarlo a producción. Lo haremos con LangChain, uno de los frameworks de Python más usados para construir aplicaciones y agentes con LLMs.\n' +
-      '¡Ven a descubrir cómo funciona un agente!',
-    decorations: ['terminal', 'robot', 'lightning'] },
   { id: 'taller-llm', day: 'wed', start: '12:00', end: '14:00', type: 'workshop', title: 'Agentes de IA para todos - Todo lo que necesitas saber', speaker: 'yohan', organizer: 'turing-box', place: 'Aula M3-224',
     description: 'La inteligencia artificial pasó de responder preguntas a ejecutar tareas: crear archivos, revisar su propio trabajo, conectarse con otras herramientas y seguir procedimientos. A esto se le llama agente. En este taller vas a entender qué hay detrás de un agente y vas a trabajar con uno en clase.',
     rules: [
@@ -116,6 +111,11 @@ const ACTIVITIES = [
       { title: '¿Qué debes traer?', text: 'Computador portátil y una cuenta personal de Google (@gmail.com). Opcional: Node.js instalado (versión 20 o superior). Si no puedes instalarlo, trabajarás desde el navegador.' },
     ],
     decorations: ['chat', 'chip', 'plug'] },
+  { id: 'taller-aperture', day: 'wed', start: '14:00', end: '16:00', type: 'workshop', title: 'De Prompts a Agentes: Inteligencia Artificial Agéntica con Python', organizer: 'aperture', place: 'Aula M3-224',
+    description: '¿Qué pasa cuando un LLM deja de solo responder y empieza a actuar?\n' +
+      'En este taller veremos cómo crear un agente, hacerlo más capaz y llevarlo a producción. Lo haremos con LangChain, uno de los frameworks de Python más usados para construir aplicaciones y agentes con LLMs.\n' +
+      '¡Ven a descubrir cómo funciona un agente!',
+    decorations: ['terminal', 'robot', 'lightning'] },
 
   // Thursday
   { id: 'observacion', day: 'thu', start: '07:00', end: '10:00', type: 'competition', title: 'Carrera de observación', team: { tab: 'Observación', size: 4, maxTeams: 10 },
