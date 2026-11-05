@@ -211,6 +211,14 @@ const TITLES = [
     description: 'Desbloquea el estilo de carnet Vice City cromático.',
     hint: 'El código de la banda QR esconde un estilo cromático.',
     codeHash: '97313ae5dff440d435ccf82927fcebd9c7444ff7248e05d4be75d898bfe27995' },
+  { id: 'franco-impero', name: 'Franco Impero 🇮🇹', feminine: 'Franco Impero 🇮🇹',
+    description: 'Desbloquea el estilo de carnet Mafia Italiana y el smoking elegante.',
+    hint: 'El respeto y la lealtad abren las puertas de la familia.',
+    codeHash: '3efd2435325d19ab5444ae7dbcf754d32d7f17f1c9ec14d853063fce19f452d3', // FRANCO-IMPERO26
+    codeHashes: [
+      '3efd2435325d19ab5444ae7dbcf754d32d7f17f1c9ec14d853063fce19f452d3', // FRANCO-IMPERO26
+      '91b282066b28b9ff04db860acbdd6117f920ed379ac74e0baa34879861c9f5fd', // FRANCO-IMPERO
+    ] },
 ];
 
 // SCARE METER: fed in real time from Supabase (table 'perfiles'),

@@ -25,13 +25,46 @@ function hasVeteranReward(user) {
   return new Date(createdAt) <= new Date(VETERAN_CUTOFF);
 }
 
+function hasUnlockedFrancoStyle(user) {
+  if (!user) return false;
+  const titles = unlockedTitles(user).map((t) => t.id);
+  if (titles.includes('franco-impero') || user.user_metadata?.titulo === 'franco-impero' || user.user_metadata?.monstruo?.titulo === 'franco-impero') return true;
+  if (user.user_metadata?.carnet_estilo === 'mafia') return true;
+  if (user.user_metadata?.monstruo?.carnet_estilo === 'mafia') return true;
+  return false;
+}
+
+function hasSmokingUnlocked(user) {
+  if (!user) return false;
+  if (user.user_metadata?.recompensa_smoking) return true;
+  if (hasUnlockedFrancoStyle(user)) return true;
+  return false;
+}
+
+function availableCardStyles(user) {
+  const styles = [{ id: 'clasico', label: 'Clásico' }];
+  if (hasUnlockedViceStyle(user)) styles.push({ id: 'vice', label: 'Vice City' });
+  if (hasUnlockedFrancoStyle(user)) styles.push({ id: 'mafia', label: 'Mafia Italiana' });
+  return styles;
+}
+
 function updateCatalogForUser(user) {
+  // Veteran reward jersey
   const hasCamiseta = MONSTER_CATALOG.accesorio.some((a) => a.value === 'camiseta');
   const eligible = hasVeteranReward(user);
   if (eligible && !hasCamiseta) {
     MONSTER_CATALOG.accesorio.push({ value: 'camiseta', label: 'Camiseta UNAL' });
   } else if (!eligible && hasCamiseta) {
     MONSTER_CATALOG.accesorio = MONSTER_CATALOG.accesorio.filter((a) => a.value !== 'camiseta');
+  }
+
+  // Franco Impero reward smoking
+  const hasSmoking = MONSTER_CATALOG.accesorio.some((a) => a.value === 'smoking');
+  const eligibleSmoking = hasSmokingUnlocked(user);
+  if (eligibleSmoking && !hasSmoking) {
+    MONSTER_CATALOG.accesorio.push({ value: 'smoking', label: 'Smoking' });
+  } else if (!eligibleSmoking && hasSmoking) {
+    MONSTER_CATALOG.accesorio = MONSTER_CATALOG.accesorio.filter((a) => a.value !== 'smoking');
   }
 }
 
@@ -172,7 +205,9 @@ function scarerIdCard(name, email, monster, title = BASE_TITLE, medal = null) {
   const isKonami = !clown && title?.id === 'konami';
   const isSupervisor = !clown && title?.id === 'supervisor';
   const isQRGang = !clown && title?.id === 'qr-gang';
+  const isFranco = !clown && title?.id === 'franco-impero';
   const isVice = !clown && (monster?.carnet_estilo === 'vice' || monster?.tema === 'vice');
+  const isMafia = !clown && (monster?.carnet_estilo === 'mafia' || monster?.tema === 'mafia');
 
   // Long titles split into two lines so they do not hit the photo
   let bandClass = role.length > 12 ? 'idcard__band idcard__band--long' : 'idcard__band';
@@ -182,6 +217,7 @@ function scarerIdCard(name, email, monster, title = BASE_TITLE, medal = null) {
   if (isKonami) bandClass += ' idcard__band--konami';
   if (isSupervisor) bandClass += ' idcard__band--supervisor';
   if (isQRGang) bandClass += ' idcard__band--qrgang';
+  if (isFranco) bandClass += ' idcard__band--franco';
   if (clown) bandClass += ' idcard__band--clown';
 
   const roleHtml = isDebugger
@@ -192,6 +228,8 @@ function scarerIdCard(name, email, monster, title = BASE_TITLE, medal = null) {
     ? `👑 ${role}`
     : isQRGang
     ? `🌴 ${role}`
+    : isFranco
+    ? `🇮🇹 ${role}`
     : role;
 
   const color = monsterColor(monster);
@@ -200,13 +238,17 @@ function scarerIdCard(name, email, monster, title = BASE_TITLE, medal = null) {
     ? 'idcard idcard--clown'
     : isVice
     ? 'idcard idcard--vice' + (medal ? ` idcard--vice-${medal}` : '')
+    : isMafia
+    ? 'idcard idcard--mafia' + (medal ? ` idcard--mafia-${medal}` : '')
     : medalStyle?.card ?? 'idcard';
   const stamp = clown
     ? '<span class="idcard__stamp idcard__stamp--clown">🤡 LICENCIA DE PAYASO</span>'
     : isSupervisor
     ? '<span class="idcard__stamp idcard__stamp--supervisor">⚡ STAFF ADMIN</span>'
+    : isMafia
+    ? '<span class="idcard__stamp idcard__stamp--mafia">🇮🇹 CAPO FAMIGLIA</span>'
     : medalStyle?.stamp ?? '';
-  const photoBorder = clown ? '#ff0033' : isVice ? '#ff2a85' : isSupervisor ? '#f59e0b' : medalStyle?.border ?? color;
+  const photoBorder = clown ? '#ff0033' : isVice ? '#ff2a85' : isMafia ? '#c5a059' : isSupervisor ? '#f59e0b' : medalStyle?.border ?? color;
 
   const brand = clown
     ? `<span class="idcard__week idcard__week--clown"><span class="idcard__tent" aria-hidden="true">🎪</span>CIRCO DE</span><span class="idcard__systems idcard__systems--clown">— PAYASOS —</span>`
@@ -263,16 +305,17 @@ function updatePreview() {
     ? 'Aún no tienes otros títulos. Canjea códigos en el Sustómetro para desbloquearlos.'
     : `Tienes ${titles.length} de ${TITLES.length} títulos. Canjea más códigos en el Sustómetro.`;
 
-  const viceAvailable = hasUnlockedViceStyle(currentUser);
+  const availableStyles = availableCardStyles(currentUser);
   const cardStyleSelector = $('#card-style-selector');
   if (cardStyleSelector) {
-    cardStyleSelector.hidden = !viceAvailable;
+    cardStyleSelector.hidden = availableStyles.length <= 1;
+    const currentStyleObj = availableStyles.find((s) => s.id === cardStyleBeingEdited) || availableStyles[0];
     const valEl = $('#val-card-style');
     if (valEl) {
-      valEl.textContent = cardStyleBeingEdited === 'vice' ? 'Vice City' : 'Clásico';
+      valEl.textContent = currentStyleObj.label;
     }
   }
-  if (!viceAvailable && cardStyleBeingEdited === 'vice') {
+  if (!availableStyles.some((s) => s.id === cardStyleBeingEdited)) {
     cardStyleBeingEdited = 'clasico';
   }
   monster.carnet_estilo = cardStyleBeingEdited;
@@ -426,7 +469,12 @@ $('#title-selector').addEventListener('click', (event) => {
 $('#card-style-selector')?.addEventListener('click', (event) => {
   const arrow = event.target.closest('.arcade-selector__arrow');
   if (!arrow || !editing) return;
-  cardStyleBeingEdited = cardStyleBeingEdited === 'vice' ? 'clasico' : 'vice';
+  const styles = availableCardStyles(currentUser);
+  if (styles.length <= 1) return;
+  const current = Math.max(0, styles.findIndex((s) => s.id === cardStyleBeingEdited));
+  const dir = Number(arrow.dataset.dir) || 1;
+  const next = (current + dir + styles.length) % styles.length;
+  cardStyleBeingEdited = styles[next].id;
   updatePreview();
 });
 

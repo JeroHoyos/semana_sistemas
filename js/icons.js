@@ -350,6 +350,22 @@ const MONSTER_PARTS = {
         <!-- UNAL varsity letters in the center of the chest -->
         <text x="60" y="96.5" text-anchor="middle" font-family="Graduate, serif" font-weight="700" font-size="8.5" fill="#ffffff" letter-spacing="0.8">UNAL</text>
       </g>`,
+    smoking: () => `
+      <g class="monster-smoking">
+        <!-- White dress shirt -->
+        <path d="M44 74 L60 95 L76 74 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2"/>
+        <!-- Classic Black Tuxedo Jacket -->
+        <path d="M14 68 C14 60 36 73 42 75 L52 94 L60 99 L68 94 L78 75 C84 73 106 60 106 68 L106 100 L14 100 Z" fill="#141416" stroke="#09090b" stroke-width="2.2" stroke-linejoin="round"/>
+        <!-- Satin Lapels with gold accent -->
+        <path d="M42 75 L52 94 L60 98 L56 90 L46 75 Z" fill="#23232a" stroke="#c5a059" stroke-width="1.2"/>
+        <path d="M78 75 L68 94 L60 98 L64 90 L74 75 Z" fill="#23232a" stroke="#c5a059" stroke-width="1.2"/>
+        <!-- Red Silk Bow Tie -->
+        <path d="M53 76 L60 78 L53 81 Z M67 76 L60 78 L67 81 Z" fill="#b91c1c" stroke="#7f1d1d" stroke-width="1"/>
+        <circle cx="60" cy="78" r="1.8" fill="#dc2626"/>
+        <!-- Italian pocket square -->
+        <path d="M30 83 L37 81 L36 84 Z" fill="#b91c1c"/>
+        <path d="M28 85 L38 85" stroke="#c5a059" stroke-width="1.4" stroke-linecap="round"/>
+      </g>`,
   },
 };
 

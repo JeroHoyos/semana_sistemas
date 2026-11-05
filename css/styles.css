@@ -6472,3 +6472,381 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   width: 17px;
   height: 17px;
 }
+
+
+/* ==========================================================================
+   Mafia Italiana Card Style (Franco Impero 🇮🇹)
+   ========================================================================== */
+
+.idcard--mafia {
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  background:
+    radial-gradient(ellipse at 85% 15%, rgba(197, 160, 89, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 15% 85%, rgba(206, 43, 55, 0.15) 0%, transparent 45%),
+    repeating-linear-gradient(90deg, #121316 0px, #121316 14px, #18191f 14px, #18191f 15px);
+  color: #ffffff;
+  border: 1.5px solid #c5a059;
+  box-shadow:
+    0 0 0 2px rgba(197, 160, 89, 0.35),
+    0 0 24px rgba(197, 160, 89, 0.22),
+    0 26px 46px -10px rgba(0, 0, 0, .85);
+}
+
+.idcard--mafia::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #009246 0%, #009246 33.3%, #ffffff 33.3%, #ffffff 66.6%, #ce2b37 66.6%, #ce2b37 100%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.idcard--mafia::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 40%, rgba(197, 160, 89, 0.08) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.idcard--mafia .idcard__crest {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 10px rgba(197, 160, 89, 0.45));
+  z-index: 2;
+}
+
+.idcard--mafia .idcard__brand {
+  z-index: 2;
+}
+
+.idcard--mafia .idcard__week {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  font-size: 8.8cqw;
+  line-height: 1;
+  letter-spacing: .04em;
+  color: #f7f3e8;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 0 14px rgba(197, 160, 89, 0.45);
+}
+
+.idcard--mafia .idcard__systems {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 3.4cqw;
+  letter-spacing: .32em;
+  color: #d4af37;
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.6), 0 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+.idcard--mafia .idcard__name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: min(4.4cqw, 68cqw / var(--letters, 1));
+  letter-spacing: .03em;
+  color: #ffffff;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95), 0 0 10px rgba(197, 160, 89, 0.3);
+  z-index: 2;
+}
+
+.idcard--mafia .idcard__role {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.9cqw;
+  letter-spacing: .08em;
+  color: #e2d5b8;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+  z-index: 2;
+}
+
+.idcard--mafia .idcard__photo {
+  border: 1.3cqw solid #c5a059;
+  box-shadow: 0 0 18px rgba(197, 160, 89, 0.4), inset 0 0 8px rgba(0, 0, 0, 0.6);
+  background: linear-gradient(180deg, #101114 0%, #1c1d24 100%);
+  z-index: 2;
+}
+
+.idcard--mafia .idcard__band {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: min(5cqw, 56cqw / var(--letters, 1));
+  letter-spacing: .05em;
+  background: linear-gradient(90deg, rgba(20, 21, 26, 0.95) 0%, rgba(35, 33, 28, 0.95) 55%, rgba(20, 21, 26, 0.95) 100%);
+  color: #d4af37;
+  border-top: 1px solid #c5a059;
+  border-bottom: 1px solid #c5a059;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
+  z-index: 2;
+}
+
+.idcard--mafia .idcard__stamp {
+  font-family: 'Playfair Display', Georgia, serif;
+  letter-spacing: .08em;
+  border: 1.5px solid #c5a059;
+  color: #e6c888;
+  background: rgba(18, 19, 22, 0.75);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 8px rgba(197, 160, 89, 0.5);
+}
+
+.idcard__band--franco {
+  padding-right: 40% !important;
+  font-family: 'Playfair Display', Georgia, serif !important;
+  letter-spacing: .06em;
+  background: linear-gradient(90deg, #16171b 0%, #2f2a1e 50%, #16171b 100%) !important;
+  color: #f5deb3 !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 10px rgba(197, 160, 89, 0.6) !important;
+  box-shadow: inset 0 0 10px rgba(197, 160, 89, 0.25), 0 0 14px rgba(0, 0, 0, 0.7) !important;
+  border-top: 1.5px solid #c5a059 !important;
+  border-bottom: 1.5px solid #c5a059 !important;
+}
+
+.idcard--mafia.idcard--mafia-gold {
+  box-shadow:
+    0 0 0 2.5px #fbbf24,
+    0 0 28px rgba(251, 191, 36, 0.6),
+    0 26px 46px -10px rgba(0, 0, 0, .85);
+}
+.idcard--mafia.idcard--mafia-silver {
+  box-shadow:
+    0 0 0 2.5px #cbd5e1,
+    0 0 28px rgba(203, 213, 225, 0.5),
+    0 26px 46px -10px rgba(0, 0, 0, .85);
+}
+.idcard--mafia.idcard--mafia-bronze {
+  box-shadow:
+    0 0 0 2.5px #f97316,
+    0 0 28px rgba(249, 115, 22, 0.5),
+    0 26px 46px -10px rgba(0, 0, 0, .85);
+}
+
+/* Titles and tags styling */
+.scarer-card__title-tag--franco {
+  background: rgba(197, 160, 89, 0.16) !important;
+  color: #d4af37 !important;
+  border: 1px solid rgba(197, 160, 89, 0.45) !important;
+  text-shadow: 0 0 8px rgba(197, 160, 89, 0.35);
+}
+
+.title-item--franco .title-item__name {
+  color: #d4af37 !important;
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+}
+
+
+/* ==========================================================================
+   Franco Impero Unlock Modal (Silent Animation)
+   ========================================================================== */
+
+.franco-unlock-modal {
+  padding: 0;
+  border: none;
+  background: transparent;
+  max-width: min(92vw, 540px);
+  width: 100%;
+  overflow: visible;
+}
+
+.franco-unlock-modal::backdrop {
+  background: radial-gradient(circle at center, rgba(16, 17, 22, 0.95) 0%, rgba(5, 6, 8, 0.98) 100%);
+  backdrop-filter: blur(8px);
+  animation: francoBackdropFade .4s ease;
+}
+
+@keyframes francoBackdropFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.franco-unlock-box {
+  position: relative;
+  overflow: hidden;
+  border-radius: 26px;
+  background:
+    radial-gradient(ellipse at 88% 12%, rgba(197, 160, 89, 0.28) 0%, transparent 48%),
+    radial-gradient(ellipse at 12% 88%, rgba(206, 43, 55, 0.18) 0%, transparent 48%),
+    repeating-linear-gradient(90deg, #111215 0px, #111215 14px, #18191f 14px, #18191f 15px);
+  border: 2px solid #c5a059;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+    0 0 35px rgba(197, 160, 89, 0.35),
+    0 30px 60px -10px rgba(0, 0, 0, 0.9);
+  padding: 28px 24px 24px;
+  text-align: center;
+  color: #fff;
+  animation: francoBoxPop .45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes francoBoxPop {
+  0% {
+    transform: scale(0.85) translateY(24px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.franco-unlock-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #009246 0%, #009246 33.3%, #ffffff 33.3%, #ffffff 66.6%, #ce2b37 66.6%, #ce2b37 100%);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.franco-unlock-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(197, 160, 89, 0.4);
+  background: rgba(0, 0, 0, 0.6);
+  color: #e6c888;
+  font-size: 15px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s;
+  z-index: 10;
+}
+.franco-unlock-close:hover {
+  background: #c5a059;
+  color: #111;
+  transform: rotate(90deg);
+}
+
+.franco-unlock-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: rgba(197, 160, 89, 0.15);
+  border: 1px solid rgba(197, 160, 89, 0.5);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: .2em;
+  color: #f5deb3;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+.franco-unlock-flag {
+  font-size: 15px;
+}
+
+.franco-unlock-title {
+  margin: 0 0 16px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(28px, 6.5vw, 42px);
+  line-height: 1;
+  letter-spacing: .06em;
+  color: #ffffff;
+  text-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.9),
+    0 0 20px rgba(197, 160, 89, 0.8),
+    0 0 35px rgba(212, 175, 55, 0.5);
+  position: relative;
+  z-index: 2;
+}
+
+.franco-unlock-preview-wrap {
+  position: relative;
+  max-width: 360px;
+  margin: 0 auto 16px;
+  z-index: 2;
+}
+
+.franco-unlock-preview-wrap .idcard {
+  box-shadow:
+    0 0 0 2px rgba(197, 160, 89, 0.6),
+    0 0 30px rgba(197, 160, 89, 0.4),
+    0 20px 40px rgba(0, 0, 0, 0.85);
+  animation: francoCardFloat 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes francoCardFloat {
+  0% { transform: translateY(0px) rotate(-0.4deg); }
+  100% { transform: translateY(-6px) rotate(0.4deg); }
+}
+
+.franco-unlock-shimmer {
+  position: absolute;
+  inset: -6px;
+  border-radius: 18px;
+  background: linear-gradient(105deg, transparent 20%, rgba(197, 160, 89, 0.25) 50%, transparent 80%);
+  pointer-events: none;
+  z-index: 5;
+  animation: francoSweep 3.2s infinite;
+}
+
+@keyframes francoSweep {
+  0% { transform: translateX(-120%); }
+  60%, 100% { transform: translateX(120%); }
+}
+
+.franco-unlock-desc {
+  margin: 0 auto 20px;
+  max-width: 420px;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 1.45;
+  color: #f1f5f9;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+  z-index: 2;
+  position: relative;
+}
+
+.franco-unlock-desc strong {
+  color: #d4af37;
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+}
+
+.franco-unlock-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  z-index: 2;
+  position: relative;
+}
+
+.franco-unlock-equip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 24px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #997328 0%, #d4af37 50%, #997328 100%);
+  color: #121316;
+  font-weight: 700;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 14px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  border: 1px solid #f5deb3;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(197, 160, 89, 0.6), 0 4px 12px rgba(0, 0, 0, 0.5);
+  transition: all .2s;
+}
+.franco-unlock-equip-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.9), 0 6px 18px rgba(0, 0, 0, 0.6);
+  background: linear-gradient(90deg, #d4af37 0%, #f5deb3 50%, #d4af37 100%);
+}
+.franco-unlock-equip-btn svg {
+  width: 17px;
+  height: 17px;
+}

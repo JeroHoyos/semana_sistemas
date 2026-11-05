@@ -87,6 +87,10 @@
     check('handle', handleOf('ana@unal.edu.co'), 'ana');
     check('accents', stripAccents('Fútbol'), 'Futbol');
 
+    // Secret titles and rewards
+    check('franco impero title', findTitle('franco-impero')?.name, 'Franco Impero 🇮🇹');
+    check('smoking accessory svg', drawCustomMonster({ accesorio: 'smoking' }).includes('monster-smoking'), true);
+
     document.getElementById('result').textContent = failures.length ? `FAILED\n${failures.join('\n')}` : 'ALL PASSED';
   </script>
 </body>

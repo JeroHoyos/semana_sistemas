@@ -83,6 +83,7 @@ function renderCollection() {
     const isDebugger = title.id === 'debugger';
     const isNocturnal = title.id === 'terror-nocturno';
     const isQRGang = title.id === 'qr-gang';
+    const isFranco = title.id === 'franco-impero';
     const used = title.id === inUse;
     const name = isDebugger ? `<span class="glitch-text" data-text="${text}">${text}</span>` : text;
     const classes = [
@@ -91,6 +92,7 @@ function renderCollection() {
       isDebugger ? 'title-item--debugger' : '',
       isNocturnal ? 'title-item--nocturnal' : '',
       isQRGang ? 'title-item--qrgang' : '',
+      isFranco ? 'title-item--franco' : '',
       title.id === 'video-futbol' ? 'title-item--phenomenon' : '',
       title.id === 'konami' ? 'title-item--konami' : '',
     ].filter(Boolean).join(' ');
@@ -135,7 +137,7 @@ async function countRedemptions(titleId) {
 
 async function redeemCode(text) {
   const hash = await hashOf(normalizeCode(text));
-  const title = TITLES.find((t) => !t.free && t.codeHash === hash);
+  const title = TITLES.find((t) => !t.free && (t.codeHash === hash || (Array.isArray(t.codeHashes) && t.codeHashes.includes(hash))));
   if (!title) return { status: 'invalid' };
 
   if (unlockedTitles(currentUser).some((t) => t.id === title.id)) {
@@ -153,11 +155,26 @@ async function redeemCode(text) {
   const meta = currentUser.user_metadata || {};
   const titles = [...new Set([...(meta.titulos || []), title.id])];
   const monster = meta.monstruo || {};
-  const carnetEstilo = title.id === 'qr-gang' ? 'vice' : (monster.carnet_estilo || 'clasico');
-  const updatedMonster = { ...monster, titulos: titles, carnet_estilo: carnetEstilo };
+  let carnetEstilo = monster.carnet_estilo || 'clasico';
+  let accesorio = monster.accesorio || 'ninguno';
+
+  if (title.id === 'qr-gang') {
+    carnetEstilo = 'vice';
+  } else if (title.id === 'franco-impero') {
+    carnetEstilo = 'mafia';
+    accesorio = 'smoking';
+  }
+
+  const updatedMonster = { ...monster, titulos: titles, carnet_estilo: carnetEstilo, accesorio };
 
   const { data, error } = await supabaseClient.auth.updateUser({
-    data: { ...meta, titulos: titles, monstruo: updatedMonster, carnet_estilo: carnetEstilo },
+    data: {
+      ...meta,
+      titulos: titles,
+      monstruo: updatedMonster,
+      carnet_estilo: carnetEstilo,
+      recompensa_smoking: title.id === 'franco-impero' ? true : meta.recompensa_smoking,
+    },
   });
   if (error) throw error;
 
@@ -297,6 +314,81 @@ function showViceUnlockAnimation() {
   playViceMusic();
 }
 
+
+/* ---------- Franco Impero unlock animation (silent) ---------- */
+
+function getFrancoUnlockModal() {
+  let modal = document.querySelector('#franco-unlock-modal');
+  if (modal) return modal;
+
+  modal = document.createElement('dialog');
+  modal.id = 'franco-unlock-modal';
+  modal.className = 'auth-modal franco-unlock-modal';
+  modal.setAttribute('aria-labelledby', 'franco-unlock-title');
+  modal.innerHTML = `
+    <div class="auth-modal__box franco-unlock-box">
+      <button class="auth-modal__close franco-unlock-close" id="btn-close-franco-unlock" type="button" aria-label="Cerrar">✕</button>
+      
+      <div class="franco-unlock-header">
+        <span class="franco-unlock-flag">🇮🇹</span>
+        <span>BENVENUTO A LA FAMIGLIA</span>
+        <span class="franco-unlock-flag">🇮🇹</span>
+      </div>
+
+      <h2 class="franco-unlock-title" id="franco-unlock-title">FRANCO IMPERO</h2>
+
+      <div class="franco-unlock-preview-wrap">
+        <div class="franco-unlock-shimmer"></div>
+        <div id="franco-unlock-preview" class="speakers__idcard"></div>
+      </div>
+
+      <p class="franco-unlock-desc">
+        ¡Has desbloqueado el título <strong>Franco Impero 🇮🇹</strong>, el estilo de carnet <strong>Mafia Italiana</strong> y el <strong>Smoking elegante</strong> para tu monstruo!
+      </p>
+
+      <div class="franco-unlock-actions">
+        <button type="button" class="hero__button franco-unlock-equip-btn" id="btn-equip-franco">
+          <span>Personalizar mi carnet</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.append(modal);
+
+  modal.querySelector('#btn-close-franco-unlock').addEventListener('click', () => modal.close());
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.close();
+  });
+
+  modal.querySelector('#btn-equip-franco').addEventListener('click', () => {
+    modal.close();
+    if (typeof openIdCardEdit === 'function') {
+      openIdCardEdit();
+    }
+  });
+
+  return modal;
+}
+
+function showFrancoUnlockAnimation() {
+  const modal = getFrancoUnlockModal();
+  const preview = document.querySelector('#franco-unlock-preview');
+  if (preview && typeof scarerIdCard === 'function') {
+    const user = currentUser;
+    const name = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Tu Nombre';
+    const monster = {
+      ...(user?.user_metadata?.monstruo || chosenMonster()),
+      carnet_estilo: 'mafia',
+      accesorio: 'smoking',
+    };
+    const francoTitle = findTitle('franco-impero') || { id: 'franco-impero', name: 'Franco Impero 🇮🇹' };
+    const medal = typeof userMedal !== 'undefined' ? userMedal : null;
+    preview.innerHTML = scarerIdCard(name, user?.email || 'estudiante@unal.edu.co', monster, francoTitle, medal);
+  }
+  modal.showModal();
+}
+
 $('#codes-form').addEventListener('submit', async (event) => {
   event.preventDefault();
   const input = $('#codes-input');
@@ -348,13 +440,21 @@ $('#codes-form').addEventListener('submit', async (event) => {
     if (status === 'repeated') {
       if (title?.id === 'qr-gang') {
         showViceUnlockAnimation();
+        showCodeMessage(`Ese código ya lo canjeaste: tienes el estilo Vice City y el título «${name}».`, 'info', edit);
+      } else if (title?.id === 'franco-impero') {
+        showFrancoUnlockAnimation();
+        showCodeMessage(`Ese código ya lo canjeaste: tienes el estilo Mafia Italiana, el smoking y el título «${name}».`, 'info', edit);
+      } else {
+        showCodeMessage(`Ese código ya lo canjeaste: tienes el título «${name}».`, 'info', edit);
       }
-      showCodeMessage(`Ese código ya lo canjeaste: tienes el estilo Vice City y el título «${name}».`, 'info', edit);
     } else if (status === 'sold-out') {
       showCodeMessage(`¡Cupos agotados! El título «${name}» era una edición limitada de ${limit || 5} personas y ya fue reclamado en su totalidad.`, 'error');
     } else if (title?.id === 'qr-gang') {
       showViceUnlockAnimation();
       showCodeMessage(`¡Desbloqueaste el estilo de carnet Vice City y el título «${name}»! Ya puedes activarlo en tu carnet.`, 'success', edit);
+    } else if (title?.id === 'franco-impero') {
+      showFrancoUnlockAnimation();
+      showCodeMessage(`¡Desbloqueaste el estilo Mafia Italiana, el smoking y el título «${name}»! Ya puedes activarlos en tu carnet.`, 'success', edit);
     } else {
       showCodeMessage(`¡Desbloqueaste el título «${name}»! Ya puedes ponértelo en tu carnet.`, 'success', edit);
     }

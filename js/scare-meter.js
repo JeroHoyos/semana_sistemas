@@ -198,6 +198,10 @@ function renderRanking(people, query = '') {
       titleTag = `<span class="scarer-card__title-tag scarer-card__title-tag--konami">${text}</span>`;
     } else if (title.id === 'supervisor') {
       titleTag = `<span class="scarer-card__title-tag scarer-card__title-tag--supervisor">👑 Admin</span>`;
+    } else if (title.id === 'qr-gang') {
+      titleTag = `<span class="scarer-card__title-tag scarer-card__title-tag--qrgang">${text}</span>`;
+    } else if (title.id === 'franco-impero') {
+      titleTag = `<span class="scarer-card__title-tag scarer-card__title-tag--franco">${text}</span>`;
     }
 
     const medal = clown ? null : (person.medalla ?? medalForTier(person.puesto_medalla));
