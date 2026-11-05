@@ -2032,6 +2032,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
   color: #1c7441;
   border: 1px solid #a8e2c0;
 }
+.auth-message--info {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
 
 .auth-form__submit {
   width: 100%;
@@ -6579,12 +6584,18 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 }
 
 .idcard--mafia .idcard__stamp {
+  left: 45%;
+  top: 37%;
+  transform: translate(-50%, -50%) rotate(-8deg);
   font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.2cqw;
+  padding: .35cqw 1.2cqw;
   letter-spacing: .08em;
   border: 1.5px solid #c5a059;
   color: #e6c888;
-  background: rgba(18, 19, 22, 0.75);
+  background: rgba(18, 19, 22, 0.85);
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 8px rgba(197, 160, 89, 0.5);
+  z-index: 2;
 }
 
 .idcard__band--franco {

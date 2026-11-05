@@ -353,18 +353,18 @@ const MONSTER_PARTS = {
     smoking: () => `
       <g class="monster-smoking">
         <!-- White dress shirt -->
-        <path d="M44 74 L60 95 L76 74 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2"/>
-        <!-- Classic Black Tuxedo Jacket -->
-        <path d="M14 68 C14 60 36 73 42 75 L52 94 L60 99 L68 94 L78 75 C84 73 106 60 106 68 L106 100 L14 100 Z" fill="#141416" stroke="#09090b" stroke-width="2.2" stroke-linejoin="round"/>
+        <path d="M44 88 L60 102 L76 88 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2"/>
+        <!-- Classic Black Tuxedo Jacket (positioned down so it never covers the mouth) -->
+        <path d="M14 82 C14 76 36 86 42 88 L52 101 L60 104 L68 101 L78 88 C84 86 106 76 106 82 L106 100 L14 100 Z" fill="#141416" stroke="#09090b" stroke-width="2.2" stroke-linejoin="round"/>
         <!-- Satin Lapels with gold accent -->
-        <path d="M42 75 L52 94 L60 98 L56 90 L46 75 Z" fill="#23232a" stroke="#c5a059" stroke-width="1.2"/>
-        <path d="M78 75 L68 94 L60 98 L64 90 L74 75 Z" fill="#23232a" stroke="#c5a059" stroke-width="1.2"/>
+        <path d="M42 88 L52 101 L60 104 L56 98 L46 88 Z" fill="#23232a" stroke="#c5a059" stroke-width="1.2"/>
+        <path d="M78 88 L68 101 L60 104 L64 98 L74 88 Z" fill="#23232a" stroke="#c5a059" stroke-width="1.2"/>
         <!-- Red Silk Bow Tie -->
-        <path d="M53 76 L60 78 L53 81 Z M67 76 L60 78 L67 81 Z" fill="#b91c1c" stroke="#7f1d1d" stroke-width="1"/>
-        <circle cx="60" cy="78" r="1.8" fill="#dc2626"/>
+        <path d="M53 90 L60 92 L53 94 Z M67 90 L60 92 L67 94 Z" fill="#b91c1c" stroke="#7f1d1d" stroke-width="1"/>
+        <circle cx="60" cy="92" r="1.8" fill="#dc2626"/>
         <!-- Italian pocket square -->
-        <path d="M30 83 L37 81 L36 84 Z" fill="#b91c1c"/>
-        <path d="M28 85 L38 85" stroke="#c5a059" stroke-width="1.4" stroke-linecap="round"/>
+        <path d="M28 93 L35 91 L34 94 Z" fill="#b91c1c"/>
+        <path d="M26 95 L36 95" stroke="#c5a059" stroke-width="1.4" stroke-linecap="round"/>
       </g>`,
   },
 };

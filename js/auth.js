@@ -354,11 +354,36 @@ $('#edit-name').addEventListener('input', updatePreview);
 let editing = false;
 let titleBeingEdited = BASE_TITLE.id;   // id of the title being tried on the preview
 
-function showEditMessage(text) {
+const MAX_CARNET_EDITS = 2;
+
+function carnetEditsTodayKey(userId) {
+  return `semana_sistemas_ediciones_${userId}_${colombiaDay()}`;
+}
+
+function getCarnetEditsToday(userId) {
+  if (!userId) return 0;
+  return Number(localStorage.getItem(carnetEditsTodayKey(userId))) || 0;
+}
+
+function recordCarnetEditToday(userId) {
+  if (!userId) return;
+  const key = carnetEditsTodayKey(userId);
+  const current = getCarnetEditsToday(userId);
+  localStorage.setItem(key, String(current + 1));
+}
+
+function hasCarnetEditsRemaining(user) {
+  if (!user) return false;
+  if (isCurrentSupervisor()) return true;
+  return getCarnetEditsToday(user.id) < MAX_CARNET_EDITS;
+}
+
+function showEditMessage(text, kind = 'error') {
   const message = $('#edit-message');
+  if (!message) return;
   message.textContent = text;
-  message.className = 'auth-message auth-message--error';
-  message.hidden = false;
+  message.className = `auth-message auth-message--${kind}`;
+  message.hidden = !text;
 }
 
 function enterEdit() {
@@ -376,13 +401,23 @@ function enterEdit() {
   editing = true;
 
   $('#edit-name').value = meta.full_name || currentUser.email.split('@')[0];
-  $('#edit-message').hidden = true;
   $('#edit-builder-mount').append($('#idcard-builder'));
   $('#idcard-builder').hidden = false;
   $('#auth-profile-view').hidden = true;
   $('#auth-edit-view').hidden = false;
   $('#auth-title').textContent = 'Editar carnet';
   updatePreview();
+
+  const remaining = MAX_CARNET_EDITS - getCarnetEditsToday(currentUser.id);
+  const isSupervisor = isCurrentSupervisor();
+  const saveBtn = $('#btn-save-edit');
+  if (!isSupervisor && remaining <= 0) {
+    showEditMessage('Has alcanzado el límite de 2 ediciones de carnet por hoy. Podrás volver a editarlo mañana.', 'error');
+    if (saveBtn) saveBtn.disabled = true;
+  } else {
+    showEditMessage(isSupervisor ? 'Modo supervisor: ediciones ilimitadas.' : `Tienes ${remaining} de ${MAX_CARNET_EDITS} ediciones disponibles hoy.`, 'info');
+    if (saveBtn) saveBtn.disabled = false;
+  }
 }
 
 // Discards the edit in progress and shows the saved ID card again
@@ -405,23 +440,27 @@ function openIdCardEdit() {
 
 // The Scare Meter reads from the 'perfiles' table, not from the account: the new name and monster
 // (with the title, so the Scare Meter shows it) must be copied there.
-// It tries Supabase's actualizar_perfil function first and falls back to a direct update.
-async function syncProfile(name, monster) {
-  const { error } = await supabaseClient.rpc('actualizar_perfil', { nuevo_nombre: name, nuevo_monstruo: monster });
-  if (!error) return;
-
-  const { error: updateError } = await supabaseClient
-    .from('perfiles')
-    .upsert({ id: currentUser.id, nombre: name, monstruo: monster, correo: currentUser.email }, { onConflict: 'id' });
-  if (updateError) console.warn('Could not sync the profile:', updateError);
+// p_contar_edicion: true only when saving from "Editar carnet" (enforcing the 2-per-day limit in SQL).
+async function syncProfile(name, monster, isManualEdit = false) {
+  const { error } = await supabaseClient.rpc('actualizar_perfil', {
+    nuevo_nombre: name,
+    nuevo_monstruo: monster,
+    p_contar_edicion: isManualEdit,
+  });
+  if (error) throw error;
 }
 
 async function saveEdit() {
   const name = $('#edit-name').value.trim();
   if (!name) {
-    showEditMessage('Escribe tu nombre para imprimirlo en el carnet.');
+    showEditMessage('Escribe tu nombre para imprimirlo en el carnet.', 'error');
     return;
   }
+  if (!hasCarnetEditsRemaining(currentUser)) {
+    showEditMessage('Has alcanzado el límite de 2 ediciones de carnet por hoy. Podrás volver a editarlo mañana.', 'error');
+    return;
+  }
+
   // Only a title the person already unlocked can stay
   const title = unlockedTitles(currentUser).find((t) => t.id === titleBeingEdited) || BASE_TITLE;
 
@@ -429,22 +468,26 @@ async function saveEdit() {
   const originalText = button.textContent;
   button.disabled = true;
   button.textContent = 'Guardando…';
-  $('#edit-message').hidden = true;
 
   try {
     const titleIds = unlockedTitles(currentUser).map((t) => t.id);
     const monster = { ...chosenMonster(), titulo: title.id, titulos: titleIds, carnet_estilo: cardStyleBeingEdited };
+
+    // Sync to perfiles first (enforces database-level daily limit)
+    await syncProfile(name, monster, true);
+    recordCarnetEditToday(currentUser.id);
+
     const { data, error } = await supabaseClient.auth.updateUser({
       data: { ...currentUser.user_metadata, full_name: name, monstruo: monster, titulo: title.id, titulos: titleIds, carnet_estilo: cardStyleBeingEdited },
     });
     if (error) throw error;
-    await syncProfile(name, monster);
+
     leaveEdit();
     updateSessionUi(data.user);
     // Only sustometro.html loads scare-meter.js
     if (typeof loadScareMeter === 'function') loadScareMeter();
   } catch (error) {
-    showEditMessage(translateError(error));
+    showEditMessage(translateError(error), 'error');
   } finally {
     button.disabled = false;
     button.textContent = originalText;
