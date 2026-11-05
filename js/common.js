@@ -86,3 +86,23 @@ function overlaps(a, b) {
 function findOverlapping(activity) {
   return ACTIVITIES.filter((other) => other !== activity && overlaps(other, activity));
 }
+
+// Night suspension mode (10:30 PM to 7:00 AM Colombia time, America/Bogota UTC-5)
+function isNightSuspension(date = new Date()) {
+  try {
+    const f = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Bogota',
+      hourCycle: 'h23',
+      hour: 'numeric',
+      minute: 'numeric'
+    }).formatToParts(date);
+    const h = Number(f.find((x) => x.type === 'hour')?.value || 0);
+    const m = Number(f.find((x) => x.type === 'minute')?.value || 0);
+    const mins = h * 60 + m;
+    return mins >= 1350 || mins < 420;
+  } catch (e) {
+    const utcMins = date.getUTCHours() * 60 + date.getUTCMinutes();
+    const bogotaMins = (utcMins - 300 + 1440) % 1440;
+    return bogotaMins >= 1350 || bogotaMins < 420;
+  }
+}

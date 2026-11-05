@@ -3,6 +3,33 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Night suspension mode (10:30 PM - 7:00 AM COT) -->
+  <script>
+    (function() {
+      var p = new URLSearchParams(window.location.search);
+      if (p.get("modo") === "dia" || p.get("test") === "day") return;
+      var isNight = false;
+      if (p.get("modo") === "noche" || p.get("test") === "night") {
+        isNight = true;
+      } else {
+        try {
+          var f = new Intl.DateTimeFormat("en-US", { timeZone: "America/Bogota", hourCycle: "h23", hour: "numeric", minute: "numeric" }).formatToParts(new Date());
+          var h = Number(f.find(function(x) { return x.type === "hour"; }).value || 0);
+          var m = Number(f.find(function(x) { return x.type === "minute"; }).value || 0);
+          var mins = h * 60 + m;
+          isNight = mins >= 1350 || mins < 420;
+        } catch (e) {
+          var now = new Date();
+          var utcMins = now.getUTCHours() * 60 + now.getUTCMinutes();
+          var bogotaMins = (utcMins - 300 + 1440) % 1440;
+          isNight = bogotaMins >= 1350 || bogotaMins < 420;
+        }
+      }
+      if (isNight) {
+        window.location.replace("descanso.html" + (window.location.search || ""));
+      }
+    })();
+  </script>
   <title>Sustómetro · Semana de Sistemas</title>
   <meta name="description" content="Tabla de clasificación oficial en tiempo real de la Semana de Sistemas en la Facultad de Minas.">
   <link rel="icon" href="img/favicon.svg">
