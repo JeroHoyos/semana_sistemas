@@ -25,6 +25,9 @@ function escapeHtml(text) {
 // Removes accents, so "futbol" finds "Fútbol"
 const stripAccents = (text) => text.normalize('NFD').replace(/[̀-ͯ]/g, '');
 
+// The date in Colombia as 'YYYY-MM-DD', wherever the person's device thinks it is
+const colombiaDay = (date = new Date()) => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(date);
+
 // What goes before the @ in an email
 const handleOf = (email) => (email?.includes('@') ? email.split('@')[0] : 'estudiante');
 

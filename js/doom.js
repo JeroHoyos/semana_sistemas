@@ -7,7 +7,7 @@
    it starts on the title screen with a minimal menu (New Game only), only E1M1 exists,
    there are no cheats, the player always runs and, on reaching the exit, it reports the level results.
    The time is Doom's own, in tics of 1/35 s: it skips pauses and does not depend
-   on how fast the computer is. If you die, the level (and the clock) goes back to 0.
+   on how fast the computer is. If you die the run ends: no points, and one of the day's games is gone.
    The difficulty is always Ultra-Violence (one above Doom's normal), so scores are comparable.
    The music is the original, played by Chocolate Doom's OPL player (as on a Sound Blaster).
 
@@ -28,7 +28,7 @@ const DOOM = {
   height: 200,
   mouseTurn: 3,                // how much Doom turns per pixel of mouse movement…
   touchTurn: 10,              // …and per pixel of finger swipe on the screen
-  resultsDuration: 6000,    // ms the results screen keeps running after reaching the exit
+  resultsDuration: 6000,    // ms the engine keeps running after the run ends (results screen or death)
   volume: 0.6,
 };
 
@@ -825,6 +825,7 @@ function createDoom(canvas, events = {}) {
 
     if (newFrame) paintFrame();
     if (state === 'playing' && result) finish();
+    else if (state === 'playing' && engine.exports.doom_player_dead()) endRun(false);
     rafId = requestAnimationFrame(loop);
   }
 
@@ -840,16 +841,21 @@ function createDoom(canvas, events = {}) {
   }
 
   // Reached the exit: the points come from the level results according to Doom itself.
-  // The engine keeps running for a while so the results screen can count up.
   function finish() {
     const score = doomScore(result);
     result = null;
+    points = score.points;
+    endRun(true, score.lines.join('\n'));
+  }
+
+  // At the exit or on dying. The engine keeps running for a while: the results screen counts up,
+  // or the person sees their death. Nothing they press reaches it, so the player does not respawn.
+  function endRun(won, detail) {
     releaseAll();
     state = 'over';
     endedAt = performance.now();
-    points = score.points;
     emit('onScoreChange', points);
-    emit('onEnd', points, true, score.lines.join('\n'));
+    emit('onEnd', points, won, detail);
   }
 
   // The engine died (a Doom or browser error). The next run starts a new one.
@@ -1029,9 +1035,10 @@ const DOOM_CARTRIDGE = {
   id: 'doom',
   name: 'Doom',
   scoring: 'points',
+  dailyGames: 3,
   create: (canvas, events) => createDoom(canvas, events),
   splash: {
-    text: 'Llega a la salida lo antes posible',
+    text: 'Llega a la salida. Si mueres, pierdes la partida',
     keyboardHelp: 'WASD y mouse · Clic dispara · P pausa',
     touchHelp: 'Cruceta camina · A dispara · B abre',
   },
@@ -1042,7 +1049,11 @@ const DOOM_CARTRIDGE = {
     ],
     touch: [['Cruceta', 'Caminar'], ['Deslizar la pantalla', 'Girar'], ['A', 'Disparar'], ['B', 'Abrir']],
   },
-  end: { title: 'Nivel completado', success: true },
+  end: {
+    title: 'Nivel completado',
+    success: true,
+    lost: { title: 'Has muerto', status: 'Perdiste esta partida: los puntos se ganan al llegar a la salida.' },
+  },
   buttons: { a: 'Disparar', b: 'Abrir' },
   dpad: 'diagonal',
   endDelay: 2500,   // at the exit you press Space: an extra tap must not start another run

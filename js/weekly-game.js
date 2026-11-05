@@ -9,10 +9,12 @@
    Each game brings its cartridge (SNAKE_CARTRIDGE in snake.js, DOOM_CARTRIDGE in doom.js, DEFRAG_CARTRIDGE in defrag.js):
      id, name               how it is saved in Supabase and how it shows
      scoring                'points' (highest wins)
+     dailyGames             runs per person per day (the same number goes in registrar_puntaje_juego)
      create(canvas, events) builds the run
      splash                 text, items and help of the start overlay
      controls               { keyboard, touch }: lists of [keys, what they do] shown on the pause overlay
-     end                    title of the end overlay (success: true paints it as a triumph)
+     end                    title of the end overlay (success: true paints it as a triumph);
+                            lost, optional: { title, status } when the run ends with won = false (Doom: dying)
      buttons                optional, { a, b }: A and B are game buttons while playing (without it, B does not show)
      dpad                   optional, 'diagonal': lets two directions be held at once
      endDelay               optional: ms before another run can start (and before the end overlay shows)
@@ -22,7 +24,7 @@
    press(button, pressed) and, if it needs them, halt(), look(dx, kind), tap() and setSound(on).
 
    Supabase: table puntajes_juego and functions registrar_puntaje_juego and ranking_juego
-   (supabase/weekly-game.sql). Without a session you can play, but the result does not enter the table.
+   (supabase/weekly-game.sql). The console needs a session: without one, js/auth.js hides the page.
    ============================================= */
 
 // The weeks, in order. locked: does not open yet and only supervisors see it.
@@ -98,6 +100,36 @@ const canPlay = (game) => !game.locked || isCurrentSupervisor();
 const defaultWeek = () => [...WEEKS].reverse().find((game) => !game.locked) || WEEKS[0];
 
 
+/* ---------- Games per day ----------
+   A game counts when it starts, so reloading the page does not give it back. This count lives in the
+   browser and only decides whether a game can start; what stops extra results is registrar_puntaje_juego,
+   whose answers bring this count up to date. Supervisors have no limit: they test the games. */
+
+const gamesKey = (game) => `juego_semana_games_${game.id}_${currentUser?.id}`;
+
+function gamesToday(game = cartridge) {
+  const saved = readLocal(gamesKey(game), null);
+  return saved?.day === colombiaDay() ? saved.games : 0;
+}
+
+function setGamesToday(game, games) {
+  saveLocal(gamesKey(game), { day: colombiaDay(), games });
+  if (game === cartridge) renderGames();
+}
+
+const outOfGames = () => !isCurrentSupervisor() && gamesToday() >= cartridge.dailyGames;
+
+function renderGames() {
+  const total = cartridge.dailyGames;
+  const left = total - gamesToday();
+  let text = '';
+  if (outOfGames()) text = `Ya jugaste tus ${total} partidas de hoy. Vuelve mañana.`;
+  else if (!isCurrentSupervisor()) text = `Te ${left === 1 ? 'queda' : 'quedan'} ${left} de ${total} partidas hoy`;
+  $$('.overlay__games').forEach((line) => { line.textContent = text; });
+  gameConsole.toggleAttribute('data-no-games', outOfGames());
+}
+
+
 /* ---------- Sound: 8-bit beeps with Web Audio ---------- */
 
 const sound = {
@@ -169,7 +201,7 @@ function createRun(game) {
       if (active()) $('#console-score').textContent = scoring.screen(value);
     },
     onEnd: (value, won, detail) => {
-      if (active()) finishRun(value, detail);
+      if (active()) finishRun(value, detail, won);
     },
     onStateChange: () => {
       if (!active()) {
@@ -183,6 +215,7 @@ function createRun(game) {
       if (active()) renderLoad(progress);
     },
     onError: (message) => {
+      setGamesToday(game, Math.max(0, gamesToday(game) - 1));   // the game failed (Doom did not load or crashed): it does not count
       if (active()) showNotice(message);
     },
     requestPause: () => {
@@ -203,6 +236,8 @@ const savedEnds = new Map();
 
 function saveEnd() {
   savedEnds.set(cartridge.week, {
+    title: $('#end-title').textContent,
+    success: $('#end-title').classList.contains('overlay__title--success'),
     score: $('#end-score').textContent,
     detail: $('#end-detail').textContent,
     status: $('#end-status').textContent,
@@ -214,6 +249,7 @@ function saveEnd() {
 function restoreEnd() {
   const end = savedEnds.get(cartridge.week)
     || { score: scoring.screen(0), detail: '', status: '', record: false, login: false };
+  if (end.title) showEndTitle(end.title, end.success);
   $('#end-score').textContent = end.score;
   $('#end-detail').textContent = end.detail;
   $('#end-detail').hidden = !end.detail;
@@ -247,6 +283,7 @@ function chooseWeek(game, { save = false } = {}) {
   onlineRecord = 0;
   renderSound();
   renderRecord();
+  renderGames();
   renderState();
   renderWeeks();
   run.resize();
@@ -291,6 +328,11 @@ function mainButton() {
   } else if (run.state === 'paused') {
     run.resume();
   } else {
+    if (outOfGames()) {
+      sound.play('locked');
+      return;
+    }
+    setGamesToday(cartridge, gamesToday() + 1);
     showNotice('');
     run.start();
     showWholeConsole();
@@ -314,13 +356,20 @@ function pauseIfPlaying() {
   renderState();
 }
 
+function showEndTitle(title, success) {
+  $('#end-title').textContent = title;
+  $('#end-title').classList.toggle('overlay__title--success', Boolean(success));
+}
+
 // detail: more lines for the end overlay (Doom: the points of each factor)
-async function finishRun(score, detail = '') {
+async function finishRun(score, detail = '', won = true) {
   const game = cartridge;
   const gameScoring = scoringOf(game);
+  const lost = won ? null : game.end?.lost;
   runEndedAt = performance.now();
   releaseControls();
   renderState();
+  showEndTitle(lost?.title || game.end?.title || 'Fin del juego', won && game.end?.success);
   $('#end-score').textContent = gameScoring.screen(score);
   $('#end-detail').textContent = detail;
   $('#end-detail').hidden = !detail;
@@ -330,7 +379,7 @@ async function finishRun(score, detail = '') {
   renderRecord();
 
   if (score <= 0) {
-    writeEnd(game.end?.noPoints || 'Sin puntos esta vez. ¡Otra!');
+    writeEnd(lost?.status || game.end?.noPoints || 'Sin puntos esta vez. ¡Otra!');
     return;
   }
 
@@ -371,13 +420,19 @@ async function saveScore(score, game = cartridge) {
 
   if (error) {
     console.error('Could not save the result:', error);
-    const locked = String(error.message || '').includes('Semana bloqueada');
-    writeEnd(locked
+    const reason = String(error.message || '');
+    if (reason.includes('Limite diario')) {
+      setGamesToday(game, game.dailyGames);   // they played on another device: this one finds out now
+      writeEnd(`Ya guardaste tus ${game.dailyGames} partidas de hoy: esta no entra a la tabla.`, false, game);
+      return;
+    }
+    writeEnd(reason.includes('Semana bloqueada')
       ? 'Esta semana todavía está bloqueada: solo se guardan los resultados de los supervisores.'
       : `No se pudo guardar tu ${gameScoring.name}. Intenta otra partida en un rato.`, false, game);
     return;
   }
 
+  if (data?.partidas_hoy > gamesToday(game)) setGamesToday(game, data.partidas_hoy);
   if (game === cartridge && data?.mejor) {
     onlineRecord = data.mejor;
     renderRecord();
@@ -917,6 +972,7 @@ try {
 // (to mark "tú") and, if there were unsaved results, save them
 document.addEventListener('idcard:session', async () => {
   checkWeeks();
+  renderGames();
   if (currentUser && pending.size) {
     const toSave = [...pending];
     pending.clear();

@@ -6,11 +6,11 @@
 
    Points (the same ones that go to the leaderboard): each row cleared is worth 50, whatever the level
    or how many go at once. Dropping a piece gives nothing, so every score is a multiple of 50.
-   Every 10 rows the level goes up: pieces fall faster and the music speeds up.
+   Every 5 rows the level goes up: pieces fall faster and the music speeds up.
 
    Pieces come from a bag of all seven (no long droughts of the one you need), rotate with
    the same rules as modern block games (if they collide on rotation, they try shifting a little),
-   and wait half a second on the floor before locking. Everything runs on time, not frames:
+   and wait a moment on the floor before locking. Everything runs on time, not frames:
    speed does not depend on the computer, so leaderboard scores are comparable.
 
    The music is an original 8-bit song played with Web Audio (pulse, triangle and noise).
@@ -25,12 +25,13 @@ const DEFRAG = {
   cell: 6,                 // units per cell: the screen is 192 × 144 units and scales
   width: 192,
   height: 144,
-  rowsPerLevel: 10,
+  rowsPerLevel: 5,
   maxLevel: 20,
+  headStart: 4,            // level 1 already falls like level 5 of the usual speed curve
   das: 170,                // ms to hold left or right before the piece auto-repeats…
   arr: 40,                 // …and how many ms between cells while it repeats
-  lockDelay: 500,            // ms a piece can stay on the floor before locking
-  lockResets: 15,    // times that moving or rotating it on the floor gives that half second back
+  lockDelay: 250,            // ms a piece can stay on the floor before locking
+  lockResets: 5,    // times that moving or rotating it on the floor gives that time back
   clearDuration: 320,   // ms that full rows blink before being removed
   fillDuration: 1100,   // ms the well takes to turn gray on losing
   volume: 0.45,
@@ -471,8 +472,8 @@ function createDefrag(canvas, events = {}) {
     spawn(nextFromQueue());
   }
 
-  // On the floor, moving or rotating it gives back the half second before locking (up to 15 times).
-  // If it gets lower than ever, the 15 come back.
+  // On the floor, moving or rotating it gives back the time before locking (up to lockResets times).
+  // If it gets lower than ever, they all come back.
   function afterMove() {
     if (piece.y > lowestRow) {
       lowestRow = piece.y;
@@ -620,8 +621,11 @@ function createDefrag(canvas, events = {}) {
     audio.speed((1 + 0.035 * (level - 1)) * urgency);
   }
 
-  // Milliseconds to fall one cell, as in modern block games (1 s at level 1)
-  const gravity = () => Math.pow(0.8 - (level - 1) * 0.007, level - 1) * 1000;
+  // Milliseconds to fall one cell, as in modern block games but with a head start (355 ms at level 1)
+  function gravity() {
+    const speed = level - 1 + DEFRAG.headStart;
+    return Math.pow(0.8 - speed * 0.007, speed) * 1000;
+  }
 
   function prepare() {
     well = Array.from({ length: TOTAL_ROWS }, () => Array(COLUMNS).fill(null));
@@ -1044,6 +1048,7 @@ const DEFRAG_CARTRIDGE = {
   id: 'defrag',
   name: 'Defrag',
   scoring: 'points',
+  dailyGames: 10,
   create: (canvas, events) => createDefrag(canvas, events),
   splash: {
     text: 'Completa filas y libera la memoria',
