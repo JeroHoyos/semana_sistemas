@@ -122,6 +122,14 @@
     check('code attempt blocked above 3 fails', isCodeAttemptAllowed(4), false);
     check('supervisor bypasses code attempts limit', isCodeAttemptAllowed(5, true), true);
 
+    // Night suspension schedule (10:30 PM to 7:00 AM Colombia time, America/Bogota UTC-5)
+    check('suspension before 22:30', isNightSuspension(new Date('2026-11-05T03:29:00Z')), false);
+    check('suspension at 22:30', isNightSuspension(new Date('2026-11-05T03:30:00Z')), true);
+    check('suspension at midnight', isNightSuspension(new Date('2026-11-05T05:00:00Z')), true);
+    check('suspension at 06:59', isNightSuspension(new Date('2026-11-05T11:59:00Z')), true);
+    check('suspension ends at 07:00', isNightSuspension(new Date('2026-11-05T12:00:00Z')), false);
+    check('suspension noon', isNightSuspension(new Date('2026-11-05T17:00:00Z')), false);
+
     document.getElementById('result').textContent = failures.length ? `FAILED\n${failures.join('\n')}` : 'ALL PASSED';
   </script>
 </body>
