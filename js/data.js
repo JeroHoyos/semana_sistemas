@@ -102,12 +102,12 @@ const ACTIVITIES = [
       'A través de ejemplos prácticos y situaciones del mundo tecnológico, reflexionaremos sobre cómo se conectan los conocimientos adquiridos en la universidad con los desafíos de la industria y qué pueden hacer los estudiantes, desde cualquier semestre, para prepararse para su futuro profesional.\n' +
       'Una invitación a mirar más allá del código y descubrir cómo construir una carrera en la que la tecnología, el criterio y las habilidades humanas trabajen juntos.',
     decorations: ['gradCap', 'helmet', 'database'] },
-  { id: 'taller-aperture', day: 'wed', start: '14:00', end: '15:00', type: 'workshop', title: 'De Prompts a Agentes: Inteligencia Artificial Agéntica con Python', organizer: 'aperture', place: 'Aula M3-224',
+  { id: 'taller-aperture', day: 'wed', start: '14:00', end: '16:00', type: 'workshop', title: 'De Prompts a Agentes: Inteligencia Artificial Agéntica con Python', organizer: 'aperture', place: 'Aula M3-224',
     description: '¿Qué pasa cuando un LLM deja de solo responder y empieza a actuar?\n' +
       'En este taller veremos cómo crear un agente, hacerlo más capaz y llevarlo a producción. Lo haremos con LangChain, uno de los frameworks de Python más usados para construir aplicaciones y agentes con LLMs.\n' +
       '¡Ven a descubrir cómo funciona un agente!',
     decorations: ['terminal', 'robot', 'lightning'] },
-  { id: 'taller-llm', day: 'wed', start: '15:00', end: '16:30', type: 'workshop', title: 'Agentes de IA para todos - Todo lo que necesitas saber', speaker: 'yohan', organizer: 'turing-box', place: 'Aula M3-224',
+  { id: 'taller-llm', day: 'wed', start: '12:00', end: '14:00', type: 'workshop', title: 'Agentes de IA para todos - Todo lo que necesitas saber', speaker: 'yohan', organizer: 'turing-box', place: 'Aula M3-224',
     description: 'La inteligencia artificial pasó de responder preguntas a ejecutar tareas: crear archivos, revisar su propio trabajo, conectarse con otras herramientas y seguir procedimientos. A esto se le llama agente. En este taller vas a entender qué hay detrás de un agente y vas a trabajar con uno en clase.',
     rules: [
       { title: 'Primera parte', text: 'Qué es un LLM y por qué “solo sabe lo que ve”. Cómo un chat se convierte en un agente: el bucle de pensar, actuar y verificar. Harness engineering: todo lo que rodea al modelo para que trabaje bien y de forma segura. Herramientas, MCP y skills: cómo se le dan nuevas capacidades a un agente. Opciones gratuitas, buenas prácticas y riesgos.' },
