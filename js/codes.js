@@ -66,6 +66,10 @@ function renderCollection() {
   progress.hidden = false;
   progress.firstElementChild.style.width = `${(unlocked.size / TITLES.length) * 100}%`;
 
+  if (isWrongCodesBlocked(currentUser.id)) {
+    showCodeMessage('Has alcanzado el límite de 3 códigos erróneos por hoy. Podrás intentar de nuevo mañana.', 'error');
+  }
+
   list.innerHTML = TITLES.map((title) => {
     const limited = title.limit ? `<span class="title-item__limit">Solo ${title.limit}</span>` : '';
 
@@ -113,6 +117,32 @@ renderCollection();   // auth.js may have notified before this file loaded
 
 
 /* ---------- Redeeming ---------- */
+
+// Maximum 3 wrong code attempts per person per day
+const MAX_DAILY_WRONG_CODES = 3;
+
+function wrongCodesKey(userId) {
+  return `semana_sistemas_codigos_erroneos_${userId}_${colombiaDay()}`;
+}
+
+function getWrongCodesToday(userId) {
+  if (!userId) return 0;
+  return Number(localStorage.getItem(wrongCodesKey(userId))) || 0;
+}
+
+function recordWrongCodeToday(userId) {
+  if (!userId) return 0;
+  const key = wrongCodesKey(userId);
+  const count = getWrongCodesToday(userId) + 1;
+  localStorage.setItem(key, String(count));
+  return count;
+}
+
+function isWrongCodesBlocked(userId) {
+  if (!userId) return false;
+  if (typeof isCurrentSupervisor === 'function' && isCurrentSupervisor()) return false;
+  return getWrongCodesToday(userId) >= MAX_DAILY_WRONG_CODES;
+}
 
 // After 5 wrong codes in a row it waits half a minute: this stops trying them one by one by hand
 const MAX_ATTEMPTS = 5;
@@ -412,6 +442,10 @@ $('#codes-form').addEventListener('submit', async (event) => {
     showCodeMessage(`Demasiados intentos. Espera ${left} segundos y prueba de nuevo.`, 'error');
     return;
   }
+  if (isWrongCodesBlocked(currentUser.id)) {
+    showCodeMessage('Has alcanzado el límite de 3 códigos erróneos por hoy. Podrás intentar de nuevo mañana.', 'error');
+    return;
+  }
 
   const button = $('#codes-button');
   const buttonText = button.querySelector('span');
@@ -424,13 +458,21 @@ $('#codes-form').addEventListener('submit', async (event) => {
     const edit = { text: 'Editar mi carnet', onClick: openIdCardEdit };
 
     if (status === 'invalid') {
+      const failsToday = recordWrongCodeToday(currentUser.id);
+      const remaining = Math.max(0, MAX_DAILY_WRONG_CODES - failsToday);
+
+      if (failsToday >= MAX_DAILY_WRONG_CODES) {
+        showCodeMessage('Ese código no existe. Has alcanzado el límite de 3 intentos erróneos por hoy. Podrás intentar de nuevo mañana.', 'error');
+        return;
+      }
+
       failedAttempts++;
       if (failedAttempts >= MAX_ATTEMPTS) {
         failedAttempts = 0;
         blockedUntil = Date.now() + WAIT_SECONDS * 1000;
-        showCodeMessage(`Ese código no existe. Demasiados intentos: espera ${WAIT_SECONDS} segundos.`, 'error');
+        showCodeMessage(`Ese código no existe. Demasiados intentos: espera ${WAIT_SECONDS} segundos. Te queda${remaining === 1 ? '' : 'n'} ${remaining} intento${remaining === 1 ? '' : 's'} hoy.`, 'error');
       } else {
-        showCodeMessage('Ese código no existe. Revisa que esté bien escrito.', 'error');
+        showCodeMessage(`Ese código no existe. Revisa que esté bien escrito. Te queda${remaining === 1 ? '' : 'n'} ${remaining} intento${remaining === 1 ? '' : 's'} hoy.`, 'error');
       }
       return;
     }
