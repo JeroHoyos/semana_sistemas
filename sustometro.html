@@ -41,15 +41,25 @@
       <p class="scare-meter-hero__intro">
         Aquí no hay puestos, hay sustos. Quien va de líder deja el tanque lleno hasta arriba y, a medida que bajas en la tabla, el nivel desciende. Toca a una persona para ver sus puntos en el tanque, o el botón del carnet para ver su carnet.
       </p>
-      <a class="game-link" href="#juego-semana">
+      <a class="game-link" href="#juego-semana" data-needs-login hidden>
         <span class="game-link__arrow" aria-hidden="true">▶</span>
         Juego de la semana: <strong id="game-link-name">Snake</strong>
       </a>
     </div>
   </header>
 
+  <!-- Without a session the page only shows this gate: js/auth.js swaps it for what has data-needs-login -->
+  <section class="login-gate" id="login-gate" hidden>
+    <h2 class="login-gate__title">Solo para asustadores con carnet</h2>
+    <p class="login-gate__text">Inicia sesión o crea tu carnet con tu correo UNAL para entrar al Sustómetro.</p>
+    <div class="login-gate__actions">
+      <button class="hero__button auth-form__submit" id="gate-login" type="button">Iniciar sesión</button>
+      <button class="hero__button auth-form__submit" id="gate-signup" type="button">Crear carnet</button>
+    </div>
+  </section>
+
   <!-- MAIN BODY, 2 COLUMNS -->
-  <main class="scare-meter-main">
+  <main class="scare-meter-main" data-needs-login hidden>
     <div class="container scare-meter-layout">
 
       <!-- LEFT COLUMN: THE SCARE TANK -->
@@ -325,6 +335,7 @@
                 <p class="overlay__text" id="start-text"></p>
                 <div class="overlay__items" id="start-items"></div>
                 <p class="overlay__status overlay__status--notice" id="start-notice" role="alert" hidden></p>
+                <p class="overlay__games"></p>
                 <p class="overlay__blink"><span class="keyboard-only">Clic o Espacio</span><span class="touch-only">Presiona A</span></p>
                 <p class="overlay__help"><span class="keyboard-only" id="keyboard-help"></span><span class="touch-only" id="touch-help"></span></p>
               </div>
@@ -349,6 +360,7 @@
                 <p class="overlay__detail" id="end-detail" hidden></p>
                 <p class="overlay__status" id="end-status" role="status" aria-live="polite"></p>
                 <button class="overlay__button" id="end-login" type="button" hidden>Ingresar</button>
+                <p class="overlay__games"></p>
                 <p class="overlay__blink"><span class="keyboard-only">Espacio para otra</span><span class="touch-only">A para otra</span></p>
               </div>
             </div>
@@ -407,7 +419,7 @@
   <!-- FOOTER -->
   <footer class="site-footer">
     <!-- CODES: redeemed for ID card titles (js/codes.js) -->
-    <div class="codes" id="codigos">
+    <div class="codes" id="codigos" data-needs-login hidden>
       <p class="section-title__eyebrow">Easter eggs y premios</p>
       <h2 class="codes__title">¿Tienes un código?</h2>
       <p class="codes__intro">Cada vez que ganes un código (por encontrar un easter egg, por una competencia…) escríbelo aquí para desbloquear un título nuevo. Luego lo eliges en <strong>Editar carnet</strong>.</p>

@@ -42,7 +42,17 @@
     </div>
   </header>
 
-  <main class="event container">
+  <!-- Without a session the page only shows this gate: js/auth.js swaps it for what has data-needs-login -->
+  <section class="login-gate" id="login-gate" hidden>
+    <h2 class="login-gate__title">Solo para asustadores con carnet</h2>
+    <p class="login-gate__text">Inicia sesión o crea tu carnet con tu correo UNAL para inscribirte a las competencias.</p>
+    <div class="login-gate__actions">
+      <button class="hero__button auth-form__submit" id="gate-login" type="button">Iniciar sesión</button>
+      <button class="hero__button auth-form__submit" id="gate-signup" type="button">Crear carnet</button>
+    </div>
+  </section>
+
+  <main class="event container" data-needs-login hidden>
     <article class="event__card">
       <!-- One tab per competition with teams (registrations.js fills it) -->
       <div class="schedule__days registration__tabs" id="registration-tabs"></div>

@@ -467,6 +467,16 @@ function hideAuthMessage() {
   message.textContent = '';
 }
 
+// Pages that need a session keep what has data-needs-login hidden until they know there is one.
+// shortcut: this only hides the page; what Supabase gives anon stays public, revoke it there to close it.
+function showLoginGate(locked) {
+  $('#login-gate')?.toggleAttribute('hidden', !locked);
+  $$('[data-needs-login]').forEach((element) => { element.hidden = locked; });
+}
+
+$('#gate-login')?.addEventListener('click', () => { setAuthMode(false); $('#auth-modal').showModal(); });
+$('#gate-signup')?.addEventListener('click', () => { setAuthMode(true); $('#auth-modal').showModal(); });
+
 // With a session, the dialog shows the person's ID card; without one, the form
 function updateSessionUi(user) {
   currentUser = user;
@@ -479,6 +489,7 @@ function updateSessionUi(user) {
       });
       return;
     }
+    showLoginGate(false);
 
     // Check for pending monster from signup or initialize first-time OAuth profile
     const pendingRaw = localStorage.getItem('semana_sistemas_pending_monster');
@@ -532,6 +543,7 @@ function updateSessionUi(user) {
     if (!editing) showProfile(user);
     checkVeteranReward(user);
   } else {
+    showLoginGate(true);
     leaveEdit();
     showForm();
   }

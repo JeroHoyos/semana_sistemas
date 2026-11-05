@@ -2756,6 +2756,21 @@ button { font: inherit; color: inherit; cursor: pointer; }
   text-shadow: 0 1px 8px rgba(0, 0, 0, .35);
 }
 
+/* What a page that needs a session shows without one (showLoginGate in js/auth.js) */
+.login-gate {
+  width: min(520px, 100% - 32px);
+  margin: 40px auto 56px;
+  padding: 30px 32px 34px;
+  background: #fff;
+  border-radius: 30px;
+  box-shadow: 0 24px 50px -26px rgba(10, 44, 82, .5);
+  text-align: center;
+}
+.login-gate__title { margin: 0; font-family: var(--font-title); font-size: 24px; font-weight: 400; line-height: 1.2; color: var(--navy); }
+.login-gate__text { margin: 12px 0 18px; line-height: 1.6; color: var(--ink-soft); }
+.login-gate__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.login-gate__actions .hero__button { width: auto; flex: 1 1 170px; }
+
 /* Main 2-column layout */
 .scare-meter-main {
   padding: 40px 0 48px;
@@ -5123,6 +5138,11 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 }
 .overlay__status--record { color: #ffd23f; animation: blink .5s steps(1) 6; }
 .overlay__status--notice { color: #ff8a8a; }
+/* Games left today; with none left, the prompt to start goes away */
+.overlay__games { max-width: 92%; font-size: clamp(7px, 1.8cqw, 11px); line-height: 1.6; color: #ffd23f; }
+.overlay__games:empty { display: none; }
+.console[data-no-games] .overlay--start .overlay__blink,
+.console[data-no-games] .overlay--over .overlay__blink { display: none; }
 /* More lines with run details (Doom: the points of each factor, one per line and lined up in columns) */
 .overlay__detail { font-size: clamp(7px, 1.8cqw, 11px); line-height: 1.6; color: #7d8bb0; white-space: pre; text-align: left; }
 .overlay__button {
