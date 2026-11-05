@@ -80,6 +80,10 @@
     check('banner four letters', drawBanner({ letras: 'ΣΣΚΑΒ' }).includes('>ΣΣΚΑ</text>'), true);
     check('banner good colors', drawBanner({ fondo: '#2f8f5b', tinta: '#f5c814' }).includes('fill="#f5c814"'), true);
 
+    // The games of the day reset at midnight in Colombia (UTC-5), like registrar_puntaje_juego counts them
+    check('colombia before midnight', colombiaDay(new Date('2026-11-05T04:59:00Z')), '2026-11-04');
+    check('colombia after midnight', colombiaDay(new Date('2026-11-05T05:00:00Z')), '2026-11-05');
+
     check('handle', handleOf('ana@unal.edu.co'), 'ana');
     check('accents', stripAccents('Fútbol'), 'Futbol');
 

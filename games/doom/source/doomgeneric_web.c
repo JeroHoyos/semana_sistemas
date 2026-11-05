@@ -131,6 +131,12 @@ EXPORT("doom_in_menu") int doom_in_menu(void)
     return menuactive ? 1 : 0;
 }
 
+// 1 if the player is dead: the page asks after each frame, because dying ends the run
+EXPORT("doom_player_dead") int doom_player_dead(void)
+{
+    return gamestate == GS_LEVEL && players[consoleplayer].playerstate == PST_DEAD ? 1 : 0;
+}
+
 // Runs the game up to the clock's current tic (35 tics per second).
 // Returns 0 if no new tic is due yet: this way the engine never stays waiting.
 EXPORT("doom_tick") int doom_tick(void)
@@ -199,6 +205,8 @@ EXPORT("doom_restart") void doom_restart(void)
     mouse_dx = 0;
     mouse_buttons = 0;
     mouse_pending = 1;
+    // The new game only applies on the next tic: until then the page must not see the old death
+    players[consoleplayer].playerstate = PST_LIVE;
     DG_NewGame();
 }
 
@@ -214,7 +222,7 @@ void *I_Realloc(void *ptr, size_t size)
     return grown;
 }
 
-// Tics of the level so far. They only advance during play; on dying, the level starts again at 0.
+// Tics of the level so far. They only advance during play.
 EXPORT("doom_time") int doom_time(void)
 {
     return leveltime;

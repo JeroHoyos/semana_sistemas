@@ -21,7 +21,8 @@ The engine is [doomgeneric](https://github.com/ozkl/doomgeneric) (based on Choco
 - Does not let another level load: `G_InitNew` and `G_DoLoadLevel` always use episode 1, map 1, and after the results screen it does not go on to E1M2.
 - Removes the cheats (`iddqd`, `idclip`, `idclev`…).
 - Makes the player always run, the same for everyone and also on phones.
-- On reaching the exit it calls `DG_LevelCompleted` with the kills, items and secrets (each with its total) and the level time (`leveltime`, in tics of 1/35 of a second). It is the same time Doom shows on the results screen: it skips pauses and does not depend on the computer's speed. If you die, the level and the time start over.
+- On reaching the exit it calls `DG_LevelCompleted` with the kills, items and secrets (each with its total) and the level time (`leveltime`, in tics of 1/35 of a second). It is the same time Doom shows on the results screen: it skips pauses and does not depend on the computer's speed.
+- Dying ends the run: `doomgeneric_web.c` exports `doom_player_dead` and the page asks after each frame, so the player never respawns. That run gives no points and costs one of the day's games.
 - Removes the "melt" between screens, because it is a loop that does not give control back to the browser.
 - Uses the OPL music from [Chocolate Doom](https://github.com/chocolate-doom/chocolate-doom) 3.0.1 (`i_oplmusic.c`, `midifile.c` and the Nuked OPL3 emulator): it sounds like a 1993 Sound Blaster, with the instruments in the WAD itself.
 

@@ -845,8 +845,11 @@ if (isIndividual()) {
   loadFreeAgents();
 }
 
-if (location.hash === '#buscando-equipo') {
+// The section only shows with a session (js/auth.js), so the link from the home page waits for it
+document.addEventListener('idcard:session', function scrollToPool() {
+  if (!currentUser || location.hash !== '#buscando-equipo') return;
+  document.removeEventListener('idcard:session', scrollToPool);
   setTimeout(() => {
     $('#buscando-equipo')?.scrollIntoView({ behavior: 'smooth' });
   }, 250);
-}
+});

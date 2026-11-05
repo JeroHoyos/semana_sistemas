@@ -9,6 +9,9 @@
 --   'doom'   (week 2, locked for now): up to 1000 for enemies, items, secrets and time in E1M1.
 --   'defrag' (week 3, locked for now): 50 per row.
 --
+-- Each person saves at most 10 results per day in Snake and Defrag and 3 in Doom (the day is Colombia's).
+-- To change a limit, change it in registrar_puntaje_juego and in dailyGames of the game's cartridge (js/).
+--
 -- Doom used to be a speedrun (its time in tics) and Defrag gave other points. If the table still has
 -- results from then (supervisors' tests), delete them ONCE so they do not beat the new ones:
 --   delete from public.puntajes_juego where juego in ('doom', 'defrag');
@@ -29,6 +32,9 @@ create table if not exists public.puntajes_juego (
   ultima_partida timestamptz not null default now(),
   primary key (usuario_id, juego)
 );
+
+-- Results saved on the day of ultima_partida
+alter table public.puntajes_juego add column if not exists partidas_hoy integer not null default 0;
 
 create index if not exists puntajes_juego_ranking
   on public.puntajes_juego (juego, mejor_puntaje desc, logrado_en);
@@ -74,7 +80,8 @@ $$;
 
 
 -- ---------- Saving the result of a run ----------
--- Returns { mejor: <the person's best result>, record: <true if this run improved it> }
+-- Returns { mejor: <the person's best result>, record: <true if this run improved it>,
+-- partidas_hoy: <results saved today> }
 create or replace function public.registrar_puntaje_juego(p_juego text, p_puntaje integer)
 returns json
 language plpgsql
@@ -82,12 +89,15 @@ security definer
 set search_path = public
 as $$
 declare
-  v_usuario    uuid := auth.uid();
-  v_minimo     integer;
-  v_maximo     integer;
-  v_multiplo   integer := 1;   -- every score of the game is a multiple of this
-  v_anterior   integer;
-  v_mejor      integer;
+  v_usuario      uuid := auth.uid();
+  v_hoy          date := (now() at time zone 'America/Bogota')::date;
+  v_minimo       integer;
+  v_maximo       integer;
+  v_multiplo     integer := 1;   -- every score of the game is a multiple of this
+  v_limite_dia   integer;        -- results per person per day
+  v_anterior     integer;
+  v_mejor        integer;
+  v_partidas_hoy integer;
 begin
   if v_usuario is null then
     raise exception 'Inicia sesión para guardar tu puntaje';
@@ -105,15 +115,18 @@ begin
       v_minimo := 10;
       v_maximo := 3000;
       v_multiplo := 10;
+      v_limite_dia := 10;
     -- Doom E1M1: 400 enemies + 200 items + 200 secrets + 200 time (doomScore in js/doom.js)
     when 'doom' then
       v_minimo := 1;
       v_maximo := 1000;
+      v_limite_dia := 3;
     -- Defrag: 50 per row; not even hours at the top level reach 10 million
     when 'defrag' then
       v_minimo := 50;
       v_maximo := 9999950;
       v_multiplo := 50;
+      v_limite_dia := 10;
     else
       raise exception 'Juego desconocido: %', p_juego;
   end case;
@@ -132,23 +145,36 @@ begin
     return json_build_object('error', '🤡 Trampa detectada: tu cuenta ahora tiene Licencia de Payaso.');
   end if;
 
-  select mejor_puntaje into v_anterior
+  -- for update: two results at the same moment cannot both take the last game of the day
+  select mejor_puntaje,
+         case when (ultima_partida at time zone 'America/Bogota')::date = v_hoy then partidas_hoy else 0 end
+    into v_anterior, v_partidas_hoy
   from puntajes_juego
-  where usuario_id = v_usuario and juego = p_juego;
+  where usuario_id = v_usuario and juego = p_juego
+  for update;
+
+  v_partidas_hoy := coalesce(v_partidas_hoy, 0) + 1;
+
+  -- Supervisors have no limit: they test the games
+  if v_partidas_hoy > v_limite_dia and not es_supervisor() then
+    raise exception 'Limite diario';
+  end if;
 
   v_mejor := greatest(coalesce(v_anterior, 0), p_puntaje);
 
-  insert into puntajes_juego as p (usuario_id, juego, mejor_puntaje, partidas)
-  values (v_usuario, p_juego, p_puntaje, 1)
+  insert into puntajes_juego as p (usuario_id, juego, mejor_puntaje, partidas, partidas_hoy)
+  values (v_usuario, p_juego, p_puntaje, 1, 1)
   on conflict (usuario_id, juego) do update set
     partidas       = p.partidas + 1,
+    partidas_hoy   = v_partidas_hoy,
     ultima_partida = now(),
     mejor_puntaje  = v_mejor,
     logrado_en     = case when v_mejor <> p.mejor_puntaje then now() else p.logrado_en end;
 
   return json_build_object(
-    'mejor',  v_mejor,
-    'record', v_anterior is null or v_mejor <> v_anterior
+    'mejor',        v_mejor,
+    'record',       v_anterior is null or v_mejor <> v_anterior,
+    'partidas_hoy', v_partidas_hoy
   );
 end;
 $$;
