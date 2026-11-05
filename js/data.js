@@ -45,7 +45,6 @@ const ACTIVITY_TYPES = {
 // (LinkedIn or web page: shown as "Saber más" on their talk's page)
 // and unconfirmed: true (their ID card gets the "Por confirmar" stamp and their talk a notice)
 const SPEAKERS = [
-  { id: 'eduardo', name: null, role: 'Charla de apertura', credential: 'Invitado', color: '#f2a33a' },
   { id: 'mariano', name: 'Mariano Sosa', role: 'Ingeniero de datos y docente', credential: 'Ponente', color: '#8b5fd6',
     photo: 'img/speaker-mariano-sosa.jpg',
     bio: 'Soy ingeniero de datos en Lovelytics, donde he participado en proyectos de arquitectura y gobierno de plataformas de datos, migración de información y desarrollo de pipelines en Azure y Databricks para empresas de los sectores de seguros, salud y servicios financieros. Paralelamente, me dedico a la formación en análisis de datos donde acompaño a estudiantes en el desarrollo de sus habilidades técnicas.\n' +
@@ -91,7 +90,7 @@ const GROUPS = [
 // and decorations (three pixel art drawings from js/pixel-art.js for its page header; the middle one sits higher).
 const ACTIVITIES = [
   // Wednesday
-  { id: 'inaugural', day: 'wed', start: '09:00', end: '10:00', type: 'talk', title: 'Conferencia inaugural', speaker: 'eduardo', place: 'Aula Máxima',
+  { id: 'inaugural', day: 'wed', start: '09:00', end: '10:00', type: 'talk', title: 'Conferencia inaugural', place: 'Aula Máxima',
     description: 'La charla de apertura aún no está definida.',
     decorations: ['flag', 'microphone', 'rocket'] },
   { id: 'feria', day: 'wed', start: '09:00', end: '12:00', type: 'social', title: 'Feria de stands', place: 'Hall M10',
