@@ -422,7 +422,7 @@ function teamCard(team, manage = false) {
 /* ---------- Reading and changing data ---------- */
 
 async function loadTeams() {
-  if (isIndividual()) return;
+  if (!currentUser || isIndividual()) return;
   const { data, error } = await supabaseClient.rpc('equipos_inscritos');
   if (error) console.error('Could not load the teams:', error);
   loadFailed = Boolean(error);
@@ -431,7 +431,7 @@ async function loadTeams() {
 }
 
 async function loadFreeAgents() {
-  if (isIndividual()) return;
+  if (!currentUser || isIndividual()) return;
   const { data, error } = await supabaseClient.rpc('personas_buscando_equipo', { p_actividad: shownActivity.id });
   if (error) console.error('Could not load the free agents:', error);
   loadFreeAgentsFailed = Boolean(error);
@@ -441,7 +441,7 @@ async function loadFreeAgents() {
 }
 
 async function loadIndividualRegistrations() {
-  if (!isIndividual()) return;
+  if (!currentUser || !isIndividual()) return;
   const { data, error } = await supabaseClient.rpc('inscritos_individuales', { p_actividad: shownActivity.id });
   if (error) console.error('Could not load individual registrations:', error);
   loadIndividualFailed = Boolean(error);
@@ -838,12 +838,30 @@ $('#find-team-eye-icon').innerHTML = drawPixelArt(PIXEL_ART.magnifier);
 $('#footer-crest').innerHTML = drawCrest();
 render();
 
-if (isIndividual()) {
-  loadIndividualRegistrations();
-} else {
-  loadTeams();
-  loadFreeAgents();
+function loadActivityData() {
+  if (!currentUser) return;
+  if (isIndividual()) {
+    loadIndividualRegistrations();
+  } else {
+    loadTeams();
+    loadFreeAgents();
+  }
 }
+
+if (currentUser) {
+  loadActivityData();
+}
+
+document.addEventListener('idcard:session', () => {
+  if (currentUser) {
+    loadActivityData();
+  } else {
+    teams = null;
+    freeAgents = null;
+    individualRegistrations = null;
+    render();
+  }
+});
 
 // The section only shows with a session (js/auth.js), so the link from the home page waits for it
 document.addEventListener('idcard:session', function scrollToPool() {

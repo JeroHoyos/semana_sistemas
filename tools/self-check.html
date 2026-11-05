@@ -87,6 +87,18 @@
     check('handle', handleOf('ana@unal.edu.co'), 'ana');
     check('accents', stripAccents('Fútbol'), 'Futbol');
 
+    // Secret titles and rewards
+    check('franco impero title', findTitle('franco-impero')?.name, 'Franco Impero 🇮🇹');
+    check('smoking accessory svg', drawCustomMonster({ accesorio: 'smoking' }).includes('monster-smoking'), true);
+
+    // Carnet daily edit limit logic
+    const canEdit = (edits, isSupervisor = false) => isSupervisor || edits < 2;
+    check('carnet edits allowed under limit', canEdit(0), true);
+    check('carnet edits allowed 1', canEdit(1), true);
+    check('carnet edits blocked at limit', canEdit(2), false);
+    check('carnet edits blocked above limit', canEdit(3), false);
+    check('supervisor bypasses carnet limit', canEdit(5, true), true);
+
     document.getElementById('result').textContent = failures.length ? `FAILED\n${failures.join('\n')}` : 'ALL PASSED';
   </script>
 </body>

@@ -198,6 +198,10 @@ function renderRanking(people, query = '') {
       titleTag = `<span class="scarer-card__title-tag scarer-card__title-tag--konami">${text}</span>`;
     } else if (title.id === 'supervisor') {
       titleTag = `<span class="scarer-card__title-tag scarer-card__title-tag--supervisor">👑 Admin</span>`;
+    } else if (title.id === 'qr-gang') {
+      titleTag = `<span class="scarer-card__title-tag scarer-card__title-tag--qrgang">${text}</span>`;
+    } else if (title.id === 'franco-impero') {
+      titleTag = `<span class="scarer-card__title-tag scarer-card__title-tag--franco">${text}</span>`;
     }
 
     const medal = clown ? null : (person.medalla ?? medalForTier(person.puesto_medalla));
@@ -275,6 +279,7 @@ function showIdCardOf(index) {
 }
 
 async function loadScareMeter() {
+  if (!currentUser) return; // Do not load ranking without an authenticated session
   if (isLoadingRanking) return;
   isLoadingRanking = true;
   try {
@@ -547,46 +552,73 @@ $('#easter-egg-modal').addEventListener('click', (event) => {
   if (event.target === $('#easter-egg-modal')) $('#easter-egg-modal').close();
 });
 
-// Supabase real-time subscription
-try {
-  let realtimeDebounceTimer = null;
-  let reloadPendingOnVisible = false;
+// Supabase real-time subscription (only active when logged in)
+let realtimeChannel = null;
+let realtimeDebounceTimer = null;
+let reloadPendingOnVisible = false;
 
-  function scheduleRealtimeReload() {
-    clearTimeout(realtimeDebounceTimer);
-    if (document.hidden) {
-      reloadPendingOnVisible = true;
-      return;
-    }
-    realtimeDebounceTimer = setTimeout(() => {
-      loadScareMeter();
-    }, 5000);
+function scheduleRealtimeReload() {
+  if (!currentUser) return;
+  clearTimeout(realtimeDebounceTimer);
+  if (document.hidden) {
+    reloadPendingOnVisible = true;
+    return;
   }
+  realtimeDebounceTimer = setTimeout(() => {
+    loadScareMeter();
+  }, 5000);
+}
 
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && reloadPendingOnVisible) {
-      reloadPendingOnVisible = false;
-      scheduleRealtimeReload();
-    }
-  });
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && reloadPendingOnVisible) {
+    reloadPendingOnVisible = false;
+    scheduleRealtimeReload();
+  }
+});
 
-  supabaseClient
-    .channel('scare-meter-profile-changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'perfiles' }, () => {
-      scheduleRealtimeReload();
-    })
-    .subscribe();
+function setupScareMeterRealtime() {
+  if (realtimeChannel || !currentUser) return;
+  try {
+    realtimeChannel = supabaseClient
+      .channel('scare-meter-profile-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'perfiles' }, () => {
+        scheduleRealtimeReload();
+      })
+      .subscribe();
+  } catch (err) {
+    console.log('Realtime is not available in this client', err);
+  }
+}
 
+function teardownScareMeterRealtime() {
+  if (realtimeChannel) {
+    try {
+      supabaseClient.removeChannel(realtimeChannel);
+    } catch {}
+    realtimeChannel = null;
+  }
+}
+
+try {
   let lastAuthUserId = currentUser?.id ?? null;
   supabaseClient.auth.onAuthStateChange((_event, session) => {
     const currentUserId = session?.user?.id ?? null;
     if (currentUserId !== lastAuthUserId) {
       lastAuthUserId = currentUserId;
-      loadScareMeter();
+      if (currentUserId) {
+        setupScareMeterRealtime();
+        loadScareMeter();
+      } else {
+        teardownScareMeterRealtime();
+        scarers = [];
+        totalFiltrados = 0;
+        totalGeneral = 0;
+        renderRanking([], '');
+      }
     }
   });
 } catch {
-  console.log('Realtime is not available in this client');
+  console.log('Auth state listener not available');
 }
 
 // Header: three pixel art drawings, as on an activity page
@@ -696,10 +728,23 @@ $('#btn-admin-edit-points').addEventListener('click', () => {
 // Check the supervisor role again when the session changes or a title is redeemed
 document.addEventListener('idcard:session', () => {
   $('#btn-admin-edit-points').hidden = !isCurrentSupervisor();
+  if (currentUser) {
+    setupScareMeterRealtime();
+    loadScareMeter();
+  } else {
+    teardownScareMeterRealtime();
+    scarers = [];
+    totalFiltrados = 0;
+    totalGeneral = 0;
+    renderRanking([], '');
+  }
   updateMyRankBanner();
 });
 
-loadScareMeter();
+if (currentUser) {
+  setupScareMeterRealtime();
+  loadScareMeter();
+}
 
 
 // Search input listener for the ranking table

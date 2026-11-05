@@ -923,6 +923,11 @@ let recordsLoading = null;
 let reloadRecords = false;
 
 async function loadRecords() {
+  if (!currentUser) {
+    renderEmptyRecords('Inicia sesión', 'Inicia sesión con tu carnet para ver la tabla de récords.');
+    myRecord.innerHTML = '';
+    return;
+  }
   // If a notice arrives during the query (real time, save, session, week change), it queries again when done
   if (recordsLoading) {
     reloadRecords = true;
@@ -958,14 +963,28 @@ async function loadRecords() {
   return recordsLoading;
 }
 
-// When someone saves a result, the table updates by itself
-try {
-  supabaseClient
-    .channel('game-score-changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'puntajes_juego' }, () => loadRecords())
-    .subscribe();
-} catch {
-  console.log('Real time is not available for the records table');
+// Real-time updates for game records (only active with a session)
+let gameRealtimeChannel = null;
+
+function setupGameRealtime() {
+  if (gameRealtimeChannel || !currentUser) return;
+  try {
+    gameRealtimeChannel = supabaseClient
+      .channel('game-score-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'puntajes_juego' }, () => loadRecords())
+      .subscribe();
+  } catch {
+    console.log('Real time is not available for the records table');
+  }
+}
+
+function teardownGameRealtime() {
+  if (gameRealtimeChannel) {
+    try {
+      supabaseClient.removeChannel(gameRealtimeChannel);
+    } catch {}
+    gameRealtimeChannel = null;
+  }
 }
 
 // The session (or its titles) changed: check which weeks it can open, repaint the table
@@ -973,17 +992,28 @@ try {
 document.addEventListener('idcard:session', async () => {
   checkWeeks();
   renderGames();
-  if (currentUser && pending.size) {
-    const toSave = [...pending];
-    pending.clear();
-    $('#end-login').hidden = true;
-    for (const [game, value] of toSave) {
-      if (canPlay(game)) await saveScore(value, game);
+  if (currentUser) {
+    setupGameRealtime();
+    if (pending.size) {
+      const toSave = [...pending];
+      pending.clear();
+      $('#end-login').hidden = true;
+      for (const [game, value] of toSave) {
+        if (canPlay(game)) await saveScore(value, game);
+      }
+    } else {
+      loadRecords();
     }
   } else {
-    loadRecords();
+    teardownGameRealtime();
+    renderEmptyRecords('Inicia sesión', 'Inicia sesión con tu carnet para ver la tabla de récords.');
+    myRecord.innerHTML = '';
   }
 });
+
+if (currentUser) {
+  setupGameRealtime();
+}
 
 
 /* ---------- The console dresses up with the game's cartridge ---------- */
