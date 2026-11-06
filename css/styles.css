@@ -2530,6 +2530,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .event__intro--wide { grid-template-columns: 1.15fr 1fr; }
 .event__intro--wide .event__image { rotate: -2deg; }
 
+/* Tall image, like a flyer (event.js marks it): bigger so its text can be read */
+.event__intro--tall { grid-template-columns: 340px 1fr; }
+
 /* The activity's YouTube video (video field) */
 .event__video {
   display: block;
