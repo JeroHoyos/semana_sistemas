@@ -45,7 +45,7 @@ const ACTIVITY_TYPES = {
 // (LinkedIn or web page: shown as "Saber más" on their talk's page)
 // and unconfirmed: true (their ID card gets the "Por confirmar" stamp and their talk a notice)
 const SPEAKERS = [
-  { id: 'mariano', name: 'Mariano Sosa', role: 'Ingeniero de datos y docente', credential: 'Ponente', color: '#8b5fd6',
+  { id: 'mariano', name: 'Mariano Sosa', role: 'Ingeniero de datos en Lovelytics', credential: 'Ponente', color: '#8b5fd6',
     photo: 'img/speaker-mariano-sosa.jpg',
     bio: 'Soy ingeniero de datos en Lovelytics, donde he participado en proyectos de arquitectura y gobierno de plataformas de datos, migración de información y desarrollo de pipelines en Azure y Databricks para empresas de los sectores de seguros, salud y servicios financieros. Paralelamente, me dedico a la formación en análisis de datos donde acompaño a estudiantes en el desarrollo de sus habilidades técnicas.\n' +
       'Desde mi experiencia en la industria tecnológica y en la educación, promuevo una visión integral de la ingeniería que combina fundamentos sólidos, pensamiento crítico, comunicación, aprendizaje continuo y habilidades humanas para resolver problemas reales. Me interesa conectar el conocimiento técnico con su aplicación práctica y ayudar a otros a desarrollar las competencias que necesitan para crecer profesionalmente en un entorno tecnológico en constante evolución.' },
