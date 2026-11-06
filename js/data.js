@@ -58,7 +58,6 @@ const SPEAKERS = [
   { id: 'juan', name: 'Juan Esteban Hincapié', role: 'Web UI Developer en Globant', credential: 'Ponente', color: '#1f9d7a',
     photo: 'img/speaker-juan-hincapie.jpg',
     bio: 'Estudiante de octavo semestre de Ingeniería de Sistemas e Informática, con un profundo interés en las experiencias interactivas, la ciberseguridad y la IA.' },
-  { id: 'jeronimo', name: 'Jerónimo Hoyos Botero', role: 'Semillero Aperture', credential: 'Ponente', color: '#1aa3b8' },
 ];
 
 // Student groups taking part in the week. Each one shows as a pennant in its color.
@@ -115,7 +114,7 @@ const ACTIVITIES = [
       { title: '¿Qué debes traer?', text: 'Computador portátil y una cuenta personal de Google (@gmail.com). Opcional: Node.js instalado (versión 20 o superior). Si no puedes instalarlo, trabajarás desde el navegador.' },
     ],
     decorations: ['chat', 'chip', 'plug'] },
-  { id: 'taller-aperture', day: 'wed', start: '14:00', end: '16:00', type: 'workshop', title: 'De Prompts a Agentes: Inteligencia Artificial Agéntica con Python', speakers: ['jeronimo'], organizer: 'aperture', place: 'Aula M3-224',
+  { id: 'taller-aperture', day: 'wed', start: '14:00', end: '16:00', type: 'workshop', title: 'De Prompts a Agentes: Inteligencia Artificial Agéntica con Python', organizer: 'aperture', place: 'Aula M3-224',
     description: '¿Qué pasa cuando un LLM deja de solo responder y empieza a actuar?\n' +
       'En este taller veremos cómo crear un agente, hacerlo más capaz y llevarlo a producción. Lo haremos con LangChain, uno de los frameworks de Python más usados para construir aplicaciones y agentes con LLMs.\n' +
       '¡Ven a descubrir cómo funciona un agente!',
