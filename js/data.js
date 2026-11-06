@@ -55,6 +55,10 @@ const SPEAKERS = [
   { id: 'yohan', name: 'Yohan Camilo Sánchez Meza', role: 'Líder de Producto en EBS Systems', credential: 'Ponente', color: '#c4358c',
     photo: 'img/speaker-yohan-sanchez.jpg',
     bio: 'Estudiante de último semestre de Ingeniería en Sistemas e Informática y Líder de Producto en EBS Systems.' },
+  { id: 'juan', name: 'Juan Esteban Hincapié', role: 'Web UI Developer en Globant', credential: 'Ponente', color: '#1f9d7a',
+    photo: 'img/speaker-juan-hincapie.jpg',
+    bio: 'Estudiante de octavo semestre de Ingeniería de Sistemas e Informática, con un profundo interés en las experiencias interactivas, la ciberseguridad y la IA.' },
+  { id: 'jeronimo', name: 'Jerónimo Hoyos Botero', role: 'Semillero Aperture', credential: 'Ponente', color: '#1aa3b8' },
 ];
 
 // Student groups taking part in the week. Each one shows as a pennant in its color.
@@ -79,7 +83,7 @@ const GROUPS = [
 // Times are provisional: they must be confirmed against the official schedule.
 // Competitions also have icon, color and summary for their card.
 // Optional: place (e.g. 'Bloque M8, auditorio'), description (long text
-// for the activity page, each \n is a paragraph; without it, the summary is used), organizer (id from GROUPS),
+// for the activity page, each \n is a paragraph; without it, the summary is used), speakers (ids from SPEAKERS), organizer (id from GROUPS),
 // rules (list of { title, text } shown as "Formato y reglas" on its page),
 // image (in img/: shown next to the text on its page),
 // video ({ id, title } of a YouTube video: the id is what follows youtu.be/ in the link),
@@ -96,13 +100,13 @@ const ACTIVITIES = [
   { id: 'feria', day: 'wed', start: '09:00', end: '12:00', type: 'social', title: 'Feria de stands', place: 'Hall M10',
     description: 'Descubre la innovación desde adentro y amplía tus horizontes. Conecta con el talento universitario recorriendo los stands de nuestros grupos estudiantiles y semilleros de investigación, e interactúa directamente con empresas invitadas para resolver dudas, intercambiar experiencias y construir tu red profesional.',
     decorations: ['briefcase', 'tent', 'lanyard'] },
-  { id: 'datos', day: 'wed', start: '11:00', end: '12:00', type: 'talk', title: 'Más allá del código: de estudiante a ingeniero en la era de la inteligencia artificial', speaker: 'mariano', place: 'Aula Máxima',
+  { id: 'datos', day: 'wed', start: '11:00', end: '12:00', type: 'talk', title: 'Más allá del código: de estudiante a ingeniero en la era de la inteligencia artificial', speakers: ['mariano'], place: 'Aula Máxima',
     description: '¿Qué significa realmente ser un buen ingeniero de sistemas en un mundo donde la inteligencia artificial puede generar código, las tecnologías cambian constantemente y los problemas reales exigen mucho más que conocimientos técnicos?\n' +
       'Durante esta charla exploraremos cómo pasar de aprender herramientas a desarrollar un perfil profesional integral, capaz de comprender problemas, tomar decisiones técnicas y construir soluciones que generen valor. Abordaremos la importancia de los fundamentos de la ingeniería, el pensamiento crítico y el uso responsable de la inteligencia artificial, así como el papel de las habilidades humanas, la comunicación, el trabajo en equipo y el aprendizaje continuo.\n' +
       'A través de ejemplos prácticos y situaciones del mundo tecnológico, reflexionaremos sobre cómo se conectan los conocimientos adquiridos en la universidad con los desafíos de la industria y qué pueden hacer los estudiantes, desde cualquier semestre, para prepararse para su futuro profesional.\n' +
       'Una invitación a mirar más allá del código y descubrir cómo construir una carrera en la que la tecnología, el criterio y las habilidades humanas trabajen juntos.',
     decorations: ['gradCap', 'helmet', 'database'] },
-  { id: 'taller-llm', day: 'wed', start: '12:00', end: '14:00', type: 'workshop', title: 'Agentes de IA para todos - Todo lo que necesitas saber', speaker: 'yohan', organizer: 'turing-box', place: 'Aula M3-224',
+  { id: 'taller-llm', day: 'wed', start: '12:00', end: '14:00', type: 'workshop', title: 'Agentes de IA para todos - Todo lo que necesitas saber', speakers: ['yohan', 'juan'], organizer: 'turing-box', place: 'Aula M3-224',
     description: 'La inteligencia artificial pasó de responder preguntas a ejecutar tareas: crear archivos, revisar su propio trabajo, conectarse con otras herramientas y seguir procedimientos. A esto se le llama agente. En este taller vas a entender qué hay detrás de un agente y vas a trabajar con uno en clase.',
     rules: [
       { title: 'Primera parte', text: 'Qué es un LLM y por qué “solo sabe lo que ve”. Cómo un chat se convierte en un agente: el bucle de pensar, actuar y verificar. Harness engineering: todo lo que rodea al modelo para que trabaje bien y de forma segura. Herramientas, MCP y skills: cómo se le dan nuevas capacidades a un agente. Opciones gratuitas, buenas prácticas y riesgos.' },
@@ -111,10 +115,11 @@ const ACTIVITIES = [
       { title: '¿Qué debes traer?', text: 'Computador portátil y una cuenta personal de Google (@gmail.com). Opcional: Node.js instalado (versión 20 o superior). Si no puedes instalarlo, trabajarás desde el navegador.' },
     ],
     decorations: ['chat', 'chip', 'plug'] },
-  { id: 'taller-aperture', day: 'wed', start: '14:00', end: '16:00', type: 'workshop', title: 'De Prompts a Agentes: Inteligencia Artificial Agéntica con Python', organizer: 'aperture', place: 'Aula M3-224',
+  { id: 'taller-aperture', day: 'wed', start: '14:00', end: '16:00', type: 'workshop', title: 'De Prompts a Agentes: Inteligencia Artificial Agéntica con Python', speakers: ['jeronimo'], organizer: 'aperture', place: 'Aula M3-224',
     description: '¿Qué pasa cuando un LLM deja de solo responder y empieza a actuar?\n' +
       'En este taller veremos cómo crear un agente, hacerlo más capaz y llevarlo a producción. Lo haremos con LangChain, uno de los frameworks de Python más usados para construir aplicaciones y agentes con LLMs.\n' +
       '¡Ven a descubrir cómo funciona un agente!',
+    image: 'img/activity-aperture-workshop.jpg',
     decorations: ['terminal', 'robot', 'lightning'] },
 
   // Thursday
@@ -162,7 +167,7 @@ const ACTIVITIES = [
     image: 'img/activity-awards.jpg',
     decorations: ['star', 'cup', 'star'] },
   { id: 'ia-cuantica', day: 'fri', start: '16:00', end: '17:00', type: 'talk', place: 'Aula M3-224',
-    title: 'El futuro de los LLM está en la computación cuántica, fotónica y térmica', speaker: 'daniel',
+    title: 'El futuro de los LLM está en la computación cuántica, fotónica y térmica', speakers: ['daniel'],
     description: 'El problema de la IA es el consumo de energía, pero ¿qué pasa si no calculamos con energía?\n' +
       'Durante esta charla veremos el proceso para llegar a hacer diferentes modelos de lenguaje estado del arte, autorregresivos y de difusión, y entender cómo llegar a la mejor configuración de capas entre los diferentes paradigmas de computación. ¿Dónde puedo usar la cuántica? ¿Dónde puedo poner la térmica? ¿Para qué sirve y qué es eso? ¿Y cómo multiplicar a la velocidad de la luz de forma paralelizada?\n' +
       'Con demo en vivo y animaciones para que sea intuitivo.',

@@ -7,7 +7,7 @@ const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => document.querySelectorAll(selector);
 
 const findDay = (id) => DAYS.find((day) => day.id === id);
-const findSpeaker = (id) => SPEAKERS.find((speaker) => speaker.id === id);
+const findSpeakers = (activity) => SPEAKERS.filter((speaker) => activity.speakers?.includes(speaker.id));
 const findActivity = (id) => ACTIVITIES.find((activity) => activity.id === id);
 const findGroup = (id) => GROUPS.find((group) => group.id === id);
 const findTitle = (id) => TITLES.find((title) => title.id === id);

@@ -2602,6 +2602,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   border: 1px solid var(--line);
   border-radius: 22px;
 }
+.event__profile + .event__profile { margin-top: 12px; }
 .event__avatar {
   flex: none;
   width: 72px;

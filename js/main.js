@@ -73,7 +73,7 @@ function showIdCard(index) {
   $$('.thumbnail').forEach((button, i) => button.setAttribute('aria-pressed', i === index));
 
   // If the speaker has an activity, the ID card links to that activity's page
-  const activity = ACTIVITIES.find((a) => a.speaker === speaker.id);
+  const activity = ACTIVITIES.find((a) => a.speakers?.includes(speaker.id));
   if (!activity) {
     swapIdCard(speakerIdCard(speaker));
     return;
@@ -256,13 +256,11 @@ function renderSchedule() {
 function matchesSearch(activity) {
   if (!schedule.search) return true;
 
-  const speaker = findSpeaker(activity.speaker);
   const text = [
     activity.title,
     ACTIVITY_TYPES[activity.type].plural,
     findDay(activity.day).name,
-    speaker?.name,
-    speaker?.role,
+    ...findSpeakers(activity).flatMap((speaker) => [speaker.name, speaker.role]),
     findGroup(activity.organizer)?.name,
     activity.place,
   ].filter(Boolean).join(' ');
@@ -328,17 +326,14 @@ function renderList(activities) {
 
 function activityCard(activity) {
   const type = ACTIVITY_TYPES[activity.type];
-  const speaker = findSpeaker(activity.speaker);
   const group = findGroup(activity.organizer);
   const overlapping = findOverlapping(activity);
 
   // Searching mixes all three days, so each activity shows its day
   const day = schedule.search ? `${findDay(activity.day).name} · ` : '';
 
-  const details = [];
-  if (speaker) {
-    details.push(`<span><span class="avatar">${speakerPortrait(speaker)}</span>${speaker.name || 'Por anunciar'}</span>`);
-  }
+  const details = findSpeakers(activity).map((speaker) =>
+    `<span><span class="avatar">${speakerPortrait(speaker)}</span>${speaker.name || 'Por anunciar'}</span>`);
   if (group) {
     details.push(`<span>${groupLogo(group)}Organiza ${group.name}</span>`);
   }
