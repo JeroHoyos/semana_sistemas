@@ -63,7 +63,10 @@ function selectScarer(index) {
   hudPoints.innerHTML = `${points} <small>pts</small>`;
 
   // Supervisor button on the HUD
-  $('#btn-admin-edit-points').hidden = !isCurrentSupervisor();
+  const isSup = isCurrentSupervisor();
+  $('#btn-admin-edit-points').hidden = !isSup;
+  const btnAudit = $('#btn-admin-audit-log');
+  if (btnAudit) btnAudit.hidden = !isSup;
 
   // Mark the selected card in the list
   $$('.scarer-card').forEach((card, i) => {
@@ -493,7 +496,10 @@ function selectMyRank() {
   tankLiquid.style.height = `${percentOf(points, maxGlobalPoints)}%`;
   hudName.textContent = name;
   hudPoints.innerHTML = `${points} <small>pts</small>`;
-  $('#btn-admin-edit-points').hidden = !isCurrentSupervisor();
+  const isSup = isCurrentSupervisor();
+  $('#btn-admin-edit-points').hidden = !isSup;
+  const btnAudit = $('#btn-admin-audit-log');
+  if (btnAudit) btnAudit.hidden = !isSup;
 
   $('.scarer-card').forEach((card) => card.setAttribute('aria-pressed', 'false'));
   const myBtn = $('#btn-my-rank-card');
@@ -656,6 +662,8 @@ function openPointsModal(person) {
   $('#points-modal-name').textContent = (person.nombre || 'Estudiante UNAL').trim();
   $('#points-modal-email').textContent = `@${handleOf(person.correo)} · UNAL`;
   $('#points-modal-input').value = scarePoints(person);
+  const reasonInput = $('#points-modal-reason');
+  if (reasonInput) reasonInput.value = '';
 
   const message = $('#points-modal-message');
   message.hidden = true;
@@ -713,9 +721,11 @@ $('#btn-save-points').addEventListener('click', async () => {
 
   try {
     // The Supabase function checks the supervisor permission
+    const reason = ($('#points-modal-reason')?.value || '').trim();
     const { error } = await supabaseClient.rpc('modificar_puntos', {
       target_id: personBeingEdited.id,
       nuevos_puntos: newPoints,
+      p_motivo: reason || null,
     });
     if (error) throw error;
 
@@ -744,7 +754,10 @@ $('#btn-admin-edit-points').addEventListener('click', () => {
 
 // Check the supervisor role again when the session changes or a title is redeemed
 document.addEventListener('idcard:session', () => {
-  $('#btn-admin-edit-points').hidden = !isCurrentSupervisor();
+  const isSup = isCurrentSupervisor();
+  $('#btn-admin-edit-points').hidden = !isSup;
+  const btnAudit = $('#btn-admin-audit-log');
+  if (btnAudit) btnAudit.hidden = !isSup;
   if (currentUser) {
     loadScareMeter();
   } else {
@@ -875,3 +888,65 @@ document.addEventListener('click', (event) => {
     }
   }
 });
+
+
+/* ---------- Audit log modal (supervisors) ---------- */
+
+const auditModal = $('#audit-modal');
+const btnOpenAudit = $('#btn-admin-audit-log');
+const btnCloseAudit = $('#btn-close-audit');
+
+async function loadAuditLog() {
+  const tbody = $('#audit-table-body');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="5" class="audit-table__empty">Cargando registros…</td></tr>';
+
+  try {
+    const { data: logs, error } = await supabaseClient.rpc('listar_auditoria_puntos', { p_limite: 100 });
+    if (error) throw error;
+
+    if (!logs || !logs.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="audit-table__empty">No hay cambios registrados todavía.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = logs.map((row) => {
+      const fecha = new Date(row.creado_en);
+      const fechaStr = `${colombiaDay(fecha)} ${fecha.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/Bogota' })}`;
+      const diff = row.diferencia;
+      const diffSign = diff > 0 ? `+${diff}` : `${diff}`;
+      const diffClass = diff >= 0 ? 'audit-diff--pos' : 'audit-diff--neg';
+
+      return `
+        <tr>
+          <td style="white-space: nowrap; font-family: monospace; font-size: 11px;">${fechaStr}</td>
+          <td><strong>${escapeHtml(row.admin_nombre || 'Admin')}</strong><br><small style="color:#64748b">@${escapeHtml(row.admin_usuario || '')}</small></td>
+          <td><strong>${escapeHtml(row.target_nombre || 'Usuario')}</strong><br><small style="color:#64748b">@${escapeHtml(row.target_usuario || '')}</small></td>
+          <td>
+            <span class="audit-diff ${diffClass}">${row.puntos_anteriores} ➔ ${row.puntos_nuevos} (${diffSign})</span>
+          </td>
+          <td style="max-width: 180px; word-break: break-word;">${escapeHtml(row.motivo || 'Sin motivo')}</td>
+        </tr>
+      `;
+    }).join('');
+  } catch (err) {
+    console.error('Error loading audit log:', err);
+    tbody.innerHTML = '<tr><td colspan="5" class="audit-table__empty" style="color:#b91c1c">Error al consultar el registro de auditoría. Revisa la función listar_auditoria_puntos en Supabase.</td></tr>';
+  }
+}
+
+if (btnOpenAudit) {
+  btnOpenAudit.addEventListener('click', () => {
+    if (!isCurrentSupervisor()) return;
+    loadAuditLog();
+    auditModal?.showModal();
+  });
+}
+if (btnCloseAudit) {
+  btnCloseAudit.addEventListener('click', () => auditModal?.close());
+}
+if (auditModal) {
+  auditModal.addEventListener('click', (e) => {
+    if (e.target === auditModal) auditModal.close();
+  });
+}
