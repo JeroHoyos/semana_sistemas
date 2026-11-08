@@ -113,13 +113,17 @@ as $$
     p.id,
     case
       when p.nombre ilike '%0110%' or p.nombre ilike '%largo%' or p.correo ilike '%0110%' or p.correo ilike '%largo%'
-        then 'Juan Carlos Largo'
-      else coalesce(nullif(trim(p.nombre::text), ''), 'Estudiante UNAL')
+        then 'Charles Larg0'
+      when p.nombre ilike '%argenis%' or p.nombre ilike '%marin%' or p.correo ilike '%armarin%'
+        then 'Argy M4rín'
+      else coalesce(nullif(trim(p.nombre::text), ''), 'Asustador Sancionado')
     end as nombre,
     case
       when p.nombre ilike '%0110%' or p.nombre ilike '%largo%' or p.correo ilike '%0110%' or p.correo ilike '%largo%'
-        then 'imlargo'
-      else split_part(p.correo::text, '@', 1)
+        then 'charles.larg0'
+      when p.nombre ilike '%argenis%' or p.nombre ilike '%marin%' or p.correo ilike '%armarin%'
+        then 'armar1n'
+      else 'tramposo'
     end as usuario,
     (p.monstruo::jsonb - 'titulos') as monstruo,
     0::integer as puntos,

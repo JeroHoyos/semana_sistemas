@@ -200,8 +200,14 @@ function scarerIdCard(name, email, monster, title = BASE_TITLE, medal = null) {
   const clown = isClown(email, name, monster);
 
   if (clown && isLargoAlias(email, name)) {
-    shownName = 'JUAN CARLOS LARGO';
-    handle = 'imlargo';
+    shownName = 'CHARLES LARG0';
+    handle = 'charles.larg0';
+  } else if (clown && typeof isArgenisAlias === 'function' && isArgenisAlias(email, name)) {
+    shownName = 'ARGY M4RÍN';
+    handle = 'armar1n';
+  } else if (clown) {
+    shownName = 'ASUSTADOR SANCIONADO';
+    handle = handle ? `${handle.slice(0, 3)}***` : 'tramposo';
   }
   const role = clown ? 'TRAMPOSO DE CIRCO' : titleText(title, monster?.estilo);
   const isDebugger = !clown && title?.id === 'debugger';
@@ -685,7 +691,13 @@ function showProfile(user) {
   const title = chosenTitleOf(user);
   const clown = isClown(user.email, fullName, monster);
 
-  if (clown && isLargoAlias(user.email, fullName)) fullName = 'Juan Carlos Largo';
+  if (clown && isLargoAlias(user.email, fullName)) {
+    fullName = 'Charles Larg0';
+  } else if (clown && typeof isArgenisAlias === 'function' && isArgenisAlias(user.email, fullName)) {
+    fullName = 'Argy M4rín';
+  } else if (clown) {
+    fullName = 'Asustador Sancionado';
+  }
 
   // Sanctioned accounts cannot edit their ID card
   $('#btn-edit-idcard').hidden = clown;

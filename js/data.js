@@ -58,9 +58,13 @@ function isClown(email, name = '', extra = null) {
   return texts.some((text) => CLOWN_FRAGMENTS.some((fragment) => text.includes(fragment)));
 }
 
-// One sanctioned person hides behind binary names: the page shows their real identity instead.
+// Sanctioned attackers have pseudonymized aliases to avoid legal/exposure issues
 function isLargoAlias(email, name) {
   return [email, name].some((value) => String(value).includes('0110') || String(value).toLowerCase().includes('largo'));
+}
+
+function isArgenisAlias(email, name) {
+  return [email, name].some((value) => String(value).toLowerCase().includes('armarin') || String(value).toLowerCase().includes('argenis'));
 }
 
 // date: free text, for example '12 nov'. If empty, the page shows "Día 1", "Día 2"...

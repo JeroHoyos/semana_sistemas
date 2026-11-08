@@ -31,12 +31,30 @@ function personView(person) {
   const email = person.correo || (person.usuario ? `${person.usuario}@unal.edu.co` : '');
   const isAdmin = typeof isSupervisorAccount === 'function' && isSupervisorAccount(email, person.nombre);
   const clown = !isAdmin && Boolean(person.clown || isClown(person.correo, person.nombre, person));
-  const alias = clown && isLargoAlias(person.correo, person.nombre);
+  const isLargo = clown && isLargoAlias(person.correo, person.nombre);
+  const isArgenis = clown && typeof isArgenisAlias === 'function' && isArgenisAlias(person.correo, person.nombre);
+
+  let handle = person.usuario || handleOf(person.correo);
+  let name = (person.nombre || 'Estudiante UNAL').trim();
+
+  if (clown) {
+    if (isLargo) {
+      name = 'Charles Larg0';
+      handle = 'charles.larg0';
+    } else if (isArgenis) {
+      name = 'Argy M4rín';
+      handle = 'armar1n';
+    } else {
+      handle = handle && handle.length > 3 ? `${handle.slice(0, 3)}***` : 'tramposo';
+      name = 'Asustador Sancionado';
+    }
+  }
+
   return {
     clown,
     points: Number(person.puntos ?? (isAdmin ? (Number(person.puntos) || 0) : scarePoints(person))),
-    handle: alias ? 'imlargo' : (person.usuario || handleOf(person.correo)),
-    name: alias ? 'Juan Carlos Largo' : (person.nombre || 'Estudiante UNAL').trim(),
+    handle,
+    name,
   };
 }
 
@@ -269,15 +287,15 @@ function renderRanking(people, query = '') {
 // Opens the dialog with the ID card of a person from the table
 function showIdCardOf(index) {
   const person = scarers[index];
-  const { clown, points } = personView(person);
+  const { clown, points, name, handle } = personView(person);
   const medal = clown ? null : (person.medalla ?? medalForTier(person.puesto_medalla));
 
   $('#idcard-modal-title').textContent = clown ? 'Licencia de Tramposo' : 'Carnet';
   $('#idcard-modal-clown-notice').hidden = !clown;
 
-  const emailForCard = person.correo || (person.usuario ? `${person.usuario}@unal.edu.co` : '');
+  const emailForCard = clown ? `${handle}@unal.edu.co` : (person.correo || (person.usuario ? `${person.usuario}@unal.edu.co` : ''));
   $('#idcard-modal-idcard').innerHTML = scarerIdCard(
-    person.nombre || 'Estudiante UNAL', emailForCard, person.monstruo || {}, personTitle(person), medal);
+    clown ? name : (person.nombre || 'Estudiante UNAL'), emailForCard, person.monstruo || {}, personTitle(person), medal);
   $('#idcard-modal').showModal();
 }
 
@@ -976,9 +994,10 @@ document.addEventListener('click', (event) => {
       const notice = $('#idcard-modal-clown-notice');
       if (notice) notice.hidden = false;
       const monster = { ...(person.monstruo || {}), es_payaso: true };
+      const { name, handle } = personView(person);
       $('#idcard-modal-idcard').innerHTML = scarerIdCard(
-        person.nombre || 'Estudiante UNAL',
-        person.correo || (person.usuario ? `${person.usuario}@unal.edu.co` : 'estudiante@unal.edu.co'),
+        name,
+        `${handle}@unal.edu.co`,
         monster,
         findTitle('asustador') || BASE_TITLE,
         null
