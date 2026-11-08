@@ -5098,42 +5098,11 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 
 /* Black frame around the screen */
 .console__bezel {
-  padding: 10px 16px 16px;
+  padding: 16px;
   border-radius: 18px;
   background: linear-gradient(#1d2231, #11141e);
   box-shadow: inset 0 2px 0 rgba(255, 255, 255, .08), inset 0 -2px 0 rgba(0, 0, 0, .45), 0 2px 0 rgba(255, 255, 255, .12);
 }
-.console__bezel-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 9px;
-  font-family: var(--font-narrow);
-  font-weight: 600;
-  font-size: 11px;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: #8b93a7;
-}
-.console__brand { margin-left: auto; overflow: hidden; text-overflow: ellipsis; }
-
-/* Power light: green, yellow on pause and red on losing */
-.console__led {
-  flex: none;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #7ee081;
-  box-shadow: 0 0 8px #7ee081;
-}
-.console[data-state="paused"] .console__led { background: #ffd23f; box-shadow: 0 0 8px #ffd23f; }
-.console[data-state="loading"] .console__led {
-  background: #ffd23f;
-  box-shadow: 0 0 8px #ffd23f;
-  animation: blink .5s steps(1) infinite;
-}
-.console[data-state="over"] .console__led { background: #ff5c5c; box-shadow: 0 0 8px #ff5c5c; }
 
 /* CRT screen: font sizes are measured from its width (cqw) */
 .console__screen {
@@ -5566,8 +5535,7 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   .console__title { font-size: 12px; }
   .console__week { font-size: 8px; }
   .console__week-notice { font-size: 7px; }
-  .console__bezel { padding: 8px 8px 10px; border-radius: 14px; }
-  .console__bezel-bar { gap: 8px; margin-bottom: 7px; font-size: 9px; letter-spacing: .14em; }
+  .console__bezel { padding: 10px 8px; border-radius: 14px; }
   .console__controls { gap: 10px; margin-top: 18px; padding: 0; }
   .dpad { --size: 38px; }
   .console__speaker { gap: 5px; }
@@ -5579,7 +5547,6 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 @media (max-width: 380px) {
   .console__speaker { display: none; }
   .console__controls { grid-template-columns: auto auto; justify-content: space-between; }
-  .console__brand { display: none; }
 }
 
 

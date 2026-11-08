@@ -7,7 +7,7 @@
    A locked week does not open yet: only supervisors (admins) can play it, to test it.
 
    Each game brings its cartridge (SNAKE_CARTRIDGE in snake.js, DOOM_CARTRIDGE in doom.js, DEFRAG_CARTRIDGE in defrag.js):
-     id, name               how it is saved in Supabase and how it shows
+     id                     how it is saved in Supabase
      scoring                'points' (highest wins)
      dailyGames             runs per person per day (the same number goes in registrar_puntaje_juego)
      create(canvas, events) builds the run
@@ -468,7 +468,7 @@ weeksContainer.innerHTML = WEEKS.map((game) => `
     ${game.locked ? WEEK_LOCK : ''}<span>Semana ${game.week}</span>
   </button>`).join('');
 
-// Locked weeks do not say which game they bring (except to supervisors)
+// Locked weeks only open for supervisors
 function renderWeeks() {
   const admin = isCurrentSupervisor();
   $$('#console-weeks .console__week').forEach((button) => {
@@ -476,7 +476,7 @@ function renderWeeks() {
     const closed = !canPlay(game);
     const label = closed
       ? `Semana ${game.week}: bloqueada`
-      : `Semana ${game.week}: ${game.name}${game.locked && admin ? ' (bloqueada, solo supervisores)' : ''}`;
+      : `Semana ${game.week}${game.locked && admin ? ' (bloqueada, solo supervisores)' : ''}`;
     button.setAttribute('aria-pressed', String(game === cartridge));
     button.classList.toggle('console__week--locked', Boolean(game.locked));
     if (closed) button.setAttribute('aria-disabled', 'true');
@@ -845,7 +845,7 @@ function renderRecords(rows) {
   const visible = (rows || []).filter((row) => !isClown(row.usuario, row.nombre));
 
   if (!visible.length) {
-    renderEmptyRecords('La tabla está vacía', `Nadie ha jugado ${escapeHtml(cartridge.name)} todavía. ¡Estrena la tabla!`);
+    renderEmptyRecords('La tabla está vacía', `Nadie ha jugado todavía. ¡Estrena la tabla!`);
     return;
   }
 
@@ -1132,12 +1132,10 @@ if (currentUser) {
 /* ---------- The console dresses up with the game's cartridge ---------- */
 
 function dressConsole() {
-  const { name, splash = {}, end = {}, buttons, controls = {} } = cartridge;
+  const { splash = {}, end = {}, buttons, controls = {} } = cartridge;
 
   gameConsole.dataset.game = cartridge.id;
   gameConsole.style.setProperty('--end-delay', `${endDelay()}ms`);
-  $('#console-cartridge').textContent = name;
-  $('#records-game').textContent = name;
 
   // Start overlay
   $('#start-text').textContent = splash.text || '';

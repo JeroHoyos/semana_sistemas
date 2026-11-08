@@ -1,7 +1,7 @@
 /* =============================================
    DEFRAG · WEEKLY GAME 3
    Memory fragments (four-block pieces) fall and must be fitted into the well:
-   each complete row is freed. Four rows at once are a ¡Defrag!
+   each complete row is freed. Four rows at once are a ¡Cuatro!
    The run ends when memory fills up to the top.
 
    Points (the same ones that go to the leaderboard): each row cleared is worth 50, whatever the level
@@ -99,7 +99,7 @@ const DEFRAG_KICKS = {
 };
 
 const DEFRAG_ROW_POINTS = 50;
-const DEFRAG_ROW_NAMES = ['', '1 FILA', 'DOBLE', 'TRIPLE', '¡DEFRAG!'];
+const DEFRAG_ROW_NAMES = ['', '1 FILA', 'DOBLE', 'TRIPLE', '¡CUATRO!'];
 
 // Keyboard: arrows or WASD to move, up (or X) rotates, Z rotates back, Space drops and C (or Shift) holds
 const DEFRAG_KEYS = {
@@ -1046,7 +1046,6 @@ function defragSprite(type) {
 
 const DEFRAG_CARTRIDGE = {
   id: 'defrag',
-  name: 'Defrag',
   scoring: 'points',
   dailyGames: 10,
   create: (canvas, events) => createDefrag(canvas, events),
