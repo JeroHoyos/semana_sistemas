@@ -604,38 +604,6 @@ function updateSessionUi(user) {
     }
     showLoginGate(false);
 
-    // Cheat detection: unauthorized claim of supervisor privilege
-    const userMeta = user.user_metadata || {};
-    const hasSupervisorMeta = (
-      userMeta.titulo === 'supervisor' ||
-      (Array.isArray(userMeta.titulos) && userMeta.titulos.includes('supervisor')) ||
-      userMeta.monstruo?.titulo === 'supervisor' ||
-      (Array.isArray(userMeta.monstruo?.titulos) && userMeta.monstruo.titulos.includes('supervisor'))
-    );
-
-    if (hasSupervisorMeta && !isCurrentSupervisor(user)) {
-      console.warn('Trampa detectada: Reclamo no autorizado de rol supervisor.');
-      const cleanedTitles = (userMeta.titulos || []).filter((t) => t !== 'supervisor');
-      const monsterCleaned = {
-        ...(userMeta.monstruo || {}),
-        titulo: userMeta.monstruo?.titulo === 'supervisor' ? 'asustador' : userMeta.monstruo?.titulo,
-        titulos: (userMeta.monstruo?.titulos || []).filter((t) => t !== 'supervisor'),
-        es_payaso: true,
-      };
-
-      supabaseClient.auth.updateUser({
-        data: {
-          ...userMeta,
-          titulo: userMeta.titulo === 'supervisor' ? 'asustador' : userMeta.titulo,
-          titulos: cleanedTitles,
-          monstruo: monsterCleaned,
-          es_payaso: true,
-        },
-      }).catch(() => {});
-
-      supabaseClient.rpc('reportar_tramposo', { motivo: 'Intento no autorizado de reclamar rol de supervisor' }).catch(() => {});
-    }
-
     // Check for pending monster from signup or initialize first-time OAuth profile
     const pendingRaw = localStorage.getItem('semana_sistemas_pending_monster');
     let pending = null;

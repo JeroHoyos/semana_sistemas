@@ -28,11 +28,13 @@ const maxPointsOf = (people) => Math.max(100, ...people.map(scarePoints));
 
 // What the page shows for a person: clowns hiding behind binary names appear under their real identity
 function personView(person) {
-  const clown = Boolean(person.clown || isClown(person.correo, person.nombre, person));
+  const email = person.correo || (person.usuario ? `${person.usuario}@unal.edu.co` : '');
+  const isAdmin = typeof isSupervisorAccount === 'function' && isSupervisorAccount(email, person.nombre);
+  const clown = !isAdmin && Boolean(person.clown || isClown(person.correo, person.nombre, person));
   const alias = clown && isLargoAlias(person.correo, person.nombre);
   return {
     clown,
-    points: Number(person.puntos ?? scarePoints(person)),
+    points: Number(person.puntos ?? (isAdmin ? (Number(person.puntos) || 0) : scarePoints(person))),
     handle: alias ? 'imlargo' : (person.usuario || handleOf(person.correo)),
     name: alias ? 'Juan Carlos Largo' : (person.nombre || 'Estudiante UNAL').trim(),
   };
@@ -794,7 +796,13 @@ if (clearSearchBtn) {
 let currentTramposos = [];
 
 function renderTramposos(tramposos) {
-  currentTramposos = tramposos || [];
+  // Exclude legitimate admins even if database still has them marked
+  const actualCheaters = (tramposos || []).filter((person) => {
+    const email = person.correo || (person.usuario ? `${person.usuario}@unal.edu.co` : '');
+    return typeof isSupervisorAccount === 'function' ? !isSupervisorAccount(email, person.nombre) : true;
+  });
+
+  currentTramposos = actualCheaters;
   const card = $('#clowns-card');
   const list = $('#clowns-list');
   if (!card || !list) return;

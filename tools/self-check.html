@@ -135,6 +135,10 @@
     check('supervisor rejected from titulos array in user_metadata', isCurrentSupervisor({ user_metadata: { titulos: ['supervisor'] } }), false);
     check('supervisor rejected from titulo string in user_metadata', isCurrentSupervisor({ user_metadata: { titulo: 'supervisor' } }), false);
     check('supervisor rejected on empty user', isCurrentSupervisor(null), false);
+    check('supervisor recognized by email', isSupervisorAccount('saescobara@unal.edu.co'), true);
+    check('supervisor recognized by handle', isSupervisorAccount('linavarrop'), true);
+    check('supervisor recognized by name', isSupervisorAccount('x@unal.edu.co', 'Juan David Perez Lopez'), true);
+    check('supervisor is never clown', isClown('saescobara@unal.edu.co', 'Santiago Escobar Arias', { es_payaso: true }), false);
 
     document.getElementById('result').textContent = failures.length ? `FAILED\n${failures.join('\n')}` : 'ALL PASSED';
   </script>
