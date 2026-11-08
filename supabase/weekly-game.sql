@@ -103,8 +103,9 @@ begin
     raise exception 'Inicia sesión para guardar tu puntaje';
   end if;
 
-  -- Sanctioned accounts (clowns, perfiles.es_payaso) do not enter the table
-  if exists (select 1 from perfiles where id = v_usuario and es_payaso) then
+  -- Sanctioned accounts (clowns, perfiles.es_payaso) do not enter the table.
+  -- Supervisors always do: the anti-cheat functions have marked them by mistake.
+  if exists (select 1 from perfiles where id = v_usuario and es_payaso) and not es_supervisor() then
     raise exception 'Seguridad: Tu cuenta tiene un Shadowban activo y no puede registrar récords.';
   end if;
 
@@ -210,7 +211,9 @@ as $$
   from puntajes_juego j
   left join perfiles p on p.id = j.usuario_id
   where j.juego = p_juego and j.mejor_puntaje > 0
-    and not coalesce(p.es_payaso, false)   -- clowns do not show
+    -- clowns do not show; supervisors always do (see registrar_puntaje_juego)
+    and (not coalesce(p.es_payaso, false)
+         or coalesce((select (u.raw_app_meta_data ->> 'supervisor')::boolean from auth.users u where u.id = j.usuario_id), false))
   order by j.mejor_puntaje desc, j.partidas asc, j.logrado_en asc
   limit least(greatest(coalesce(p_limite, 10), 1), 50);
 $$;
