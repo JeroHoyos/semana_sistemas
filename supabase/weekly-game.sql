@@ -115,7 +115,7 @@ begin
       v_minimo := 10;
       v_maximo := 3000;
       v_multiplo := 10;
-      v_limite_dia := 10;
+      v_limite_dia := 30;
     -- Doom E1M1: 400 enemies + 200 items + 200 secrets + 200 time (doomScore in js/doom.js)
     when 'doom' then
       v_minimo := 1;
