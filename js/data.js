@@ -35,12 +35,26 @@ const CLOWN_FRAGMENTS = ['armarina', 'argenis', 'largo', '01101100', '01101001']
 // extra: a row from 'perfiles', or a monster. Both can carry the es_payaso flag set in the database.
 function isClown(email, name = '', extra = null) {
   if (isSupervisorAccount(email, name)) return false;
-  const e = String(email || '').toLowerCase().trim();
-  const n = String(name || '').toLowerCase().trim();
-  if (e.includes('josgarciave') || n.includes('jose miguel garcia')) return false;
+
+  const normalize = (str) =>
+    String(str || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+
+  const e = normalize(email);
+  const n = normalize(name);
+  const u = normalize(extra?.usuario || (email && String(email).includes('@') ? String(email).split('@')[0] : ''));
+
+  // Jose Miguel Garcia Velez (@josgarciave) is a legitimate student, NEVER a clown
+  if (e.includes('josgarciave') || u.includes('josgarciave') || n.includes('jose miguel garcia')) {
+    return false;
+  }
+
   if ([extra?.es_payaso, extra?.monstruo?.es_payaso, extra?.tramposo, extra?.monstruo?.tramposo].some((flag) => flag === true || flag === 'true')) return true;
 
-  const texts = [email, name].map((text) => String(text || '').toLowerCase());
+  const texts = [e, n, u];
   return texts.some((text) => CLOWN_FRAGMENTS.some((fragment) => text.includes(fragment)));
 }
 

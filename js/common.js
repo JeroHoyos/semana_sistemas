@@ -42,7 +42,7 @@ function isCurrentSupervisor(user = (typeof currentUser !== 'undefined' ? curren
 const handleOf = (email) => (email?.includes('@') ? email.split('@')[0] : 'estudiante');
 
 // A person's points on the Scare Meter: a clown always counts as 0 (person is a row from 'perfiles')
-const scarePoints = (person) => (isClown(person.correo, person.nombre, person) ? 0 : Number(person.puntos) || 0);
+const scarePoints = (person) => (isClown(person?.correo || person?.usuario, person?.nombre, person) ? 0 : Number(person?.puntos) || 0);
 
 // The distinct scores above 0, best first: people with equal points share a place
 const pointTiers = (allPoints) => [...new Set(allPoints.filter((p) => p > 0))].sort((a, b) => b - a);

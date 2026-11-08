@@ -7,7 +7,7 @@
 -- 3. Crea índices de alto rendimiento en perfiles para que Sustómetro y Tramposos carguen al instante.
 -- 4. Blindaje en es_payaso_perfil y tramposos_sustometro (supervisores y José Miguel nunca son payasos).
 -- 5. Crea la tabla 'auditoria_puntos' con RLS para registrar qué admin cambió qué puntos y por qué.
--- 6. Actualiza 'modificar_puntos' para registrar cada acción en la tabla de auditoría.
+-- 6. Actualiza 'modificar_puntos' para registrar cada acción en auditoría y desmarcar flags si un admin asigna puntos.
 -- 7. Crea 'listar_auditoria_puntos' para que los supervisores consulten el registro de auditoría.
 -- =============================================
 
@@ -15,10 +15,16 @@
 update public.perfiles
    set es_payaso = false,
        puntos = 5,
-       monstruo = monstruo - 'es_payaso' - 'tramposo'
- where lower(correo) = 'josgarciave@unal.edu.co'
+       monstruo = (coalesce(monstruo, '{}'::jsonb) - 'es_payaso' - 'tramposo')
+ where lower(correo) like '%josgarciave%'
     or split_part(lower(correo), '@', 1) = 'josgarciave'
-    or lower(nombre) like '%jose miguel garcia%';
+    or lower(nombre) like '%jos%miguel%garc%a%';
+
+update auth.users
+   set raw_user_meta_data = (coalesce(raw_user_meta_data, '{}'::jsonb) - 'es_payaso' - 'tramposo')
+ where lower(email) like '%josgarciave%'
+    or split_part(lower(email), '@', 1) = 'josgarciave'
+    or lower(raw_user_meta_data->>'full_name') like '%jos%miguel%garc%a%';
 
 
 -- ---------- 2. Restaurar Administradores Oficiales ----------
@@ -37,7 +43,7 @@ update auth.users
 
 update public.perfiles
    set es_payaso = false,
-       monstruo = monstruo - 'es_payaso' - 'tramposo'
+       monstruo = (coalesce(monstruo, '{}'::jsonb) - 'es_payaso' - 'tramposo')
  where lower(correo) in (
    'saescobara@unal.edu.co',
    'linavarrop@unal.edu.co',
@@ -77,7 +83,7 @@ as $$
     when split_part(lower(coalesce(p_correo, '')), '@', 1) in ('saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl') then false
     when lower(coalesce(p_nombre, '')) like any (array['%santiago escobar%', '%libardo navarro%', '%jeronimo hoyos%', '%catalina arango%', '%juan david perez%']) then false
     -- Estudiante legítimo José Miguel García Vélez (@josgarciave) NUNCA es payaso
-    when lower(coalesce(p_correo, '')) = 'josgarciave@unal.edu.co' or split_part(lower(coalesce(p_correo, '')), '@', 1) = 'josgarciave' or lower(coalesce(p_nombre, '')) like '%jose miguel garcia%' then false
+    when lower(coalesce(p_correo, '')) like '%josgarciave%' or split_part(lower(coalesce(p_correo, '')), '@', 1) = 'josgarciave' or lower(coalesce(p_nombre, '')) like '%jos%miguel%garc%a%' then false
     else (
       coalesce(p_es_payaso, false)
       or coalesce((p_monstruo->>'es_payaso' in ('true', 't', '1')), false)
@@ -124,9 +130,9 @@ as $$
       lower(coalesce(p.correo, '')) in ('saescobara@unal.edu.co', 'linavarrop@unal.edu.co', 'jhoyosbo@unal.edu.co', 'carangosi@unal.edu.co', 'carangosl@unal.edu.co')
       or split_part(lower(coalesce(p.correo, '')), '@', 1) in ('saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl')
       or lower(coalesce(p.nombre, '')) like any (array['%santiago escobar%', '%libardo navarro%', '%jeronimo hoyos%', '%catalina arango%', '%juan david perez%'])
-      or lower(coalesce(p.correo, '')) = 'josgarciave@unal.edu.co'
+      or lower(coalesce(p.correo, '')) like '%josgarciave%'
       or split_part(lower(coalesce(p.correo, '')), '@', 1) = 'josgarciave'
-      or lower(coalesce(p.nombre, '')) like '%jose miguel garcia%'
+      or lower(coalesce(p.nombre, '')) like '%jos%miguel%garc%a%'
     )
   order by p.creado_en desc
   limit least(greatest(coalesce(p_limite, 50), 1), 100);
@@ -170,7 +176,8 @@ create policy "Supervisores leen auditoria" on public.auditoria_puntos
   using (public.es_supervisor());
 
 
--- ---------- 7. Modificar Puntos con Registro de Auditoría ----------
+-- ---------- 7. Modificar Puntos con Registro de Auditoría y Limpieza de Flags ----------
+drop function if exists public.modificar_puntos(uuid, integer);
 create or replace function public.modificar_puntos(
   target_id uuid,
   nuevos_puntos integer,
@@ -195,14 +202,14 @@ begin
   end if;
 
   if not public.es_supervisor() then
-    -- TRAMPA DETECTADA: Sancionar inmediatamente a atacantes no autorizados
+    -- Intento no autorizado: sancionar
     update public.perfiles
        set es_payaso = true,
            puntos = 0,
            monstruo = jsonb_set(coalesce(monstruo, '{}'::jsonb), '{es_payaso}', 'true'::jsonb)
      where id = v_caller;
 
-    raise exception 'Seguridad: Acceso denegado. No tienes permisos de Supervisor. Intento de trampa registrado.';
+    raise exception 'Seguridad: Acceso denegado. No tienes permisos de Supervisor.';
   end if;
 
   -- Obtener información previa del target
@@ -222,9 +229,23 @@ begin
     from auth.users
    where id = v_caller;
 
-  -- Aplicar el cambio de puntos
+  -- Aplicar el cambio de puntos y desmarcar sanción si no es atacante de la lista negra
   update public.perfiles
-     set puntos = v_pts_nuevos
+     set puntos = v_pts_nuevos,
+         es_payaso = case
+           when v_pts_nuevos > 0 and not (
+             lower(coalesce(nombre, '')) like any (array['%armarina%', '%argenis%', '%largo%', '%01101100%', '%01101001%'])
+             or lower(coalesce(correo, '')) like any (array['%armarina%', '%argenis%', '%largo%', '%01101100%', '%01101001%'])
+           ) then false
+           else es_payaso
+         end,
+         monstruo = case
+           when v_pts_nuevos > 0 and not (
+             lower(coalesce(nombre, '')) like any (array['%armarina%', '%argenis%', '%largo%', '%01101100%', '%01101001%'])
+             or lower(coalesce(correo, '')) like any (array['%armarina%', '%argenis%', '%largo%', '%01101100%', '%01101001%'])
+           ) then (monstruo - 'es_payaso' - 'tramposo')
+           else monstruo
+         end
    where id = target_id;
 
   -- Registrar en la tabla de auditoría para supervisores
@@ -303,6 +324,6 @@ cross join (
       or lower(email) in ('saescobara@unal.edu.co', 'linavarrop@unal.edu.co')
    limit 1
 ) u
-where lower(p.correo) = 'josgarciave@unal.edu.co'
+where lower(p.correo) like '%josgarciave%'
    or split_part(lower(p.correo), '@', 1) = 'josgarciave'
-   or lower(p.nombre) like '%jose miguel garcia%';
+   or lower(p.nombre) like '%jos%miguel%garc%a%';

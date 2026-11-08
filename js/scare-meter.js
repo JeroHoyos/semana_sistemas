@@ -663,8 +663,9 @@ function openPointsModal(person) {
   avatar.style.borderColor = monsterColor(person.monstruo);
   avatar.innerHTML = drawCustomMonster(person.monstruo || {});
   $('#points-modal-name').textContent = (person.nombre || 'Estudiante UNAL').trim();
-  $('#points-modal-email').textContent = `@${handleOf(person.correo)} · UNAL`;
-  $('#points-modal-input').value = scarePoints(person);
+  const emailForModal = person.correo || (person.usuario ? `${person.usuario}@unal.edu.co` : '');
+  $('#points-modal-email').textContent = `@${person.usuario || handleOf(emailForModal)} · UNAL`;
+  $('#points-modal-input').value = isClown(emailForModal, person.nombre, person) ? 0 : (Number(person.puntos) || 0);
   const reasonInput = $('#points-modal-reason');
   if (reasonInput) reasonInput.value = '';
 
@@ -713,7 +714,8 @@ $('#btn-save-points').addEventListener('click', async () => {
   const buttonText = button.querySelector('span');
 
   // A clown cannot receive points
-  if (isClown(personBeingEdited.correo, personBeingEdited.nombre, personBeingEdited)) {
+  const emailForSave = personBeingEdited.correo || (personBeingEdited.usuario ? `${personBeingEdited.usuario}@unal.edu.co` : '');
+  if (isClown(emailForSave, personBeingEdited.nombre, personBeingEdited)) {
     showPointsError('Este usuario tiene Shadowban permanente por juego sucio y no puede recibir puntos.');
     return;
   }
