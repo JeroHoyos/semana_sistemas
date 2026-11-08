@@ -174,7 +174,7 @@ async function countRedemptions(titleId) {
 
 async function redeemCode(text) {
   const hash = await hashOf(normalizeCode(text));
-  const title = TITLES.find((t) => !t.free && (t.codeHash === hash || (Array.isArray(t.codeHashes) && t.codeHashes.includes(hash))));
+  const title = TITLES.find((t) => !t.free && !t.adminOnly && t.id !== 'supervisor' && t.codeHash && (t.codeHash === hash || (Array.isArray(t.codeHashes) && t.codeHashes.includes(hash))));
   if (!title) return { status: 'invalid' };
 
   if (unlockedTitles(currentUser).some((t) => t.id === title.id)) {

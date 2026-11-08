@@ -57,7 +57,7 @@ function selectScarer(index) {
   tankLiquid.style.height = `${percentOf(points, maxGlobalPoints)}%`;
 
   // Tank screen: name and points
-  hudName.textContent = clown ? `🤡 ${name} [PAYASO]` : name;
+  hudName.textContent = clown ? `⚠️ ${name} [TRAMPOSO]` : name;
   hudPoints.innerHTML = `${points} <small>pts</small>`;
 
   // Supervisor button on the HUD
@@ -211,7 +211,7 @@ function renderRanking(people, query = '') {
     const cardClass = modifier ? `scarer-card--${modifier}` : '';
     const rankClass = `scarer-card__rank--${modifier || 'normal'}`;
     const idCardClass = modifier ? `scarer-item__idcard--${modifier}` : '';
-    const idCardTitle = clown ? 'Ver Licencia de Payaso 🤡' : IDCARD_BUTTON_TITLES[medal] ?? 'Ver carnet';
+    const idCardTitle = clown ? 'Ver Licencia de Tramposo' : IDCARD_BUTTON_TITLES[medal] ?? 'Ver carnet';
     const isMine = currentUser && person.id === currentUser.id;
 
     const adminButton = isSupervisor
@@ -267,7 +267,7 @@ function showIdCardOf(index) {
   const { clown, points } = personView(person);
   const medal = clown ? null : (person.medalla ?? medalForTier(person.puesto_medalla));
 
-  $('#idcard-modal-title').textContent = clown ? '🤡 Licencia de Payaso' : 'Carnet';
+  $('#idcard-modal-title').textContent = clown ? 'Licencia de Tramposo' : 'Carnet';
   $('#idcard-modal-clown-notice').hidden = !clown;
 
   const emailForCard = person.correo || (person.usuario ? `${person.usuario}@unal.edu.co` : '');
@@ -276,7 +276,10 @@ function showIdCardOf(index) {
   $('#idcard-modal').showModal();
 }
 
-const SUSTOMETRO_CACHE_KEY = 'semana_sistemas_sustometro_cache';
+const SUSTOMETRO_CACHE_KEY = 'semana_sistemas_sustometro_v2_cache';
+try {
+  localStorage.removeItem('semana_sistemas_sustometro_cache');
+} catch (_) {}
 const SUSTOMETRO_CACHE_TTL = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
 
 function readSustometroCache() {
@@ -326,7 +329,7 @@ async function loadScareMeter(forceRefresh = false) {
         totalGeneral = 0;
       }
       renderRanking(cached.ranking, '');
-      if (typeof renderClowns === 'function') renderClowns(cached.clowns || []);
+      renderTramposos(cached.clowns || []);
       updateMyRankBanner();
       updateLoadMoreButton();
       return;
@@ -342,7 +345,10 @@ async function loadScareMeter(forceRefresh = false) {
         p_desplazamiento: 0,
         p_busqueda: currentSearchQuery || null,
       }),
-      supabaseClient.rpc('payasos_sustometro', { p_limite: 20 }),
+      supabaseClient.rpc('tramposos_sustometro', { p_limite: 50 }).then((res) => {
+        if (res.error) return supabaseClient.rpc('payasos_sustometro', { p_limite: 20 });
+        return res;
+      }),
       currentUser ? supabaseClient.rpc('mi_puesto_sustometro') : Promise.resolve({ data: [] }),
     ]);
 
@@ -366,7 +372,7 @@ async function loadScareMeter(forceRefresh = false) {
       renderRanking(ranking, currentSearchQuery);
     }
 
-    if (typeof renderClowns === 'function') renderClowns(clowns || []);
+    renderTramposos(clowns || []);
     updateMyRankBanner();
 
     if (isDefaultView && ranking) {
@@ -695,7 +701,7 @@ $('#btn-save-points').addEventListener('click', async () => {
 
   // A clown cannot receive points
   if (isClown(personBeingEdited.correo, personBeingEdited.nombre, personBeingEdited)) {
-    showPointsError('🤡 Este usuario tiene Shadowban permanente por juego sucio y no puede recibir puntos.');
+    showPointsError('Este usuario tiene Shadowban permanente por juego sucio y no puede recibir puntos.');
     return;
   }
 
@@ -782,3 +788,82 @@ if (clearSearchBtn) {
     loadScareMeter();
   });
 }
+
+
+// Renders the separate "Tabla de Tramposos" box for shadowbanned accounts
+let currentTramposos = [];
+
+function renderTramposos(tramposos) {
+  currentTramposos = tramposos || [];
+  const card = $('#clowns-card');
+  const list = $('#clowns-list');
+  if (!card || !list) return;
+
+  if (!currentTramposos.length) {
+    card.hidden = true;
+    return;
+  }
+
+  card.hidden = false;
+  list.innerHTML = currentTramposos.map((person, i) => {
+    const { handle, name } = personView(person);
+    const monster = person.monstruo || {};
+    return `
+      <li class="scarer-item scarer-item--clown scarer-item--tramposo">
+        <div class="scarer-card scarer-card--clown scarer-card--tramposo">
+          <div class="scarer-card__rank scarer-card__rank--clown">
+            <span aria-hidden="true">⚠️</span>
+          </div>
+
+          <div class="scarer-card__avatar" style="border-color: #ff0033; position: relative;">
+            ${drawCustomMonster(monster)}
+          </div>
+
+          <div class="scarer-card__info">
+            <div class="scarer-card__name">
+              <span>${escapeHtml(name)}</span>
+              <span class="scarer-card__title-tag scarer-card__title-tag--clown">Tramposo</span>
+            </div>
+            <div class="scarer-card__email">@${escapeHtml(handle)} · SANCIONADO</div>
+          </div>
+
+          <div class="scarer-card__score">
+            <span class="scarer-card__pts" style="color: #ff0033">0 <small>PTS</small></span>
+            <span class="scarer-card__percent" style="color: #ff0033">SHADOWBAN</span>
+          </div>
+        </div>
+
+        <div class="scarer-item__actions">
+          <button type="button" class="scarer-item__idcard scarer-item__idcard--clown btn-view-clown" data-clown-index="${i}" aria-label="Ver Licencia de Tramposo" title="Ver Licencia de Tramposo">
+            ${ICONS.idCard}
+          </button>
+        </div>
+      </li>
+    `;
+  }).join('');
+}
+
+const renderClowns = renderTramposos;
+
+// Interaction for tramposo cards: opens the ID card modal
+document.addEventListener('click', (event) => {
+  const clownBtn = event.target.closest('.btn-view-clown');
+  if (clownBtn) {
+    const idx = Number(clownBtn.dataset.clownIndex);
+    const person = currentTramposos[idx];
+    if (person) {
+      $('#idcard-modal-title').textContent = 'Licencia de Tramposo';
+      const notice = $('#idcard-modal-clown-notice');
+      if (notice) notice.hidden = false;
+      const monster = { ...(person.monstruo || {}), es_payaso: true };
+      $('#idcard-modal-idcard').innerHTML = scarerIdCard(
+        person.nombre || 'Estudiante UNAL',
+        person.correo || (person.usuario ? `${person.usuario}@unal.edu.co` : 'estudiante@unal.edu.co'),
+        monster,
+        findTitle('asustador') || BASE_TITLE,
+        null
+      );
+      $('#idcard-modal').showModal();
+    }
+  }
+});

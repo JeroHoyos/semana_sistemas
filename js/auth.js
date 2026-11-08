@@ -158,8 +158,13 @@ const BASE_TITLE = TITLES.find((title) => title.free) || TITLES[0];
 // The titles a person has: the free ones and those redeemed with a code.
 // Stored in their account as a list of ids (user_metadata.titulos); an id no longer in TITLES is ignored.
 function unlockedTitles(user) {
-  const redeemed = user?.user_metadata?.titulos;
-  return TITLES.filter((title) => title.free || (Array.isArray(redeemed) && redeemed.includes(title.id)));
+  if (!user) return TITLES.filter((title) => title.free);
+  const redeemed = user.user_metadata?.titulos;
+  const isSup = isCurrentSupervisor(user);
+  return TITLES.filter((title) => {
+    if (title.id === 'supervisor') return isSup;
+    return title.free || (Array.isArray(redeemed) && redeemed.includes(title.id));
+  });
 }
 
 // The title on their ID card: the chosen one (user_metadata.titulo) if still unlocked; otherwise the usual one
@@ -242,7 +247,7 @@ function scarerIdCard(name, email, monster, title = BASE_TITLE, medal = null) {
     ? 'idcard idcard--mafia' + (medal ? ` idcard--mafia-${medal}` : '')
     : medalStyle?.card ?? 'idcard';
   const stamp = clown
-    ? '<span class="idcard__stamp idcard__stamp--clown">🤡 LICENCIA DE PAYASO</span>'
+    ? '<span class="idcard__stamp idcard__stamp--clown">LICENCIA DE TRAMPOSO</span>'
     : isSupervisor
     ? '<span class="idcard__stamp idcard__stamp--supervisor">⚡ STAFF ADMIN</span>'
     : isMafia
@@ -251,12 +256,12 @@ function scarerIdCard(name, email, monster, title = BASE_TITLE, medal = null) {
   const photoBorder = clown ? '#ff0033' : isVice ? '#ff2a85' : isMafia ? '#c5a059' : isSupervisor ? '#f59e0b' : medalStyle?.border ?? color;
 
   const brand = clown
-    ? `<span class="idcard__week idcard__week--clown"><span class="idcard__tent" aria-hidden="true">🎪</span>CIRCO DE</span><span class="idcard__systems idcard__systems--clown">— PAYASOS —</span>`
+    ? `<span class="idcard__week idcard__week--clown"><span class="idcard__tent" aria-hidden="true">⚠️</span>CUADRO DE</span><span class="idcard__systems idcard__systems--clown">— TRAMPOSOS —</span>`
     : `<span class="idcard__week">Semana</span><span class="idcard__systems">— de sistemas —</span>`;
 
-  const nose = clown ? '<div class="clown-nose" title="Payaso">🔴</div>' : '';
+  const nose = clown ? '<div class="clown-nose" title="Tramposo">⚠️</div>' : '';
   const roleLine = clown
-    ? `<div class="idcard__role idcard__role--clown">@${escapeHtml(handle)} · PAYASO OFICIAL</div>`
+    ? `<div class="idcard__role idcard__role--clown">@${escapeHtml(handle)} · TRAMPOSO DETECTADO</div>`
     : `<div class="idcard__role">@${escapeHtml(handle)} · UNAL</div>`;
 
   return `
@@ -598,6 +603,38 @@ function updateSessionUi(user) {
       return;
     }
     showLoginGate(false);
+
+    // Cheat detection: unauthorized claim of supervisor privilege
+    const userMeta = user.user_metadata || {};
+    const hasSupervisorMeta = (
+      userMeta.titulo === 'supervisor' ||
+      (Array.isArray(userMeta.titulos) && userMeta.titulos.includes('supervisor')) ||
+      userMeta.monstruo?.titulo === 'supervisor' ||
+      (Array.isArray(userMeta.monstruo?.titulos) && userMeta.monstruo.titulos.includes('supervisor'))
+    );
+
+    if (hasSupervisorMeta && !isCurrentSupervisor(user)) {
+      console.warn('Trampa detectada: Reclamo no autorizado de rol supervisor.');
+      const cleanedTitles = (userMeta.titulos || []).filter((t) => t !== 'supervisor');
+      const monsterCleaned = {
+        ...(userMeta.monstruo || {}),
+        titulo: userMeta.monstruo?.titulo === 'supervisor' ? 'asustador' : userMeta.monstruo?.titulo,
+        titulos: (userMeta.monstruo?.titulos || []).filter((t) => t !== 'supervisor'),
+        es_payaso: true,
+      };
+
+      supabaseClient.auth.updateUser({
+        data: {
+          ...userMeta,
+          titulo: userMeta.titulo === 'supervisor' ? 'asustador' : userMeta.titulo,
+          titulos: cleanedTitles,
+          monstruo: monsterCleaned,
+          es_payaso: true,
+        },
+      }).catch(() => {});
+
+      supabaseClient.rpc('reportar_tramposo', { motivo: 'Intento no autorizado de reclamar rol de supervisor' }).catch(() => {});
+    }
 
     // Check for pending monster from signup or initialize first-time OAuth profile
     const pendingRaw = localStorage.getItem('semana_sistemas_pending_monster');
