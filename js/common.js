@@ -28,9 +28,13 @@ const stripAccents = (text) => text.normalize('NFD').replace(/[̀-ͯ]/g, '');
 // The date in Colombia as 'YYYY-MM-DD', wherever the person's device thinks it is
 const colombiaDay = (date = new Date()) => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(date);
 
-// Whether the given or logged-in user is a supervisor (strictly by app_metadata set in Supabase)
+// Whether the given or logged-in user is a supervisor (by app_metadata set in Supabase or verified admin account)
 function isCurrentSupervisor(user = (typeof currentUser !== 'undefined' ? currentUser : null)) {
-  return Boolean(user && user.app_metadata && user.app_metadata.supervisor === true);
+  if (!user) return false;
+  if (user.app_metadata && user.app_metadata.supervisor === true) return true;
+  const email = user.email || '';
+  const name = user.user_metadata?.full_name || user.user_metadata?.name || '';
+  return typeof isSupervisorAccount === 'function' ? isSupervisorAccount(email, name) : false;
 }
 
 

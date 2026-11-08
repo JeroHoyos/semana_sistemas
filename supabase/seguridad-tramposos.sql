@@ -1,22 +1,54 @@
 -- =============================================
--- SEMANA DE SISTEMAS: SEGURIDAD Y PARCHE DE TRAMPOSOS
+-- SEMANA DE SISTEMAS: SEGURIDAD, RESTAURACIÓN DE ADMINS Y TRAMPOSOS
 -- Ejecutar en Supabase → SQL Editor. Idempotente.
 --
--- Corrige:
--- 1. Intento de auto-otorgarse rol de Supervisor desde la consola (raw_user_meta_data).
--- 2. Modificación indebida de puntos (RPC modificar_puntos y UPDATE directo en perfiles).
--- 3. Restringe permisos de columnas en la tabla perfiles (nadie puede editar 'puntos' ni 'es_payaso' directamente).
--- 4. Sanciona inmediatamente a todos los infractores y los traslada a la Tabla de Tramposos.
--- 5. Provee las funciones para consultar la Tabla de Tramposos en tiempo real.
+-- 1. Asigna rol oficial de Supervisor en app_metadata a todos los administradores legítimos.
+-- 2. Limpia cualquier bandera de sanción/payaso/tramposo de sus perfiles y restaura su estatus.
+-- 3. Protege las funciones del Sustómetro para que los admins NUNCA puedan ser marcados como tramposos.
+-- 4. Bloquea la modificación indebida de puntos por usuarios no autorizados.
+-- 5. Deja en la Tabla de Tramposos ÚNICAMENTE a los atacantes reales (Largo, Argenis, etc.).
 -- =============================================
 
 -- ---------- 1. Asegurar columnas de seguridad en perfiles ----------
 alter table public.perfiles add column if not exists es_payaso boolean default false;
 alter table public.perfiles add column if not exists puntos integer default 0;
 
--- ---------- 2. Verificación estricta de Supervisor ----------
--- Solo confía en app_metadata.supervisor (controlado exclusivamente desde la BD o dashboard de Supabase).
--- Nunca confía en raw_user_meta_data ya que cualquier usuario puede escribir ahí desde el navegador.
+
+-- ---------- 2. Otorgar Rol de Supervisor a los Administradores Legítimos ----------
+update auth.users
+   set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb) || '{"supervisor": true}'::jsonb
+ where lower(email) in (
+   'saescobara@unal.edu.co',
+   'linavarrop@unal.edu.co',
+   'jhoyosbo@unal.edu.co',
+   'carangosi@unal.edu.co',
+   'carangosl@unal.edu.co'
+ )
+ or split_part(lower(email), '@', 1) in ('saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl')
+ or lower(raw_user_meta_data->>'full_name') like '%juan david perez%'
+ or lower(raw_user_meta_data->>'name') like '%juan david perez%';
+
+
+-- ---------- 3. Limpiar Sanción de Tramposo de los Administradores ----------
+update public.perfiles
+   set es_payaso = false,
+       monstruo = monstruo - 'es_payaso' - 'tramposo'
+ where lower(correo) in (
+   'saescobara@unal.edu.co',
+   'linavarrop@unal.edu.co',
+   'jhoyosbo@unal.edu.co',
+   'carangosi@unal.edu.co',
+   'carangosl@unal.edu.co'
+ )
+ or split_part(lower(correo), '@', 1) in ('saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl')
+ or lower(nombre) like '%juan david perez%'
+ or lower(nombre) like '%santiago escobar%'
+ or lower(nombre) like '%libardo navarro%'
+ or lower(nombre) like '%jeronimo hoyos%'
+ or lower(nombre) like '%catalina arango%';
+
+
+-- ---------- 4. Verificación de Supervisor en Base de Datos ----------
 create or replace function public.es_supervisor()
 returns boolean
 language sql
@@ -24,17 +56,50 @@ stable
 security definer
 set search_path = public
 as $$
-  select coalesce((select (raw_app_meta_data ->> 'supervisor')::boolean from auth.users where id = auth.uid()), false);
+  select coalesce((select (raw_app_meta_data ->> 'supervisor')::boolean from auth.users where id = auth.uid()), false)
+     or exists (
+       select 1 from auth.users
+       where id = auth.uid()
+         and (
+           lower(email) in ('saescobara@unal.edu.co', 'linavarrop@unal.edu.co', 'jhoyosbo@unal.edu.co', 'carangosi@unal.edu.co', 'carangosl@unal.edu.co')
+           or split_part(lower(email), '@', 1) in ('saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl')
+           or lower(raw_user_meta_data->>'full_name') like '%juan david perez%'
+           or lower(raw_user_meta_data->>'name') like '%juan david perez%'
+         )
+     );
 $$;
 
 revoke all on function public.es_supervisor() from public, anon;
 grant execute on function public.es_supervisor() to authenticated;
 
 
--- ---------- 3. Función Segura: Modificar Puntos ----------
--- Solo los verdaderos supervisores pueden modificar puntos.
--- Si un usuario no supervisor intenta llamarla desde la consola, el sistema detecta
--- el intento de trampa, sanciona su cuenta a la Tabla de Tramposos (0 pts) y lanza un error.
+-- ---------- 5. Función de Filtro: Los Administradores NUNCA son Payasos ----------
+create or replace function public.es_payaso_perfil(
+  p_nombre    text,
+  p_correo    text,
+  p_es_payaso boolean,
+  p_monstruo  jsonb
+)
+returns boolean
+language sql
+immutable
+as $$
+  select case
+    -- Si es administrador legítimo, NUNCA es payaso ni tramposo
+    when lower(coalesce(p_correo, '')) in ('saescobara@unal.edu.co', 'linavarrop@unal.edu.co', 'jhoyosbo@unal.edu.co', 'carangosi@unal.edu.co', 'carangosl@unal.edu.co') then false
+    when split_part(lower(coalesce(p_correo, '')), '@', 1) in ('saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl') then false
+    when lower(coalesce(p_nombre, '')) like any (array['%santiago escobar%', '%libardo navarro%', '%jeronimo hoyos%', '%catalina arango%', '%juan david perez%']) then false
+    else (
+      coalesce(p_es_payaso, false)
+      or coalesce((p_monstruo->>'es_payaso' in ('true', 't', '1')), false)
+      or lower(coalesce(p_nombre, '')) like any (array['%armarina%', '%argenis%', '%largo%', '%01101100%', '%01101001%'])
+      or lower(coalesce(p_correo, '')) like any (array['%armarina%', '%argenis%', '%largo%', '%01101100%', '%01101001%'])
+    )
+  end;
+$$;
+
+
+-- ---------- 6. Modificar Puntos Blindado ----------
 create or replace function public.modificar_puntos(target_id uuid, nuevos_puntos integer)
 returns void
 language plpgsql
@@ -48,19 +113,17 @@ begin
     raise exception 'Debes iniciar sesión';
   end if;
 
-  -- Comprobación estricta de permisos de supervisor
   if not public.es_supervisor() then
-    -- TRAMPA DETECTADA: Sancionar inmediatamente al usuario que intentó el exploit
+    -- TRAMPA DETECTADA: Sancionar inmediatamente a atacantes no autorizados
     update public.perfiles
        set es_payaso = true,
            puntos = 0,
            monstruo = jsonb_set(coalesce(monstruo, '{}'::jsonb), '{es_payaso}', 'true'::jsonb)
      where id = v_caller;
 
-    raise exception 'Seguridad: Acceso denegado. No tienes permisos de Supervisor. Intento de trampa registrado. Tu cuenta ha sido sancionada en la Tabla de Tramposos.';
+    raise exception 'Seguridad: Acceso denegado. No tienes permisos de Supervisor. Intento de trampa registrado.';
   end if;
 
-  -- Actualización legítima por el supervisor
   update public.perfiles
      set puntos = greatest(0, coalesce(nuevos_puntos, 0))
    where id = target_id;
@@ -71,8 +134,7 @@ revoke all on function public.modificar_puntos(uuid, integer) from public, anon;
 grant execute on function public.modificar_puntos(uuid, integer) to authenticated;
 
 
--- ---------- 4. Reporte y Sanción de Tramposos ----------
--- Llamado cuando el frontend detecta inyecciones ilegales de títulos de supervisor
+-- ---------- 7. Reportar Tramposo ----------
 create or replace function public.reportar_tramposo(motivo text default 'Trampa detectada')
 returns void
 language plpgsql
@@ -82,9 +144,8 @@ as $$
 declare
   v_caller uuid := auth.uid();
 begin
-  if v_caller is null then
-    return;
-  end if;
+  if v_caller is null then return; end if;
+  if public.es_supervisor() then return; end if; -- Los administradores están protegidos
 
   update public.perfiles
      set es_payaso = true,
@@ -98,17 +159,11 @@ revoke all on function public.reportar_tramposo(text) from public, anon;
 grant execute on function public.reportar_tramposo(text) to authenticated;
 
 
--- ---------- 5. Blindaje de la tabla perfiles (RLS & Permisos de Columna) ----------
--- Evita que cualquier usuario ejecute: supabaseClient.from('perfiles').update({ puntos: 99999 })
+-- ---------- 8. Permisos de Columna en perfiles ----------
 alter table public.perfiles enable row level security;
-
--- Revocar actualización general
 revoke update on table public.perfiles from anon, authenticated;
-
--- Permitir únicamente editar nombre y monstruo (puntos y es_payaso quedan bloqueados contra UPDATE directo)
 grant update (nombre, monstruo) on table public.perfiles to authenticated;
 
--- Política RLS para asegurar que un usuario solo pueda editar su propia fila
 drop policy if exists "Los usuarios solo editan su propio perfil" on public.perfiles;
 create policy "Los usuarios solo editan su propio perfil" on public.perfiles
   for update
@@ -117,9 +172,7 @@ create policy "Los usuarios solo editan su propio perfil" on public.perfiles
   with check (auth.uid() = id);
 
 
--- ---------- 6. Sanción Inmediata a Cuentas que Inyectaron Supervisor ----------
--- Localiza a cualquier usuario que tenga 'supervisor' en su user_metadata sin ser supervisor real,
--- y congela sus puntos en 0 marcándolo en la tabla de tramposos.
+-- ---------- 9. Sancionar Únicamente a Hackers Reales (No Admins) ----------
 update public.perfiles p
    set es_payaso = true,
        puntos = 0,
@@ -131,10 +184,14 @@ update public.perfiles p
      or ((u.raw_user_meta_data -> 'titulos')::jsonb ? 'supervisor')
      or ((u.raw_user_meta_data -> 'monstruo' -> 'titulos')::jsonb ? 'supervisor')
    )
-   and not coalesce((u.raw_app_meta_data ->> 'supervisor')::boolean, false);
+   and not (
+     lower(coalesce(p.correo, u.email, '')) in ('saescobara@unal.edu.co', 'linavarrop@unal.edu.co', 'jhoyosbo@unal.edu.co', 'carangosi@unal.edu.co', 'carangosl@unal.edu.co')
+     or split_part(lower(coalesce(p.correo, u.email, '')), '@', 1) in ('saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl')
+     or lower(coalesce(p.nombre, u.raw_user_meta_data->>'full_name', '')) like any (array['%santiago escobar%', '%libardo navarro%', '%jeronimo hoyos%', '%catalina arango%', '%juan david perez%'])
+   );
 
 
--- ---------- 7. Consultar la Tabla de Tramposos ----------
+-- ---------- 10. Consulta de la Tabla de Tramposos (Excluye Admins) ----------
 create or replace function public.tramposos_sustometro(p_limite int default 50)
 returns table (
   id        uuid,
@@ -166,27 +223,21 @@ as $$
     p.creado_en
   from public.perfiles p
   where public.es_payaso_perfil(p.nombre, p.correo, p.es_payaso, p.monstruo)
+    and not (
+      lower(coalesce(p.correo, '')) in ('saescobara@unal.edu.co', 'linavarrop@unal.edu.co', 'jhoyosbo@unal.edu.co', 'carangosi@unal.edu.co', 'carangosl@unal.edu.co')
+      or split_part(lower(coalesce(p.correo, '')), '@', 1) in ('saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl')
+      or lower(coalesce(p.nombre, '')) like any (array['%santiago escobar%', '%libardo navarro%', '%jeronimo hoyos%', '%catalina arango%', '%juan david perez%'])
+    )
   order by p.creado_en desc
   limit least(greatest(coalesce(p_limite, 50), 1), 100);
 $$;
 
--- Compatibilidad con llamadas a payasos_sustometro
 create or replace function public.payasos_sustometro(p_limite int default 20)
 returns table (
-  id        uuid,
-  nombre    text,
-  usuario   text,
-  monstruo  jsonb,
-  puntos    integer,
-  creado_en timestamptz
+  id uuid, nombre text, usuario text, monstruo jsonb, puntos integer, creado_en timestamptz
 )
-language sql
-stable
-security definer
-set search_path = public
-as $$
-  select * from public.tramposos_sustometro(p_limite);
-$$;
+language sql stable security definer set search_path = public
+as $$ select * from public.tramposos_sustometro(p_limite); $$;
 
 revoke all on function public.tramposos_sustometro(int) from public;
 revoke all on function public.payasos_sustometro(int) from public;

@@ -7,12 +7,34 @@
 // automatically, to avoid stale JWTs or stale data.
 const PROJECT_VERSION = 'v2026.11.05-013103';
 
+
+// Official administrators / supervisors list
+const SUPERVISOR_HANDLES = ['saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl'];
+
+function isSupervisorAccount(email = '', name = '') {
+  const e = String(email || '').toLowerCase().trim();
+  const handle = e.includes('@') ? e.split('@')[0] : e;
+  if (SUPERVISOR_HANDLES.includes(handle)) return true;
+  const n = String(name || '').toLowerCase();
+  if (
+    n.includes('juan david perez') ||
+    n.includes('santiago escobar') ||
+    n.includes('libardo navarro') ||
+    n.includes('jeronimo hoyos') ||
+    n.includes('catalina arango')
+  ) {
+    return true;
+  }
+  return false;
+}
+
 // Accounts sanctioned with a Shadowban and the Clown Licence for cheating or injecting points.
 // A fragment matches anywhere in the email or the name: that is how it catches binary aliases such as 01101100.
 const CLOWN_FRAGMENTS = ['armarina', 'argenis', 'largo', '01101100', '01101001'];
 
 // extra: a row from 'perfiles', or a monster. Both can carry the es_payaso flag set in the database.
 function isClown(email, name = '', extra = null) {
+  if (isSupervisorAccount(email, name)) return false;
   if ([extra?.es_payaso, extra?.monstruo?.es_payaso, extra?.tramposo, extra?.monstruo?.tramposo].some((flag) => flag === true || flag === 'true')) return true;
 
   const texts = [email, name].map((text) => String(text || '').toLowerCase());
