@@ -974,7 +974,7 @@ document.addEventListener('click', async (event) => {
 
 // Purges stale data caches (leaderboard, rankings, game records) on deployment
 // WITHOUT logging the user out (preserves Supabase session tokens).
-const DATA_CACHE_VERSION = '20261108_v3';
+const DATA_CACHE_VERSION = '20261108_v5';
 
 function syncDataCache() {
   try {

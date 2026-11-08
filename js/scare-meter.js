@@ -281,7 +281,7 @@ function showIdCardOf(index) {
   $('#idcard-modal').showModal();
 }
 
-const SUSTOMETRO_CACHE_KEY = 'semana_sistemas_sustometro_v3_cache';
+const SUSTOMETRO_CACHE_KEY = 'semana_sistemas_sustometro_v5_cache';
 try {
   for (const k of Object.keys(localStorage)) {
     if (k.startsWith('semana_sistemas_sustometro_') && k !== SUSTOMETRO_CACHE_KEY) {
@@ -306,11 +306,13 @@ function readSustometroCache() {
 
 function writeSustometroCache(ranking, clowns, myRankInfo) {
   try {
+    const existing = readSustometroCache() || {};
     localStorage.setItem(SUSTOMETRO_CACHE_KEY, JSON.stringify({
       timestamp: Date.now(),
-      ranking,
-      clowns,
-      myRankInfo,
+      ranking: (ranking && ranking.length) ? ranking : existing.ranking,
+      clowns: (clowns && clowns.length) ? clowns : (existing.clowns || []),
+      myRankUserId: currentUser?.id || null,
+      myRankInfo: myRankInfo || (existing.myRankUserId === currentUser?.id ? existing.myRankInfo : null),
     }));
   } catch (e) {
     console.warn('Could not cache Scare Meter ranking:', e);
@@ -322,13 +324,16 @@ async function loadScareMeter(forceRefresh = false) {
   if (isLoadingRanking) return;
 
   const isDefaultView = !currentSearchQuery && currentLimit === PAGE_SIZE;
+  let cached = null;
 
   // Use 5-hour local cache when not searching or paginating
   if (isDefaultView && !forceRefresh) {
-    const cached = readSustometroCache();
+    cached = readSustometroCache();
     if (cached && Array.isArray(cached.ranking)) {
       scarers = cached.ranking;
-      myRankInfo = cached.myRankInfo;
+      if (cached.myRankUserId === currentUser?.id) {
+        myRankInfo = cached.myRankInfo;
+      }
       if (cached.ranking.length) {
         totalFiltrados = cached.ranking[0].total_filtrados || cached.ranking.length;
         totalGeneral = cached.ranking[0].total_general || cached.ranking.length;
@@ -338,17 +343,21 @@ async function loadScareMeter(forceRefresh = false) {
         totalGeneral = 0;
       }
       renderRanking(cached.ranking, '');
-      renderTramposos(cached.clowns || []);
-      updateMyRankBanner();
+      if (Array.isArray(cached.clowns) && cached.clowns.length) {
+        renderTramposos(cached.clowns);
+      }
+      if (myRankInfo) {
+        updateMyRankBanner();
+      }
       updateLoadMoreButton();
-      return;
+      // Render cache instantly, then continue in background to get fresh clowns and myRankInfo
     }
   }
 
   isLoadingRanking = true;
   try {
     // shortcut: max limit capped at 50 per page, increase limit or add keyset pagination if leaderboard volume requires larger viewports.
-    const [{ data: ranking, error: rankingError }, { data: clowns }, myPuestoRes] = await Promise.all([
+    const [{ data: ranking, error: rankingError }, clownsRes, myPuestoRes] = await Promise.all([
       supabaseClient.rpc('ranking_sustometro', {
         p_limite: currentLimit,
         p_desplazamiento: 0,
@@ -357,7 +366,11 @@ async function loadScareMeter(forceRefresh = false) {
       supabaseClient.rpc('tramposos_sustometro', { p_limite: 50 })
         .then((res) => (res.error ? supabaseClient.rpc('payasos_sustometro', { p_limite: 50 }) : res))
         .catch(() => ({ data: [] })),
-      currentUser ? supabaseClient.rpc('mi_puesto_sustometro') : Promise.resolve({ data: [] }),
+      currentUser
+        ? supabaseClient.rpc('mi_puesto_sustometro', { p_user_id: currentUser.id })
+            .then((res) => (res.error ? supabaseClient.rpc('mi_puesto_sustometro') : res))
+            .catch(() => supabaseClient.rpc('mi_puesto_sustometro'))
+        : Promise.resolve({ data: [] }),
     ]);
 
     if (rankingError) {
@@ -366,7 +379,32 @@ async function loadScareMeter(forceRefresh = false) {
       return;
     }
 
-    myRankInfo = (myPuestoRes?.data && myPuestoRes.data.length) ? myPuestoRes.data[0] : null;
+    const freshClowns = (clownsRes?.data && clownsRes.data.length) ? clownsRes.data : null;
+    if (freshClowns) {
+      renderTramposos(freshClowns);
+    } else if (!currentTramposos.length && cached?.clowns?.length) {
+      renderTramposos(cached.clowns);
+    }
+
+    if (myPuestoRes?.data && myPuestoRes.data.length) {
+      myRankInfo = myPuestoRes.data[0];
+      updateMyRankBanner();
+    } else if (cached?.myRankUserId === currentUser?.id && cached?.myRankInfo) {
+      myRankInfo = cached.myRankInfo;
+      updateMyRankBanner();
+    } else if (currentUser && ranking && ranking.length) {
+      const myIdx = ranking.findIndex((p) => p.id === currentUser.id);
+      if (myIdx >= 0) {
+        const me = ranking[myIdx];
+        myRankInfo = {
+          posicion: me.posicion || (myIdx + 1),
+          puntos: me.puntos || 0,
+          medalla: me.medalla || null,
+          puesto_medalla: me.puesto_medalla || (myIdx + 1),
+        };
+        updateMyRankBanner();
+      }
+    }
 
     if (!ranking || !ranking.length) {
       scarers = [];
@@ -380,11 +418,44 @@ async function loadScareMeter(forceRefresh = false) {
       renderRanking(ranking, currentSearchQuery);
     }
 
-    renderTramposos(clowns || []);
-    updateMyRankBanner();
+    // If clowns or myRankInfo were empty on the first tick due to async auth header race, retry at 200ms and 700ms
+    if (currentUser && (!freshClowns || (!myPuestoRes?.data || !myPuestoRes.data.length))) {
+      const doRetry = async () => {
+        try {
+          const [retryClowns, retryRank] = await Promise.all([
+            !currentTramposos.length
+              ? supabaseClient.rpc('tramposos_sustometro', { p_limite: 50 })
+                  .then((r) => (r.error ? supabaseClient.rpc('payasos_sustometro', { p_limite: 50 }) : r))
+                  .catch(() => null)
+              : null,
+            !myRankInfo
+              ? supabaseClient.rpc('mi_puesto_sustometro', { p_user_id: currentUser.id })
+                  .then((r) => (r.error ? supabaseClient.rpc('mi_puesto_sustometro') : r))
+                  .catch(() => null)
+              : null,
+          ]);
 
-    if (isDefaultView && ranking) {
-      writeSustometroCache(ranking, clowns || [], myRankInfo);
+          let cacheUpdated = false;
+          if (retryClowns?.data && retryClowns.data.length) {
+            renderTramposos(retryClowns.data);
+            cacheUpdated = true;
+          }
+          if (retryRank?.data && retryRank.data.length) {
+            myRankInfo = retryRank.data[0];
+            updateMyRankBanner();
+            cacheUpdated = true;
+          }
+          if (cacheUpdated && isDefaultView && scarers.length) {
+            writeSustometroCache(scarers, currentTramposos, myRankInfo);
+          }
+        } catch (_) {}
+      };
+      setTimeout(doRetry, 200);
+      setTimeout(doRetry, 700);
+    }
+
+    if (isDefaultView && ranking && ranking.length) {
+      writeSustometroCache(ranking, currentTramposos, myRankInfo);
     }
   } catch (err) {
     console.error('Unexpected error:', err);
@@ -767,16 +838,35 @@ document.addEventListener('idcard:session', () => {
     loadScareMeter();
   } else {
     scarers = [];
+    myRankInfo = null;
     totalFiltrados = 0;
     totalGeneral = 0;
     renderRanking([], '');
+    updateMyRankBanner();
   }
-  updateMyRankBanner();
 });
 
 if (currentUser) {
   loadScareMeter();
 }
+
+window.addEventListener('pageshow', () => {
+  if (currentUser && (!myRankInfo || !currentTramposos.length)) {
+    loadScareMeter();
+  }
+});
+
+window.addEventListener('focus', () => {
+  if (currentUser && (!myRankInfo || !currentTramposos.length)) {
+    loadScareMeter();
+  }
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && currentUser && (!myRankInfo || !currentTramposos.length)) {
+    loadScareMeter();
+  }
+});
 
 
 // Search input listener for the ranking table
