@@ -1138,10 +1138,8 @@ function dressConsole() {
   gameConsole.style.setProperty('--end-delay', `${endDelay()}ms`);
   $('#console-cartridge').textContent = name;
   $('#records-game').textContent = name;
-  $('#game-link-name').textContent = name;
 
   // Start overlay
-  $('#start-title').textContent = name;
   $('#start-text').textContent = splash.text || '';
   $('#start-items').innerHTML = typeof splash.items === 'function' ? splash.items() : splash.items || '';
   $('#keyboard-help').textContent = splash.keyboardHelp || '';
