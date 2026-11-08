@@ -3703,6 +3703,107 @@ button { font: inherit; color: inherit; cursor: pointer; }
   margin-top: 10px;
 }
 
+
+/* Audit modal and reason field */
+.points-modal__reason-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+.points-modal__reason-input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #cbd5e1;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--navy);
+  background: #f8fafc;
+  box-sizing: border-box;
+}
+.points-modal__reason-input:focus {
+  outline: none;
+  border-color: #1667c2;
+  box-shadow: 0 0 0 2px rgba(22, 103, 194, 0.18);
+  background: #fff;
+}
+
+.modal-audit-log .auth-modal__box--wide {
+  max-width: 720px;
+  width: 95vw;
+}
+.audit-modal__intro {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--gray);
+}
+.audit-modal__table-wrap {
+  margin-top: 14px;
+  max-height: 420px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+}
+.audit-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  text-align: left;
+}
+.audit-table th {
+  position: sticky;
+  top: 0;
+  background: #f1f5f9;
+  padding: 10px 12px;
+  font-family: var(--font-narrow);
+  font-weight: 700;
+  color: var(--navy);
+  border-bottom: 1.5px solid #cbd5e1;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: 11px;
+  z-index: 2;
+}
+.audit-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  color: var(--navy);
+  vertical-align: middle;
+}
+.audit-table tr:hover td {
+  background: #f8fafc;
+}
+.audit-table__empty {
+  text-align: center;
+  padding: 28px !important;
+  color: var(--gray);
+  font-style: italic;
+}
+.audit-diff {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-varsity);
+  font-weight: 700;
+}
+.audit-diff--pos {
+  color: #15803d;
+}
+.audit-diff--neg {
+  color: #b91c1c;
+}
+.hud__admin-btn--audit {
+  background: rgba(22, 103, 194, 0.08) !important;
+  border-color: rgba(22, 103, 194, 0.25) !important;
+  margin-left: 6px;
+}
+.hud__admin-btn--audit:hover {
+  background: #1667c2 !important;
+  color: #fff !important;
+}
+
 /* Each person in a light gray box, like the day, time and place ones */
 .scarer-card {
   width: 100%;
