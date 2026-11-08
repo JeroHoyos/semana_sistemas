@@ -108,8 +108,8 @@ function isNightSuspension(date = new Date()) {
 function showLastDayNotice() {
   if (colombiaDay() !== '2026-11-08') return;
   try {
-    if (localStorage.getItem('last_day_week_1_seen')) return;
-    localStorage.setItem('last_day_week_1_seen', '1');
+    if (localStorage.getItem('last_day_week_1_top_50_seen')) return;
+    localStorage.setItem('last_day_week_1_top_50_seen', '1');
   } catch { return; }
 
   const notice = document.createElement('dialog');
@@ -122,7 +122,7 @@ function showLastDayNotice() {
         <div class="reward-icon-box">🎮</div>
         <p class="section-title__eyebrow">¡Último día!</p>
         <h2 class="auth-modal__title reward-modal__title" id="last-day-title">Juego de la semana 1</h2>
-        <p class="reward-desc">Hoy es el último día para jugar el juego de la semana 1. Solo por hoy tienes <strong>30 intentos</strong> para subir en la tabla.</p>
+        <p class="reward-desc">Hoy es el último día para jugar el juego de la semana 1. Solo por hoy tienes <strong>30 intentos</strong>, y los <strong>50 mejores</strong> de la tabla ganarán puntos.</p>
         <a class="hero__button reward-btn" href="sustometro.html#juego-semana">¡A jugar!</a>
       </div>
     </div>`;
