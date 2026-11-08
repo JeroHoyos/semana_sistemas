@@ -972,6 +972,30 @@ document.addEventListener('click', async (event) => {
 
 /* ---------- Startup and version control ---------- */
 
+// Purges stale data caches (leaderboard, rankings, game records) on deployment
+// WITHOUT logging the user out (preserves Supabase session tokens).
+const DATA_CACHE_VERSION = '20261108_v3';
+
+function syncDataCache() {
+  try {
+    const saved = localStorage.getItem('semana_sistemas_data_cache_version');
+    if (saved !== DATA_CACHE_VERSION) {
+      for (const key of Object.keys(localStorage)) {
+        if (
+          key.startsWith('semana_sistemas_sustometro_') ||
+          key.startsWith('juego_semana_records_') ||
+          key.startsWith('semana_sistemas_cache_')
+        ) {
+          localStorage.removeItem(key);
+        }
+      }
+      localStorage.setItem('semana_sistemas_data_cache_version', DATA_CACHE_VERSION);
+    }
+  } catch (_) {}
+}
+syncDataCache();
+
+
 // If the project version changed, old sessions in the browser are closed
 // and stored tokens are cleared, to avoid stale JWTs or outdated versions.
 async function syncSessionVersion() {

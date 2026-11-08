@@ -281,9 +281,13 @@ function showIdCardOf(index) {
   $('#idcard-modal').showModal();
 }
 
-const SUSTOMETRO_CACHE_KEY = 'semana_sistemas_sustometro_v2_cache';
+const SUSTOMETRO_CACHE_KEY = 'semana_sistemas_sustometro_v3_cache';
 try {
-  localStorage.removeItem('semana_sistemas_sustometro_cache');
+  for (const k of Object.keys(localStorage)) {
+    if (k.startsWith('semana_sistemas_sustometro_') && k !== SUSTOMETRO_CACHE_KEY) {
+      localStorage.removeItem(k);
+    }
+  }
 } catch (_) {}
 const SUSTOMETRO_CACHE_TTL = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
 
@@ -350,10 +354,9 @@ async function loadScareMeter(forceRefresh = false) {
         p_desplazamiento: 0,
         p_busqueda: currentSearchQuery || null,
       }),
-      supabaseClient.rpc('tramposos_sustometro', { p_limite: 50 }).then((res) => {
-        if (res.error) return supabaseClient.rpc('payasos_sustometro', { p_limite: 20 });
-        return res;
-      }),
+      supabaseClient.rpc('tramposos_sustometro', { p_limite: 50 })
+        .then((res) => (res.error ? supabaseClient.rpc('payasos_sustometro', { p_limite: 50 }) : res))
+        .catch(() => ({ data: [] })),
       currentUser ? supabaseClient.rpc('mi_puesto_sustometro') : Promise.resolve({ data: [] }),
     ]);
 
@@ -809,10 +812,14 @@ if (clearSearchBtn) {
 let currentTramposos = [];
 
 function renderTramposos(tramposos) {
-  // Exclude legitimate admins even if database still has them marked
+  // Exclude legitimate admins and legitimate student Jose Miguel Garcia Velez
   const actualCheaters = (tramposos || []).filter((person) => {
     const email = person.correo || (person.usuario ? `${person.usuario}@unal.edu.co` : '');
-    return typeof isSupervisorAccount === 'function' ? !isSupervisorAccount(email, person.nombre) : true;
+    if (typeof isSupervisorAccount === 'function' && isSupervisorAccount(email, person.nombre)) return false;
+    const e = String(email || '').toLowerCase();
+    const n = String(person.nombre || '').toLowerCase();
+    if (e.includes('josgarciave') || n.includes('jose miguel garcia')) return false;
+    return true;
   });
 
   currentTramposos = actualCheaters;

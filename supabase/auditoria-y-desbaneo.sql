@@ -1,12 +1,14 @@
 -- =============================================
--- SEMANA DE SISTEMAS: AUDITORÍA DE SUPERVISORES Y RESTAURACIÓN
--- Ejecutar en Supabase → SQL Editor. Idempotente.
+-- SEMANA DE SISTEMAS: AUDITORÍA DE SUPERVISORES, ACELERACIÓN Y DESBANEO
+-- Ejecutar en Supabase → SQL Editor. Idempotente y de ejecución rápida.
 --
 -- 1. Desbanea a José Miguel García Vélez (@josgarciave) y le asigna sus 5 puntos reales.
--- 2. Asegura rol de Supervisor y limpia cualquier sanción previa de los administradores.
--- 3. Crea la tabla 'auditoria_puntos' con RLS para registrar qué admin cambió qué puntos y por qué.
--- 4. Modifica 'modificar_puntos' para registrar cada acción en la tabla de auditoría.
--- 5. Crea la función 'listar_auditoria_puntos' para que los admins consulten el historial.
+-- 2. Asegura rol de Supervisor y limpia cualquier sanción de los administradores oficiales.
+-- 3. Crea índices de alto rendimiento en perfiles para que Sustómetro y Tramposos carguen al instante.
+-- 4. Blindaje en es_payaso_perfil y tramposos_sustometro (supervisores y José Miguel nunca son payasos).
+-- 5. Crea la tabla 'auditoria_puntos' con RLS para registrar qué admin cambió qué puntos y por qué.
+-- 6. Actualiza 'modificar_puntos' para registrar cada acción en la tabla de auditoría.
+-- 7. Crea 'listar_auditoria_puntos' para que los supervisores consulten el registro de auditoría.
 -- =============================================
 
 -- ---------- 1. Restaurar a José Miguel García Vélez ----------
@@ -51,7 +53,99 @@ update public.perfiles
  or lower(nombre) like '%catalina arango%';
 
 
--- ---------- 3. Tabla de Auditoría de Puntos ----------
+-- ---------- 3. Índices de Alto Rendimiento (Aceleración de Consultas) ----------
+create index if not exists idx_perfiles_es_payaso on public.perfiles (es_payaso);
+create index if not exists idx_perfiles_puntos on public.perfiles (puntos desc);
+create index if not exists idx_perfiles_correo on public.perfiles (lower(correo));
+create index if not exists idx_perfiles_creado_en on public.perfiles (creado_en desc);
+
+
+-- ---------- 4. Filtro Blindado: Supervisores y José Miguel NUNCA son Payasos ----------
+create or replace function public.es_payaso_perfil(
+  p_nombre    text,
+  p_correo    text,
+  p_es_payaso boolean,
+  p_monstruo  jsonb
+)
+returns boolean
+language sql
+immutable
+as $$
+  select case
+    -- Administradores legítimos NUNCA son payasos ni tramposos
+    when lower(coalesce(p_correo, '')) in ('saescobara@unal.edu.co', 'linavarrop@unal.edu.co', 'jhoyosbo@unal.edu.co', 'carangosi@unal.edu.co', 'carangosl@unal.edu.co') then false
+    when split_part(lower(coalesce(p_correo, '')), '@', 1) in ('saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl') then false
+    when lower(coalesce(p_nombre, '')) like any (array['%santiago escobar%', '%libardo navarro%', '%jeronimo hoyos%', '%catalina arango%', '%juan david perez%']) then false
+    -- Estudiante legítimo José Miguel García Vélez (@josgarciave) NUNCA es payaso
+    when lower(coalesce(p_correo, '')) = 'josgarciave@unal.edu.co' or split_part(lower(coalesce(p_correo, '')), '@', 1) = 'josgarciave' or lower(coalesce(p_nombre, '')) like '%jose miguel garcia%' then false
+    else (
+      coalesce(p_es_payaso, false)
+      or coalesce((p_monstruo->>'es_payaso' in ('true', 't', '1')), false)
+      or lower(coalesce(p_nombre, '')) like any (array['%armarina%', '%argenis%', '%largo%', '%01101100%', '%01101001%'])
+      or lower(coalesce(p_correo, '')) like any (array['%armarina%', '%argenis%', '%largo%', '%01101100%', '%01101001%'])
+    )
+  end;
+$$;
+
+
+-- ---------- 5. Consulta Rápida de la Tabla de Tramposos ----------
+create or replace function public.tramposos_sustometro(p_limite int default 50)
+returns table (
+  id        uuid,
+  nombre    text,
+  usuario   text,
+  monstruo  jsonb,
+  puntos    integer,
+  creado_en timestamptz
+)
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select
+    p.id,
+    case
+      when p.nombre ilike '%0110%' or p.nombre ilike '%largo%' or p.correo ilike '%0110%' or p.correo ilike '%largo%'
+        then 'Juan Carlos Largo'
+      else coalesce(nullif(trim(p.nombre::text), ''), 'Estudiante UNAL')
+    end as nombre,
+    case
+      when p.nombre ilike '%0110%' or p.nombre ilike '%largo%' or p.correo ilike '%0110%' or p.correo ilike '%largo%'
+        then 'imlargo'
+      else split_part(p.correo::text, '@', 1)
+    end as usuario,
+    (p.monstruo::jsonb - 'titulos') as monstruo,
+    0::integer as puntos,
+    p.creado_en
+  from public.perfiles p
+  where public.es_payaso_perfil(p.nombre, p.correo, p.es_payaso, p.monstruo)
+    and not (
+      lower(coalesce(p.correo, '')) in ('saescobara@unal.edu.co', 'linavarrop@unal.edu.co', 'jhoyosbo@unal.edu.co', 'carangosi@unal.edu.co', 'carangosl@unal.edu.co')
+      or split_part(lower(coalesce(p.correo, '')), '@', 1) in ('saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl')
+      or lower(coalesce(p.nombre, '')) like any (array['%santiago escobar%', '%libardo navarro%', '%jeronimo hoyos%', '%catalina arango%', '%juan david perez%'])
+      or lower(coalesce(p.correo, '')) = 'josgarciave@unal.edu.co'
+      or split_part(lower(coalesce(p.correo, '')), '@', 1) = 'josgarciave'
+      or lower(coalesce(p.nombre, '')) like '%jose miguel garcia%'
+    )
+  order by p.creado_en desc
+  limit least(greatest(coalesce(p_limite, 50), 1), 100);
+$$;
+
+create or replace function public.payasos_sustometro(p_limite int default 50)
+returns table (
+  id uuid, nombre text, usuario text, monstruo jsonb, puntos integer, creado_en timestamptz
+)
+language sql stable security definer set search_path = public
+as $$ select * from public.tramposos_sustometro(p_limite); $$;
+
+revoke all on function public.tramposos_sustometro(int) from public;
+revoke all on function public.payasos_sustometro(int) from public;
+grant execute on function public.tramposos_sustometro(int) to anon, authenticated;
+grant execute on function public.payasos_sustometro(int) to anon, authenticated;
+
+
+-- ---------- 6. Tabla de Auditoría de Puntos ----------
 create table if not exists public.auditoria_puntos (
   id uuid primary key default gen_random_uuid(),
   creado_en timestamptz not null default now(),
@@ -70,14 +164,13 @@ create table if not exists public.auditoria_puntos (
 alter table public.auditoria_puntos enable row level security;
 revoke all on public.auditoria_puntos from public, anon;
 
--- Solo los supervisores pueden leer el historial de auditoría
 drop policy if exists "Supervisores leen auditoria" on public.auditoria_puntos;
 create policy "Supervisores leen auditoria" on public.auditoria_puntos
   for select to authenticated
   using (public.es_supervisor());
 
 
--- ---------- 4. Modificar Puntos con Registro de Auditoría ----------
+-- ---------- 7. Modificar Puntos con Registro de Auditoría ----------
 create or replace function public.modificar_puntos(
   target_id uuid,
   nuevos_puntos integer,
@@ -152,7 +245,7 @@ revoke all on function public.modificar_puntos(uuid, integer, text) from public,
 grant execute on function public.modificar_puntos(uuid, integer, text) to authenticated;
 
 
--- ---------- 5. Función para Consultar el Historial de Cambios ----------
+-- ---------- 8. Función para Consultar el Historial de Auditoría ----------
 create or replace function public.listar_auditoria_puntos(p_limite int default 50)
 returns table (
   id uuid,
@@ -192,7 +285,7 @@ revoke all on function public.listar_auditoria_puntos(int) from public, anon;
 grant execute on function public.listar_auditoria_puntos(int) to authenticated;
 
 
--- ---------- 6. Registrar evento inicial de corrección de José Miguel ----------
+-- ---------- 9. Registrar evento inicial de corrección de José Miguel ----------
 insert into public.auditoria_puntos (
   admin_id, admin_nombre, admin_usuario,
   target_id, target_nombre, target_usuario,
