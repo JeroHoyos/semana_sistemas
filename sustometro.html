@@ -351,12 +351,6 @@
 
         <!-- Black frame around the screen -->
         <div class="console__bezel">
-          <div class="console__bezel-bar" aria-hidden="true">
-            <span class="console__led"></span>
-            <span>Cartucho · <span id="console-cartridge">Snake</span></span>
-            <span class="console__brand">8 bits · Sistemas</span>
-          </div>
-
           <div class="console__screen" id="console-screen" tabindex="0"
             aria-label="Pantalla del juego. Espacio para empezar, P para pausar.">
             <div class="console__hud" aria-hidden="true">
@@ -371,7 +365,7 @@
 
               <!-- Overlays on top of the board: the console's data-state decides which one shows -->
               <div class="overlay overlay--start">
-                <p class="overlay__title">Press 2 Start</p>
+                <p class="overlay__title">¡A jugar!</p>
                 <p class="overlay__text" id="start-text"></p>
                 <div class="overlay__items" id="start-items"></div>
                 <p class="overlay__status overlay__status--notice" id="start-notice" role="alert" hidden></p>
@@ -445,9 +439,7 @@
       <!-- Leaderboard of the weekly game (each person's best score) -->
       <aside class="ranking-card records" aria-labelledby="records-title">
         <div class="ranking-card__header">
-          <h3 class="ranking-card__title" id="records-title">Récords</h3>
-          <span class="ranking-card__badge" id="records-game">Snake</span>
-        </div>
+          <h3 class="ranking-card__title" id="records-title">Récords</h3>        </div>
         <ol class="records__list" id="records-list">
           <li class="ranking-empty"><span class="ranking-spinner"></span></li>
         </ol>
