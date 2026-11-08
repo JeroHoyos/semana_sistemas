@@ -3940,6 +3940,29 @@ button { font: inherit; color: inherit; cursor: pointer; }
   border: 2px dashed #ff4d6d;
   background: linear-gradient(180deg, #fff5f7 0%, #ffeef2 100%);
 }
+/* It folds: the header is the <summary> of a <details>, closed by default */
+.ranking-card__header--clowns {
+  list-style: none;
+  cursor: pointer;
+}
+.ranking-card__header--clowns::-webkit-details-marker { display: none; }
+.ranking-card__header--clowns .ranking-card__badge { margin-left: auto; }
+.ranking-card__header--clowns::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  margin: -6px 4px 0 0;
+  border-right: 3px solid #ff0033;
+  border-bottom: 3px solid #ff0033;
+  transform: rotate(45deg);
+  transition: transform .2s, margin .2s;
+}
+.ranking-card--clowns[open] .ranking-card__header--clowns::after { margin-top: 6px; transform: rotate(225deg); }
+.ranking-card--clowns:not([open]) .ranking-card__header--clowns {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
 .ranking-card__header--clowns,
 .ranking-card__header--tramposos {
   border-bottom: 2px dashed rgba(255, 77, 109, 0.3);
