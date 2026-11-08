@@ -311,12 +311,21 @@
               <p>Conectando con Supabase…</p>
             </li>
           </ol>
-
           <div class="ranking-more" id="ranking-more-box" hidden>
             <button type="button" class="hero__button hero__button--outline ranking-more__btn" id="btn-load-more">
               Ver más
             </button>
           </div>
+        </div>
+
+        <!-- TABLA DE LOS TRAMPOSOS (SHADOWBAN) -->
+        <div class="ranking-card ranking-card--tramposos ranking-card--clowns" id="clowns-card" hidden>
+          <div class="ranking-card__header ranking-card__header--tramposos ranking-card__header--clowns">
+            <h2 class="ranking-card__title">Tabla de Tramposos</h2>
+            <span class="ranking-card__badge ranking-card__badge--tramposos ranking-card__badge--clowns">Shadowban</span>
+          </div>
+          <p class="tramposos-desc clowns-desc">Cuentas sancionadas permanentemente por intento de inyección de código y manipulación indebida de datos. Sus puntos están congelados en 0.</p>
+          <ul class="ranking-list ranking-list--tramposos ranking-list--clowns" id="clowns-list"></ul>
         </div>
       </section>
 
@@ -715,10 +724,10 @@
 
       <div class="auth-profile">
         <div class="clown-notice" id="idcard-modal-clown-notice" hidden>
-          <span class="clown-notice__icon">🤡🎪</span>
+          <span class="clown-notice__icon">⚠️</span>
           <div class="clown-notice__body">
-            <strong>¡HAY UN PAYASO INTENTANDO ARRUINAR LA FIESTA!</strong>
-            <p>Este usuario fue descubierto intentando inyectar puntos desde la consola del navegador. Su carnet ha sido degradado públicamente a Licencia de Payaso y está sancionado con Shadowban permanente.</p>
+            <strong>CUENTA SANCIONADA POR JUEGO SUCIO</strong>
+            <p>Este usuario fue descubierto intentando inyectar privilegios o manipular puntos. Su carnet ha sido degradado públicamente a Licencia de Tramposo y está sancionado con Shadowban permanente.</p>
           </div>
         </div>
         <div class="speakers__idcard idcard-builder__preview" id="idcard-modal-idcard"></div>
@@ -797,13 +806,13 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0"></script>
   <script src="js/supabase.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
-  <script src="js/data.js"></script>
+  <script src="js/data.js?v=20261108"></script>
   <script src="js/icons.js"></script>
-  <script src="js/common.js"></script>
+  <script src="js/common.js?v=20261108"></script>
   <script src="js/pixel-art.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/codes.js"></script>
-  <script src="js/scare-meter.js"></script>
+  <script src="js/auth.js?v=20261108"></script>
+  <script src="js/codes.js?v=20261108"></script>
+  <script src="js/scare-meter.js?v=20261108"></script>
   <script src="js/snake.js"></script>
   <script src="js/doom.js"></script>
   <script src="js/defrag.js"></script>

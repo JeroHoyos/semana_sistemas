@@ -13,7 +13,7 @@ const CLOWN_FRAGMENTS = ['armarina', 'argenis', 'largo', '01101100', '01101001']
 
 // extra: a row from 'perfiles', or a monster. Both can carry the es_payaso flag set in the database.
 function isClown(email, name = '', extra = null) {
-  if ([extra?.es_payaso, extra?.monstruo?.es_payaso].some((flag) => flag === true || flag === 'true')) return true;
+  if ([extra?.es_payaso, extra?.monstruo?.es_payaso, extra?.tramposo, extra?.monstruo?.tramposo].some((flag) => flag === true || flag === 'true')) return true;
 
   const texts = [email, name].map((text) => String(text || '').toLowerCase());
   return texts.some((text) => CLOWN_FRAGMENTS.some((fragment) => text.includes(fragment)));
@@ -189,10 +189,9 @@ const ACTIVITIES = [
 const TITLES = [
   { id: 'asustador', name: 'Asustador', feminine: 'Asustadora', free: true,
     description: 'El título con el que arranca todo monstruo de la Semana.' },
-  { id: 'supervisor', name: 'Supervisor de Sustos', feminine: 'Supervisora de Sustos',
+  { id: 'supervisor', name: 'Supervisor de Sustos', feminine: 'Supervisora de Sustos', adminOnly: true,
     description: 'Del equipo de administración de la página.',
-    hint: 'Solo para quienes mueven los hilos de la Semana.',
-    codeHash: '71c580f40935a6e35613a6223e59db79d22d534a8e3fed097020e3153da846da' },
+    hint: 'Solo para quienes mueven los hilos de la Semana.' },
   { id: 'pionero', name: 'Asustador Pionero', feminine: 'Asustadora Pionera',
     description: 'Llegó antes que nadie y abrió camino a los demás monstruos.',
     hint: 'Los primeros en llegar se llevan algo especial.',

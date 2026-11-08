@@ -3808,6 +3808,66 @@ button { font: inherit; color: inherit; cursor: pointer; }
   color: #b45309;
 }
 
+
+/* Tabla de Tramposos (Muro de Shadowban en sustometro.html) */
+.ranking-card--clowns,
+.ranking-card--tramposos {
+  margin-top: 24px;
+  border: 2px dashed #ff4d6d;
+  background: linear-gradient(180deg, #fff5f7 0%, #ffeef2 100%);
+}
+.ranking-card__header--clowns,
+.ranking-card__header--tramposos {
+  border-bottom: 2px dashed rgba(255, 77, 109, 0.3);
+}
+.ranking-card__badge--clowns,
+.ranking-card__badge--tramposos {
+  background: #ff0033 !important;
+  color: #fff !important;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  animation: pulse-clown 2s infinite;
+}
+@keyframes pulse-clown {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .85; transform: scale(1.04); }
+}
+.clowns-desc,
+.tramposos-desc {
+  padding: 12px 18px 0;
+  margin: 0;
+  font-size: 13px;
+  color: #8c1d34;
+  line-height: 1.4;
+}
+.ranking-list--clowns,
+.ranking-list--tramposos {
+  padding: 14px 18px 18px;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+.scarer-item--clown .scarer-card,
+.scarer-item--tramposo .scarer-card {
+  border: 2px solid #ff4d6d;
+  background: #fff;
+  opacity: 0.95;
+}
+.scarer-item--clown .scarer-card:hover,
+.scarer-item--tramposo .scarer-card:hover {
+  background: #fff5f7;
+}
+.scarer-item__idcard--clown {
+  border-color: #ff4d6d;
+  color: #ff0033;
+}
+.scarer-item__idcard--clown:hover {
+  background: #ff0033;
+  color: #fff;
+}
+
 /* Clown row in the Scare Meter table */
 .scarer-card--clown {
   background: repeating-linear-gradient(45deg, #fff5f5, #fff5f5 10px, #fee2e2 10px, #fee2e2 20px) !important;
