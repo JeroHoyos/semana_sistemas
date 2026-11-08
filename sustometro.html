@@ -263,6 +263,10 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     <span>Editar puntos</span>
                   </button>
+                  <button type="button" class="hud__admin-btn hud__admin-btn--audit" id="btn-admin-audit-log" hidden title="Historial de cambios de puntos (Supervisores)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span>Historial</span>
+                  </button>
                 </div>
               </div>
 
@@ -804,6 +808,36 @@
             <span>Guardar puntos</span>
           </button>
         </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- AUDIT LOG MODAL (supervisores) -->
+  <dialog id="audit-modal" class="auth-modal modal-audit-log">
+    <div class="auth-modal__box auth-modal__box--wide">
+      <div class="auth-modal__header">
+        <div>
+          <h2 class="auth-modal__title">Historial de Cambios de Puntos</h2>
+          <p class="audit-modal__intro">Registro exclusivo de supervisores: qué admin modificó puntos, a quién y por qué.</p>
+        </div>
+        <button type="button" class="auth-modal__close" id="btn-close-audit" aria-label="Cerrar">&times;</button>
+      </div>
+
+      <div class="audit-modal__table-wrap">
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Admin</th>
+              <th>Estudiante</th>
+              <th>Puntos</th>
+              <th>Motivo</th>
+            </tr>
+          </thead>
+          <tbody id="audit-table-body">
+            <tr><td colspan="5" class="audit-table__empty">Cargando registros…</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </dialog>
