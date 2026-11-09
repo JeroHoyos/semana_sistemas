@@ -1,0 +1,398 @@
+/* =========================================================
+   Política de Tratamiento de Datos Personales
+   Semana de Sistemas · Facultad de Minas · UNAL Medellín
+   Estilo terminal e interactivo (Deep Navy & Neon Cyan)
+   ========================================================= */
+
+body[data-pagina="legal"],
+body.legal-page {
+  --fondo: #050f1f;
+  --panel: #081a33;
+  --borde: #1b4a86;
+  --neon-2: #2fa8ff;
+  --cian: #8fd2ff;
+  --luz: #d8ecff;
+  --suave: #8fb3d6;
+  --mono: 'Share Tech Mono', ui-monospace, Menlo, Monaco, Consolas, monospace;
+  background-color: var(--fondo);
+  color: var(--luz);
+}
+
+body[data-pagina="legal"] main,
+body.legal-page main {
+  background:
+    linear-gradient(rgba(47, 168, 255, .05) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, rgba(47, 168, 255, .05) 1px, transparent 1px) 0 0 / 40px 40px,
+    radial-gradient(ellipse at 50% 0%, rgba(47, 168, 255, .15), transparent 65%),
+    var(--fondo);
+  color: var(--luz);
+  min-height: 60vh;
+}
+
+.legal {
+  padding: 44px 0 72px;
+}
+
+.legal__contenedor {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: grid;
+  gap: 24px;
+}
+
+.legal__contenedor > * {
+  min-width: 0;
+}
+
+.legal__hero {
+  padding: 48px 0 32px;
+  background: linear-gradient(180deg, rgba(3, 20, 39, .95) 0%, rgba(5, 15, 31, .98) 100%);
+  border-bottom: 1px solid var(--borde);
+  position: relative;
+  overflow: hidden;
+}
+
+.legal__hero-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.legal__hero-eyebrow {
+  margin: 0 0 8px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--cian);
+}
+
+.legal__hero-title {
+  margin: 0 0 14px;
+  font-family: var(--font-varsity, 'Graduate', serif);
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: .02em;
+  text-shadow: 0 0 20px rgba(47, 168, 255, .4);
+}
+
+.legal__hero-intro {
+  margin: 0 0 18px;
+  font-size: 16.5px;
+  line-height: 1.6;
+  color: var(--suave);
+  max-width: 720px;
+}
+
+.legal__prompt {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: rgba(3, 10, 21, .75);
+  border: 1px solid rgba(47, 168, 255, .3);
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--cian);
+}
+
+.legal__prompt-ruta {
+  color: #79e2ff;
+}
+
+.legal__prompt-signo {
+  color: var(--neon-2);
+}
+
+.legal__cursor {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  background: var(--cian);
+  margin-left: 4px;
+  animation: blinkCursor 1s step-end infinite;
+}
+
+@keyframes blinkCursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.legal__version {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--suave);
+  letter-spacing: .04em;
+}
+
+.legal__version b {
+  color: var(--cian);
+}
+
+.legal__indice {
+  padding: 22px 26px;
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  background: rgba(8, 26, 51, .85);
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, .5);
+}
+
+.legal__indice-titulo {
+  margin: 0 0 14px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #9fcfff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legal__indice-titulo::before {
+  content: '>';
+  color: var(--neon-2);
+}
+
+.legal__indice ol {
+  margin: 0;
+  padding-left: 22px;
+  columns: 2 300px;
+  column-gap: 32px;
+  font-size: 14.5px;
+  line-height: 2;
+}
+
+.legal__indice li {
+  break-inside: avoid;
+}
+
+.legal__indice a {
+  color: var(--luz);
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(143, 210, 255, .35);
+  transition: all .2s ease;
+}
+
+.legal__indice a:hover,
+.legal__indice a:focus-visible {
+  color: #ffffff;
+  border-bottom-color: var(--neon-2);
+  padding-left: 4px;
+}
+
+.legal__articulo {
+  padding: 12px 32px 36px;
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  background: rgba(8, 26, 51, .85);
+  box-shadow: 0 24px 60px -30px rgba(0, 0, 0, .8);
+}
+
+.legal__articulo section {
+  padding-top: 28px;
+  scroll-margin-top: 84px;
+}
+
+.legal__articulo section + section {
+  border-top: 1px dashed rgba(143, 179, 214, .22);
+  margin-top: 28px;
+}
+
+.legal__articulo h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0 0 14px;
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  color: #ffffff;
+}
+
+.legal__articulo h2 span {
+  color: var(--neon-2);
+  font-size: 14px;
+  letter-spacing: .1em;
+}
+
+.legal__articulo p,
+.legal__articulo li {
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: var(--luz);
+}
+
+.legal__articulo p {
+  margin: 0 0 14px;
+}
+
+.legal__articulo ul,
+.legal__articulo ol {
+  margin: 0 0 16px;
+  padding-left: 24px;
+  display: grid;
+  gap: 8px;
+}
+
+.legal__articulo strong {
+  color: #ffffff;
+}
+
+.legal__articulo em {
+  color: var(--cian);
+  font-style: normal;
+}
+
+.legal__articulo a {
+  color: var(--cian);
+  text-underline-offset: 3px;
+  transition: color .15s ease;
+}
+
+.legal__articulo a:hover {
+  color: #ffffff;
+}
+
+.legal__articulo code {
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: rgba(47, 168, 255, .15);
+  font-family: var(--mono);
+  font-size: .92em;
+  color: var(--cian);
+  border: 1px solid rgba(47, 168, 255, .2);
+}
+
+.legal__ficha {
+  margin: 16px 0 6px;
+  display: grid;
+  gap: 10px;
+}
+
+.legal__ficha div {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: rgba(3, 10, 21, .6);
+  border: 1px solid rgba(47, 168, 255, .2);
+}
+
+.legal__ficha dt {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--suave);
+  display: flex;
+  align-items: center;
+}
+
+.legal__ficha dd {
+  margin: 0;
+  font-size: 15px;
+  overflow-wrap: anywhere;
+  color: #ffffff;
+}
+
+.legal__autorizacion {
+  margin: 10px 0 18px;
+  padding: 18px 22px;
+  border-left: 4px solid var(--neon-2);
+  background: rgba(47, 168, 255, .09);
+  border-radius: 0 10px 10px 0;
+  border-top: 1px solid rgba(47, 168, 255, .15);
+  border-right: 1px solid rgba(47, 168, 255, .15);
+  border-bottom: 1px solid rgba(47, 168, 255, .15);
+}
+
+.legal__autorizacion p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--luz);
+  font-style: italic;
+}
+
+.legal__nota {
+  font-size: 13.5px !important;
+  color: var(--suave) !important;
+  margin-top: 14px !important;
+}
+
+.legal__volver {
+  margin: 12px 0 0;
+  font-family: var(--mono);
+  font-size: 14.5px;
+}
+
+.legal__volver a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--cian);
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: rgba(8, 26, 51, .6);
+  border: 1px solid var(--borde);
+  transition: all .2s ease;
+}
+
+.legal__volver a:hover {
+  color: #ffffff;
+  background: rgba(47, 168, 255, .18);
+  border-color: var(--neon-2);
+  transform: translateX(-3px);
+}
+
+body.legal-page .site-footer {
+  background: #030d1c;
+  border-top: 1px solid var(--borde);
+  color: var(--suave);
+}
+
+body.legal-page .site-footer__legal {
+  color: #6a88ab;
+}
+
+body.legal-page .site-footer__copyright {
+  color: var(--suave);
+}
+
+body.legal-page .site-footer a {
+  color: var(--cian);
+}
+
+body.legal-page .site-footer a:hover {
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .legal__indice ol {
+    columns: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .legal__articulo {
+    padding: 8px 18px 24px;
+  }
+  .legal__ficha div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .legal__hero-title {
+    font-size: 30px;
+  }
+}

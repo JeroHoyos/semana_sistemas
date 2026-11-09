@@ -1825,6 +1825,16 @@ button { font: inherit; color: inherit; cursor: pointer; }
   color: #8a9099;
   margin: 6px 0 0;
 }
+.site-footer__link {
+  color: var(--blue, #1667c2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 500;
+  transition: color .2s ease;
+}
+.site-footer__link:hover {
+  color: var(--navy, #0a2c52);
+}
 
 
 /* ---------- 9. Tablet and mobile ---------- */
