@@ -4994,7 +4994,7 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 /* ---------- 14. Weekly game (sustometro.html) ----------
    Retro console with the weekly game (js/weekly-game.js) and its leaderboard next to it.
    The console's data-state decides which overlay shows on top of the screen:
-   ready (start), loading, playing (none), paused or over. */
+   ready (start), loading, playing (none), paused, over or finished (the week closed). */
 
 @keyframes blink {
   50% { opacity: 0; }
@@ -5249,10 +5249,12 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 .console[data-state="ready"] .overlay--start,
 .console[data-state="loading"] .overlay--loading,
 .console[data-state="paused"] .overlay--paused,
-.console[data-state="over"] .overlay--over { display: flex; }
+.console[data-state="over"] .overlay--over,
+.console[data-state="finished"] .overlay--finished { display: flex; }
 /* Before starting the board is barely visible, so the still snake is not confused with the overlay */
 .overlay--start,
-.overlay--loading { background: rgba(6, 10, 22, .9); }
+.overlay--loading,
+.overlay--finished { background: rgba(6, 10, 22, .9); }
 /* The end overlay waits for the game to finish its animation
    (Snake blinks; Doom shows its results). weekly-game.js sets the delay per game. */
 .console[data-state="over"] .overlay--over { animation: overlay-appear .25s var(--end-delay, .8s) both; }
@@ -5363,6 +5365,20 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   box-shadow: 0 4px 0 #b58a00;
 }
 .overlay__button:active { translate: 0 3px; box-shadow: 0 1px 0 #b58a00; }
+/* Top 3 of a finished week: names in the terminal font, like the status (accents) */
+.overlay__podium {
+  width: min(88%, 420px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(12px, 2.8cqw, 18px);
+  line-height: 1.5;
+  text-transform: none;
+}
+.overlay__podium li { display: flex; gap: .6em; }
+.overlay__podium-name { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: left; }
+.overlay__podium strong { font-weight: 400; color: #7ee081; }
 .overlay__button:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
 /* With a keyboard it says "Espacio"; on phones, "A" */

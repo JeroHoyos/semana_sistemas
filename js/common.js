@@ -104,26 +104,23 @@ function isNightSuspension(date = new Date()) {
   }
 }
 
-// One-time notice on 2026-11-08: last day of the week 1 game, with 30 runs (dailyGames in snake.js)
-function showLastDayNotice() {
-  if (colombiaDay() !== '2026-11-08') return;
-  try {
-    if (localStorage.getItem('last_day_week_1_top_50_seen')) return;
-    localStorage.setItem('last_day_week_1_top_50_seen', '1');
-  } catch { return; }
+// The week 1 game (Snake) closes at 8 p.m. Colombia time: the same time is in juego_terminado (supabase/weekly-game.sql)
+const WEEK_1_ENDS = Date.parse('2026-11-08T20:00:00-05:00');
 
+// A notice in the style of the reward window. text and button are HTML.
+function showNoticeDialog(icon, eyebrow, title, text, button) {
   const notice = document.createElement('dialog');
   notice.className = 'auth-modal reward-modal';
-  notice.setAttribute('aria-labelledby', 'last-day-title');
+  notice.setAttribute('aria-label', title);
   notice.innerHTML = `
     <div class="auth-modal__box reward-modal__box">
       <button class="auth-modal__close" type="button" aria-label="Cerrar ventana">✕</button>
       <div class="reward-stage">
-        <div class="reward-icon-box">🎮</div>
-        <p class="section-title__eyebrow">¡Último día!</p>
-        <h2 class="auth-modal__title reward-modal__title" id="last-day-title">Juego de la semana 1</h2>
-        <p class="reward-desc">Hoy es el último día para jugar el juego de la semana 1. Solo por hoy tienes <strong>30 intentos</strong>, y los <strong>50 mejores</strong> de la tabla ganarán puntos.</p>
-        <a class="hero__button reward-btn" href="sustometro.html#juego-semana">¡A jugar!</a>
+        <div class="reward-icon-box">${icon}</div>
+        <p class="section-title__eyebrow">${eyebrow}</p>
+        <h2 class="auth-modal__title reward-modal__title">${title}</h2>
+        <p class="reward-desc">${text}</p>
+        ${button}
       </div>
     </div>`;
   // The X, the button and a tap outside the box all close it
@@ -132,5 +129,18 @@ function showLastDayNotice() {
   });
   document.body.append(notice);
   notice.showModal();
+}
+
+// One-time notice on 2026-11-08 until 8 p.m.: last day of the week 1 game, with 30 runs (dailyGames in snake.js)
+function showLastDayNotice() {
+  if (colombiaDay() !== '2026-11-08' || Date.now() >= WEEK_1_ENDS) return;
+  try {
+    if (localStorage.getItem('last_day_week_1_top_50_seen')) return;
+    localStorage.setItem('last_day_week_1_top_50_seen', '1');
+  } catch { return; }
+
+  showNoticeDialog('🎮', '¡Último día!', 'Juego de la semana 1',
+    'Hoy es el último día para jugar el juego de la semana 1. Solo por hoy tienes <strong>30 intentos</strong>, y los <strong>50 mejores</strong> de la tabla ganarán puntos.',
+    '<a class="hero__button reward-btn" href="sustometro.html#juego-semana">¡A jugar!</a>');
 }
 showLastDayNotice();

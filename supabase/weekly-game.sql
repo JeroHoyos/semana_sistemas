@@ -5,11 +5,11 @@
 --
 -- Stores each person's best score in each game. Highest wins in all of them; on a tie, whoever
 -- played fewer games:
---   'snake'  (week 1): 10 per bug.
+--   'snake'  (week 1, finished on 2026-11-08 at 8 p.m.): 10 per bug.
 --   'doom'   (week 2, locked for now): up to 1000 for enemies, items, secrets and time in E1M1.
 --   'defrag' (week 3, locked for now): 50 per row.
 --
--- Each person saves at most 10 results per day in Snake and Defrag and 3 in Doom (the day is Colombia's).
+-- Each person saves at most 30 results per day in Snake, 10 in Defrag and 3 in Doom (the day is Colombia's).
 -- To change a limit, change it in registrar_puntaje_juego and in dailyGames of the game's cartridge (js/).
 --
 -- Doom used to be a speedrun (its time in tics) and Defrag gave other points. If the table still has
@@ -60,6 +60,18 @@ language sql
 immutable
 as $$
   select p_juego in ('doom', 'defrag');
+$$;
+
+-- ---------- Finished weeks ----------
+-- After its closing time a game saves no more results, not even supervisors', so the final table
+-- (and its prizes, supabase/week-1-prizes.sql) does not move. The same time is endsAt in WEEKS
+-- (js/weekly-game.js). The time is checked here, so this script can run before it.
+create or replace function public.juego_terminado(p_juego text)
+returns boolean
+language sql
+stable
+as $$
+  select p_juego = 'snake' and now() >= timestamptz '2026-11-08 20:00:00-05';
 $$;
 
 -- Supervisor (admin): marked by hand in app_metadata, which only the database can change.
@@ -134,6 +146,10 @@ begin
 
   if juego_bloqueado(p_juego) and not es_supervisor() then
     raise exception 'Semana bloqueada';
+  end if;
+
+  if juego_terminado(p_juego) then
+    raise exception 'Juego terminado';
   end if;
 
   -- The page only sends possible results, so an impossible one comes from the console: the account
