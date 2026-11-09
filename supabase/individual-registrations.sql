@@ -6,6 +6,7 @@
 --   'atletismo':   Carrera de atletismo 8-bit (hasta 45 personas)
 --   'videojuegos': Torneo de videojuegos Overcooked 2 (hasta 16 personas)
 --   'just-dance':  Torneo de Just Dance (hasta 16 personas)
+--   'clash-royale': Torneo de Clash Royale (hasta 16 personas)
 --
 -- No requiere equipos ni búsqueda de equipo: cada estudiante se inscribe
 -- directamente con su cuenta y su número de celular.
@@ -13,7 +14,7 @@
 
 create table if not exists public.inscripciones_individuales (
   id          uuid        primary key default gen_random_uuid(),
-  actividad   text        not null check (actividad in ('atletismo', 'videojuegos', 'just-dance')),
+  actividad   text        not null check (actividad in ('atletismo', 'videojuegos', 'just-dance', 'clash-royale')),
   usuario_id  uuid        not null references auth.users (id) on delete cascade,
   celular     text        not null,
   creado_en   timestamptz not null default now(),
@@ -38,7 +39,7 @@ as $$
 declare
   v_usuario uuid := auth.uid();
   v_celular text := regexp_replace(coalesce(p_celular, ''), '[\s().-]', '', 'g');
-  v_cupos   integer := case p_actividad when 'atletismo' then 45 when 'videojuegos' then 16 when 'just-dance' then 16 else null end;
+  v_cupos   integer := case p_actividad when 'atletismo' then 45 when 'videojuegos' then 16 when 'just-dance' then 16 when 'clash-royale' then 16 else null end;
   v_actual  integer;
 begin
   if v_usuario is null then
