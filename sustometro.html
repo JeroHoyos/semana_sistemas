@@ -37,7 +37,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Cinzel:wght@600;700&family=Graduate&family=Press+Start+2P&family=Share+Tech+Mono&display=swap" crossorigin>
   <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/pricedown">
-  <link rel="stylesheet" href="css/styles.css?v=20261108_v5">
+  <link rel="stylesheet" href="css/styles.css?v=20261108_v6">
 </head>
 <body class="scare-meter-page">
 
@@ -70,7 +70,7 @@
       </p>
       <a class="game-link" href="#juego-semana" data-needs-login hidden>
         <span class="game-link__arrow" aria-hidden="true">▶</span>
-        Juego de la semana: <strong id="game-link-name">Snake</strong>
+        Conoce el juego de la semana
       </a>
     </div>
   </header>
@@ -323,19 +323,19 @@
         </div>
 
         <!-- TABLA DE LOS TRAMPOSOS (SHADOWBAN) -->
-        <div class="ranking-card ranking-card--tramposos ranking-card--clowns" id="clowns-card" hidden>
-          <div class="ranking-card__header ranking-card__header--tramposos ranking-card__header--clowns">
+        <details class="ranking-card ranking-card--tramposos ranking-card--clowns" id="clowns-card" hidden>
+          <summary class="ranking-card__header ranking-card__header--tramposos ranking-card__header--clowns">
             <h2 class="ranking-card__title">Tabla de Tramposos</h2>
             <span class="ranking-card__badge ranking-card__badge--tramposos ranking-card__badge--clowns">Shadowban</span>
-          </div>
+          </summary>
           <p class="tramposos-desc clowns-desc">Cuentas sancionadas permanentemente por intento de inyección de código y manipulación indebida de datos. Sus puntos están congelados en 0.</p>
           <div class="clowns-warning tramposos-warning">
             <div class="clowns-warning__text">
-              <strong>ADVERTENCIA LEGAL Y DE CIBERSEGURIDAD:</strong> Todo intento de vulneración, manipulación no autorizada, acceso abusivo o alteración informática de este sistema es auditado y registrado en tiempo real, y podria sancionarse penalmente conforme a la <strong>Ley 1273 de 2009 (Delitos Informáticos)</strong>, con penas de prisión de 48 a 96 meses y multas de hasta 1.000 SMMLV, además del reporte ante las autoridades disciplinarias de la Universidad Nacional de Colombia e incluso la Fiscalía General de la Nación.
+              <strong>ADVERTENCIA LEGAL Y DE CIBERSEGURIDAD:</strong> Todo intento de vulneración, manipulación no autorizada, acceso abusivo o alteración informática de este sistema es auditado y registrado en tiempo real, y podria sancionarse penalmente conforme a la <strong>Ley 1273 de 2009 (Delitos Informáticos)</strong>, con penas de prisión de 48 a 96 meses y multas de hasta 1.000 SMMLV, además del reporte ante las autoridades disciplinarias de la Universidad Nacional de Colombia. Bajo el Reglamento Estudiantil (Acuerdo 044 de 2009 del Consejo Superior Universitario), la utilización indebida de los bienes de la Universidad (incluyendo las plataformas digitales y correos @unal.edu.co) constituye una falta disciplinaria. La conducta se califica como leve, grave o gravísima
             </div>
           </div>
           <ul class="ranking-list ranking-list--tramposos ranking-list--clowns" id="clowns-list"></ul>
-        </div>
+        </details>
       </section>
 
     </div>
@@ -356,12 +356,6 @@
 
         <!-- Black frame around the screen -->
         <div class="console__bezel">
-          <div class="console__bezel-bar" aria-hidden="true">
-            <span class="console__led"></span>
-            <span>Cartucho · <span id="console-cartridge">Snake</span></span>
-            <span class="console__brand">8 bits · Sistemas</span>
-          </div>
-
           <div class="console__screen" id="console-screen" tabindex="0"
             aria-label="Pantalla del juego. Espacio para empezar, P para pausar.">
             <div class="console__hud" aria-hidden="true">
@@ -376,7 +370,7 @@
 
               <!-- Overlays on top of the board: the console's data-state decides which one shows -->
               <div class="overlay overlay--start">
-                <p class="overlay__title" id="start-title"></p>
+                <p class="overlay__title">¡A jugar!</p>
                 <p class="overlay__text" id="start-text"></p>
                 <div class="overlay__items" id="start-items"></div>
                 <p class="overlay__status overlay__status--notice" id="start-notice" role="alert" hidden></p>
@@ -407,6 +401,14 @@
                 <button class="overlay__button" id="end-login" type="button" hidden>Ingresar</button>
                 <p class="overlay__games"></p>
                 <p class="overlay__blink"><span class="keyboard-only">Espacio para otra</span><span class="touch-only">A para otra</span></p>
+              </div>
+
+              <!-- The week's game closed (endsAt in js/weekly-game.js): its final top 3 -->
+              <div class="overlay overlay--finished">
+                <p class="overlay__title overlay__title--over">Juego terminado</p>
+                <p class="overlay__text">Top 3 de la semana</p>
+                <ol class="overlay__podium" id="finished-podium"></ol>
+                <p class="overlay__status">Los 50 mejores de la tabla ganaron puntos en el Sustómetro.</p>
               </div>
             </div>
           </div>
@@ -450,9 +452,7 @@
       <!-- Leaderboard of the weekly game (each person's best score) -->
       <aside class="ranking-card records" aria-labelledby="records-title">
         <div class="ranking-card__header">
-          <h3 class="ranking-card__title" id="records-title">Récords</h3>
-          <span class="ranking-card__badge" id="records-game">Snake</span>
-        </div>
+          <h3 class="ranking-card__title" id="records-title">Récords</h3>        </div>
         <ol class="records__list" id="records-list">
           <li class="ranking-empty"><span class="ranking-spinner"></span></li>
         </ol>
@@ -855,15 +855,15 @@
   <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
   <script src="js/data.js?v=20261108_v5"></script>
   <script src="js/icons.js"></script>
-  <script src="js/common.js?v=20261108_v5"></script>
+  <script src="js/common.js?v=20261108_v6"></script>
   <script src="js/pixel-art.js"></script>
-  <script src="js/auth.js?v=20261108_v5"></script>
+  <script src="js/auth.js?v=20261109_v1"></script>
   <script src="js/codes.js?v=20261108_v5"></script>
   <script src="js/scare-meter.js?v=20261108_v5"></script>
   <script src="js/snake.js"></script>
   <script src="js/doom.js"></script>
   <script src="js/defrag.js"></script>
-  <script src="js/weekly-game.js"></script>
+  <script src="js/weekly-game.js?v=20261108_v7"></script>
   <script src="js/secrets.js"></script>
 
 

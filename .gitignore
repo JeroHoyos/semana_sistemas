@@ -17,3 +17,6 @@ node_modules/
 
 # SQL with secrets (prize code, sanctioned accounts, supervisors): run it in Supabase, never commit it
 *.local.sql
+
+# Week 1 prize SQL (winners and points): run it by hand in Supabase, not public
+supabase/week-1-prizes.sql

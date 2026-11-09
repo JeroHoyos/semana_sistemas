@@ -7,7 +7,7 @@ const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => document.querySelectorAll(selector);
 
 const findDay = (id) => DAYS.find((day) => day.id === id);
-const findSpeaker = (id) => SPEAKERS.find((speaker) => speaker.id === id);
+const findSpeakers = (activity) => SPEAKERS.filter((speaker) => activity.speakers?.includes(speaker.id));
 const findActivity = (id) => ACTIVITIES.find((activity) => activity.id === id);
 const findGroup = (id) => GROUPS.find((group) => group.id === id) || (typeof COMPANIES !== 'undefined' ? COMPANIES.find((c) => c.id === id) : null);
 const findTitle = (id) => TITLES.find((title) => title.id === id);
@@ -103,3 +103,44 @@ function isNightSuspension(date = new Date()) {
     return bogotaMins >= 1350 || bogotaMins < 420;
   }
 }
+
+// The week 1 game (Snake) closes at 8 p.m. Colombia time: the same time is in juego_terminado (supabase/weekly-game.sql)
+const WEEK_1_ENDS = Date.parse('2026-11-08T20:00:00-05:00');
+
+// A notice in the style of the reward window. text and button are HTML.
+function showNoticeDialog(icon, eyebrow, title, text, button) {
+  const notice = document.createElement('dialog');
+  notice.className = 'auth-modal reward-modal';
+  notice.setAttribute('aria-label', title);
+  notice.innerHTML = `
+    <div class="auth-modal__box reward-modal__box">
+      <button class="auth-modal__close" type="button" aria-label="Cerrar ventana">✕</button>
+      <div class="reward-stage">
+        <div class="reward-icon-box">${icon}</div>
+        <p class="section-title__eyebrow">${eyebrow}</p>
+        <h2 class="auth-modal__title reward-modal__title">${title}</h2>
+        <p class="reward-desc">${text}</p>
+        ${button}
+      </div>
+    </div>`;
+  // The X, the button and a tap outside the box all close it
+  notice.addEventListener('click', (event) => {
+    if (event.target === notice || event.target.closest('.auth-modal__close, .reward-btn')) notice.close();
+  });
+  document.body.append(notice);
+  notice.showModal();
+}
+
+// One-time notice on 2026-11-08 until 8 p.m.: last day of the week 1 game, with 30 runs (dailyGames in snake.js)
+function showLastDayNotice() {
+  if (colombiaDay() !== '2026-11-08' || Date.now() >= WEEK_1_ENDS) return;
+  try {
+    if (localStorage.getItem('last_day_week_1_top_50_seen')) return;
+    localStorage.setItem('last_day_week_1_top_50_seen', '1');
+  } catch { return; }
+
+  showNoticeDialog('🎮', '¡Último día!', 'Juego de la semana 1',
+    'Hoy es el último día para jugar el juego de la semana 1. Solo por hoy tienes <strong>30 intentos</strong>, y los <strong>50 mejores</strong> de la tabla ganarán puntos.',
+    '<a class="hero__button reward-btn" href="sustometro.html#juego-semana">¡A jugar!</a>');
+}
+showLastDayNotice();

@@ -1434,8 +1434,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   position: relative;               /* the title link covers the whole card */
   padding: 18px 26px 20px;
   text-align: center;
-  background: #ffffff;
-  background: linear-gradient(125deg, #ffffff 15%, color-mix(in srgb, var(--color) 7%, #ffffff) 100%);
+  background: var(--bg);
+  background: color-mix(in srgb, var(--bg) 50%, transparent);
   border: 1px solid var(--line);
   border: 1px solid color-mix(in srgb, var(--color) 20%, var(--line));
   border-left: 6px solid var(--color);
@@ -1443,11 +1443,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
   box-shadow: 0 8px 22px -12px rgba(10, 44, 82, .25);
   box-shadow: 0 8px 24px -10px color-mix(in srgb, var(--color) 28%, rgba(10, 44, 82, 0.12)), 0 2px 6px rgba(0, 0, 0, 0.03);
   animation: appear .35s ease;
-  transition: transform .2s, box-shadow .2s, background .2s, border-color .2s;
+  transition: transform .2s, box-shadow .2s, border-color .2s;
 }
 .activity:hover {
   transform: translateY(-3px);
-  background: linear-gradient(125deg, #ffffff 8%, color-mix(in srgb, var(--color) 11%, #ffffff) 100%);
   border-color: color-mix(in srgb, var(--color) 34%, var(--line));
   border-left-color: var(--color);
   box-shadow: 0 16px 30px -10px color-mix(in srgb, var(--color) 38%, rgba(10, 44, 82, 0.2)), 0 4px 10px rgba(0, 0, 0, 0.04);
@@ -2564,6 +2563,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .event__intro--wide { grid-template-columns: 1.15fr 1fr; }
 .event__intro--wide .event__image { rotate: -2deg; }
 
+/* Tall image, like a flyer (event.js marks it): bigger so its text can be read */
+.event__intro--tall { grid-template-columns: 340px 1fr; }
+
 /* The activity's YouTube video (video field) */
 .event__video {
   display: block;
@@ -2636,6 +2638,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   border: 1px solid var(--line);
   border-radius: 22px;
 }
+.event__profile + .event__profile { margin-top: 12px; }
 .event__avatar {
   flex: none;
   width: 72px;
@@ -3948,6 +3951,29 @@ button { font: inherit; color: inherit; cursor: pointer; }
   border: 2px dashed #ff4d6d;
   background: linear-gradient(180deg, #fff5f7 0%, #ffeef2 100%);
 }
+/* It folds: the header is the <summary> of a <details>, closed by default */
+.ranking-card__header--clowns {
+  list-style: none;
+  cursor: pointer;
+}
+.ranking-card__header--clowns::-webkit-details-marker { display: none; }
+.ranking-card__header--clowns .ranking-card__badge { margin-left: auto; }
+.ranking-card__header--clowns::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  margin: -6px 4px 0 0;
+  border-right: 3px solid #ff0033;
+  border-bottom: 3px solid #ff0033;
+  transform: rotate(45deg);
+  transition: transform .2s, margin .2s;
+}
+.ranking-card--clowns[open] .ranking-card__header--clowns::after { margin-top: 6px; transform: rotate(225deg); }
+.ranking-card--clowns:not([open]) .ranking-card__header--clowns {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
 .ranking-card__header--clowns,
 .ranking-card__header--tramposos {
   border-bottom: 2px dashed rgba(255, 77, 109, 0.3);
@@ -5026,7 +5052,7 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 /* ---------- 14. Weekly game (sustometro.html) ----------
    Retro console with the weekly game (js/weekly-game.js) and its leaderboard next to it.
    The console's data-state decides which overlay shows on top of the screen:
-   ready (start), loading, playing (none), paused or over. */
+   ready (start), loading, playing (none), paused, over or finished (the week closed). */
 
 @keyframes blink {
   50% { opacity: 0; }
@@ -5052,7 +5078,6 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   box-shadow: 0 0 18px -4px rgba(255, 210, 63, .55);
   transition: transform .15s, background .15s;
 }
-.game-link strong { font-weight: 400; color: #fff; }
 .game-link:hover { transform: translateY(-2px); background: rgba(10, 14, 28, .78); }
 .game-link__arrow { animation: blink 1s steps(1) infinite; }
 
@@ -5200,42 +5225,11 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 
 /* Black frame around the screen */
 .console__bezel {
-  padding: 10px 16px 16px;
+  padding: 16px;
   border-radius: 18px;
   background: linear-gradient(#1d2231, #11141e);
   box-shadow: inset 0 2px 0 rgba(255, 255, 255, .08), inset 0 -2px 0 rgba(0, 0, 0, .45), 0 2px 0 rgba(255, 255, 255, .12);
 }
-.console__bezel-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 9px;
-  font-family: var(--font-narrow);
-  font-weight: 600;
-  font-size: 11px;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: #8b93a7;
-}
-.console__brand { margin-left: auto; overflow: hidden; text-overflow: ellipsis; }
-
-/* Power light: green, yellow on pause and red on losing */
-.console__led {
-  flex: none;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #7ee081;
-  box-shadow: 0 0 8px #7ee081;
-}
-.console[data-state="paused"] .console__led { background: #ffd23f; box-shadow: 0 0 8px #ffd23f; }
-.console[data-state="loading"] .console__led {
-  background: #ffd23f;
-  box-shadow: 0 0 8px #ffd23f;
-  animation: blink .5s steps(1) infinite;
-}
-.console[data-state="over"] .console__led { background: #ff5c5c; box-shadow: 0 0 8px #ff5c5c; }
 
 /* CRT screen: font sizes are measured from its width (cqw) */
 .console__screen {
@@ -5313,10 +5307,12 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 .console[data-state="ready"] .overlay--start,
 .console[data-state="loading"] .overlay--loading,
 .console[data-state="paused"] .overlay--paused,
-.console[data-state="over"] .overlay--over { display: flex; }
+.console[data-state="over"] .overlay--over,
+.console[data-state="finished"] .overlay--finished { display: flex; }
 /* Before starting the board is barely visible, so the still snake is not confused with the overlay */
 .overlay--start,
-.overlay--loading { background: rgba(6, 10, 22, .9); }
+.overlay--loading,
+.overlay--finished { background: rgba(6, 10, 22, .9); }
 /* The end overlay waits for the game to finish its animation
    (Snake blinks; Doom shows its results). weekly-game.js sets the delay per game. */
 .console[data-state="over"] .overlay--over { animation: overlay-appear .25s var(--end-delay, .8s) both; }
@@ -5427,6 +5423,20 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   box-shadow: 0 4px 0 #b58a00;
 }
 .overlay__button:active { translate: 0 3px; box-shadow: 0 1px 0 #b58a00; }
+/* Top 3 of a finished week: names in the terminal font, like the status (accents) */
+.overlay__podium {
+  width: min(88%, 420px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(12px, 2.8cqw, 18px);
+  line-height: 1.5;
+  text-transform: none;
+}
+.overlay__podium li { display: flex; gap: .6em; }
+.overlay__podium-name { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: left; }
+.overlay__podium strong { font-weight: 400; color: #7ee081; }
 .overlay__button:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
 /* With a keyboard it says "Espacio"; on phones, "A" */
@@ -5668,8 +5678,7 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   .console__title { font-size: 12px; }
   .console__week { font-size: 8px; }
   .console__week-notice { font-size: 7px; }
-  .console__bezel { padding: 8px 8px 10px; border-radius: 14px; }
-  .console__bezel-bar { gap: 8px; margin-bottom: 7px; font-size: 9px; letter-spacing: .14em; }
+  .console__bezel { padding: 10px 8px; border-radius: 14px; }
   .console__controls { gap: 10px; margin-top: 18px; padding: 0; }
   .dpad { --size: 38px; }
   .console__speaker { gap: 5px; }
@@ -5681,7 +5690,6 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 @media (max-width: 380px) {
   .console__speaker { display: none; }
   .console__controls { grid-template-columns: auto auto; justify-content: space-between; }
-  .console__brand { display: none; }
 }
 
 

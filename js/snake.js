@@ -379,9 +379,8 @@ function createSnake(canvas, events = {}) {
 
 const SNAKE_CARTRIDGE = {
   id: 'snake',
-  name: 'Snake',
   scoring: 'points',
-  dailyGames: 10,
+  dailyGames: 30,
   create: (canvas, events) => createSnake(canvas, events),
   splash: {
     text: 'Atrapa los bugs y no choques',

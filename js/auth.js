@@ -661,6 +661,7 @@ function updateSessionUi(user) {
     // the profile is not repainted on top, so they do not lose their work.
     if (!editing) showProfile(user);
     checkVeteranReward(user);
+    checkGamePrize(user);
   } else {
     showLoginGate(true);
     leaveEdit();
@@ -917,6 +918,35 @@ $$('.download-button').forEach((button) => {
 });
 
 
+/* ---------- Week 1 prize: Scare Meter points for the 50 best in Snake ----------
+   supabase/week-1-prizes.sql gives them after the game closes and keeps them in premios_juego.
+   Each winner sees the message once; it asks Supabase once per page load. */
+
+let gamePrizeChecked = false;
+
+async function checkGamePrize(user) {
+  if (gamePrizeChecked || Date.now() < WEEK_1_ENDS) return;
+  const seenKey = `week_1_prize_seen_${user.id}`;
+  try {
+    if (localStorage.getItem(seenKey)) return;
+  } catch { return; }
+  gamePrizeChecked = true;
+
+  const { data: prize } = await supabaseClient
+    .from('premios_juego')
+    .select('puesto, puntos')
+    .eq('usuario_id', user.id)
+    .eq('juego', 'snake')
+    .maybeSingle();
+  if (!prize) return;   // not a winner, or the prizes have not been given yet
+
+  try { localStorage.setItem(seenKey, '1'); } catch {}
+  showNoticeDialog('🏆', '¡Ganaste puntos!', 'Juego de la semana 1',
+    `Quedaste en el puesto <strong>${Number(prize.puesto)}</strong> de la tabla y ganaste <strong>${Number(prize.puntos)} ${prize.puntos === 1 ? 'punto' : 'puntos'}</strong> en el Sustómetro. ¡Gracias por jugar!`,
+    '<a class="hero__button reward-btn" href="sustometro.html">Ver el Sustómetro</a>');
+}
+
+
 /* ---------- Veteran Reward (Camiseta UNAL) ---------- */
 
 function checkVeteranReward(user) {
@@ -986,7 +1016,7 @@ document.addEventListener('click', async (event) => {
 
 // Purges stale data caches (leaderboard, rankings, game records) on deployment
 // WITHOUT logging the user out (preserves Supabase session tokens).
-const DATA_CACHE_VERSION = '20261108_v5';
+const DATA_CACHE_VERSION = '20261109_v1';
 
 function syncDataCache() {
   try {
@@ -996,6 +1026,7 @@ function syncDataCache() {
         if (
           key.startsWith('semana_sistemas_sustometro_') ||
           key.startsWith('juego_semana_records_') ||
+          key.startsWith('juego_semana_games_') ||   // games per day: Supabase still enforces the limit
           key.startsWith('semana_sistemas_cache_')
         ) {
           localStorage.removeItem(key);

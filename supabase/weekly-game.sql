@@ -5,11 +5,11 @@
 --
 -- Stores each person's best score in each game. Highest wins in all of them; on a tie, whoever
 -- played fewer games:
---   'snake'  (week 1): 10 per bug.
---   'doom'   (week 2, locked for now): up to 1000 for enemies, items, secrets and time in E1M1.
+--   'snake'  (week 1, finished on 2026-11-08 at 8 p.m.): 10 per bug.
+--   'doom'   (week 2, opens on 2026-11-09 at 7 a.m.): up to 1000 for enemies, items, secrets and time in E1M1.
 --   'defrag' (week 3, locked for now): 50 per row.
 --
--- Each person saves at most 10 results per day in Snake and Defrag and 3 in Doom (the day is Colombia's).
+-- Each person saves at most 30 results per day in Snake, 10 in Defrag and 5 in Doom (the day is Colombia's).
 -- To change a limit, change it in registrar_puntaje_juego and in dailyGames of the game's cartridge (js/).
 --
 -- Doom used to be a speedrun (its time in tics) and Defrag gave other points. If the table still has
@@ -54,12 +54,25 @@ revoke insert, update, delete on public.puntajes_juego from anon, authenticated;
 -- To open a week: remove its game from this list, run the script again and remove locked
 -- in WEEKS (js/weekly-game.js). To delete the supervisors' test results:
 --   delete from public.puntajes_juego where juego = 'doom';   -- or 'defrag'
+-- Doom opens by itself at 7 a.m. on 2026-11-09: the same time is in WEEKS (js/weekly-game.js).
 create or replace function public.juego_bloqueado(p_juego text)
 returns boolean
 language sql
-immutable
+stable
 as $$
-  select p_juego in ('doom', 'defrag');
+  select p_juego = 'defrag' or (p_juego = 'doom' and now() < timestamptz '2026-11-09 07:00:00-05');
+$$;
+
+-- ---------- Finished weeks ----------
+-- After its closing time a game saves no more results, not even supervisors', so the final table
+-- (and its prizes, supabase/week-1-prizes.sql) does not move. The same time is endsAt in WEEKS
+-- (js/weekly-game.js). The time is checked here, so this script can run before it.
+create or replace function public.juego_terminado(p_juego text)
+returns boolean
+language sql
+stable
+as $$
+  select p_juego = 'snake' and now() >= timestamptz '2026-11-08 20:00:00-05';
 $$;
 
 -- Supervisor (admin): marked by hand in app_metadata, which only the database can change.
@@ -103,8 +116,9 @@ begin
     raise exception 'Inicia sesión para guardar tu puntaje';
   end if;
 
-  -- Sanctioned accounts (clowns, perfiles.es_payaso) do not enter the table
-  if exists (select 1 from perfiles where id = v_usuario and es_payaso) then
+  -- Sanctioned accounts (clowns, perfiles.es_payaso) do not enter the table.
+  -- Supervisors always do: the anti-cheat functions have marked them by mistake.
+  if exists (select 1 from perfiles where id = v_usuario and es_payaso) and not es_supervisor() then
     raise exception 'Seguridad: Tu cuenta tiene un Shadowban activo y no puede registrar récords.';
   end if;
 
@@ -115,12 +129,12 @@ begin
       v_minimo := 10;
       v_maximo := 3000;
       v_multiplo := 10;
-      v_limite_dia := 10;
+      v_limite_dia := 30;
     -- Doom E1M1: 400 enemies + 200 items + 200 secrets + 200 time (doomScore in js/doom.js)
     when 'doom' then
       v_minimo := 1;
       v_maximo := 1000;
-      v_limite_dia := 3;
+      v_limite_dia := 5;
     -- Defrag: 50 per row; not even hours at the top level reach 10 million
     when 'defrag' then
       v_minimo := 50;
@@ -133,6 +147,10 @@ begin
 
   if juego_bloqueado(p_juego) and not es_supervisor() then
     raise exception 'Semana bloqueada';
+  end if;
+
+  if juego_terminado(p_juego) then
+    raise exception 'Juego terminado';
   end if;
 
   -- The page only sends possible results, so an impossible one comes from the console: the account
@@ -210,7 +228,9 @@ as $$
   from puntajes_juego j
   left join perfiles p on p.id = j.usuario_id
   where j.juego = p_juego and j.mejor_puntaje > 0
-    and not coalesce(p.es_payaso, false)   -- clowns do not show
+    -- clowns do not show; supervisors always do (see registrar_puntaje_juego)
+    and (not coalesce(p.es_payaso, false)
+         or coalesce((select (u.raw_app_meta_data ->> 'supervisor')::boolean from auth.users u where u.id = j.usuario_id), false))
   order by j.mejor_puntaje desc, j.partidas asc, j.logrado_en asc
   limit least(greatest(coalesce(p_limite, 10), 1), 50);
 $$;

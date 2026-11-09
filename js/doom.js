@@ -868,7 +868,7 @@ function createDoom(canvas, events = {}) {
     hasImage = false;
     draw();
     changeState('ready');
-    emit('onError', 'Doom se detuvo por un error. Presiona Jugar para empezar otra vez.');
+    emit('onError', 'El juego se detuvo por un error. Presiona Jugar para empezar otra vez.');
   }
 
   /* ---------- Drawing ---------- */
@@ -935,7 +935,7 @@ function createDoom(canvas, events = {}) {
       engine = null;
       clock.stop();
       changeState('ready');
-      emit('onError', 'No se pudo cargar Doom. Revisa la conexión e inténtalo otra vez.');
+      emit('onError', 'No se pudo cargar el juego. Revisa la conexión e inténtalo otra vez.');
       return;
     }
     result = null;
@@ -1033,9 +1033,8 @@ function createDoom(canvas, events = {}) {
 
 const DOOM_CARTRIDGE = {
   id: 'doom',
-  name: 'Doom',
   scoring: 'points',
-  dailyGames: 3,
+  dailyGames: 5,
   create: (canvas, events) => createDoom(canvas, events),
   splash: {
     text: 'Llega a la salida. Si mueres, pierdes la partida',

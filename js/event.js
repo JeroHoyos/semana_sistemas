@@ -44,18 +44,18 @@ function renderInfo() {
     descriptionSection(),
     videoSection(activity.video),
     rulesSection(activity.rules),
-    speakerSection(findSpeaker(activity.speaker)),
+    speakerSection(findSpeakers(activity)),
     groupSection(findGroup(activity.organizer)),
     overlapsSection(findOverlapping(activity)),
   ].join('');
   $('#event-info').style.setProperty('--color', activity.color || ACTIVITY_TYPES[activity.type].color);
 
-  fitWideImage();
+  fitImage();
 }
 
-// Notice if the activity or its speaker is unconfirmed (unconfirmed field in data.js)
+// Notice if the activity or one of its speakers is unconfirmed (unconfirmed field in data.js)
 function noticeSection() {
-  if (!activity.unconfirmed && !findSpeaker(activity.speaker)?.unconfirmed) return '';
+  if (!activity.unconfirmed && !findSpeakers(activity).some((speaker) => speaker.unconfirmed)) return '';
 
   return `<p class="event__notice">${ICONS.clock}Información por confirmar: puede cambiar antes del evento.</p>`;
 }
@@ -168,15 +168,21 @@ function rulesSection(rules) {
   `;
 }
 
-function speakerSection(speaker) {
-  if (!speaker) return '';
+function speakerSection(speakers) {
+  if (speakers.length === 0) return '';
 
+  return `
+    <h2 class="event__subtitle">${speakers.length > 1 ? 'Ponentes' : 'Ponente'}</h2>
+    ${speakers.map(speakerProfile).join('')}
+  `;
+}
+
+function speakerProfile(speaker) {
   const bio = speaker.bio
     ? speaker.bio.split('\n').map((paragraph) => `<p class="event__bio">${paragraph}</p>`).join('')
     : '';
 
   return `
-    <h2 class="event__subtitle">Ponente</h2>
     <div class="event__profile">
       <span class="event__avatar ${speaker.photo ? 'event__avatar--photo' : ''}">${speakerPortrait(speaker)}</span>
       <div>
@@ -237,14 +243,17 @@ function overlapsSection(overlapping) {
   `;
 }
 
-// A wide image (like Just Dance's) gets more room than a square one.
+// A wide image (like Just Dance's) or a tall one (like a flyer) gets more room than a square one.
 // Its size is only known once it finishes loading.
-function fitWideImage() {
+function fitImage() {
   const image = $('.event__image');
   if (!image) return;
 
-  const measure = () => image.parentElement.classList.toggle(
-    'event__intro--wide', image.naturalWidth > image.naturalHeight * 1.2);
+  const measure = () => {
+    const { classList } = image.parentElement;
+    classList.toggle('event__intro--wide', image.naturalWidth > image.naturalHeight * 1.2);
+    classList.toggle('event__intro--tall', image.naturalHeight > image.naturalWidth * 1.2);
+  };
 
   if (image.complete) measure();
   else image.addEventListener('load', measure);

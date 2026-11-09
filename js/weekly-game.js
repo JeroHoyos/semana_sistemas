@@ -7,7 +7,7 @@
    A locked week does not open yet: only supervisors (admins) can play it, to test it.
 
    Each game brings its cartridge (SNAKE_CARTRIDGE in snake.js, DOOM_CARTRIDGE in doom.js, DEFRAG_CARTRIDGE in defrag.js):
-     id, name               how it is saved in Supabase and how it shows
+     id                     how it is saved in Supabase
      scoring                'points' (highest wins)
      dailyGames             runs per person per day (the same number goes in registrar_puntaje_juego)
      create(canvas, events) builds the run
@@ -29,9 +29,13 @@
 
 // The weeks, in order. locked: does not open yet and only supervisors see it.
 // To open a week: remove locked here and remove its game from juego_bloqueado() in the SQL.
+// Doom opens by itself at 7 a.m. on 2026-11-09 (the same time is in juego_bloqueado); a page opened
+// before then keeps it locked until it reloads.
+// endsAt: when the week's game closes (the same time as juego_terminado() in the SQL). After it the
+// screen shows the top 3 and nobody plays, not even supervisors.
 const WEEKS = [
-  { ...SNAKE_CARTRIDGE, week: 1 },
-  { ...DOOM_CARTRIDGE, week: 2, locked: true },
+  { ...SNAKE_CARTRIDGE, week: 1, endsAt: WEEK_1_ENDS },
+  { ...DOOM_CARTRIDGE, week: 2, locked: Date.now() < Date.parse('2026-11-09T07:00:00-05:00') },
   { ...DEFRAG_CARTRIDGE, week: 3, locked: true },
 ];
 
@@ -96,6 +100,8 @@ function saveLocal(key, value) {
 /* ---------- Who can open each week ---------- */
 
 const canPlay = (game) => !game.locked || isCurrentSupervisor();
+// A finished week still opens, to see its final table, but no run starts
+const weekOver = (game = cartridge) => Date.now() >= (game.endsAt ?? Infinity);
 // The one shown on entering: the last open week
 const defaultWeek = () => [...WEEKS].reverse().find((game) => !game.locked) || WEEKS[0];
 
@@ -290,9 +296,11 @@ function chooseWeek(game, { save = false } = {}) {
   loadRecords();
 }
 
-// data-state on the console decides which overlay shows on top of the screen (the CSS does it)
+// data-state on the console decides which overlay shows on top of the screen (the CSS does it).
+// In a finished week, 'finished' replaces the start and end overlays (a run that started before the close can end).
 function renderState() {
-  gameConsole.dataset.state = run.state;
+  const finished = weekOver() && (run.state === 'ready' || run.state === 'over');
+  gameConsole.dataset.state = finished ? 'finished' : run.state;
 }
 
 // REC: with a session, the account's record; without one, this browser's
@@ -328,8 +336,9 @@ function mainButton() {
   } else if (run.state === 'paused') {
     run.resume();
   } else {
-    if (outOfGames()) {
+    if (outOfGames() || weekOver()) {
       sound.play('locked');
+      renderState();   // a page opened before the close shows the final table now
       return;
     }
     setGamesToday(cartridge, gamesToday() + 1);
@@ -428,7 +437,9 @@ async function saveScore(score, game = cartridge) {
     }
     writeEnd(reason.includes('Semana bloqueada')
       ? 'Esta semana todavía está bloqueada: solo se guardan los resultados de los supervisores.'
-      : `No se pudo guardar tu ${gameScoring.name}. Intenta otra partida en un rato.`, false, game);
+      : reason.includes('Juego terminado')
+        ? 'El juego de esta semana ya terminó: esta partida no entra a la tabla.'
+        : `No se pudo guardar tu ${gameScoring.name}. Intenta otra partida en un rato.`, false, game);
     return;
   }
 
@@ -468,7 +479,7 @@ weeksContainer.innerHTML = WEEKS.map((game) => `
     ${game.locked ? WEEK_LOCK : ''}<span>Semana ${game.week}</span>
   </button>`).join('');
 
-// Locked weeks do not say which game they bring (except to supervisors)
+// Locked weeks only open for supervisors
 function renderWeeks() {
   const admin = isCurrentSupervisor();
   $$('#console-weeks .console__week').forEach((button) => {
@@ -476,7 +487,7 @@ function renderWeeks() {
     const closed = !canPlay(game);
     const label = closed
       ? `Semana ${game.week}: bloqueada`
-      : `Semana ${game.week}: ${game.name}${game.locked && admin ? ' (bloqueada, solo supervisores)' : ''}`;
+      : `Semana ${game.week}${game.locked && admin ? ' (bloqueada, solo supervisores)' : ''}`;
     button.setAttribute('aria-pressed', String(game === cartridge));
     button.classList.toggle('console__week--locked', Boolean(game.locked));
     if (closed) button.setAttribute('aria-disabled', 'true');
@@ -845,7 +856,7 @@ function renderRecords(rows) {
   const visible = (rows || []).filter((row) => !isClown(row.usuario, row.nombre));
 
   if (!visible.length) {
-    renderEmptyRecords('La tabla está vacía', `Nadie ha jugado ${escapeHtml(cartridge.name)} todavía. ¡Estrena la tabla!`);
+    renderEmptyRecords('La tabla está vacía', `Nadie ha jugado todavía. ¡Estrena la tabla!`);
     return;
   }
 
@@ -853,7 +864,17 @@ function renderRecords(rows) {
   recordsList.innerHTML = visible.map((row, i) => (
     recordRow(row, places[i], currentUser && row.usuario_id === currentUser.id)
   )).join('');
+
+  // The top 3 on the screen of a finished week (with ties there can be more)
+  $('#finished-podium').innerHTML = visible.map((row, i) => (places[i] > 3 ? '' : `
+    <li>
+      <span>${PODIUM[places[i]]}</span>
+      <span class="overlay__podium-name">${escapeHtml(row.nombre)}</span>
+      <strong>${scoring.table(row.mejor_puntaje)}</strong>
+    </li>`)).join('');
 }
+
+const PODIUM = { 1: '🥇', 2: '🥈', 3: '🥉' };
 
 const MEDALS = { 1: 'gold', 2: 'silver', 3: 'bronze' };
 
@@ -1132,16 +1153,12 @@ if (currentUser) {
 /* ---------- The console dresses up with the game's cartridge ---------- */
 
 function dressConsole() {
-  const { name, splash = {}, end = {}, buttons, controls = {} } = cartridge;
+  const { splash = {}, end = {}, buttons, controls = {} } = cartridge;
 
   gameConsole.dataset.game = cartridge.id;
   gameConsole.style.setProperty('--end-delay', `${endDelay()}ms`);
-  $('#console-cartridge').textContent = name;
-  $('#records-game').textContent = name;
-  $('#game-link-name').textContent = name;
 
   // Start overlay
-  $('#start-title').textContent = name;
   $('#start-text').textContent = splash.text || '';
   $('#start-items').innerHTML = typeof splash.items === 'function' ? splash.items() : splash.items || '';
   $('#keyboard-help').textContent = splash.keyboardHelp || '';
