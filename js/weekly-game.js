@@ -29,11 +29,13 @@
 
 // The weeks, in order. locked: does not open yet and only supervisors see it.
 // To open a week: remove locked here and remove its game from juego_bloqueado() in the SQL.
+// Doom opens by itself at 7 a.m. on 2026-11-09 (the same time is in juego_bloqueado); a page opened
+// before then keeps it locked until it reloads.
 // endsAt: when the week's game closes (the same time as juego_terminado() in the SQL). After it the
 // screen shows the top 3 and nobody plays, not even supervisors.
 const WEEKS = [
   { ...SNAKE_CARTRIDGE, week: 1, endsAt: WEEK_1_ENDS },
-  { ...DOOM_CARTRIDGE, week: 2, locked: true },
+  { ...DOOM_CARTRIDGE, week: 2, locked: Date.now() < Date.parse('2026-11-09T07:00:00-05:00') },
   { ...DEFRAG_CARTRIDGE, week: 3, locked: true },
 ];
 
