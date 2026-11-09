@@ -141,6 +141,10 @@
     check('supervisor recognized by handle', isSupervisorAccount('linavarrop'), true);
     check('supervisor recognized by name', isSupervisorAccount('x@unal.edu.co', 'Juan David Perez Lopez'), true);
     check('supervisor is never clown', isClown('saescobara@unal.edu.co', 'Santiago Escobar Arias', { es_payaso: true }), false);
+    check('luzarait recognized as supervisor by handle', isSupervisorAccount('lcanasq'), true);
+    check('luzarait recognized as supervisor by email', isSupervisorAccount('lcanasq@unal.edu.co'), true);
+    check('luzarait recognized as supervisor by name', isSupervisorAccount('x@unal.edu.co', 'Luzarait Cañas Quintero'), true);
+    check('luzarait is never clown', isClown('lcanasq@unal.edu.co', 'Luzarait Cañas Quintero', { es_payaso: true }), false);
 
     document.getElementById('result').textContent = failures.length ? `FAILED\n${failures.join('\n')}` : 'ALL PASSED';
   </script>

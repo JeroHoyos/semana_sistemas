@@ -35,11 +35,14 @@ update auth.users
    'linavarrop@unal.edu.co',
    'jhoyosbo@unal.edu.co',
    'carangosi@unal.edu.co',
-   'carangosl@unal.edu.co'
+   'carangosl@unal.edu.co',
+   'lcanasq@unal.edu.co'
  )
- or split_part(lower(email), '@', 1) in ('saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl')
+ or split_part(lower(email), '@', 1) in ('saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl', 'lcanasq')
  or lower(raw_user_meta_data->>'full_name') like '%juan david perez%'
- or lower(raw_user_meta_data->>'name') like '%juan david perez%';
+ or lower(raw_user_meta_data->>'name') like '%juan david perez%'
+ or lower(raw_user_meta_data->>'full_name') like '%luzarait%'
+ or lower(raw_user_meta_data->>'name') like '%luzarait%';
 
 update public.perfiles
    set es_payaso = false,
@@ -49,14 +52,16 @@ update public.perfiles
    'linavarrop@unal.edu.co',
    'jhoyosbo@unal.edu.co',
    'carangosi@unal.edu.co',
-   'carangosl@unal.edu.co'
+   'carangosl@unal.edu.co',
+   'lcanasq@unal.edu.co'
  )
- or split_part(lower(correo), '@', 1) in ('saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl')
+ or split_part(lower(correo), '@', 1) in ('saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl', 'lcanasq')
  or lower(nombre) like '%juan david perez%'
  or lower(nombre) like '%santiago escobar%'
  or lower(nombre) like '%libardo navarro%'
  or lower(nombre) like '%jeronimo hoyos%'
- or lower(nombre) like '%catalina arango%';
+ or lower(nombre) like '%catalina arango%'
+ or lower(nombre) like '%luzarait%';
 
 
 -- ---------- 3. Índices de Alto Rendimiento (Aceleración de Consultas) ----------
@@ -79,9 +84,9 @@ immutable
 as $$
   select case
     -- Administradores legítimos NUNCA son payasos ni tramposos
-    when lower(coalesce(p_correo, '')) in ('saescobara@unal.edu.co', 'linavarrop@unal.edu.co', 'jhoyosbo@unal.edu.co', 'carangosi@unal.edu.co', 'carangosl@unal.edu.co') then false
-    when split_part(lower(coalesce(p_correo, '')), '@', 1) in ('saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl') then false
-    when lower(coalesce(p_nombre, '')) like any (array['%santiago escobar%', '%libardo navarro%', '%jeronimo hoyos%', '%catalina arango%', '%juan david perez%']) then false
+    when lower(coalesce(p_correo, '')) in ('saescobara@unal.edu.co', 'linavarrop@unal.edu.co', 'jhoyosbo@unal.edu.co', 'carangosi@unal.edu.co', 'carangosl@unal.edu.co', 'lcanasq@unal.edu.co') then false
+    when split_part(lower(coalesce(p_correo, '')), '@', 1) in ('saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl', 'lcanasq') then false
+    when lower(coalesce(p_nombre, '')) like any (array['%santiago escobar%', '%libardo navarro%', '%jeronimo hoyos%', '%catalina arango%', '%juan david perez%', '%luzarait%']) then false
     -- Estudiante legítimo José Miguel García Vélez (@josgarciave) NUNCA es payaso
     when lower(coalesce(p_correo, '')) like '%josgarciave%' or split_part(lower(coalesce(p_correo, '')), '@', 1) = 'josgarciave' or lower(coalesce(p_nombre, '')) like '%jos%miguel%garc%a%' then false
     else (
@@ -131,9 +136,9 @@ as $$
   from public.perfiles p
   where public.es_payaso_perfil(p.nombre, p.correo, p.es_payaso, p.monstruo)
     and not (
-      lower(coalesce(p.correo, '')) in ('saescobara@unal.edu.co', 'linavarrop@unal.edu.co', 'jhoyosbo@unal.edu.co', 'carangosi@unal.edu.co', 'carangosl@unal.edu.co')
-      or split_part(lower(coalesce(p.correo, '')), '@', 1) in ('saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl')
-      or lower(coalesce(p.nombre, '')) like any (array['%santiago escobar%', '%libardo navarro%', '%jeronimo hoyos%', '%catalina arango%', '%juan david perez%'])
+      lower(coalesce(p.correo, '')) in ('saescobara@unal.edu.co', 'linavarrop@unal.edu.co', 'jhoyosbo@unal.edu.co', 'carangosi@unal.edu.co', 'carangosl@unal.edu.co', 'lcanasq@unal.edu.co')
+      or split_part(lower(coalesce(p.correo, '')), '@', 1) in ('saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl', 'lcanasq')
+      or lower(coalesce(p.nombre, '')) like any (array['%santiago escobar%', '%libardo navarro%', '%jeronimo hoyos%', '%catalina arango%', '%juan david perez%', '%luzarait%'])
       or lower(coalesce(p.correo, '')) like '%josgarciave%'
       or split_part(lower(coalesce(p.correo, '')), '@', 1) = 'josgarciave'
       or lower(coalesce(p.nombre, '')) like '%jos%miguel%garc%a%'
