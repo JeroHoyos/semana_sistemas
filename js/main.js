@@ -5,6 +5,7 @@
 
 // '09:30' → 9.5
 function toHours(time) {
+  if (!time) return 0;
   const [hours, minutes] = time.split(':').map(Number);
   return hours + minutes / 60;
 }
@@ -259,7 +260,7 @@ function matchesSearch(activity) {
   const text = [
     activity.title,
     ACTIVITY_TYPES[activity.type].plural,
-    findDay(activity.day).name,
+    findDay(activity.day)?.name,
     ...findSpeakers(activity).flatMap((speaker) => [speaker.name, speaker.role]),
     findGroup(activity.organizer)?.name,
     activity.place,
@@ -330,7 +331,7 @@ function activityCard(activity) {
   const overlapping = findOverlapping(activity);
 
   // Searching mixes all three days, so each activity shows its day
-  const day = schedule.search ? `${findDay(activity.day).name} · ` : '';
+  const day = schedule.search ? (findDay(activity.day) ? `${findDay(activity.day).name} · ` : 'Por definir · ') : '';
 
   const details = findSpeakers(activity).map((speaker) =>
     `<span><span class="avatar">${speakerPortrait(speaker)}</span>${speaker.name || 'Por anunciar'}</span>`);
@@ -363,8 +364,9 @@ function activityCard(activity) {
 
 function renderWeek(visible) {
   const visibleIds = visible.map((activity) => activity.id);
-  const firstHour = Math.floor(Math.min(...ACTIVITIES.map((a) => toHours(a.start))));
-  const lastHour = Math.ceil(Math.max(...ACTIVITIES.map((a) => toHours(a.end))));
+  const timed = ACTIVITIES.filter((a) => a.start && a.end);
+  const firstHour = timed.length ? Math.floor(Math.min(...timed.map((a) => toHours(a.start)))) : 8;
+  const lastHour = timed.length ? Math.ceil(Math.max(...timed.map((a) => toHours(a.end)))) : 18;
 
   let hours = '';
   for (let hour = firstHour; hour < lastHour; hour++) {
@@ -373,7 +375,7 @@ function renderWeek(visible) {
 
   // One column per day, with its activities spread into lanes
   const columns = DAYS.map((day) => {
-    const ofTheDay = ACTIVITIES.filter((activity) => activity.day === day.id);
+    const ofTheDay = ACTIVITIES.filter((activity) => activity.day === day.id && activity.start && activity.end);
     const blocks = assignLanes(ofTheDay)
       .map((activity) => activityBlock(activity, firstHour, visibleIds.includes(activity.id)))
       .join('');
@@ -452,14 +454,16 @@ function renderCompetitions() {
   $('#competitions-list').innerHTML = competitions.map((activity) => {
     const day = findDay(activity.day);
     const group = findGroup(activity.organizer);
+    const dayPill = day ? day.short : 'Por definir';
+    const timeText = (day && activity.start) ? `${day.name} · ${activity.start} – ${activity.end}` : 'Fecha y hora por definir';
     return `
       <a class="competition" href="${activityLink(activity.id)}" style="--color: ${activity.color}">
         <span class="competition__image">
-          <span class="competition__day">${day.short}</span>
+          <span class="competition__day">${dayPill}</span>
           ${ICONS[activity.icon]}
         </span>
         <span class="competition__title">${ICONS.eye}${activity.title}</span>
-        <span class="competition__time">${day.name} · ${activity.start} – ${activity.end}</span>
+        <span class="competition__time">${timeText}</span>
         <span class="competition__summary">${activity.summary}</span>
         ${group ? `<span class="competition__organizer">${groupLogo(group)}Organiza ${group.name}</span>` : ''}
       </a>

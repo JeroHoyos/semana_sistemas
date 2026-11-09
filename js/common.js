@@ -76,7 +76,7 @@ const activityLink = (id) => `evento.html?id=${encodeURIComponent(id)}`;
 // Two activities overlap if they are on the same day and their times intersect.
 // 'HH:MM' times can be compared directly as text.
 function overlaps(a, b) {
-  return a.day === b.day && a.start < b.end && b.start < a.end;
+  return Boolean(a.day && b.day && a.day === b.day && a.start && a.end && b.start && b.end && a.start < b.end && b.start < a.end);
 }
 
 // The other activities happening at the same time

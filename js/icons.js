@@ -84,6 +84,21 @@ const ICONS = {
     <path d="M7.5 10.5v4M5.5 12.5h4"/>
     <circle cx="16" cy="11.5" r=".6"/><circle cx="18" cy="13.5" r=".6"/>
   </svg>`,
+
+  crown: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M3 18h18l-2-10-4.5 5L12 4 9.5 13 5 8l-2 10z" fill="currentColor" fill-opacity="0.18"/>
+    <circle cx="12" cy="4" r="1.3" fill="currentColor"/>
+    <circle cx="4.5" cy="8" r="1.3" fill="currentColor"/>
+    <circle cx="19.5" cy="8" r="1.3" fill="currentColor"/>
+    <path d="M4 18v2h16v-2"/>
+  </svg>`,
+
+  dance: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M9 18V5l12-2v13"/>
+    <circle cx="6" cy="18" r="3.2" fill="currentColor"/>
+    <circle cx="18" cy="16" r="3.2" fill="currentColor"/>
+    <path d="M9 9.5l12-2"/>
+  </svg>`,
 };
 
 // One-eyed monster peeking from below. If it is a mystery, the eye shows a "?".

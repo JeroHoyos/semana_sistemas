@@ -186,7 +186,7 @@ const PIXEL_ART = {
     ],
   },
 
-  // Karaoke and Just Dance
+  // Just Dance
   note: {
     palette: { k: '#5a1638', n: '#ff6fae' },
     rows: [

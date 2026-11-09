@@ -1726,6 +1726,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   font-size: 12px;
   letter-spacing: .12em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .competition__title {
