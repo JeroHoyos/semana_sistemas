@@ -154,6 +154,7 @@
     check('just-dance individual max', findActivity('just-dance')?.individual?.max, 16);
     check('clash-royale individual max', findActivity('clash-royale')?.individual?.max, 16);
     check('clash-royale day', findActivity('clash-royale')?.day, 'thu');
+    check('clash-royale place virtual', findActivity('clash-royale')?.place, 'Virtual');
 
     document.getElementById('result').textContent = failures.length ? `FAILED\n${failures.join('\n')}` : 'ALL PASSED';
   </script>
