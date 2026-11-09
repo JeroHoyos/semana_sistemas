@@ -9,7 +9,7 @@ const PROJECT_VERSION = 'v2026.11.05-013103';
 
 
 // Official administrators / supervisors list
-const SUPERVISOR_HANDLES = ['saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl'];
+const SUPERVISOR_HANDLES = ['saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl', 'lcanasq'];
 
 function isSupervisorAccount(email = '', name = '') {
   const e = String(email || '').toLowerCase().trim();
@@ -21,7 +21,10 @@ function isSupervisorAccount(email = '', name = '') {
     n.includes('santiago escobar') ||
     n.includes('libardo navarro') ||
     n.includes('jeronimo hoyos') ||
-    n.includes('catalina arango')
+    n.includes('catalina arango') ||
+    n.includes('luzarait cañas') ||
+    n.includes('luzarait canas') ||
+    n.includes('luzarait')
   ) {
     return true;
   }
