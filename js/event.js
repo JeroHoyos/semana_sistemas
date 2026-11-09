@@ -7,6 +7,7 @@ const activity = findActivity(new URLSearchParams(location.search).get('id'));
 
 // 'Miércoles, 18 nov' (or just 'Miércoles' if the day has no date)
 function dayText(day) {
+  if (!day) return 'Por definir';
   return `${day.name}${day.date ? `, ${day.date}` : ''}`;
 }
 
@@ -61,9 +62,10 @@ function noticeSection() {
 
 // Day, time and place
 function factsSection() {
+  const timeText = (activity.start && activity.end) ? `${activity.start} – ${activity.end}` : 'Por definir';
   const facts = [
     { icon: ICONS.calendar, name: 'Día', value: dayText(findDay(activity.day)) },
-    { icon: ICONS.clock, name: 'Hora', value: `${activity.start} – ${activity.end}` },
+    { icon: ICONS.clock, name: 'Hora', value: timeText },
     { icon: ICONS.pin, name: 'Lugar', value: activity.place || 'Facultad de Minas (salón por confirmar)' },
   ];
 
