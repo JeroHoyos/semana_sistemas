@@ -151,6 +151,7 @@
     check('find company tcs', findGroup('tcs')?.name, 'TCS');
     check('find activity just-dance', findActivity('just-dance')?.title, 'Torneo de Just Dance');
     check('find activity clash-royale', findActivity('clash-royale')?.title, 'Torneo de Clash Royale');
+    check('just-dance individual max', findActivity('just-dance')?.individual?.max, 16);
 
     document.getElementById('result').textContent = failures.length ? `FAILED\n${failures.join('\n')}` : 'ALL PASSED';
   </script>
