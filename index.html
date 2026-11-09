@@ -159,8 +159,16 @@
       <div class="container">
         <div class="section-title">
           <p class="section-title__eyebrow">También participan</p>
-          <h2>Grupos estudiantiles</h2>
-          <p class="section-title__intro">Grupos de la facultad que se suman a la Semana de Sistemas.</p>
+          <h2 id="groups-heading">Grupos estudiantiles</h2>
+          <p class="section-title__intro" id="groups-intro">Grupos y semilleros de la facultad que se suman a la Semana de Sistemas.</p>
+          <div class="groups__tabs" role="tablist" aria-label="Cambiar entre grupos estudiantiles y empresas">
+            <button type="button" class="groups__tab is-active" id="btn-show-groups" role="tab" aria-selected="true" aria-controls="groups-list">
+              Grupos estudiantiles
+            </button>
+            <button type="button" class="groups__tab" id="btn-show-companies" role="tab" aria-selected="false" aria-controls="groups-list">
+              Empresas
+            </button>
+          </div>
         </div>
         <ul class="groups__list" id="groups-list"></ul>
       </div>

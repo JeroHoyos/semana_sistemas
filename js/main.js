@@ -473,25 +473,73 @@ function renderCompetitions() {
 }
 
 
-/* ---------- Student groups ---------- */
+/* ---------- Student groups & Companies ---------- */
+
+let currentAffiliateTab = 'groups';
+
+function affiliateCard(item) {
+  const tag = item.link ? 'a' : 'span';
+  const target = item.link ? `href="${item.link}" target="_blank" rel="noopener"` : '';
+  return `
+    <li class="group" style="--color: ${item.color}; --letters: ${item.name.length}">
+      <${tag} class="pennant ${item.logo ? 'pennant--with-logo' : ''}" ${target}>
+        <span class="pennant__cloth"><span class="pennant__name">${item.name}</span></span>
+        ${item.logo ? `<img class="pennant__logo" src="${item.logo}" alt="Logo de ${item.name}">` : ''}
+      </${tag}>
+      <span class="group__type">${item.type}</span>
+    </li>
+  `;
+}
+
+function setAffiliateTab(tab) {
+  currentAffiliateTab = tab;
+  const isCompanies = tab === 'companies';
+  const list = isCompanies ? (typeof COMPANIES !== 'undefined' ? COMPANIES : []) : GROUPS;
+
+  const btnGroups = $('#btn-show-groups');
+  const btnCompanies = $('#btn-show-companies');
+  const heading = $('#groups-heading');
+  const intro = $('#groups-intro');
+
+  if (btnGroups) {
+    btnGroups.classList.toggle('is-active', !isCompanies);
+    btnGroups.setAttribute('aria-selected', !isCompanies ? 'true' : 'false');
+  }
+  if (btnCompanies) {
+    btnCompanies.classList.toggle('is-active', isCompanies);
+    btnCompanies.setAttribute('aria-selected', isCompanies ? 'true' : 'false');
+  }
+
+  if (heading) {
+    heading.textContent = isCompanies ? 'Empresas aliadas' : 'Grupos estudiantiles';
+  }
+  if (intro) {
+    intro.textContent = isCompanies
+      ? 'Empresas líderes del sector tecnológico que confirman su participación en la Semana de Sistemas.'
+      : 'Grupos y semilleros de la facultad que se suman a la Semana de Sistemas.';
+  }
+
+  const listContainer = $('#groups-list');
+  if (listContainer) {
+    listContainer.innerHTML = list.map(affiliateCard).join('');
+  }
+}
 
 // --letters adjusts the name's size so it fits on the pennant.
 // A group with a logo gets it as a round patch on the pole.
 // A group with a link makes the pennant a link that opens its page in another tab.
 function renderGroups() {
-  $('#groups-list').innerHTML = GROUPS.map((group) => {
-    const tag = group.link ? 'a' : 'span';
-    const target = group.link ? `href="${group.link}" target="_blank" rel="noopener"` : '';
-    return `
-      <li class="group" style="--color: ${group.color}; --letters: ${group.name.length}">
-        <${tag} class="pennant ${group.logo ? 'pennant--with-logo' : ''}" ${target}>
-          <span class="pennant__cloth"><span class="pennant__name">${group.name}</span></span>
-          ${group.logo ? `<img class="pennant__logo" src="${group.logo}" alt="Logo de ${group.name}">` : ''}
-        </${tag}>
-        <span class="group__type">${group.type}</span>
-      </li>
-    `;
-  }).join('');
+  const btnGroups = $('#btn-show-groups');
+  const btnCompanies = $('#btn-show-companies');
+
+  if (btnGroups) {
+    btnGroups.addEventListener('click', () => setAffiliateTab('groups'));
+  }
+  if (btnCompanies) {
+    btnCompanies.addEventListener('click', () => setAffiliateTab('companies'));
+  }
+
+  setAffiliateTab(currentAffiliateTab);
 }
 
 

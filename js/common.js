@@ -9,7 +9,7 @@ const $$ = (selector) => document.querySelectorAll(selector);
 const findDay = (id) => DAYS.find((day) => day.id === id);
 const findSpeaker = (id) => SPEAKERS.find((speaker) => speaker.id === id);
 const findActivity = (id) => ACTIVITIES.find((activity) => activity.id === id);
-const findGroup = (id) => GROUPS.find((group) => group.id === id);
+const findGroup = (id) => GROUPS.find((group) => group.id === id) || (typeof COMPANIES !== 'undefined' ? COMPANIES.find((c) => c.id === id) : null);
 const findTitle = (id) => TITLES.find((title) => title.id === id);
 
 // How a title reads according to the monster's style (Asustador / Asustadora, Rey / Reina…)
