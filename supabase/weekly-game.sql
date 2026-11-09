@@ -9,7 +9,7 @@
 --   'doom'   (week 2, opens on 2026-11-09 at 7 a.m.): up to 1000 for enemies, items, secrets and time in E1M1.
 --   'defrag' (week 3, locked for now): 50 per row.
 --
--- Each person saves at most 30 results per day in Snake, 10 in Defrag and 3 in Doom (the day is Colombia's).
+-- Each person saves at most 30 results per day in Snake, 10 in Defrag and 5 in Doom (the day is Colombia's).
 -- To change a limit, change it in registrar_puntaje_juego and in dailyGames of the game's cartridge (js/).
 --
 -- Doom used to be a speedrun (its time in tics) and Defrag gave other points. If the table still has
@@ -134,7 +134,7 @@ begin
     when 'doom' then
       v_minimo := 1;
       v_maximo := 1000;
-      v_limite_dia := 3;
+      v_limite_dia := 5;
     -- Defrag: 50 per row; not even hours at the top level reach 10 million
     when 'defrag' then
       v_minimo := 50;

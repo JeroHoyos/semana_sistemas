@@ -1034,7 +1034,7 @@ function createDoom(canvas, events = {}) {
 const DOOM_CARTRIDGE = {
   id: 'doom',
   scoring: 'points',
-  dailyGames: 3,
+  dailyGames: 5,
   create: (canvas, events) => createDoom(canvas, events),
   splash: {
     text: 'Llega a la salida. Si mueres, pierdes la partida',
