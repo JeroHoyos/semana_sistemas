@@ -4422,6 +4422,53 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .groups .section-title__eyebrow { color: #a9d1ff; }
 .groups .section-title__intro { color: #c9dcf0; }
 
+.groups__tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  margin-top: 24px;
+  background: rgba(255, 255, 255, .08);
+  border: 1px solid rgba(255, 255, 255, .15);
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+}
+
+.groups__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #c9dcf0;
+  font-family: var(--font-varsity);
+  font-size: 14px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .2s ease;
+  user-select: none;
+}
+
+.groups__tab:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, .08);
+}
+
+.groups__tab.is-active,
+.groups__tab[aria-selected="true"] {
+  background: linear-gradient(135deg, #1aa3b8, var(--blue));
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .35), inset 0 0 0 1px rgba(255, 255, 255, .3);
+}
+
+.groups__tab:focus-visible {
+  outline: 3px solid #a9d1ff;
+  outline-offset: 3px;
+}
+
 .groups__list {
   list-style: none;
   max-width: 800px;                     /* two pennants per row */

@@ -145,6 +145,10 @@
     check('luzarait recognized as supervisor by email', isSupervisorAccount('lcanasq@unal.edu.co'), true);
     check('luzarait recognized as supervisor by name', isSupervisorAccount('x@unal.edu.co', 'Luzarait Cañas Quintero'), true);
     check('luzarait is never clown', isClown('lcanasq@unal.edu.co', 'Luzarait Cañas Quintero', { es_payaso: true }), false);
+    check('find group unalgoritmo', findGroup('unalgoritmo')?.name, 'UNAlgoritmo');
+    check('find company lovelytics', findGroup('lovelytics')?.name, 'Lovelytics');
+    check('find company sole', findGroup('sole')?.name, 'Solē');
+    check('find company tcs', findGroup('tcs')?.name, 'TCS');
 
     document.getElementById('result').textContent = failures.length ? `FAILED\n${failures.join('\n')}` : 'ALL PASSED';
   </script>

@@ -124,6 +124,37 @@ const GROUPS = [
     link: 'https://www.instagram.com/uneuralgroup' },
 ];
 
+// Companies confirmed to participate in the week
+const COMPANIES = [
+  {
+    id: 'lovelytics',
+    name: 'Lovelytics',
+    type: 'Empresa aliada',
+    color: '#ff6c26',
+    logo: 'img/company-lovelytics.png',
+    link: 'https://lovelytics.com/es/',
+    description: 'Lovelytics es una firma boutique de consultoría en analítica avanzada, inteligencia artificial y arquitectura de datos moderna en la nube. Trabaja junto a organizaciones globales para transformar sus datos en valor e innovación tecnológica real.',
+  },
+  {
+    id: 'sole',
+    name: 'Solē',
+    type: 'Empresa aliada',
+    color: '#162a46',
+    logo: 'img/company-sole.png',
+    link: 'https://sole.tech/',
+    description: 'Solē es una compañía tecnológica e innovadora enfocada en el desarrollo de soluciones de software, ingeniería de datos y transformación digital de alto impacto.',
+  },
+  {
+    id: 'tcs',
+    name: 'TCS',
+    type: 'Empresa aliada',
+    color: '#114b94',
+    logo: 'img/company-tcs.png',
+    link: 'https://www.tcs.com/',
+    description: 'Tata Consultancy Services (TCS) es una de las mayores empresas globales en servicios de TI, consultoría y soluciones de negocios, impulsando la transformación digital de las industrias más importantes del mundo.',
+  },
+];
+
 // Times in 'HH:MM' format (24 h). Keep them sorted by day and time.
 // Times are provisional: they must be confirmed against the official schedule.
 // Competitions also have icon, color and summary for their card.
