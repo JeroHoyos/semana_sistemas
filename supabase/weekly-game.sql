@@ -6,7 +6,7 @@
 -- Stores each person's best score in each game. Highest wins in all of them; on a tie, whoever
 -- played fewer games:
 --   'snake'  (week 1, finished on 2026-11-08 at 8 p.m.): 10 per bug.
---   'doom'   (week 2, locked for now): up to 1000 for enemies, items, secrets and time in E1M1.
+--   'doom'   (week 2, opens on 2026-11-09 at 7 a.m.): up to 1000 for enemies, items, secrets and time in E1M1.
 --   'defrag' (week 3, locked for now): 50 per row.
 --
 -- Each person saves at most 30 results per day in Snake, 10 in Defrag and 3 in Doom (the day is Colombia's).
@@ -54,12 +54,13 @@ revoke insert, update, delete on public.puntajes_juego from anon, authenticated;
 -- To open a week: remove its game from this list, run the script again and remove locked
 -- in WEEKS (js/weekly-game.js). To delete the supervisors' test results:
 --   delete from public.puntajes_juego where juego = 'doom';   -- or 'defrag'
+-- Doom opens by itself at 7 a.m. on 2026-11-09: the same time is in WEEKS (js/weekly-game.js).
 create or replace function public.juego_bloqueado(p_juego text)
 returns boolean
 language sql
-immutable
+stable
 as $$
-  select p_juego in ('doom', 'defrag');
+  select p_juego = 'defrag' or (p_juego = 'doom' and now() < timestamptz '2026-11-09 07:00:00-05');
 $$;
 
 -- ---------- Finished weeks ----------

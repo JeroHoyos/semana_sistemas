@@ -20,7 +20,7 @@ Git Flow, without release branches:
 
 - Never commit directly to `main` or `develop`; open a pull request.
 - To publish, merge `develop` into `main`.
-- Doom (week 2) and Defrag (week 3) are already in `main`, locked to supervisors. To open one, unlock it (see "Weekly game locks" below).
+- Week 1 (Snake) closed on 2026-11-08 at 8 p.m. Doom (week 2) opens by itself on 2026-11-09 at 7 a.m. Defrag (week 3) is in `main`, locked to supervisors. To open it, unlock it (see "Weekly game locks" below).
 - Previews use the same Supabase project as production: whatever you do on a preview writes real data.
 
 ## Language
