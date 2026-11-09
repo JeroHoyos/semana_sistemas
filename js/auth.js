@@ -1016,7 +1016,7 @@ document.addEventListener('click', async (event) => {
 
 // Purges stale data caches (leaderboard, rankings, game records) on deployment
 // WITHOUT logging the user out (preserves Supabase session tokens).
-const DATA_CACHE_VERSION = '20261108_v5';
+const DATA_CACHE_VERSION = '20261109_v1';
 
 function syncDataCache() {
   try {
@@ -1026,6 +1026,7 @@ function syncDataCache() {
         if (
           key.startsWith('semana_sistemas_sustometro_') ||
           key.startsWith('juego_semana_records_') ||
+          key.startsWith('juego_semana_games_') ||   // games per day: Supabase still enforces the limit
           key.startsWith('semana_sistemas_cache_')
         ) {
           localStorage.removeItem(key);
