@@ -4434,46 +4434,53 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .groups .section-title__eyebrow { color: #a9d1ff; }
 .groups .section-title__intro { color: #c9dcf0; }
 
+/* Groups / companies switch: a sunken track with two tabs of the same width.
+   The chosen one is blue with the white inner ring of the other tabs on the site (.day). */
 .groups__tabs {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px;
-  margin-top: 24px;
-  background: rgba(255, 255, 255, .08);
-  border: 1px solid rgba(255, 255, 255, .15);
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 5px;
+  margin-top: 26px;
+  background: rgba(2, 12, 26, .5);
+  border: 1px solid rgba(169, 209, 255, .16);
   border-radius: 999px;
-  backdrop-filter: blur(8px);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, .4);
 }
 
 .groups__tab {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 24px;
+  justify-content: center;
+  gap: 9px;
+  padding: 11px 24px;
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: #c9dcf0;
+  color: #8fa9c6;
   font-family: var(--font-varsity);
-  font-size: 14px;
-  letter-spacing: .08em;
+  font-size: 13px;
+  letter-spacing: .1em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all .2s ease;
+  transition: color .2s, background .2s;
   user-select: none;
 }
+.groups__tab svg { flex: none; width: 18px; height: 18px; }
 
-.groups__tab:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, .08);
+.groups__tab:hover { color: #fff; background: rgba(255, 255, 255, .05); }
+
+/* Phones: the track spans the width and "Grupos estudiantiles" may take two lines */
+@media (max-width: 640px) {
+  .groups__tabs { display: grid; width: 100%; }
+  .groups__tab { gap: 7px; padding: 10px 12px; font-size: 11.5px; letter-spacing: .06em; }
+  .groups__tab svg { width: 16px; height: 16px; }
 }
 
-.groups__tab.is-active,
 .groups__tab[aria-selected="true"] {
-  background: linear-gradient(135deg, #1aa3b8, var(--blue));
+  background: linear-gradient(var(--blue-bright), var(--blue));
   color: #fff;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, .35), inset 0 0 0 1px rgba(255, 255, 255, .3);
+  box-shadow: inset 0 0 0 2px var(--blue), inset 0 0 0 4px rgba(255, 255, 255, .5), 0 8px 20px -8px rgba(40, 140, 255, .8);
 }
 
 .groups__tab:focus-visible {
