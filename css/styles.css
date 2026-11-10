@@ -5750,15 +5750,26 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   background: #e4effd;
 }
 
-.registration__tabs { grid-template-columns: repeat(5, 1fr); }
+/* Tabs grouped by day: the day's name between two thin lines, its tabs centered below.
+   Every tab is a quarter of the row, so the tabs of both days line up in columns. */
+.registration__tabs { display: grid; gap: 14px; }
+.registration__day-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+  font-family: var(--font-varsity);
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+.registration__day-name::before,
+.registration__day-name::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.registration__day-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.registration__day-tabs .day { flex: 0 0 calc((100% - 24px) / 4); }
 .registration__tabs .day svg { width: 24px; height: 24px; }
 .registration__tabs .day strong { font-size: 14px; }
-/* Too narrow for five labels: 3 + 2 centered, six columns so the second row starts half a tab in */
-@media (max-width: 860px) {
-  .registration__tabs { grid-template-columns: repeat(6, 1fr); }
-  .registration__tabs .day { grid-column: span 2; }
-  .registration__tabs .day:nth-child(4) { grid-column: 2 / span 2; }
-}
 
 /* The competition's facts use the activity page boxes (.event__facts) */
 .registration__summary { margin-top: 20px; }
@@ -6443,8 +6454,10 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 }
 
 @media (max-width: 640px) {
-  .registration__tabs .day { padding-inline: 4px; }
-  .registration__tabs .day strong { font-size: 10.5px; letter-spacing: .02em; }
+  /* Four labels do not fit: two per row, icon beside the label */
+  .registration__day-tabs .day { flex-basis: calc((100% - 8px) / 2); flex-direction: row; justify-content: center; gap: 6px; padding: 10px 4px; }
+  .registration__tabs .day svg { flex: none; width: 18px; height: 18px; }
+  .registration__tabs .day strong { font-size: 11.5px; letter-spacing: .03em; }
   .team-list { grid-template-columns: 1fr; }
   .team {
     grid-template-columns: 1fr;

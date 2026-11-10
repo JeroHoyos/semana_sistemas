@@ -4,7 +4,7 @@
 --
 -- Competitions that take teams, with the limits the page also shows (team in ACTIVITIES, js/data.js):
 --   'observacion': up to 4 people per team, at most 10 teams
---   'maraton':     up to 3 people per team, at most 10 teams
+--   'maraton':     up to 3 people per team, at most 20 teams
 --   'futbol':      up to 5 people per team, at most 8 teams
 -- To change a limit, change it here (guardar_equipo / agregar_miembro) and in js/data.js.
 --
@@ -82,7 +82,7 @@ declare
   v_usuario_email    text;
   v_nombre           text := trim(coalesce(p_nombre, ''));
   v_celular          text := regexp_replace(coalesce(p_celular, ''), '[\s().-]', '', 'g');
-  v_cupos            integer := case p_actividad when 'futbol' then 8 when 'observacion' then 10 when 'maraton' then 10 end;
+  v_cupos            integer := case p_actividad when 'futbol' then 8 when 'observacion' then 10 when 'maraton' then 20 end;
   v_tamano           integer := case p_actividad when 'futbol' then 5 when 'observacion' then 4 when 'maraton' then 3 end;
   v_bandera jsonb := jsonb_build_object(
     'letras',    trim(coalesce(p_bandera ->> 'letras', '')),
