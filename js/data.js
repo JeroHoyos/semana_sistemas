@@ -204,14 +204,14 @@ const ACTIVITIES = [
     description: 'Una verdadera prueba de velocidad, lógica y trabajo en equipo. Recorre las estaciones distribuidas alrededor del campus resolviendo acertijos y desafíos en el menor tiempo posible.\n' +
       '¿Tiene tu equipo la destreza mental y la resistencia necesarias para llevarse la victoria?',
     decorations: ['questionMark', 'magnifier', 'map'] },
-  { id: 'clash-royale', day: 'thu', start: '10:30', end: '12:30', type: 'competition', title: 'Torneo de Clash Royale', individual: { tab: 'Clash Royale', max: 16 },
+  { id: 'clash-royale', day: 'thu', start: '10:30', end: '12:30', type: 'competition', title: 'Torneo de Clash Royale', individual: { tab: 'Clash Royale', max: 32 },
     icon: 'crown', color: '#d97706', summary: 'Duelos estratégicos en la arena. Corona tras corona hasta la victoria.', place: 'Virtual',
     description: 'Torneo oficial de Clash Royale en modalidad virtual con formato competitivo real, a cargo de Santiago Escobar (exjugador competitivo del juego). Puedes participar desde donde estés a través del clan exclusivo creado para el evento en Modo Elección (Draft) para estandarizar niveles y minimizar la ventaja entre jugadores, garantizando que gane la mejor estrategia y lectura de partida en la arena.',
-    stats: [{ value: 16, label: 'cupos' }, { value: 'Elección', label: 'modo' }, { value: 'Virtual', label: 'modalidad' }],
+    stats: [{ value: 32, label: 'cupos' }, { value: 'Elección', label: 'modo' }, { value: 'Virtual', label: 'modalidad' }],
     rules: [
-      { title: 'Modalidad 100% virtual y clan oficial', text: 'Torneo individual para 16 jugadores en llaves de eliminación directa. Puedes jugar desde donde te encuentres: todas las batallas se coordinarán virtualmente y se disputarán dentro del clan privado creado para la competencia.' },
+      { title: 'Modalidad 100% virtual y clan oficial', text: 'Torneo individual para 32 jugadores en llaves de eliminación directa. Puedes jugar desde donde te encuentres: todas las batallas se coordinarán virtualmente y se disputarán dentro del clan privado creado para la competencia.' },
       { title: 'Modo Elección (Draft competitivo)', text: 'Se jugará en Modo Elección con reglas de torneo (cartas y torres estandarizadas a nivel 11). Cada jugador elige 4 cartas y le pasa 4 al rival, neutralizando diferencias de nivel de cuentas personales y premiando la habilidad pura.' },
-      { title: 'Estructura de las rondas', text: 'Octavos y cuartos de final a partida única (Bo1). Semifinales y Gran Final al mejor de 3 partidas (Bo3).' },
+      { title: 'Estructura de las rondas', text: 'Dieciseisavos, octavos y cuartos de final a partida única (Bo1). Semifinales y Gran Final al mejor de 3 partidas (Bo3).' },
       { title: 'Dispositivo y conectividad', text: 'Cada participante juega en su propio dispositivo móvil con Clash Royale actualizado y conexión a internet estable.' },
       { title: 'Organización y coordinación', text: 'A cargo de Santiago Escobar — exjugador competitivo de Clash Royale. La coordinación virtual, asignación de salas y llamados a partida se realizarán directamente por el grupo oficial de WhatsApp.' },
     ],
