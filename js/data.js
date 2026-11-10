@@ -204,6 +204,7 @@ const ACTIVITIES = [
     icon: 'magnifier', color: '#e05a7a', summary: 'Recorre el campus resolviendo pistas antes que los demás equipos.', place: 'Hall M10',
     description: 'Una verdadera prueba de velocidad, lógica y trabajo en equipo. Recorre las estaciones distribuidas alrededor del campus resolviendo acertijos y desafíos en el menor tiempo posible.\n' +
       '¿Tiene tu equipo la destreza mental y la resistencia necesarias para llevarse la victoria?',
+    image: 'img/flyers/scavenger-hunt.jpg',
     decorations: ['questionMark', 'magnifier', 'map'] },
   { id: 'clash-royale', day: 'thu', start: '10:30', end: '12:30', type: 'competition', title: 'Torneo de Clash Royale', individual: { tab: 'Clash Royale', max: 32 },
     icon: 'crown', color: '#d97706', summary: 'Duelos estratégicos en la arena. Corona tras corona hasta la victoria.', place: 'Virtual',
@@ -246,7 +247,7 @@ const ACTIVITIES = [
   { id: 'videojuegos', day: 'fri', start: '10:00', end: '12:00', type: 'competition', title: 'Torneo de videojuegos', individual: { tab: 'Videojuegos', max: 16 }, place: 'Sala Lovelace Turing',
     icon: 'gamepad', color: '#7b4fc9', summary: '16 jugadores se enfrentan en Overcooked hasta que solo quede un campeón.',
     description: 'Toma el control, demuestra tu talento en la pantalla y compite codo a codo con otros jugadores para coronarte como el campeón del torneo.',
-    image: 'img/activity-overcooked2.jpg',
+    image: 'img/flyers/video-games.jpg',
     stats: [{ value: 16, label: 'jugadores' }, { value: 'VS', label: 'modo' }],
     decorations: ['chefHat', 'gamepad', 'onionKing'] },
   { id: 'just-dance', day: 'fri', start: '14:00', end: '15:00', type: 'competition', title: 'Torneo de Just Dance', individual: { tab: 'Just Dance', max: 16 },
