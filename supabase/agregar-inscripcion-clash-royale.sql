@@ -1,7 +1,7 @@
 -- =============================================
 -- AGREGAR INSCRIPCIÓN INDIVIDUAL: TORNEO DE CLASH ROYALE
 -- Ejecutar en Supabase → SQL Editor → Run
--- Habilita 16 cupos individuales con registro de celular para 'clash-royale'
+-- Habilita 32 cupos individuales con registro de celular para 'clash-royale'
 -- =============================================
 
 -- 1. Actualizar la restricción de actividades permitidas en inscripciones_individuales
@@ -12,7 +12,7 @@ alter table public.inscripciones_individuales
   add constraint inscripciones_individuales_actividad_check
   check (actividad in ('atletismo', 'videojuegos', 'just-dance', 'clash-royale'));
 
--- 2. Actualizar la función de inscripción con el límite de 16 cupos para 'clash-royale'
+-- 2. Actualizar la función de inscripción con el límite de 32 cupos para 'clash-royale'
 create or replace function public.inscribirse_individual(
   p_actividad text,
   p_celular   text
@@ -29,7 +29,7 @@ declare
     when 'atletismo' then 45
     when 'videojuegos' then 16
     when 'just-dance' then 16
-    when 'clash-royale' then 16
+    when 'clash-royale' then 32
     else null
   end;
   v_actual  integer;
