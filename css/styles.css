@@ -2577,17 +2577,18 @@ button { font: inherit; color: inherit; cursor: pointer; }
   box-shadow: 0 18px 30px -18px rgba(10, 44, 82, .55);
 }
 
-/* Activity stats (stats field): one box per item, in the activity's color */
+/* Activity stats (stats field): one box per item, in the activity's color.
+   Equal widths when they fit; a box too wide for the row (a long word next to a flyer) drops to the next one. */
 .event__stats {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;          /* as many equal columns as there are stats */
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin: 22px 0 0;
   padding: 0;
   list-style: none;
 }
 .event__stats li {
+  flex: 1 1 0;
   display: grid;
   justify-items: center;
   padding: 10px 6px 12px;
