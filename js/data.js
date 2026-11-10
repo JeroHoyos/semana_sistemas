@@ -161,7 +161,7 @@ const COMPANIES = [
 // Optional: place (e.g. 'Bloque M8, auditorio'), description (long text
 // for the activity page, each \n is a paragraph; without it, the summary is used), speakers (ids from SPEAKERS), organizer (id from GROUPS),
 // rules (list of { title, text } shown as "Formato y reglas" on its page),
-// image (in img/: shown next to the text on its page),
+// image (usually its flyer, in img/flyers/: shown next to the text on its page),
 // video ({ id, title } of a YouTube video: the id is what follows youtu.be/ in the link),
 // stats (list of { value, label } shown as big boxes below the text, e.g. { value: 16, label: 'jugadores' }),
 // team ({ tab, size, maxTeams }: its short name on the inscripciones.html tabs, people per team and, optionally,
@@ -181,6 +181,7 @@ const ACTIVITIES = [
       'Durante esta charla exploraremos cómo pasar de aprender herramientas a desarrollar un perfil profesional integral, capaz de comprender problemas, tomar decisiones técnicas y construir soluciones que generen valor. Abordaremos la importancia de los fundamentos de la ingeniería, el pensamiento crítico y el uso responsable de la inteligencia artificial, así como el papel de las habilidades humanas, la comunicación, el trabajo en equipo y el aprendizaje continuo.\n' +
       'A través de ejemplos prácticos y situaciones del mundo tecnológico, reflexionaremos sobre cómo se conectan los conocimientos adquiridos en la universidad con los desafíos de la industria y qué pueden hacer los estudiantes, desde cualquier semestre, para prepararse para su futuro profesional.\n' +
       'Una invitación a mirar más allá del código y descubrir cómo construir una carrera en la que la tecnología, el criterio y las habilidades humanas trabajen juntos.',
+    image: 'img/flyers/talk-beyond-code.jpg',
     decorations: ['gradCap', 'helmet', 'database'] },
   { id: 'taller-llm', day: 'wed', start: '12:00', end: '14:00', type: 'workshop', title: 'Agentes de IA para todos - Todo lo que necesitas saber', speakers: ['yohan', 'juan'], organizer: 'turing-box', place: 'Aula M3-224',
     description: 'La inteligencia artificial pasó de responder preguntas a ejecutar tareas: crear archivos, revisar su propio trabajo, conectarse con otras herramientas y seguir procedimientos. A esto se le llama agente. En este taller vas a entender qué hay detrás de un agente y vas a trabajar con uno en clase.',
@@ -195,7 +196,7 @@ const ACTIVITIES = [
     description: '¿Qué pasa cuando un LLM deja de solo responder y empieza a actuar?\n' +
       'En este taller veremos cómo crear un agente, hacerlo más capaz y llevarlo a producción. Lo haremos con LangChain, uno de los frameworks de Python más usados para construir aplicaciones y agentes con LLMs.\n' +
       '¡Ven a descubrir cómo funciona un agente!',
-    image: 'img/activity-aperture-workshop.jpg',
+    image: 'img/flyers/aperture-workshop.jpg',
     decorations: ['terminal', 'robot', 'lightning'] },
 
   // Thursday
@@ -207,6 +208,7 @@ const ACTIVITIES = [
   { id: 'clash-royale', day: 'thu', start: '10:30', end: '12:30', type: 'competition', title: 'Torneo de Clash Royale', individual: { tab: 'Clash Royale', max: 32 },
     icon: 'crown', color: '#d97706', summary: 'Duelos estratégicos en la arena. Corona tras corona hasta la victoria.', place: 'Virtual',
     description: 'Torneo oficial de Clash Royale en modalidad virtual con formato competitivo real, a cargo de Santiago Escobar (exjugador competitivo del juego). Puedes participar desde donde estés a través del clan exclusivo creado para el evento en Modo Elección (Draft) para estandarizar niveles y minimizar la ventaja entre jugadores, garantizando que gane la mejor estrategia y lectura de partida en la arena.',
+    image: 'img/flyers/clash-royale.jpg',
     stats: [{ value: 32, label: 'cupos' }, { value: 'Elección', label: 'modo' }, { value: 'Virtual', label: 'modalidad' }],
     rules: [
       { title: 'Modalidad 100% virtual y clan oficial', text: 'Torneo individual para 32 jugadores en llaves de eliminación directa. Puedes jugar desde donde te encuentres: todas las batallas se coordinarán virtualmente y se disputarán dentro del clan privado creado para la competencia.' },
@@ -216,9 +218,10 @@ const ACTIVITIES = [
       { title: 'Organización y coordinación', text: 'A cargo de Santiago Escobar — exjugador competitivo de Clash Royale. La coordinación virtual, asignación de salas y llamados a partida se realizarán directamente por el grupo oficial de WhatsApp.' },
     ],
     decorations: ['cup', 'star', 'gamepad'] },
-  { id: 'maraton', day: 'thu', start: '14:00', end: '18:00', type: 'competition', title: 'Maratón de programación', team: { tab: 'Maratón', size: 3, maxTeams: 10 },
-    icon: 'code', color: '#2f9e5b', summary: 'Cuatro horas de problemas algorítmicos contra el reloj.', organizer: 'unalgoritmo', place: 'Salón M7-501',
+  { id: 'maraton', day: 'thu', start: '14:00', end: '18:00', type: 'competition', title: 'Maratón de programación', team: { tab: 'Maratón', size: 3, maxTeams: 20 },
+    icon: 'code', color: '#2f9e5b', summary: 'Cuatro horas de problemas algorítmicos contra el reloj.', organizer: 'unalgoritmo', place: 'Salones M7-501 y M7-502B',
     description: 'Llega la Maratón de Programación, el evento insignia en la sede Medellín para medir el pensamiento algorítmico, la lógica y el trabajo colaborativo en equipos de tres personas frente a retos de programación.',
+    image: 'img/flyers/marathon.jpg',
     rules: [
       { title: 'Conformación y estaciones', text: 'Participación en ternas (3 integrantes). Cada equipo contará con un computador para la resolución e implementación del código.' },
       { title: 'Lenguajes permitidos', text: 'Los problemas se pueden resolver en cualquier lenguaje de programación, principalmente C++, Python y Java.' },
@@ -231,13 +234,13 @@ const ACTIVITIES = [
   { id: 'atletismo', day: 'fri', start: '08:00', end: '09:00', type: 'competition', title: 'Carrera de atletismo 8‑bit', individual: { tab: 'Atletismo', max: 45 },
     icon: 'pixel', color: '#f08a24', summary: 'Una carrera con alma de videojuego retro.', place: 'Hall M10',
     description: 'Pon a prueba tu velocidad y resistencia en un circuito a lo largo de todo el campus. Prepárate para enfrentar los cambios de inclinación del terreno, superar cada nivel y retarte a ti mismo en una carrera con pura alma de videojuego retro.',
-    image: 'img/activity-athletics.jpg',
+    image: 'img/flyers/athletics.jpg',
     decorations: ['medal10', 'medal01', 'medal11'] },
   { id: 'futbol', day: 'fri', start: '09:00', end: '11:00', type: 'competition', title: 'Torneo de fútbol', team: { tab: 'Fútbol', size: 5, maxTeams: 8 },
     icon: 'ball', color: '#1667c2', summary: 'Arma tu equipo y sal a la cancha.', place: 'Placa polideportiva',
     description: 'Reúne a tu equipo y demuestra tu nivel en la cancha en un torneo de eliminación directa por brackets. Avanza llave a llave, supera a tus rivales en cada partido y compite hasta alcanzar la gran final.\n' +
       'Se prestan los petos y el balón.',
-    image: 'img/activity-soccer.jpg',
+    image: 'img/flyers/soccer.jpg',
     video: { id: '_2zoIHTWd00', title: 'Comercial de Nike Football: Arriésgalo todo (2014)' },
     decorations: ['jersey', 'cup', 'ball'] },
   { id: 'videojuegos', day: 'fri', start: '10:00', end: '12:00', type: 'competition', title: 'Torneo de videojuegos', individual: { tab: 'Videojuegos', max: 16 }, place: 'Sala Lovelace Turing',
@@ -249,7 +252,7 @@ const ACTIVITIES = [
   { id: 'just-dance', day: 'fri', start: '14:00', end: '15:00', type: 'competition', title: 'Torneo de Just Dance', individual: { tab: 'Just Dance', max: 16 },
     icon: 'dance', color: '#c4358c', summary: 'Saca tus mejores pasos en la pista y compite por el mayor puntaje.', place: 'Sala Lovelace Turing',
     description: 'El reto en la pista de baile. Sigue las coreografías en pantalla, acumula estrellas al ritmo de la música y compite con la comunidad para demostrar quién domina la pista de Just Dance.',
-    image: 'img/activity-just-dance.jpg',
+    image: 'img/flyers/just-dance.jpg',
     stats: [{ value: 16, label: 'cupos' }, { value: 'VS', label: 'modo' }],
     decorations: ['note', 'discoBall', 'star'] },
   { id: 'premiacion', day: 'fri', start: '15:00', end: '16:00', type: 'social', title: 'Premiación', place: 'Sala Lovelace Turing',
@@ -261,6 +264,7 @@ const ACTIVITIES = [
     description: 'El problema de la IA es el consumo de energía, pero ¿qué pasa si no calculamos con energía?\n' +
       'Durante esta charla veremos el proceso para llegar a hacer diferentes modelos de lenguaje estado del arte, autorregresivos y de difusión, y entender cómo llegar a la mejor configuración de capas entre los diferentes paradigmas de computación. ¿Dónde puedo usar la cuántica? ¿Dónde puedo poner la térmica? ¿Para qué sirve y qué es eso? ¿Y cómo multiplicar a la velocidad de la luz de forma paralelizada?\n' +
       'Con demo en vivo y animaciones para que sea intuitivo.',
+    image: 'img/flyers/talk-llm-future.jpg',
     decorations: ['thermometer', 'atom', 'lightbulb'] },
 ];
 
