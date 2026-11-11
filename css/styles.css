@@ -261,7 +261,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
    The chosen one shows in full with a blue ring; the others, a bit dimmed. */
 .speakers__thumbnails {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
   gap: 6px;
   margin-bottom: 34px;
@@ -271,7 +271,28 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: rgba(255, 255, 255, .62);
   backdrop-filter: blur(10px);
   box-shadow: 0 18px 36px -20px rgba(10, 44, 82, .6);
+  max-width: 100%;                 /* on narrow phones the thumbnails shrink instead of overflowing */
 }
+.thumbnail[hidden] { display: none; }
+.speakers__arrow {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .7);
+  color: var(--blue);
+  transition: background .2s;
+}
+.speakers__arrow:hover { background: #fff; }
+.speakers__arrow:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.speakers__arrow svg { width: 18px; height: 18px; }
+.speakers__arrow--prev { order: -1; }   /* the thumbnails get order 0, 1, 2 from main.js */
+.speakers__arrow--prev svg { transform: scaleX(-1); }
+.speakers__arrow--next { order: 3; }
 .thumbnail {
   display: grid;
   justify-items: center;
@@ -1858,6 +1879,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   /* Speakers: smaller photos so several fit in one row */
   .speakers .container { padding: 48px 0 56px; }
   .speakers__thumbnails { gap: 2px; margin-bottom: 26px; padding: 8px; }
+  .speakers__arrow { width: 24px; height: 24px; }
+  .speakers__arrow svg { width: 15px; height: 15px; }
   .thumbnail { width: 88px; }
   .thumbnail__photo { width: 52px; height: 52px; }
   .thumbnail__name { font-size: 12px; }
