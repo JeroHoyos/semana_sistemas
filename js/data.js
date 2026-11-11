@@ -187,8 +187,9 @@ const ACTIVITIES = [
       'Una invitación a mirar más allá del código y descubrir cómo construir una carrera en la que la tecnología, el criterio y las habilidades humanas trabajen juntos.',
     image: 'img/flyers/talk-beyond-code.jpg',
     decorations: ['gradCap', 'helmet', 'database'] },
-  { id: 'taller-llm', day: 'wed', start: '12:00', end: '14:00', type: 'workshop', title: 'Agentes de IA para todos - Todo lo que necesitas saber', speakers: ['yohan', 'juan'], organizer: 'turing-box', place: 'Aula M3-224',
+  { id: 'taller-llm', day: 'wed', start: '12:30', end: '14:00', type: 'workshop', title: 'Agentes de IA para todos - Todo lo que necesitas saber', speakers: ['yohan', 'juan'], organizer: 'turing-box', place: 'Aula M3-224',
     description: 'La inteligencia artificial pasó de responder preguntas a ejecutar tareas: crear archivos, revisar su propio trabajo, conectarse con otras herramientas y seguir procedimientos. A esto se le llama agente. En este taller vas a entender qué hay detrás de un agente y vas a trabajar con uno en clase.',
+    image: 'img/flyers/ai-agents-workshop.jpg',
     rules: [
       { title: 'Primera parte', text: 'Qué es un LLM y por qué “solo sabe lo que ve”. Cómo un chat se convierte en un agente: el bucle de pensar, actuar y verificar. Harness engineering: todo lo que rodea al modelo para que trabaje bien y de forma segura. Herramientas, MCP y skills: cómo se le dan nuevas capacidades a un agente. Opciones gratuitas, buenas prácticas y riesgos.' },
       { title: 'Segunda parte: práctica (en parejas)', text: 'Con Gemini CLI, que es gratuito, vas a pedirle al agente que construya una pequeña app, darle reglas propias con un archivo de instrucciones, crear tu primera skill y conectarle una herramienta externa por MCP.' },
