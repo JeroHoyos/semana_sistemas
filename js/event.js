@@ -243,7 +243,7 @@ function overlapsSection(overlapping) {
   `;
 }
 
-// A wide image (like Just Dance's) or a tall one (like a flyer) gets more room than a square one.
+// A wide image (like Just Dance's) takes half the card; a square or tall one (a flyer) gets the bigger flyer column.
 // Its size is only known once it finishes loading.
 function fitImage() {
   const image = $('.event__image');
@@ -252,7 +252,7 @@ function fitImage() {
   const measure = () => {
     const { classList } = image.parentElement;
     classList.toggle('event__intro--wide', image.naturalWidth > image.naturalHeight * 1.2);
-    classList.toggle('event__intro--tall', image.naturalHeight > image.naturalWidth * 1.2);
+    classList.toggle('event__intro--tall', image.naturalHeight >= image.naturalWidth * 0.95);
   };
 
   if (image.complete) measure();
