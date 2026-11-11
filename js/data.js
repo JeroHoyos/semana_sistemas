@@ -104,6 +104,10 @@ const SPEAKERS = [
   { id: 'juan', name: 'Juan Esteban Hincapié', role: 'Web UI Developer en Globant', credential: 'Ponente', color: '#1f9d7a',
     photo: 'img/speaker-juan-hincapie.jpg',
     bio: 'Estudiante de octavo semestre de Ingeniería de Sistemas e Informática, con un profundo interés en las experiencias interactivas, la ciberseguridad y la IA.' },
+  { id: 'carlos', name: 'Carlos Martínez', role: 'Consultor en Analítica e IA', credential: 'Ponente', color: '#d97706',
+    photo: 'img/speaker-carlos-martinez.jpg', link: 'https://www.linkedin.com/in/carlos-martinez-ai',
+    bio: 'Consultor especializado en analítica, inteligencia artificial y big data, con más de 20 años de experiencia. Se ha desempeñado como director de Analítica e Inteligencia de Negocios en varias compañías aseguradoras y financieras en Colombia, y es cofundador y director de diversas empresas de tecnología en analítica que prestan servicios a compañías de la región.\n' +
+      'Ingeniero de Sistemas e Informática, magíster en Sistemas y doctor en Ingeniería de la Universidad Nacional de Colombia. Ha sido investigador de la Universidad Nacional y de la Universidad de Cantabria, en España, con múltiples modelos matemáticos y publicaciones en revistas especializadas. Es docente en Ciencias de la Computación y Analítica de Grandes Volúmenes de Datos, y un apasionado por la generación de valor en las compañías.' },
 ];
 
 // Student groups taking part in the week. Each one shows as a pennant in its color.
@@ -198,6 +202,12 @@ const ACTIVITIES = [
       '¡Ven a descubrir cómo funciona un agente!',
     image: 'img/flyers/aperture-workshop.jpg',
     decorations: ['terminal', 'robot', 'lightning'] },
+  { id: 'ia-decisiones', day: 'wed', start: '17:00', end: '18:30', type: 'talk', title: 'El dato es el nuevo petróleo. La IA es la nueva refinería', speakers: ['carlos'], place: 'Virtual',
+    description: 'Nunca habíamos tenido tantos datos. ¿Por qué seguimos decidiendo igual?\n' +
+      'Casi todas las empresas ya usan inteligencia artificial, pero muy pocas ven resultados: tableros que nadie usa para decidir, tres versiones de la misma cifra y pilotos que nunca llegan a operación. En esta charla veremos por qué los análisis de hoy no mueven la aguja aunque sobren datos, y cómo la IA acelera cada paso del camino que va del dato crudo a la decisión.\n' +
+      'Con el caso de una cadena de tiendas responderemos cuatro preguntas de negocio: dónde y por qué se cae la venta, quién se va a ir y cuánto vale retenerlo, qué parte de la operación nos está costando clientes y cuánto pedir sin perder plata. Verás cómo auditar los datos puede cambiar la respuesta, cómo cruzar fuentes revela lo que ninguna tabla muestra sola y cómo un equipo de agentes de IA revisa, limpia, compara y grafica antes de responder.\n' +
+      'Una charla de nivel intermedio sobre IA para el análisis de datos y la toma de decisiones, con una regla clara: la IA propone; una persona verifica, decide y responde.',
+    decorations: ['database', 'robot', 'lightbulb'] },
 
   // Thursday
   { id: 'observacion', day: 'thu', start: '07:00', end: '10:00', type: 'competition', title: 'Carrera de observación', team: { tab: 'Observación', size: 4, maxTeams: 10 },
