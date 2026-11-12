@@ -66,27 +66,52 @@ function flagHtml(participant) {
     : `<span class="monster-flag" style="--cloth: ${monsterColor(participant.monster)}">${drawCustomMonster(participant.monster)}</span>`;
 }
 
-// Whoever has lost a match in the bracket
-function knockedOut() {
-  if (!bracket) return new Set();
-  return new Set(buildRounds(bracket).rounds.flat()
-    .filter((match) => match.winner !== null)
-    .map((match) => match.sides[1 - match.winner])
-    .filter((side) => typeof side === 'string'));
+// How far each one got in the bracket: matches won (a free pass does not count), and who lost one
+function standings() {
+  const wins = new Map();
+  const out = new Set();
+  const played = bracket
+    ? buildRounds(bracket).rounds.flat().filter((match) => match.winner !== null && match.sides.every((side) => typeof side === 'string'))
+    : [];
+  for (const { sides, winner } of played) {
+    wins.set(sides[winner], (wins.get(sides[winner]) ?? 0) + 1);
+    out.add(sides[1 - winner]);
+  }
+  return { wins, out };
 }
 
-// The knocked out keep their place, with their flag gone dark
+// Furthest along first: whoever is still in, by matches won, then the knocked out, with their
+// flag gone dark. Ties keep sign-up order. When the order changes, the flags glide to their place.
 function renderParticipants() {
   if (!participants.length) return;
-  const out = knockedOut();
+  const { wins, out } = standings();
+  const score = ({ name }) => (out.has(name) ? 0 : 1000) + (wins.get(name) ?? 0);
+  const order = participants.map((participant, i) => ({ participant, i })).sort((a, b) => score(b.participant) - score(a.participant));
+  const before = new Map([...document.querySelectorAll('.flags__item')].map((item) => [item.dataset.i, item.getBoundingClientRect()]));
+
   $('#participants').innerHTML = `
     <h2 class="event__subtitle">Participantes · ${participants.length}</h2>
     <ul class="flags">
-      ${participants.map((participant) => `
-        <li class="flags__item ${out.has(participant.name) ? 'flags__item--out' : ''}">${flagHtml(participant)}<span>${escapeHtml(participant.name)}</span></li>
+      ${order.map(({ participant, i }) => `
+        <li class="flags__item ${out.has(participant.name) ? 'flags__item--out' : ''}" data-i="${i}">${flagHtml(participant)}<span>${escapeHtml(participant.name)}</span></li>
       `).join('')}
     </ul>
   `;
+  glideFlags(before);
+}
+
+// Each flag that moved starts where it was and slides, with a little bounce, to its new place
+function glideFlags(before) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('.flags__item').forEach((item, n) => {
+    const from = before.get(item.dataset.i);
+    const to = item.getBoundingClientRect();
+    if (!from || (from.left === to.left && from.top === to.top)) return;
+    item.animate(
+      [{ transform: `translate(${from.left - to.left}px, ${from.top - to.top}px)` }, { transform: 'none' }],
+      { duration: 800, delay: n * 25, easing: 'cubic-bezier(.3, 1.35, .5, 1)', fill: 'backwards' },
+    );
+  });
 }
 
 function sideHtml(match, i) {
