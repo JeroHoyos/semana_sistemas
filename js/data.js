@@ -108,6 +108,10 @@ const SPEAKERS = [
     photo: 'img/speaker-carlos-martinez.jpg', link: 'https://www.linkedin.com/in/carlos-martinez-ai',
     bio: 'Consultor especializado en analítica, inteligencia artificial y big data, con más de 20 años de experiencia. Se ha desempeñado como director de Analítica e Inteligencia de Negocios en varias compañías aseguradoras y financieras en Colombia, y es cofundador y director de diversas empresas de tecnología en analítica que prestan servicios a compañías de la región.\n' +
       'Ingeniero de Sistemas e Informática, magíster en Sistemas y doctor en Ingeniería de la Universidad Nacional de Colombia. Ha sido investigador de la Universidad Nacional y de la Universidad de Cantabria, en España, con múltiples modelos matemáticos y publicaciones en revistas especializadas. Es docente en Ciencias de la Computación y Analítica de Grandes Volúmenes de Datos, y un apasionado por la generación de valor en las compañías.' },
+  { id: 'eduardo', name: 'Eduardo Ospina Serrano', role: 'CEO de Unergy', credential: 'Ponente', color: '#0e7490',
+    photo: 'img/speaker-eduardo-ospina.jpg', link: 'https://unergy.io/',
+    bio: 'Emprendedor en tecnología climática y sostenibilidad, apasionado por el desarrollo de hardware, firmware y software. Es cofundador y CEO de Unergy, que construye minigranjas solares para democratizar y descentralizar la energía limpia en Colombia, y cofundador de Solenium. Estudió en la Universidad Nacional de Colombia.\n' +
+      'Con Unergy construyó en Luruaco la primera minigranja solar del país y hoy opera más de 50. La empresa cerró una ronda pre-serie A de US$4 millones, con un compromiso de coinversión de más de US$80 millones para construir 80 minigranjas más, y tiene el primer proyecto legalizado bajo la regulación de comunidades energéticas en Colombia. MIT Technology Review lo seleccionó como uno de los Innovators Under 35 de Latinoamérica.' },
 ];
 
 // Student groups taking part in the week. Each one shows as a pennant in its color.
@@ -175,8 +179,10 @@ const COMPANIES = [
 // and decorations (three pixel art drawings from js/pixel-art.js for its page header; the middle one sits higher).
 const ACTIVITIES = [
   // Wednesday
-  { id: 'inaugural', day: 'wed', start: '09:00', end: '10:00', type: 'talk', title: 'Conferencia inaugural', place: 'Aula Máxima',
-    description: 'La charla de apertura aún no está definida.',
+  { id: 'inaugural', day: 'wed', start: '09:00', end: '10:00', type: 'talk', title: 'Conversatorio: Empresas de base tecnológica', speakers: ['eduardo'], place: 'Aula Máxima',
+    description: 'Un encuentro para conversar con Eduardo Ospina, CEO de Unergy, sobre empresas de base tecnológica.\n' +
+      'Un espacio abierto al diálogo, al intercambio de ideas y a las preguntas de la comunidad universitaria. Súmate a la conversación: trae tus preguntas y participa.',
+    image: 'img/flyers/talk-tech-companies.jpg',
     decorations: ['flag', 'microphone', 'rocket'] },
   { id: 'feria', day: 'wed', start: '09:00', end: '12:00', type: 'social', title: 'Feria de stands', place: 'Hall M10',
     description: 'Descubre la innovación desde adentro y amplía tus horizontes. Conecta con el talento universitario recorriendo los stands de nuestros grupos estudiantiles y semilleros de investigación, e interactúa directamente con empresas invitadas para resolver dudas, intercambiar experiencias y construir tu red profesional.',
@@ -209,6 +215,7 @@ const ACTIVITIES = [
       'Casi todas las empresas ya usan inteligencia artificial, pero muy pocas ven resultados: tableros que nadie usa para decidir, tres versiones de la misma cifra y pilotos que nunca llegan a operación. En esta charla veremos por qué los análisis de hoy no mueven la aguja aunque sobren datos, y cómo la IA acelera cada paso del camino que va del dato crudo a la decisión.\n' +
       'Con el caso de una cadena de tiendas responderemos cuatro preguntas de negocio: dónde y por qué se cae la venta, quién se va a ir y cuánto vale retenerlo, qué parte de la operación nos está costando clientes y cuánto pedir sin perder plata. Verás cómo auditar los datos puede cambiar la respuesta, cómo cruzar fuentes revela lo que ninguna tabla muestra sola y cómo un equipo de agentes de IA revisa, limpia, compara y grafica antes de responder.\n' +
       'Una charla de nivel intermedio sobre IA para el análisis de datos y la toma de decisiones, con una regla clara: la IA propone; una persona verifica, decide y responde.',
+    image: 'img/flyers/talk-ai-decisions.jpg',
     decorations: ['database', 'robot', 'lightbulb'] },
 
   // Thursday
