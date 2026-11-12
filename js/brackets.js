@@ -96,7 +96,7 @@ function renderParticipants() {
   const order = participants.map((participant, i) => ({ participant, i })).sort((a, b) => score(b.participant) - score(a.participant));
   const before = new Map([...document.querySelectorAll('.flags__item')].map((item) => [item.dataset.i, item.getBoundingClientRect()]));
 
-  $('#participants').innerHTML = foldHtml('#participants', `Participantes · ${participants.length}`, `
+  $('#participants').innerHTML = foldHtml('#participants', 'Participantes', `
     <ul class="flags">
       ${order.map(({ participant, i }) => `
         <li class="flags__item ${out.has(participant.name) ? 'flags__item--out' : ''}" data-i="${i}">${flagHtml(participant)}<span>${escapeHtml(participant.name)}</span></li>
