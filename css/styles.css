@@ -2745,6 +2745,7 @@ button.bracket__side:hover { background: rgba(37, 128, 218, .35); }
   color: #fff;
 }
 .bracket__side--lost { color: rgba(230, 238, 248, .35); text-decoration: line-through; }
+.bracket__side--lost .bracket__flag { filter: grayscale(1) brightness(.5); }
 .bracket__side--empty { color: rgba(230, 238, 248, .4); font-weight: 500; font-style: italic; }
 
 /* The champion: gold like the gold ID card, with its shine */
@@ -2845,6 +2846,9 @@ button.bracket__side:hover { background: rgba(37, 128, 218, .35); }
 .flags__item > svg { filter: drop-shadow(0 6px 6px rgba(10, 44, 82, .25)); }
 .flags__item:nth-child(2n) > :first-child { animation-delay: -1.5s; }
 .flags__item:nth-child(3n) > :first-child { animation-duration: 3.7s; }
+/* Knocked out: the flag goes dark and hangs still and crooked */
+.flags__item--out > :first-child { filter: grayscale(1) brightness(.45); rotate: 9deg; animation: none; }
+.flags__item--out > span { color: var(--gray); text-decoration: line-through; }
 @keyframes flag-sway {
   from { rotate: -4deg; }
   to { rotate: 4deg; }
