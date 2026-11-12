@@ -2652,6 +2652,24 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .event__rules dd { margin: 4px 0 0; color: var(--ink-soft); }
 
+/* Sections that fold under their title (participants and bracket, js/brackets.js): an arrow on
+   the right, like the cheaters table on the Scare Meter, points down when closed */
+.fold > summary { list-style: none; cursor: pointer; }
+.fold > summary::-webkit-details-marker { display: none; }
+.fold > summary .event__subtitle { display: flex; align-items: center; }
+.fold > summary .event__subtitle::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  margin: -6px 6px 0 auto;
+  border-right: 3px solid var(--blue);
+  border-bottom: 3px solid var(--blue);
+  transform: rotate(45deg);
+  transition: transform .2s, margin .2s;
+}
+.fold[open] > summary .event__subtitle::after { margin-top: 6px; transform: rotate(225deg); }
+.fold > summary:hover .event__subtitle { color: var(--blue); }
+
 /* Knockout bracket (js/brackets.js): one column per round, in the boxes of the rest of the page,
    joined by lines that turn blue along each winner's path. On phones it scrolls sideways. */
 .bracket__scroll {

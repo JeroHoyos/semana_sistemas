@@ -80,6 +80,13 @@ function standings() {
   return { wins, out };
 }
 
+// A section folded under its title, closed at first so the page stays short. When it is drawn
+// again it stays as the person left it.
+function foldHtml(container, title, body) {
+  const open = $(`${container} > .fold`)?.open ? 'open' : '';
+  return `<details class="fold" ${open}><summary><h2 class="event__subtitle">${title}</h2></summary>${body}</details>`;
+}
+
 // Furthest along first: whoever is still in, by matches won, then the knocked out, with their
 // flag gone dark. Ties keep sign-up order. When the order changes, the flags glide to their place.
 function renderParticipants() {
@@ -89,14 +96,13 @@ function renderParticipants() {
   const order = participants.map((participant, i) => ({ participant, i })).sort((a, b) => score(b.participant) - score(a.participant));
   const before = new Map([...document.querySelectorAll('.flags__item')].map((item) => [item.dataset.i, item.getBoundingClientRect()]));
 
-  $('#participants').innerHTML = `
-    <h2 class="event__subtitle">Participantes · ${participants.length}</h2>
+  $('#participants').innerHTML = foldHtml('#participants', `Participantes · ${participants.length}`, `
     <ul class="flags">
       ${order.map(({ participant, i }) => `
         <li class="flags__item ${out.has(participant.name) ? 'flags__item--out' : ''}" data-i="${i}">${flagHtml(participant)}<span>${escapeHtml(participant.name)}</span></li>
       `).join('')}
     </ul>
-  `;
+  `);
   glideFlags(before);
 }
 
@@ -182,12 +188,11 @@ function renderBracket() {
     $('#bracket').innerHTML = '';
     return;
   }
-  $('#bracket').innerHTML = `
-    <h2 class="event__subtitle">Llaves</h2>
+  $('#bracket').innerHTML = foldHtml('#bracket', 'Llaves', `
     ${bracket ? bracketHtml() : '<p class="event__bio">Las llaves todavía no han empezado.</p>'}
     ${bracketAdmin ? editorHtml() : ''}
     <p class="bracket__message" role="status"></p>
-  `;
+  `);
 }
 
 
