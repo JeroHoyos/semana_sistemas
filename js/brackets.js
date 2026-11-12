@@ -66,12 +66,25 @@ function flagHtml(participant) {
     : `<span class="monster-flag" style="--cloth: ${monsterColor(participant.monster)}">${drawCustomMonster(participant.monster)}</span>`;
 }
 
+// Whoever has lost a match in the bracket
+function knockedOut() {
+  if (!bracket) return new Set();
+  return new Set(buildRounds(bracket).rounds.flat()
+    .filter((match) => match.winner !== null)
+    .map((match) => match.sides[1 - match.winner])
+    .filter((side) => typeof side === 'string'));
+}
+
+// The knocked out keep their place, with their flag gone dark
 function renderParticipants() {
   if (!participants.length) return;
+  const out = knockedOut();
   $('#participants').innerHTML = `
     <h2 class="event__subtitle">Participantes · ${participants.length}</h2>
     <ul class="flags">
-      ${participants.map((participant) => `<li class="flags__item">${flagHtml(participant)}<span>${escapeHtml(participant.name)}</span></li>`).join('')}
+      ${participants.map((participant) => `
+        <li class="flags__item ${out.has(participant.name) ? 'flags__item--out' : ''}">${flagHtml(participant)}<span>${escapeHtml(participant.name)}</span></li>
+      `).join('')}
     </ul>
   `;
 }
@@ -138,6 +151,7 @@ function editorHtml() {
 }
 
 function renderBracket() {
+  renderParticipants();   // their flags show who is out
   reseeded = false;   // the editor shows what is stored again
   if (!bracket && !bracketAdmin) {
     $('#bracket').innerHTML = '';
