@@ -2652,57 +2652,203 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .event__rules dd { margin: 4px 0 0; color: var(--ink-soft); }
 
-/* Knockout bracket (js/brackets.js): one column per round; on phones it scrolls sideways inside the card */
-.bracket__scroll { overflow-x: auto; padding-bottom: 6px; }
-.bracket__rounds { display: flex; gap: 12px; width: max-content; }
-.bracket__round { display: flex; flex-direction: column; width: 170px; }
+/* Knockout bracket (js/brackets.js): a night arena with one column per round, joined by lines that
+   turn gold along each winner's path. On phones it scrolls sideways inside the card. */
+.bracket__scroll {
+  --gold: #f5c542;
+  --wire: rgba(255, 255, 255, .2);
+  --gap: 28px;   /* between rounds: the lines live here */
+  overflow-x: auto;
+  padding: 24px 16px 20px;
+  border-radius: 24px;
+  background:
+    radial-gradient(ellipse at 100% 50%, rgba(245, 197, 66, .2), transparent 40%),
+    radial-gradient(ellipse at 0% 0%, rgba(37, 128, 218, .5), transparent 55%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .035) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, .035) 0 1px, transparent 1px 28px),
+    linear-gradient(160deg, #0d3566, #061a33 70%);
+  background-attachment: local;   /* the glows travel with the rounds when it scrolls */
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08), 0 24px 40px -24px rgba(6, 26, 51, .8);
+  color-scheme: dark;   /* dark scrollbar */
+}
+/* Rounds widen to fill the card; four of them (eight players) fit without scrolling */
+.bracket__rounds { display: flex; gap: var(--gap); width: max-content; min-width: 100%; }
+.bracket__round { display: flex; flex: 1 0 auto; flex-direction: column; width: 170px; }
 .bracket__round h3 {
-  margin: 0 0 10px;
-  font-family: var(--font-narrow);
-  font-weight: 600;
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(255, 255, 255, .12);
+  font-family: var(--font-varsity);
+  font-weight: 400;
   font-size: 13px;
-  letter-spacing: .1em;
+  letter-spacing: .08em;
   text-transform: uppercase;
-  color: var(--gray);
+  text-align: center;
+  white-space: nowrap;   /* same height in every round, so the matches stay level */
+  color: #9cc7f2;
 }
-/* space-around puts each match level with the two it comes from */
-.bracket__round ol {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  justify-content: space-around;
-  gap: 10px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+.bracket__round:nth-last-child(-n+2) h3 { border-color: rgba(245, 197, 66, .45); color: var(--gold); }   /* final and champion */
+.bracket__round ol { display: flex; flex: 1; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+
+/* Every slot gets an equal share of its column, so each match sits level with the two it comes from
+   and the lines can be drawn from halves: out of a match to the right, then up or down to meet its
+   partner halfway, where the next match's line comes in. */
+.bracket__slot { position: relative; display: flex; flex: 1; align-items: center; padding: 6px 0; }
+.bracket__slot::after,
+.bracket__round + .bracket__round .bracket__slot::before {
+  content: '';
+  position: absolute;
+  width: calc(var(--gap) / 2);
+  border: 0 solid var(--wire);
 }
+.bracket__slot::after { left: 100%; height: 50%; border-right-width: 2px; }
+.bracket__slot:nth-child(odd)::after { top: 50%; border-top-width: 2px; border-top-right-radius: 10px; }
+.bracket__slot:nth-child(even)::after { bottom: 50%; border-bottom-width: 2px; border-bottom-right-radius: 10px; }
+.bracket__slot:only-child::after { height: 0; border-right-width: 0; }   /* the final goes straight to the champion */
+.bracket__round--champion .bracket__slot::after { content: none; }
+.bracket__round + .bracket__round .bracket__slot::before { right: 100%; top: 50%; border-top-width: 2px; }
+.bracket__slot--won::after,
+.bracket__round + .bracket__round .bracket__slot--reached::before {
+  border-color: var(--gold);
+  filter: drop-shadow(0 0 4px rgba(245, 197, 66, .8));
+}
+
 .bracket__match {
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: #f7f8fa;
+  flex: 1;
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 12px;
+  background: rgba(6, 26, 51, .85);
+  box-shadow: 0 10px 20px -12px rgba(0, 0, 0, .7);
   overflow: hidden;
 }
 .bracket__side {
   display: flex;
   align-items: center;
-  gap: 6px;
   width: 100%;
-  min-height: 36px;
-  padding: 6px 12px;
+  min-height: 34px;
+  padding: 5px 10px;
   border: 0;
   background: none;
-  font: 600 14px/1.2 var(--font-body);
-  color: var(--navy);
+  font: 600 15px/1.2 var(--font-narrow);
+  letter-spacing: .02em;
+  color: #e6eef8;
   text-align: left;
+}
+.bracket__side > span:last-child { min-width: 0; padding-right: .2em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }   /* one line keeps the slots even */
+.bracket__side + .bracket__side { border-top: 1px solid rgba(255, 255, 255, .1); }
+button.bracket__side { cursor: pointer; }
+button.bracket__side:hover { background: rgba(37, 128, 218, .35); }
+.bracket__side--won, button.bracket__side--won:hover {
+  background: linear-gradient(90deg, var(--blue), var(--blue-bright));
+  box-shadow: inset 4px 0 var(--gold);
+  color: #fff;
+}
+.bracket__side--lost { color: rgba(230, 238, 248, .35); text-decoration: line-through; }
+.bracket__side--empty { color: rgba(230, 238, 248, .4); font-weight: 500; font-style: italic; }
+
+/* The champion: gold like the gold ID card, with its shine */
+.bracket__champion {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 18px 14px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fffcf0 0%, #fbedbe 24%, #eed074 50%, #fae6a8 76%, #dfb53d 100%);
+  box-shadow: 0 0 0 2px #d4a017, 0 0 34px rgba(245, 197, 66, .6);
+  font: 400 17px/1.2 var(--font-title);
+  color: #241902;
+  text-align: center;
+  overflow: hidden;
   overflow-wrap: anywhere;
 }
-.bracket__side + .bracket__side { border-top: 1px solid var(--line); }
-.bracket__side svg { flex: none; width: 18px; height: 18px; }
-button.bracket__side { cursor: pointer; }
-button.bracket__side:hover { background: #e4effa; }
-.bracket__side--won, button.bracket__side--won:hover { background: var(--navy); color: #fff; }
-.bracket__side--lost { color: var(--gray); text-decoration: line-through; }
-.bracket__side--empty { color: var(--gray); font-weight: 400; font-style: italic; }
+.bracket__champion::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 35%, rgba(255, 255, 255, .6) 50%, transparent 65%);
+  background-size: 200% 200%;
+  animation: idcard-gold-shimmer 4s ease-in-out infinite;
+  pointer-events: none;
+}
+.bracket__champion svg { width: 44px; height: 44px; color: #8a6200; }
+.bracket__champion--empty {
+  border: 2px dashed rgba(245, 197, 66, .55);
+  background: rgba(245, 197, 66, .07);
+  box-shadow: none;
+  font: italic 600 16px/1.2 var(--font-narrow);
+  color: var(--gold);
+}
+.bracket__champion--empty::before { content: none; }
+.bracket__champion--empty svg { color: var(--gold); filter: drop-shadow(0 0 10px rgba(245, 197, 66, .7)); }
+.bracket__flag { flex: none; width: 20px; margin-right: 6px; font-size: 4.4px; }   /* the font size scales a pennant down */
+.bracket__flag > svg { width: 100%; }
+
+/* A person's pennant: the cloth in their monster's color, their monster on a cream patch.
+   Sized in em so it can shrink (the bracket sets a small font size). */
+.monster-flag {
+  display: flex;
+  justify-content: center;
+  width: 4.5em;
+  height: 5.625em;   /* the banners' 120:150 */
+  padding-top: .55em;
+  background:
+    linear-gradient(rgba(0, 0, 0, .12) 0 .25em, transparent .25em),
+    radial-gradient(circle at 50% 2.05em, #fffdf6 0 1.5em, rgba(0, 0, 0, .15) 1.5em 1.62em, transparent 1.62em),
+    var(--cloth);
+  clip-path: polygon(0 0, 100% 0, 100% 80%, 50% 100%, 0 80%);
+}
+.monster-flag svg { width: 3em; height: 3em; }
+
+/* Participants (js/brackets.js): their flags hang from strings and sway */
+.flags {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 20px 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.flags__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 4px 0;
+  font: 600 14px/1.15 var(--font-narrow);
+  color: var(--navy);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+/* Each flag's piece of string sags to where it hangs; side by side they read as one garland */
+.flags__item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  border-bottom: 2px solid #b9a77a;
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+}
+.flags__item > :first-child {
+  width: 72px;
+  font-size: 16px;
+  transform-origin: 50% 0;
+  animation: flag-sway 3s ease-in-out infinite alternate;
+}
+.flags__item > svg { filter: drop-shadow(0 6px 6px rgba(10, 44, 82, .25)); }
+.flags__item:nth-child(2n) > :first-child { animation-delay: -1.5s; }
+.flags__item:nth-child(3n) > :first-child { animation-duration: 3.7s; }
+@keyframes flag-sway {
+  from { rotate: -4deg; }
+  to { rotate: 4deg; }
+}
 .bracket__editor { margin-top: 18px; }
 .bracket__editor summary { cursor: pointer; font-weight: 600; color: var(--navy); }
 .bracket__names {

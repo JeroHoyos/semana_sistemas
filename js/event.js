@@ -42,6 +42,7 @@ function renderInfo() {
     factsSection(),
     registrationSection(),
     descriptionSection(),
+    activity.team || activity.individual ? '<div id="participants"></div>' : '',   // filled by js/brackets.js
     activity.bracket ? '<div id="bracket"></div>' : '',   // filled by js/brackets.js
     videoSection(activity.video),
     rulesSection(activity.rules),
