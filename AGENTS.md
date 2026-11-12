@@ -49,8 +49,9 @@ Git Flow, without release branches:
 | `js/weekly-game.js` | Retro console; each game is a "cartridge" in its own file (`js/snake.js`) |
 | `js/icons.js`, `js/pixel-art.js` | SVG icons, monsters and pixel art drawings |
 | `games/doom/` | `doom.wasm` (committed build output), `doom1.wad`, engine sources in `source/` |
+| `semana-sistemas.ics` | Every activity as a calendar feed: the "add the whole week" link subscribes to it |
 | `supabase/` | SQL to run in the Supabase SQL Editor |
-| `tools/` | `hash-code.js`, `bump-version.js`, `build-doom.sh`, `self-check.html` |
+| `tools/` | `hash-code.js`, `bump-version.js`, `build-doom.sh`, `build-calendar.html`, `self-check.html` |
 
 Scripts are classic `<script>` tags sharing globals, so the load order in each HTML file matters. `data.js`, `icons.js` and `common.js` always come first.
 
@@ -72,4 +73,5 @@ Scripts are classic `<script>` tags sharing globals, so the load order in each H
 - **Daily game limits:** a game's limit lives in `dailyGames` of its cartridge and in `registrar_puntaje_juego` (`supabase/weekly-game.sql`). Change both and run the SQL again.
 - **Login gate:** `sustometro.html` and `inscripciones.html` keep everything with `data-needs-login` hidden without a session (`showLoginGate` in `js/auth.js`). It only hides the page: what Supabase gives `anon` stays readable.
 - **Doom:** after editing `games/doom/source/*`, rebuild with `bash tools/build-doom.sh` (needs git and Zig 0.17) and commit `games/doom/doom.wasm`; Vercel cannot build it. The import and export names between the page and the engine are defined in both `doomgeneric_web.c` and `js/doom.js`.
-- **Line endings:** `.sh` and `.patch` files must keep LF (`.gitattributes` enforces it).
+- **Calendar feed:** `semana-sistemas.ics` is generated from `ACTIVITIES`, not edited by hand. After changing an activity's day, time, title or place in `js/data.js`, open `/tools/build-calendar.html` through the server and save its download over it. People subscribed to it get the change on their own (Google refreshes it every few hours).
+- **Line endings:** `.sh` and `.patch` files must keep LF (`.gitattributes` enforces it); `.ics` files keep the CRLF the generator writes (`.gitattributes` stores them as is).
