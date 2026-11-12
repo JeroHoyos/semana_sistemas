@@ -2807,8 +2807,9 @@ button.bracket__side:hover { background: rgba(37, 128, 218, .35); }
 
 /* Participants (js/brackets.js): their flags hang from strings and sway */
 .flags {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;   /* a row that is not full sits in the middle */
   gap: 20px 0;
   margin: 0;
   padding: 0;
@@ -2819,6 +2820,7 @@ button.bracket__side:hover { background: rgba(37, 128, 218, .35); }
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 98px;
   gap: 6px;
   padding: 10px 4px 0;
   font: 600 14px/1.15 var(--font-narrow);
