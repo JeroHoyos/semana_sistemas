@@ -2652,6 +2652,72 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .event__rules dd { margin: 4px 0 0; color: var(--ink-soft); }
 
+/* Knockout bracket (js/brackets.js): one column per round; on phones it scrolls sideways inside the card */
+.bracket__scroll { overflow-x: auto; padding-bottom: 6px; }
+.bracket__rounds { display: flex; gap: 12px; width: max-content; }
+.bracket__round { display: flex; flex-direction: column; width: 170px; }
+.bracket__round h3 {
+  margin: 0 0 10px;
+  font-family: var(--font-narrow);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+/* space-around puts each match level with the two it comes from */
+.bracket__round ol {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.bracket__match {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #f7f8fa;
+  overflow: hidden;
+}
+.bracket__side {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 0;
+  background: none;
+  font: 600 14px/1.2 var(--font-body);
+  color: var(--navy);
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.bracket__side + .bracket__side { border-top: 1px solid var(--line); }
+.bracket__side svg { flex: none; width: 18px; height: 18px; }
+button.bracket__side { cursor: pointer; }
+button.bracket__side:hover { background: #e4effa; }
+.bracket__side--won, button.bracket__side--won:hover { background: var(--navy); color: #fff; }
+.bracket__side--lost { color: var(--gray); text-decoration: line-through; }
+.bracket__side--empty { color: var(--gray); font-weight: 400; font-style: italic; }
+.bracket__editor { margin-top: 18px; }
+.bracket__editor summary { cursor: pointer; font-weight: 600; color: var(--navy); }
+.bracket__names {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  font: 15px/1.4 var(--font-body);
+  resize: vertical;
+}
+.bracket__message { margin-top: 10px; font-weight: 600; color: var(--blue-dark); }
+.bracket__message:empty { display: none; }
+
 /* Speaker or organizer: monster or logo, with name and role next to it */
 .event__profile {
   display: flex;
