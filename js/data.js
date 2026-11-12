@@ -9,7 +9,7 @@ const PROJECT_VERSION = 'v2026.11.05-013103';
 
 
 // Official administrators / supervisors list
-const SUPERVISOR_HANDLES = ['saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl', 'lcanasq'];
+const SUPERVISOR_HANDLES = ['saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezlo', 'lcanasq'];
 
 function isSupervisorAccount(email = '', name = '') {
   const e = String(email || '').toLowerCase().trim();
@@ -170,6 +170,7 @@ const COMPANIES = [
 // stats (list of { value, label } shown as big boxes below the text, e.g. { value: 16, label: 'jugadores' }),
 // team ({ tab, size, maxTeams }: its short name on the inscripciones.html tabs, people per team and, optionally,
 // how many teams fit; the activity takes team sign-ups. The same limits live in supabase/teams.sql: change both),
+// bracket: true (its knockout bracket, "Llaves", shows on its page: js/brackets.js, supabase/brackets.sql),
 // unconfirmed: true (shows an "Información por confirmar" notice on its page)
 // and decorations (three pixel art drawings from js/pixel-art.js for its page header; the middle one sits higher).
 const ACTIVITIES = [
@@ -217,7 +218,7 @@ const ACTIVITIES = [
       '¿Tiene tu equipo la destreza mental y la resistencia necesarias para llevarse la victoria?',
     image: 'img/flyers/scavenger-hunt.jpg',
     decorations: ['questionMark', 'magnifier', 'map'] },
-  { id: 'clash-royale', day: 'thu', start: '10:30', end: '12:30', type: 'competition', title: 'Torneo de Clash Royale', individual: { tab: 'Clash Royale', max: 32 },
+  { id: 'clash-royale', day: 'thu', start: '10:30', end: '12:30', type: 'competition', title: 'Torneo de Clash Royale', individual: { tab: 'Clash Royale', max: 32 }, bracket: true,
     icon: 'crown', color: '#d97706', summary: 'Duelos estratégicos en la arena. Corona tras corona hasta la victoria.', place: 'Virtual',
     description: 'Torneo oficial de Clash Royale en modalidad virtual con formato competitivo real, a cargo de Santiago Escobar (exjugador competitivo del juego). Puedes participar desde donde estés a través del clan exclusivo creado para el evento en Modo Elección (Draft) para estandarizar niveles y minimizar la ventaja entre jugadores, garantizando que gane la mejor estrategia y lectura de partida en la arena.',
     image: 'img/flyers/clash-royale.jpg',
@@ -248,20 +249,20 @@ const ACTIVITIES = [
     description: 'Pon a prueba tu velocidad y resistencia en un circuito a lo largo de todo el campus. Prepárate para enfrentar los cambios de inclinación del terreno, superar cada nivel y retarte a ti mismo en una carrera con pura alma de videojuego retro.',
     image: 'img/flyers/athletics.jpg',
     decorations: ['medal10', 'medal01', 'medal11'] },
-  { id: 'futbol', day: 'fri', start: '09:00', end: '11:00', type: 'competition', title: 'Torneo de fútbol', team: { tab: 'Fútbol', size: 5, maxTeams: 8 },
+  { id: 'futbol', day: 'fri', start: '09:00', end: '11:00', type: 'competition', title: 'Torneo de fútbol', team: { tab: 'Fútbol', size: 5, maxTeams: 8 }, bracket: true,
     icon: 'ball', color: '#1667c2', summary: 'Arma tu equipo y sal a la cancha.', place: 'Placa polideportiva',
     description: 'Reúne a tu equipo y demuestra tu nivel en la cancha en un torneo de eliminación directa por brackets. Avanza llave a llave, supera a tus rivales en cada partido y compite hasta alcanzar la gran final.\n' +
       'Se prestan los petos y el balón.',
     image: 'img/flyers/soccer.jpg',
     video: { id: '_2zoIHTWd00', title: 'Comercial de Nike Football: Arriésgalo todo (2014)' },
     decorations: ['jersey', 'cup', 'ball'] },
-  { id: 'videojuegos', day: 'fri', start: '10:00', end: '12:00', type: 'competition', title: 'Torneo de videojuegos', individual: { tab: 'Videojuegos', max: 16 }, place: 'Sala Lovelace Turing',
+  { id: 'videojuegos', day: 'fri', start: '10:00', end: '12:00', type: 'competition', title: 'Torneo de videojuegos', individual: { tab: 'Videojuegos', max: 16 }, bracket: true, place: 'Sala Lovelace Turing',
     icon: 'gamepad', color: '#7b4fc9', summary: '16 jugadores se enfrentan en Overcooked hasta que solo quede un campeón.',
     description: 'Toma el control, demuestra tu talento en la pantalla y compite codo a codo con otros jugadores para coronarte como el campeón del torneo.',
     image: 'img/flyers/video-games.jpg',
     stats: [{ value: 16, label: 'jugadores' }, { value: 'VS', label: 'modo' }],
     decorations: ['chefHat', 'gamepad', 'onionKing'] },
-  { id: 'just-dance', day: 'fri', start: '14:00', end: '15:00', type: 'competition', title: 'Torneo de Just Dance', individual: { tab: 'Just Dance', max: 16 },
+  { id: 'just-dance', day: 'fri', start: '14:00', end: '15:00', type: 'competition', title: 'Torneo de Just Dance', individual: { tab: 'Just Dance', max: 16 }, bracket: true,
     icon: 'dance', color: '#c4358c', summary: 'Saca tus mejores pasos en la pista y compite por el mayor puntaje.', place: 'Sala Lovelace Turing',
     description: 'El reto en la pista de baile. Sigue las coreografías en pantalla, acumula estrellas al ritmo de la música y compite con la comunidad para demostrar quién domina la pista de Just Dance.',
     image: 'img/flyers/just-dance.jpg',
