@@ -1,7 +1,8 @@
 /* =============================================
-   BRACKETS
-   The knockout bracket on a competition's page (evento.html?id=clash-royale), for the activities
-   with `bracket: true` in js/data.js. It reads the 'llaves' table (supabase/brackets.sql).
+   PARTICIPANTS AND BRACKETS
+   On the page of a competition with sign-ups (evento.html?id=clash-royale), whoever is signed up,
+   each with a little flag. Then the knockout bracket, for the activities with `bracket: true` in
+   js/data.js. It reads the 'llaves' table (supabase/brackets.sql).
    Supervisors mark the winners and edit the participants right here; Supabase checks that they
    really are supervisors.
    ============================================= */
@@ -9,6 +10,7 @@
 const BYE = Symbol('bye');   // empty first-round slot: whoever faces it goes through
 const ROUND_NAMES = { 1: 'Final', 2: 'Semifinal', 4: 'Cuartos de final', 8: 'Octavos de final', 16: 'Dieciseisavos' };
 
+let participants = [];       // whoever is signed up, as { name, banner } (a team) or { name, monster } (a person)
 let bracket = null;          // { participantes, ganadores } as stored, or null if it has not started
 let bracketAdmin = false;         // supervisor: shows the controls
 let reseeded = false;        // the editor list came from "Cargar inscritos": its results start empty
@@ -56,15 +58,43 @@ function buildRounds({ participantes, ganadores }) {
 
 /* ---------- Drawing ---------- */
 
+// A participant's little flag: a team flies the banner its captain designed, a person a pennant
+// in their monster's color with the monster on it.
+function flagHtml(participant) {
+  return participant.banner
+    ? drawBanner(participant.banner)
+    : `<span class="monster-flag" style="--cloth: ${monsterColor(participant.monster)}">${drawCustomMonster(participant.monster)}</span>`;
+}
+
+function renderParticipants() {
+  if (!participants.length) return;
+  $('#participants').innerHTML = `
+    <h2 class="event__subtitle">Participantes · ${participants.length}</h2>
+    <ul class="flags">
+      ${participants.map((participant) => `<li class="flags__item">${flagHtml(participant)}<span>${escapeHtml(participant.name)}</span></li>`).join('')}
+    </ul>
+  `;
+}
+
 function sideHtml(match, i) {
   const name = match.sides[i];
   const state = typeof name !== 'string' ? 'empty' : match.winner === i ? 'won' : match.winner !== null ? 'lost' : '';
   const text = name === BYE ? 'Pase libre' : name === null ? 'Por definir' : escapeHtml(name);
   const playable = bracketAdmin && match.sides.every((side) => typeof side === 'string');
+  const participant = typeof name === 'string' && participants.find((p) => p.name === name);
+  const content = `${participant ? `<span class="bracket__flag">${flagHtml(participant)}</span>` : ''}<span title="${text}">${text}</span>`;
 
   return playable
-    ? `<button type="button" class="bracket__side bracket__side--${state}" data-match="${match.key}" data-side="${i}">${text}</button>`
-    : `<span class="bracket__side bracket__side--${state}">${text}</span>`;
+    ? `<button type="button" class="bracket__side bracket__side--${state}" data-match="${match.key}" data-side="${i}">${content}</button>`
+    : `<span class="bracket__side bracket__side--${state}">${content}</span>`;
+}
+
+// The slot around a match draws its lines. They light up gold along the path of whoever goes
+// through: the one out once the match has a winner, the one in once someone has reached it.
+function slotHtml(match) {
+  const won = match.winner !== null ? ' bracket__slot--won' : '';
+  const reached = match.sides.some((side) => typeof side === 'string') ? ' bracket__slot--reached' : '';
+  return `<li class="bracket__slot${won}${reached}"><div class="bracket__match">${sideHtml(match, 0)}${sideHtml(match, 1)}</div></li>`;
 }
 
 function bracketHtml() {
@@ -75,12 +105,14 @@ function bracketHtml() {
         ${rounds.map((matches) => `
           <div class="bracket__round">
             <h3>${ROUND_NAMES[matches.length] || `Ronda de ${matches.length * 2}`}</h3>
-            <ol>${matches.map((match) => `<li class="bracket__match">${sideHtml(match, 0)}${sideHtml(match, 1)}</li>`).join('')}</ol>
+            <ol>${matches.map(slotHtml).join('')}</ol>
           </div>
         `).join('')}
         <div class="bracket__round bracket__round--champion">
           <h3>Campeón</h3>
-          <ol><li class="bracket__match"><span class="bracket__side bracket__side--${champion ? 'won' : 'empty'}">${ICONS.trophy}${champion ? escapeHtml(champion) : 'Por definir'}</span></li></ol>
+          <ol><li class="bracket__slot${champion ? ' bracket__slot--reached' : ''}">
+            <div class="bracket__champion ${champion ? '' : 'bracket__champion--empty'}">${ICONS.trophy}<span>${champion ? escapeHtml(champion) : '¿Quién será?'}</span></div>
+          </li></ol>
         </div>
       </div>
     </div>
@@ -122,6 +154,17 @@ function renderBracket() {
 
 /* ---------- Reading and saving ---------- */
 
+// Whoever is signed up, in sign-up order. Returns the error, if any.
+async function loadParticipants() {
+  const { data, error } = activity.team
+    ? await supabaseClient.rpc('equipos_inscritos')
+    : await supabaseClient.rpc('inscritos_individuales', { p_actividad: activity.id });
+  if (error) return error;
+  participants = data
+    .filter((row) => !activity.team || row.actividad === activity.id)
+    .map((row) => ({ name: row.nombre, banner: row.bandera, monster: row.monstruo || {} }));
+}
+
 async function loadBracket() {
   const { data, error } = await supabaseClient.from('llaves').select('participantes, ganadores').eq('actividad', activity.id).maybeSingle();
   if (error) console.warn('[Llaves]', error.message);
@@ -162,14 +205,12 @@ async function saveNames() {
 
 // Fills the editor with whoever is signed up, shuffled
 async function loadRegistered() {
-  const { data, error } = activity.team
-    ? await supabaseClient.rpc('equipos_inscritos')
-    : await supabaseClient.rpc('inscritos_individuales', { p_actividad: activity.id });
+  const error = await loadParticipants();
   if (error) {
     $('.bracket__message').textContent = `No se pudieron leer los inscritos: ${error.message}`;
     return;
   }
-  const names = data.filter((row) => !activity.team || row.actividad === activity.id).map((row) => row.nombre);
+  const names = participants.map((participant) => participant.name);
   for (let i = names.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [names[i], names[j]] = [names[j], names[i]];
@@ -187,11 +228,17 @@ $('#bracket')?.addEventListener('click', (event) => {
   if (action === 'load') loadRegistered();
 });
 
-async function startBracket() {
+// The participants come first, so the bracket can show their flags
+async function startCompetition() {
+  const error = await loadParticipants();
+  if (error) console.warn('[Participantes]', error.message);
+  renderParticipants();
+  if (!activity.bracket) return;
+
   const { data } = await supabaseClient.auth.getSession();
   bracketAdmin = isCurrentSupervisor(data.session?.user ?? null);
   await loadBracket();
   renderBracket();
 }
 
-if (activity?.bracket) startBracket();
+if (activity?.team || activity?.individual) startCompetition();
