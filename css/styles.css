@@ -261,7 +261,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
    The chosen one shows in full with a blue ring; the others, a bit dimmed. */
 .speakers__thumbnails {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
   gap: 6px;
   margin-bottom: 34px;
@@ -271,7 +271,28 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: rgba(255, 255, 255, .62);
   backdrop-filter: blur(10px);
   box-shadow: 0 18px 36px -20px rgba(10, 44, 82, .6);
+  max-width: 100%;                 /* on narrow phones the thumbnails shrink instead of overflowing */
 }
+.thumbnail[hidden] { display: none; }
+.speakers__arrow {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .7);
+  color: var(--blue);
+  transition: background .2s;
+}
+.speakers__arrow:hover { background: #fff; }
+.speakers__arrow:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.speakers__arrow svg { width: 18px; height: 18px; }
+.speakers__arrow--prev { order: -1; }   /* the thumbnails get order 0, 1, 2 from main.js */
+.speakers__arrow--prev svg { transform: scaleX(-1); }
+.speakers__arrow--next { order: 3; }
 .thumbnail {
   display: grid;
   justify-items: center;
@@ -1858,6 +1879,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   /* Speakers: smaller photos so several fit in one row */
   .speakers .container { padding: 48px 0 56px; }
   .speakers__thumbnails { gap: 2px; margin-bottom: 26px; padding: 8px; }
+  .speakers__arrow { width: 24px; height: 24px; }
+  .speakers__arrow svg { width: 15px; height: 15px; }
   .thumbnail { width: 88px; }
   .thumbnail__photo { width: 52px; height: 52px; }
   .thumbnail__name { font-size: 12px; }
@@ -2577,17 +2600,18 @@ button { font: inherit; color: inherit; cursor: pointer; }
   box-shadow: 0 18px 30px -18px rgba(10, 44, 82, .55);
 }
 
-/* Activity stats (stats field): one box per item, in the activity's color */
+/* Activity stats (stats field): one box per item, in the activity's color.
+   Equal widths when they fit; a box too wide for the row (a long word next to a flyer) drops to the next one. */
 .event__stats {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;          /* as many equal columns as there are stats */
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin: 22px 0 0;
   padding: 0;
   list-style: none;
 }
 .event__stats li {
+  flex: 1 1 0;
   display: grid;
   justify-items: center;
   padding: 10px 6px 12px;
@@ -2627,6 +2651,222 @@ button { font: inherit; color: inherit; cursor: pointer; }
   color: var(--navy);
 }
 .event__rules dd { margin: 4px 0 0; color: var(--ink-soft); }
+
+/* Sections that fold under their title (participants and bracket, js/brackets.js): an arrow on
+   the right, like the cheaters table on the Scare Meter, points down when closed */
+.fold > summary { list-style: none; cursor: pointer; }
+.fold > summary::-webkit-details-marker { display: none; }
+.fold > summary .event__subtitle { display: flex; align-items: center; }
+.fold > summary .event__subtitle::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  margin: -6px 6px 0 auto;
+  border-right: 3px solid var(--blue);
+  border-bottom: 3px solid var(--blue);
+  transform: rotate(45deg);
+  transition: transform .2s, margin .2s;
+}
+.fold[open] > summary .event__subtitle::after { margin-top: 6px; transform: rotate(225deg); }
+.fold > summary:hover .event__subtitle { color: var(--blue); }
+
+/* Knockout bracket (js/brackets.js): one column per round, in the boxes of the rest of the page,
+   joined by lines that turn blue along each winner's path. On phones it scrolls sideways. */
+.bracket__scroll {
+  --wire: #cfd6df;
+  --gap: 28px;   /* between rounds: the lines live here */
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+/* Rounds widen to fill the card; four of them (eight players) fit without scrolling */
+.bracket__rounds { display: flex; gap: var(--gap); width: max-content; min-width: 100%; }
+.bracket__round { display: flex; flex: 1 0 auto; flex-direction: column; width: 170px; }
+.bracket__round h3 {
+  margin: 0 0 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-narrow);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;   /* same height in every round, so the matches stay level */
+  color: var(--gray);
+}
+.bracket__round:nth-last-child(-n+2) h3 { color: var(--navy); }   /* final and champion */
+.bracket__round ol { display: flex; flex: 1; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+
+/* Every slot gets an equal share of its column, so each match sits level with the two it comes from
+   and the lines can be drawn from halves: out of a match to the right, then up or down to meet its
+   partner halfway, where the next match's line comes in. */
+.bracket__slot { position: relative; display: flex; flex: 1; align-items: center; padding: 6px 0; }
+.bracket__slot::after,
+.bracket__round + .bracket__round .bracket__slot::before {
+  content: '';
+  position: absolute;
+  width: calc(var(--gap) / 2);
+  border: 0 solid var(--wire);
+}
+.bracket__slot::after { left: 100%; height: 50%; border-right-width: 2px; }
+.bracket__slot:nth-child(odd)::after { top: 50%; border-top-width: 2px; border-top-right-radius: 10px; }
+.bracket__slot:nth-child(even)::after { bottom: 50%; border-bottom-width: 2px; border-bottom-right-radius: 10px; }
+.bracket__slot:only-child::after { height: 0; border-right-width: 0; }   /* the final goes straight to the champion */
+.bracket__round--champion .bracket__slot::after { content: none; }
+.bracket__round + .bracket__round .bracket__slot::before { right: 100%; top: 50%; border-top-width: 2px; }
+.bracket__slot--won::after,
+.bracket__round + .bracket__round .bracket__slot--reached::before { border-color: var(--blue); }
+
+.bracket__match {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #f7f8fa;
+  overflow: hidden;
+}
+.bracket__side {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 34px;
+  padding: 5px 10px;
+  border: 0;
+  background: none;
+  font: 600 15px/1.2 var(--font-narrow);
+  letter-spacing: .02em;
+  color: var(--navy);
+  text-align: left;
+}
+.bracket__side > span:last-child { min-width: 0; padding-right: .2em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }   /* one line keeps the slots even */
+.bracket__side + .bracket__side { border-top: 1px solid var(--line); }
+button.bracket__side { cursor: pointer; }
+button.bracket__side:hover { background: #e4effa; }
+.bracket__side--won, button.bracket__side--won:hover { background: var(--navy); color: #fff; }
+.bracket__side--lost { color: var(--gray); text-decoration: line-through; }
+.bracket__side--lost .bracket__flag { filter: grayscale(1) brightness(.6); }
+.bracket__side--empty { color: var(--gray); font-weight: 500; font-style: italic; }
+.bracket__flag { flex: none; width: 20px; margin-right: 6px; font-size: 4.4px; }   /* the font size scales a pennant down */
+.bracket__flag > svg { width: 100%; }
+
+/* The champion: gold like the gold ID card, with its shine */
+.bracket__champion {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 18px 14px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fffcf0 0%, #fbedbe 24%, #eed074 50%, #fae6a8 76%, #dfb53d 100%);
+  border: 2px solid #d4a017;
+  font: 400 17px/1.2 var(--font-title);
+  color: #241902;
+  text-align: center;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+.bracket__champion::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 35%, rgba(255, 255, 255, .6) 50%, transparent 65%);
+  background-size: 200% 200%;
+  animation: idcard-gold-shimmer 4s ease-in-out infinite;
+  pointer-events: none;
+}
+.bracket__champion svg { width: 44px; height: 44px; color: #8a6200; }
+.bracket__champion--empty {
+  border: 2px dashed #e3c766;
+  background: #fffbea;
+  font: italic 600 16px/1.2 var(--font-narrow);
+  color: #8a6200;
+}
+.bracket__champion--empty::before { content: none; }
+.bracket__champion--empty svg { color: #c99a12; }
+
+/* A person's pennant: the cloth in their monster's color, their monster on a cream patch.
+   Sized in em so it can shrink (the bracket sets a small font size). */
+.monster-flag {
+  display: flex;
+  justify-content: center;
+  width: 4.5em;
+  height: 5.625em;   /* the banners' 120:150 */
+  padding-top: .55em;
+  background:
+    linear-gradient(rgba(0, 0, 0, .12) 0 .25em, transparent .25em),
+    radial-gradient(circle at 50% 2.05em, #fffdf6 0 1.5em, rgba(0, 0, 0, .15) 1.5em 1.62em, transparent 1.62em),
+    var(--cloth);
+  clip-path: polygon(0 0, 100% 0, 100% 80%, 50% 100%, 0 80%);
+}
+.monster-flag svg { width: 3em; height: 3em; }
+
+/* Participants (js/brackets.js): their flags hang from strings and sway */
+.flags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;   /* a row that is not full sits in the middle */
+  gap: 20px 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.flags__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 98px;
+  gap: 6px;
+  padding: 10px 4px 0;
+  font: 600 14px/1.15 var(--font-narrow);
+  color: var(--navy);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+/* Each flag's piece of string sags to where it hangs; side by side they read as one garland */
+.flags__item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  border-bottom: 2px solid #b9a77a;
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+}
+.flags__item > :first-child {
+  width: 72px;
+  font-size: 16px;
+  transform-origin: 50% 0;
+  animation: flag-sway 3s ease-in-out infinite alternate;
+}
+.flags__item > svg { filter: drop-shadow(0 6px 6px rgba(10, 44, 82, .25)); }
+.flags__item:nth-child(2n) > :first-child { animation-delay: -1.5s; }
+.flags__item:nth-child(3n) > :first-child { animation-duration: 3.7s; }
+/* Knocked out: the flag goes dark and hangs still and crooked */
+.flags__item--out > :first-child { filter: grayscale(1) brightness(.45); rotate: 9deg; animation: none; }
+.flags__item--out > span { color: var(--gray); text-decoration: line-through; }
+@keyframes flag-sway {
+  from { rotate: -4deg; }
+  to { rotate: 4deg; }
+}
+.bracket__editor { margin-top: 18px; }
+.bracket__editor summary { cursor: pointer; font-weight: 600; color: var(--navy); }
+.bracket__names {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  font: 15px/1.4 var(--font-body);
+  resize: vertical;
+}
+.bracket__message { margin-top: 10px; font-weight: 600; color: var(--blue-dark); }
+.bracket__message:empty { display: none; }
 
 /* Speaker or organizer: monster or logo, with name and role next to it */
 .event__profile {
@@ -4456,6 +4696,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   color: #c9dcf0;
   font-family: var(--font-varsity);
   font-size: 14px;
+  line-height: 1.25;                    /* "Grupos / estudiantiles" goes on two lines */
   letter-spacing: .08em;
   text-transform: uppercase;
   cursor: pointer;
@@ -5750,15 +5991,26 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   background: #e4effd;
 }
 
-.registration__tabs { grid-template-columns: repeat(5, 1fr); }
+/* Tabs grouped by day: the day's name between two thin lines, its tabs centered below.
+   Every tab is a quarter of the row, so the tabs of both days line up in columns. */
+.registration__tabs { display: grid; gap: 14px; }
+.registration__day-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+  font-family: var(--font-varsity);
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+.registration__day-name::before,
+.registration__day-name::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.registration__day-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.registration__day-tabs .day { flex: 0 0 calc((100% - 24px) / 4); }
 .registration__tabs .day svg { width: 24px; height: 24px; }
 .registration__tabs .day strong { font-size: 14px; }
-/* Too narrow for five labels: 3 + 2 centered, six columns so the second row starts half a tab in */
-@media (max-width: 860px) {
-  .registration__tabs { grid-template-columns: repeat(6, 1fr); }
-  .registration__tabs .day { grid-column: span 2; }
-  .registration__tabs .day:nth-child(4) { grid-column: 2 / span 2; }
-}
 
 /* The competition's facts use the activity page boxes (.event__facts) */
 .registration__summary { margin-top: 20px; }
@@ -6443,8 +6695,10 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 }
 
 @media (max-width: 640px) {
-  .registration__tabs .day { padding-inline: 4px; }
-  .registration__tabs .day strong { font-size: 10.5px; letter-spacing: .02em; }
+  /* Four labels do not fit: two per row, icon beside the label */
+  .registration__day-tabs .day { flex-basis: calc((100% - 8px) / 2); flex-direction: row; justify-content: center; gap: 6px; padding: 10px 4px; }
+  .registration__tabs .day svg { flex: none; width: 18px; height: 18px; }
+  .registration__tabs .day strong { font-size: 11.5px; letter-spacing: .03em; }
   .team-list { grid-template-columns: 1fr; }
   .team {
     grid-template-columns: 1fr;

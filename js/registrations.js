@@ -56,16 +56,27 @@ function render() {
   renderFreeAgents();
 }
 
+// One row per day, with the day's name above its tabs
 function renderTabs() {
-  $('#registration-tabs').innerHTML = REGISTRATION_ACTIVITIES.map((activity) => {
-    const tabName = activity.team?.tab || activity.individual?.tab || activity.title;
-    return `
-      <button class="day" type="button" data-id="${activity.id}" aria-pressed="${activity === shownActivity}">
-        ${ICONS[activity.icon]}
-        <strong>${escapeHtml(tabName)}</strong>
-      </button>
-    `;
-  }).join('');
+  const days = DAYS.filter((day) => REGISTRATION_ACTIVITIES.some((activity) => activity.day === day.id));
+  $('#registration-tabs').innerHTML = days.map((day) => `
+    <div class="registration__day">
+      <span class="registration__day-name">${day.name} ${day.date}</span>
+      <div class="registration__day-tabs">
+        ${REGISTRATION_ACTIVITIES.filter((activity) => activity.day === day.id).map(tabButton).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function tabButton(activity) {
+  const tabName = activity.team?.tab || activity.individual?.tab || activity.title;
+  return `
+    <button class="day" type="button" data-id="${activity.id}" aria-pressed="${activity === shownActivity}">
+      ${ICONS[activity.icon]}
+      <strong>${escapeHtml(tabName)}</strong>
+    </button>
+  `;
 }
 
 // Summary fact boxes: day, modality / team size, and registered count with progress bar

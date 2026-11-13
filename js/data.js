@@ -9,7 +9,7 @@ const PROJECT_VERSION = 'v2026.11.05-013103';
 
 
 // Official administrators / supervisors list
-const SUPERVISOR_HANDLES = ['saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezl', 'lcanasq'];
+const SUPERVISOR_HANDLES = ['saescobara', 'linavarrop', 'jhoyosbo', 'carangosi', 'carangosl', 'juperezlo', 'lcanasq'];
 
 function isSupervisorAccount(email = '', name = '') {
   const e = String(email || '').toLowerCase().trim();
@@ -104,6 +104,14 @@ const SPEAKERS = [
   { id: 'juan', name: 'Juan Esteban Hincapié', role: 'Web UI Developer en Globant', credential: 'Ponente', color: '#1f9d7a',
     photo: 'img/speaker-juan-hincapie.jpg',
     bio: 'Estudiante de octavo semestre de Ingeniería de Sistemas e Informática, con un profundo interés en las experiencias interactivas, la ciberseguridad y la IA.' },
+  { id: 'carlos', name: 'Carlos Martínez', role: 'Consultor en Analítica e IA', credential: 'Ponente', color: '#d97706',
+    photo: 'img/speaker-carlos-martinez.jpg', link: 'https://www.linkedin.com/in/carlos-martinez-ai',
+    bio: 'Consultor especializado en analítica, inteligencia artificial y big data, con más de 20 años de experiencia. Se ha desempeñado como director de Analítica e Inteligencia de Negocios en varias compañías aseguradoras y financieras en Colombia, y es cofundador y director de diversas empresas de tecnología en analítica que prestan servicios a compañías de la región.\n' +
+      'Ingeniero de Sistemas e Informática, magíster en Sistemas y doctor en Ingeniería de la Universidad Nacional de Colombia. Ha sido investigador de la Universidad Nacional y de la Universidad de Cantabria, en España, con múltiples modelos matemáticos y publicaciones en revistas especializadas. Es docente en Ciencias de la Computación y Analítica de Grandes Volúmenes de Datos, y un apasionado por la generación de valor en las compañías.' },
+  { id: 'eduardo', name: 'Eduardo Ospina Serrano', role: 'CEO de Unergy', credential: 'Ponente', color: '#0e7490',
+    photo: 'img/speaker-eduardo-ospina.jpg', link: 'https://unergy.io/',
+    bio: 'Emprendedor en tecnología climática y sostenibilidad, apasionado por el desarrollo de hardware, firmware y software. Es cofundador y CEO de Unergy, que construye minigranjas solares para democratizar y descentralizar la energía limpia en Colombia, y cofundador de Solenium. Estudió en la Universidad Nacional de Colombia.\n' +
+      'Con Unergy construyó en Luruaco la primera minigranja solar del país y hoy opera más de 50. La empresa cerró una ronda pre-serie A de US$4 millones, con un compromiso de coinversión de más de US$80 millones para construir 80 minigranjas más, y tiene el primer proyecto legalizado bajo la regulación de comunidades energéticas en Colombia. MIT Technology Review lo seleccionó como uno de los Innovators Under 35 de Latinoamérica.' },
 ];
 
 // Student groups taking part in the week. Each one shows as a pennant in its color.
@@ -161,7 +169,7 @@ const COMPANIES = [
 // Optional: place (e.g. 'Bloque M8, auditorio'), description (long text
 // for the activity page, each \n is a paragraph; without it, the summary is used), speakers (ids from SPEAKERS), organizer (id from GROUPS),
 // rules (list of { title, text } shown as "Formato y reglas" on its page),
-// image (in img/: shown next to the text on its page),
+// image (usually its flyer, in img/flyers/: shown next to the text on its page),
 // video ({ id, title } of a YouTube video: the id is what follows youtu.be/ in the link),
 // stats (list of { value, label } shown as big boxes below the text, e.g. { value: 16, label: 'jugadores' }),
 // team ({ tab, size, maxTeams }: its short name on the inscripciones.html tabs, people per team and, optionally,
@@ -169,13 +177,16 @@ const COMPANIES = [
 // preRegister ({ modalidad, max }: a talk opens a pre-registration (pre-inscripción) with limited spots.
 // modalidad is 'aula-maxima' (100 cupos), 'aula' (40) or 'virtual' (70); max must match the modality and the
 // mapping in supabase/preinscripciones-conferencias.sql, change both together),
+// bracket: true (its knockout bracket, "Llaves", shows on its page: js/brackets.js, supabase/brackets.sql),
 // unconfirmed: true (shows an "Información por confirmar" notice on its page)
 // and decorations (three pixel art drawings from js/pixel-art.js for its page header; the middle one sits higher).
 const ACTIVITIES = [
   // Wednesday
-  { id: 'inaugural', day: 'wed', start: '09:00', end: '10:00', type: 'talk', title: 'Conferencia inaugural', place: 'Aula Máxima',
+  { id: 'inaugural', day: 'wed', start: '09:00', end: '10:00', type: 'talk', title: 'Conversatorio: Empresas de base tecnológica', speakers: ['eduardo'], place: 'Aula Máxima',
     preRegister: { modalidad: 'aula-maxima', max: 100 },
-    description: 'La charla de apertura aún no está definida.',
+    description: 'Un encuentro para conversar con Eduardo Ospina, CEO de Unergy, sobre empresas de base tecnológica.\n' +
+      'Un espacio abierto al diálogo, al intercambio de ideas y a las preguntas de la comunidad universitaria. Súmate a la conversación: trae tus preguntas y participa.',
+    image: 'img/flyers/talk-tech-companies.jpg',
     decorations: ['flag', 'microphone', 'rocket'] },
   { id: 'feria', day: 'wed', start: '09:00', end: '12:00', type: 'social', title: 'Feria de stands', place: 'Hall M10',
     description: 'Descubre la innovación desde adentro y amplía tus horizontes. Conecta con el talento universitario recorriendo los stands de nuestros grupos estudiantiles y semilleros de investigación, e interactúa directamente con empresas invitadas para resolver dudas, intercambiar experiencias y construir tu red profesional.',
@@ -186,9 +197,11 @@ const ACTIVITIES = [
       'Durante esta charla exploraremos cómo pasar de aprender herramientas a desarrollar un perfil profesional integral, capaz de comprender problemas, tomar decisiones técnicas y construir soluciones que generen valor. Abordaremos la importancia de los fundamentos de la ingeniería, el pensamiento crítico y el uso responsable de la inteligencia artificial, así como el papel de las habilidades humanas, la comunicación, el trabajo en equipo y el aprendizaje continuo.\n' +
       'A través de ejemplos prácticos y situaciones del mundo tecnológico, reflexionaremos sobre cómo se conectan los conocimientos adquiridos en la universidad con los desafíos de la industria y qué pueden hacer los estudiantes, desde cualquier semestre, para prepararse para su futuro profesional.\n' +
       'Una invitación a mirar más allá del código y descubrir cómo construir una carrera en la que la tecnología, el criterio y las habilidades humanas trabajen juntos.',
+    image: 'img/flyers/talk-beyond-code.jpg',
     decorations: ['gradCap', 'helmet', 'database'] },
-  { id: 'taller-llm', day: 'wed', start: '12:00', end: '14:00', type: 'workshop', title: 'Agentes de IA para todos - Todo lo que necesitas saber', speakers: ['yohan', 'juan'], organizer: 'turing-box', place: 'Aula M3-224',
+  { id: 'taller-llm', day: 'wed', start: '12:30', end: '14:00', type: 'workshop', title: 'Agentes de IA para todos - Todo lo que necesitas saber', speakers: ['yohan', 'juan'], organizer: 'turing-box', place: 'Aula M3-224',
     description: 'La inteligencia artificial pasó de responder preguntas a ejecutar tareas: crear archivos, revisar su propio trabajo, conectarse con otras herramientas y seguir procedimientos. A esto se le llama agente. En este taller vas a entender qué hay detrás de un agente y vas a trabajar con uno en clase.',
+    image: 'img/flyers/ai-agents-workshop.jpg',
     rules: [
       { title: 'Primera parte', text: 'Qué es un LLM y por qué “solo sabe lo que ve”. Cómo un chat se convierte en un agente: el bucle de pensar, actuar y verificar. Harness engineering: todo lo que rodea al modelo para que trabaje bien y de forma segura. Herramientas, MCP y skills: cómo se le dan nuevas capacidades a un agente. Opciones gratuitas, buenas prácticas y riesgos.' },
       { title: 'Segunda parte: práctica (en parejas)', text: 'Con Gemini CLI, que es gratuito, vas a pedirle al agente que construya una pequeña app, darle reglas propias con un archivo de instrucciones, crear tu primera skill y conectarle una herramienta externa por MCP.' },
@@ -200,18 +213,27 @@ const ACTIVITIES = [
     description: '¿Qué pasa cuando un LLM deja de solo responder y empieza a actuar?\n' +
       'En este taller veremos cómo crear un agente, hacerlo más capaz y llevarlo a producción. Lo haremos con LangChain, uno de los frameworks de Python más usados para construir aplicaciones y agentes con LLMs.\n' +
       '¡Ven a descubrir cómo funciona un agente!',
-    image: 'img/activity-aperture-workshop.jpg',
+    image: 'img/flyers/aperture-workshop.jpg',
     decorations: ['terminal', 'robot', 'lightning'] },
+  { id: 'ia-decisiones', day: 'wed', start: '17:00', end: '18:30', type: 'talk', title: 'El dato es el nuevo petróleo. La IA es la nueva refinería', speakers: ['carlos'], place: 'Virtual',
+    description: 'Nunca habíamos tenido tantos datos. ¿Por qué seguimos decidiendo igual?\n' +
+      'Casi todas las empresas ya usan inteligencia artificial, pero muy pocas ven resultados: tableros que nadie usa para decidir, tres versiones de la misma cifra y pilotos que nunca llegan a operación. En esta charla veremos por qué los análisis de hoy no mueven la aguja aunque sobren datos, y cómo la IA acelera cada paso del camino que va del dato crudo a la decisión.\n' +
+      'Con el caso de una cadena de tiendas responderemos cuatro preguntas de negocio: dónde y por qué se cae la venta, quién se va a ir y cuánto vale retenerlo, qué parte de la operación nos está costando clientes y cuánto pedir sin perder plata. Verás cómo auditar los datos puede cambiar la respuesta, cómo cruzar fuentes revela lo que ninguna tabla muestra sola y cómo un equipo de agentes de IA revisa, limpia, compara y grafica antes de responder.\n' +
+      'Una charla de nivel intermedio sobre IA para el análisis de datos y la toma de decisiones, con una regla clara: la IA propone; una persona verifica, decide y responde.',
+    image: 'img/flyers/talk-ai-decisions.jpg',
+    decorations: ['database', 'robot', 'lightbulb'] },
 
   // Thursday
   { id: 'observacion', day: 'thu', start: '07:00', end: '10:00', type: 'competition', title: 'Carrera de observación', team: { tab: 'Observación', size: 4, maxTeams: 10 },
     icon: 'magnifier', color: '#e05a7a', summary: 'Recorre el campus resolviendo pistas antes que los demás equipos.', place: 'Hall M10',
     description: 'Una verdadera prueba de velocidad, lógica y trabajo en equipo. Recorre las estaciones distribuidas alrededor del campus resolviendo acertijos y desafíos en el menor tiempo posible.\n' +
       '¿Tiene tu equipo la destreza mental y la resistencia necesarias para llevarse la victoria?',
+    image: 'img/flyers/scavenger-hunt.jpg',
     decorations: ['questionMark', 'magnifier', 'map'] },
-  { id: 'clash-royale', day: 'thu', start: '10:30', end: '12:30', type: 'competition', title: 'Torneo de Clash Royale', individual: { tab: 'Clash Royale', max: 32 },
+  { id: 'clash-royale', day: 'thu', start: '10:30', end: '12:30', type: 'competition', title: 'Torneo de Clash Royale', individual: { tab: 'Clash Royale', max: 32 }, bracket: true,
     icon: 'crown', color: '#d97706', summary: 'Duelos estratégicos en la arena. Corona tras corona hasta la victoria.', place: 'Virtual',
     description: 'Torneo oficial de Clash Royale en modalidad virtual con formato competitivo real, a cargo de Santiago Escobar (exjugador competitivo del juego). Puedes participar desde donde estés a través del clan exclusivo creado para el evento en Modo Elección (Draft) para estandarizar niveles y minimizar la ventaja entre jugadores, garantizando que gane la mejor estrategia y lectura de partida en la arena.',
+    image: 'img/flyers/clash-royale.jpg',
     stats: [{ value: 32, label: 'cupos' }, { value: 'Elección', label: 'modo' }, { value: 'Virtual', label: 'modalidad' }],
     rules: [
       { title: 'Modalidad 100% virtual y clan oficial', text: 'Torneo individual para 32 jugadores en llaves de eliminación directa. Puedes jugar desde donde te encuentres: todas las batallas se coordinarán virtualmente y se disputarán dentro del clan privado creado para la competencia.' },
@@ -221,9 +243,10 @@ const ACTIVITIES = [
       { title: 'Organización y coordinación', text: 'A cargo de Santiago Escobar — exjugador competitivo de Clash Royale. La coordinación virtual, asignación de salas y llamados a partida se realizarán directamente por el grupo oficial de WhatsApp.' },
     ],
     decorations: ['cup', 'star', 'gamepad'] },
-  { id: 'maraton', day: 'thu', start: '14:00', end: '18:00', type: 'competition', title: 'Maratón de programación', team: { tab: 'Maratón', size: 3, maxTeams: 10 },
-    icon: 'code', color: '#2f9e5b', summary: 'Cuatro horas de problemas algorítmicos contra el reloj.', organizer: 'unalgoritmo', place: 'Salón M7-501',
+  { id: 'maraton', day: 'thu', start: '14:00', end: '18:00', type: 'competition', title: 'Maratón de programación', team: { tab: 'Maratón', size: 3, maxTeams: 20 },
+    icon: 'code', color: '#2f9e5b', summary: 'Cuatro horas de problemas algorítmicos contra el reloj.', organizer: 'unalgoritmo', place: 'Salones M7-501 y M7-502B',
     description: 'Llega la Maratón de Programación, el evento insignia en la sede Medellín para medir el pensamiento algorítmico, la lógica y el trabajo colaborativo en equipos de tres personas frente a retos de programación.',
+    image: 'img/flyers/marathon.jpg',
     rules: [
       { title: 'Conformación y estaciones', text: 'Participación en ternas (3 integrantes). Cada equipo contará con un computador para la resolución e implementación del código.' },
       { title: 'Lenguajes permitidos', text: 'Los problemas se pueden resolver en cualquier lenguaje de programación, principalmente C++, Python y Java.' },
@@ -236,25 +259,25 @@ const ACTIVITIES = [
   { id: 'atletismo', day: 'fri', start: '08:00', end: '09:00', type: 'competition', title: 'Carrera de atletismo 8‑bit', individual: { tab: 'Atletismo', max: 45 },
     icon: 'pixel', color: '#f08a24', summary: 'Una carrera con alma de videojuego retro.', place: 'Hall M10',
     description: 'Pon a prueba tu velocidad y resistencia en un circuito a lo largo de todo el campus. Prepárate para enfrentar los cambios de inclinación del terreno, superar cada nivel y retarte a ti mismo en una carrera con pura alma de videojuego retro.',
-    image: 'img/activity-athletics.jpg',
+    image: 'img/flyers/athletics.jpg',
     decorations: ['medal10', 'medal01', 'medal11'] },
-  { id: 'futbol', day: 'fri', start: '09:00', end: '11:00', type: 'competition', title: 'Torneo de fútbol', team: { tab: 'Fútbol', size: 5, maxTeams: 8 },
+  { id: 'futbol', day: 'fri', start: '09:00', end: '11:00', type: 'competition', title: 'Torneo de fútbol', team: { tab: 'Fútbol', size: 5, maxTeams: 8 }, bracket: true,
     icon: 'ball', color: '#1667c2', summary: 'Arma tu equipo y sal a la cancha.', place: 'Placa polideportiva',
     description: 'Reúne a tu equipo y demuestra tu nivel en la cancha en un torneo de eliminación directa por brackets. Avanza llave a llave, supera a tus rivales en cada partido y compite hasta alcanzar la gran final.\n' +
       'Se prestan los petos y el balón.',
-    image: 'img/activity-soccer.jpg',
+    image: 'img/flyers/soccer.jpg',
     video: { id: '_2zoIHTWd00', title: 'Comercial de Nike Football: Arriésgalo todo (2014)' },
     decorations: ['jersey', 'cup', 'ball'] },
-  { id: 'videojuegos', day: 'fri', start: '10:00', end: '12:00', type: 'competition', title: 'Torneo de videojuegos', individual: { tab: 'Videojuegos', max: 16 }, place: 'Sala Lovelace Turing',
+  { id: 'videojuegos', day: 'fri', start: '10:00', end: '12:00', type: 'competition', title: 'Torneo de videojuegos', individual: { tab: 'Videojuegos', max: 16 }, bracket: true, place: 'Sala Lovelace Turing',
     icon: 'gamepad', color: '#7b4fc9', summary: '16 jugadores se enfrentan en Overcooked hasta que solo quede un campeón.',
     description: 'Toma el control, demuestra tu talento en la pantalla y compite codo a codo con otros jugadores para coronarte como el campeón del torneo.',
-    image: 'img/activity-overcooked2.jpg',
+    image: 'img/flyers/video-games.jpg',
     stats: [{ value: 16, label: 'jugadores' }, { value: 'VS', label: 'modo' }],
     decorations: ['chefHat', 'gamepad', 'onionKing'] },
-  { id: 'just-dance', day: 'fri', start: '14:00', end: '15:00', type: 'competition', title: 'Torneo de Just Dance', individual: { tab: 'Just Dance', max: 16 },
+  { id: 'just-dance', day: 'fri', start: '14:00', end: '15:00', type: 'competition', title: 'Torneo de Just Dance', individual: { tab: 'Just Dance', max: 16 }, bracket: true,
     icon: 'dance', color: '#c4358c', summary: 'Saca tus mejores pasos en la pista y compite por el mayor puntaje.', place: 'Sala Lovelace Turing',
     description: 'El reto en la pista de baile. Sigue las coreografías en pantalla, acumula estrellas al ritmo de la música y compite con la comunidad para demostrar quién domina la pista de Just Dance.',
-    image: 'img/activity-just-dance.jpg',
+    image: 'img/flyers/just-dance.jpg',
     stats: [{ value: 16, label: 'cupos' }, { value: 'VS', label: 'modo' }],
     decorations: ['note', 'discoBall', 'star'] },
   { id: 'premiacion', day: 'fri', start: '15:00', end: '16:00', type: 'social', title: 'Premiación', place: 'Sala Lovelace Turing',
@@ -267,6 +290,7 @@ const ACTIVITIES = [
     description: 'El problema de la IA es el consumo de energía, pero ¿qué pasa si no calculamos con energía?\n' +
       'Durante esta charla veremos el proceso para llegar a hacer diferentes modelos de lenguaje estado del arte, autorregresivos y de difusión, y entender cómo llegar a la mejor configuración de capas entre los diferentes paradigmas de computación. ¿Dónde puedo usar la cuántica? ¿Dónde puedo poner la térmica? ¿Para qué sirve y qué es eso? ¿Y cómo multiplicar a la velocidad de la luz de forma paralelizada?\n' +
       'Con demo en vivo y animaciones para que sea intuitivo.',
+    image: 'img/flyers/talk-llm-future.jpg',
     decorations: ['thermometer', 'atom', 'lightbulb'] },
 ];
 

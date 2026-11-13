@@ -11,6 +11,8 @@
   <script src="../js/icons.js"></script>
   <script src="../js/common.js"></script>
   <script src="../js/doom.js"></script>
+  <script>const activity = null;   // brackets.js runs on an activity page; here it only lends its functions</script>
+  <script src="../js/brackets.js"></script>
   <script>
     const failures = [];
     const check = (name, actual, expected) => {
@@ -163,6 +165,20 @@
     check('clash-royale individual max', findActivity('clash-royale')?.individual?.max, 32);
     check('clash-royale day', findActivity('clash-royale')?.day, 'thu');
     check('clash-royale place virtual', findActivity('clash-royale')?.place, 'Virtual');
+    check('juan david perez recognized by handle', isSupervisorAccount('juperezlo@unal.edu.co'), true);
+
+    // Brackets: byes spread one per match, a bye lets the rival through, results only count between two people
+    const slots = (names) => firstRound(names).map((side) => (side === BYE ? '-' : side));
+    check('bracket full', slots(['a', 'b', 'c', 'd']), ['a', 'b', 'c', 'd']);
+    check('bracket 7 spreads the bye', slots(['a', 'b', 'c', 'd', 'e', 'f', 'g']), ['a', 'e', 'b', 'f', 'c', 'g', 'd', '-']);
+    check('bracket 5 never two byes', slots(['a', 'b', 'c', 'd', 'e']), ['a', 'e', 'b', '-', 'c', '-', 'd', '-']);
+    check('bracket explicit byes', slots(['a', null, 'b', 'c']), ['a', '-', 'b', 'c']);
+    check('bracket champion', buildRounds({ participantes: ['a', 'b', 'c', 'd'], ganadores: { '0-0': 1, '0-1': 0, '1-0': 0 } }).champion, 'b');
+    check('bracket no results yet', buildRounds({ participantes: ['a', 'b', 'c', 'd'], ganadores: {} }).champion, null);
+    check('bracket bye goes through', buildRounds({ participantes: ['a', null, null, null], ganadores: {} }).champion, 'a');
+    check('bracket bye waits for rival', buildRounds({ participantes: ['a', 'b', 'c'], ganadores: {} }).rounds[1][0].sides, [null, 'b']);
+    check('bracket result needs two people', buildRounds({ participantes: ['a', 'b', 'c', 'd'], ganadores: { '1-0': 0 } }).rounds[1][0].winner, null);
+    check('bracket 7 final', buildRounds({ participantes: ['a', 'b', 'c', 'd', 'e', 'f', 'g'], ganadores: { '0-0': 0, '0-1': 1, '0-2': 1, '1-0': 1, '1-1': 0, '2-0': 1 } }).champion, 'g');
 
     // Conference pre-registration: caps by modality must match supabase/preinscripciones-conferencias.sql
     // (cupos_conferencia): aula-maxima = 100, aula = 40, virtual = 70.

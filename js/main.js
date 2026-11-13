@@ -25,17 +25,25 @@ function renderHero() {
 
 /* ---------- Speakers ---------- */
 
+// The selector shows three speakers: the one on screen in the middle, the previous and the next
+// at its sides (in a circle). The arrows move one speaker back or forward.
 function renderSpeakers() {
-  $('#speakers-thumbnails').innerHTML = SPEAKERS.map((speaker, index) => `
-    <button class="thumbnail" data-index="${index}">
-      <span class="thumbnail__photo">${speakerPortrait(speaker)}</span>
-      <span class="thumbnail__name">${speaker.name || 'Por anunciar'}</span>
-    </button>
-  `).join('');
+  $('#speakers-thumbnails').innerHTML = `
+    <button class="speakers__arrow speakers__arrow--prev" data-step="-1" aria-label="Ponente anterior">${ICONS.arrow}</button>
+    ${SPEAKERS.map((speaker, index) => `
+      <button class="thumbnail" data-index="${index}">
+        <span class="thumbnail__photo">${speakerPortrait(speaker)}</span>
+        <span class="thumbnail__name">${speaker.name || 'Por anunciar'}</span>
+      </button>
+    `).join('')}
+    <button class="speakers__arrow speakers__arrow--next" data-step="1" aria-label="Ponente siguiente">${ICONS.arrow}</button>
+  `;
 
   $('#speakers-thumbnails').addEventListener('click', (event) => {
     const button = event.target.closest('.thumbnail');
     if (button) showIdCard(Number(button.dataset.index));
+    const arrow = event.target.closest('.speakers__arrow');
+    if (arrow) showIdCard((currentIdCard + Number(arrow.dataset.step) + SPEAKERS.length) % SPEAKERS.length);
   });
 
   // Rotation pauses while the mouse or keyboard focus is on the speakers.
@@ -69,9 +77,23 @@ function pauseIdCards() {
 
 function showIdCard(index) {
   const speaker = SPEAKERS[index];
+  // 1 = one forward, -1 = one back: the thumbnails slide one place that way and the new one fades in
+  const step = (index - currentIdCard + SPEAKERS.length) % SPEAKERS.length;
+  const direction = step === 1 ? 1 : step === SPEAKERS.length - 1 ? -1 : 0;
   currentIdCard = index;
 
-  $$('.thumbnail').forEach((button, i) => button.setAttribute('aria-pressed', i === index));
+  $$('.thumbnail').forEach((button, i) => {
+    const place = (i - index + 1 + SPEAKERS.length) % SPEAKERS.length;   // 0 left, 1 middle, 2 right
+    button.setAttribute('aria-pressed', i === index);
+    button.hidden = place > 2;
+    button.style.order = place;
+    if (direction && !button.hidden && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      button.animate(
+        [{ transform: `translateX(${direction * 100}%)`, opacity: place === 1 + direction ? 0 : 1 }, { transform: 'none', opacity: 1 }],
+        { duration: 450, easing: 'ease-out' },
+      );
+    }
+  });
 
   // If the speaker has an activity, the ID card links to that activity's page
   const activity = ACTIVITIES.find((a) => a.speakers?.includes(speaker.id));
