@@ -68,7 +68,7 @@
     const filled = count === null ? 0 : Math.min(100, (count / max) * 100);
     const label = count === null
       ? 'Cargando cupos…'
-      : `${count} de ${max} cupos ocupados${spotsLeft() > 0 ? ` · quedan ${spotsLeft()}` : ' · ¡cupos agotados!'}`;
+      : `${count} de ${max} cupos ocupados${spotsLeft() > 0 ? `, quedan ${spotsLeft()}` : ', ¡cupos agotados!'}`;
     return `
       <p class="pre-register__count">${label}</p>
       <span class="registration__bar" style="--filled: ${filled}%"></span>
@@ -104,7 +104,7 @@
         ${capacityBar()}
         <div class="pre-register__status">
           <span class="team__badge" style="background: #e6f7ec; color: #1a7f37; border: 1px solid #b7ebc6;">
-            ✓ Pre-inscrito${attended ? ' · asistencia confirmada' : ''}
+            ✓ Pre-inscrito${attended ? ', asistencia confirmada' : ''}
           </span>
           <p class="registration__text">
             ${attended
@@ -154,7 +154,7 @@
           <div class="participant-card__info">
             <div class="participant-card__top">
               <span class="team__who">${escapeHtml(person.nombre)}<small>@${escapeHtml(person.usuario)}</small></span>
-              ${attended ? '<span class="team__badge">Asistió · 10 pts</span>' : ''}
+              ${attended ? '<span class="team__badge">Asistió, 10 pts</span>' : ''}
             </div>
             <div class="participant-card__actions pre-register__admin-actions">
               <button class="week-button" type="button" data-action="toggle-attendance"

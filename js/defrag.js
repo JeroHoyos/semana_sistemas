@@ -650,7 +650,7 @@ function createDefrag(canvas, events = {}) {
     releaseAll();
     audio.stopMusic();
     emit('playSound', 'over');
-    emit('onEnd', score, false, `Nivel ${level} · ${rowsCleared} ${rowsCleared === 1 ? 'fila' : 'filas'}`);
+    emit('onEnd', score, false, `Nivel ${level}, ${rowsCleared} ${rowsCleared === 1 ? 'fila' : 'filas'}`);
   }
 
   /* ---------- Each frame: auto-repeat, fall and lock ---------- */
@@ -1052,8 +1052,8 @@ const DEFRAG_CARTRIDGE = {
   splash: {
     text: 'Completa filas y libera la memoria',
     items: () => `<span class="overlay__item"><span class="overlay__sprite">${drawPixelArt(defragSprite('I'))}</span>50 pts</span>`,
-    keyboardHelp: 'Flechas o WASD · Espacio suelta · P pausa',
-    touchHelp: 'Cruceta mueve · A gira · B guarda',
+    keyboardHelp: 'Flechas o WASD, espacio suelta, P pausa',
+    touchHelp: 'Cruceta mueve, A gira, B guarda',
   },
   controls: {
     keyboard: [

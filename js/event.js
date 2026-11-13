@@ -17,7 +17,7 @@ function dayText(day) {
 function renderHero() {
   const type = ACTIVITY_TYPES[activity.type];
 
-  document.title = `${activity.title} · Semana de Sistemas`;
+  document.title = `${activity.title} | Semana de Sistemas`;
 
   // Pixel art drawings above the type, if the activity has any (see pixel-art.js)
   const decorations = activity.decorations

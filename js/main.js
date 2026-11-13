@@ -116,7 +116,7 @@ function showIdCard(index) {
 // --letters adjusts the name's size so it fits on the card.
 function speakerIdCard(speaker) {
   const isMystery = !speaker.name;
-  const name = speaker.name || '· · ·';
+  const name = speaker.name || '???';
   let stamp = '';
   if (isMystery) stamp = '<span class="idcard__stamp">Clasificado</span>';
   else if (speaker.unconfirmed) stamp = '<span class="idcard__stamp idcard__stamp--pending">Por confirmar</span>';
@@ -353,7 +353,7 @@ function activityCard(activity) {
   const overlapping = findOverlapping(activity);
 
   // Searching mixes all three days, so each activity shows its day
-  const day = schedule.search ? (findDay(activity.day) ? `${findDay(activity.day).name} · ` : 'Por definir · ') : '';
+  const day = schedule.search ? (findDay(activity.day) ? `${findDay(activity.day).name}, ` : 'Por definir, ') : '';
 
   const details = findSpeakers(activity).map((speaker) =>
     `<span><span class="avatar">${speakerPortrait(speaker)}</span>${speaker.name || 'Por anunciar'}</span>`);
@@ -477,7 +477,7 @@ function renderCompetitions() {
     const day = findDay(activity.day);
     const group = findGroup(activity.organizer);
     const dayPill = day ? day.short : 'Por definir';
-    const timeText = (day && activity.start) ? `${day.name} · ${activity.start} – ${activity.end}` : 'Fecha y hora por definir';
+    const timeText = (day && activity.start) ? `${day.name}, ${activity.start} – ${activity.end}` : 'Fecha y hora por definir';
     return `
       <a class="competition" href="${activityLink(activity.id)}" style="--color: ${activity.color}">
         <span class="competition__image">

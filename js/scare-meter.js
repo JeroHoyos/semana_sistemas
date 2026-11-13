@@ -260,7 +260,7 @@ function renderRanking(people, query = '') {
               ${isMine ? '<span class="team__badge">TÚ</span>' : ''}
               ${titleTag}
             </div>
-            <div class="scarer-card__email">@${escapeHtml(handle)} · ${clown ? 'TRAMPOSO DE CIRCO' : 'UNAL'}</div>
+            <div class="scarer-card__email">@${escapeHtml(handle)} | ${clown ? 'TRAMPOSO DE CIRCO' : 'UNAL'}</div>
           </div>
 
           <div class="scarer-card__score">
@@ -561,7 +561,7 @@ function updateMyRankBanner() {
             <span class="team__badge">TÚ</span>
             <span class="scarer-card__title-tag">${escapeHtml(titleText(title, monster.estilo))}</span>
           </div>
-          <div class="scarer-card__email">@${escapeHtml(handle)} · UNAL</div>
+          <div class="scarer-card__email">@${escapeHtml(handle)} | UNAL</div>
         </div>
         <div class="scarer-card__score">
           <span class="scarer-card__pts">${points} <small>PTS</small></span>
@@ -753,7 +753,7 @@ function openPointsModal(person) {
   avatar.innerHTML = drawCustomMonster(person.monstruo || {});
   $('#points-modal-name').textContent = (person.nombre || 'Estudiante UNAL').trim();
   const emailForModal = person.correo || (person.usuario ? `${person.usuario}@unal.edu.co` : '');
-  $('#points-modal-email').textContent = `@${person.usuario || handleOf(emailForModal)} · UNAL`;
+  $('#points-modal-email').textContent = `@${person.usuario || handleOf(emailForModal)} | UNAL`;
   $('#points-modal-input').value = isClown(emailForModal, person.nombre, person) ? 0 : (Number(person.puntos) || 0);
   const reasonInput = $('#points-modal-reason');
   if (reasonInput) reasonInput.value = '';
@@ -962,7 +962,7 @@ function renderTramposos(tramposos) {
               <span>${escapeHtml(name)}</span>
               <span class="scarer-card__title-tag scarer-card__title-tag--clown">Tramposo</span>
             </div>
-            <div class="scarer-card__email">@${escapeHtml(handle)} · SANCIONADO</div>
+            <div class="scarer-card__email">@${escapeHtml(handle)} | SANCIONADO</div>
           </div>
 
           <div class="scarer-card__score">
