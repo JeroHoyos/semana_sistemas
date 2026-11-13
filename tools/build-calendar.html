@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Build calendar</title>
+</head>
+<body>
+  <!-- Open this file through a local server and save the download over /semana-sistemas.ics,
+       the calendar that the "add the whole week" link subscribes to. -->
+  <p><a id="download" download="semana-sistemas.ics">Download semana-sistemas.ics</a></p>
+  <pre id="ics"></pre>
+  <script src="../js/data.js"></script>
+  <script>
+    const SITE = 'https://semanasistemas.vercel.app';
+    const DATES = { wed: '2026-11-18', thu: '2026-11-19', fri: '2026-11-20' };   // the days in DAYS
+
+    // Bogotá is UTC-5 all year, so times go out in UTC and need no VTIMEZONE block
+    const utc = (day, time) => {
+      if (!DATES[day]) throw new Error(`Unknown day: ${day}`);
+      return new Date(`${DATES[day]}T${time}:00-05:00`).toISOString().replace(/[-:]|\.\d+/g, '');
+    };
+    const text = (value) => value.replace(/[\\;,]/g, '\\$&').replace(/\n/g, '\\n');
+    // RFC 5545: no line longer than 75 bytes; the rest continues on a line that starts with a space
+    const fold = (line) => {
+      let out = '', size = 0;
+      for (const char of line) {
+        const bytes = new TextEncoder().encode(char).length;
+        if (size + bytes > 75) { out += '\r\n '; size = 1; }
+        out += char;
+        size += bytes;
+      }
+      return out;
+    };
+
+    if (utc('wed', '09:00') !== '20261118T140000Z') throw new Error('Bogotá to UTC conversion is wrong');
+
+    const now = new Date().toISOString().replace(/[-:]|\.\d+/g, '');
+    const lines = [
+      'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Semana de Sistemas//ES', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+      'X-WR-CALNAME:Semana de Sistemas 2026', 'X-WR-TIMEZONE:America/Bogota',
+      ...ACTIVITIES.flatMap((activity) => {
+        const page = `${SITE}/evento.html?id=${activity.id}`;
+        const place = [activity.place, activity.place !== 'Virtual' && 'Facultad de Minas, UNAL Medellín'].filter(Boolean).join(', ');
+        const about = (activity.description || activity.summary || '').split('\n')[0];
+        return [
+          'BEGIN:VEVENT',
+          `UID:${activity.id}@semanasistemas.vercel.app`,
+          `DTSTAMP:${now}`,
+          `DTSTART:${utc(activity.day, activity.start)}`,
+          `DTEND:${utc(activity.day, activity.end)}`,
+          `SUMMARY:${text(activity.title)}`,
+          `LOCATION:${text(place)}`,
+          `DESCRIPTION:${text(`${about}\n\nMás información: ${page}`)}`,
+          `URL:${page}`,
+          'END:VEVENT',
+        ];
+      }),
+      'END:VCALENDAR',
+    ];
+    const ics = lines.map(fold).join('\r\n') + '\r\n';
+
+    document.getElementById('ics').textContent = ics;
+    document.getElementById('download').href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
+  </script>
+</body>
+</html>

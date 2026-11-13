@@ -1,0 +1,211 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Semana de Sistemas//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Semana de Sistemas 2026
+X-WR-TIMEZONE:America/Bogota
+BEGIN:VEVENT
+UID:inaugural@semanasistemas.vercel.app
+DTSTAMP:20261112T224209Z
+DTSTART:20261118T140000Z
+DTEND:20261118T150000Z
+SUMMARY:Conversatorio: Empresas de base tecnológica
+LOCATION:Aula Máxima\, Facultad de Minas\, UNAL Medellín
+DESCRIPTION:Un encuentro para conversar con Eduardo Ospina\, CEO de Unergy\
+ , sobre empresas de base tecnológica.\n\nMás información: https://seman
+ asistemas.vercel.app/evento.html?id=inaugural
+URL:https://semanasistemas.vercel.app/evento.html?id=inaugural
+END:VEVENT
+BEGIN:VEVENT
+UID:feria@semanasistemas.vercel.app
+DTSTAMP:20261112T224209Z
+DTSTART:20261118T140000Z
+DTEND:20261118T170000Z
+SUMMARY:Feria de stands
+LOCATION:Hall M10\, Facultad de Minas\, UNAL Medellín
+DESCRIPTION:Descubre la innovación desde adentro y amplía tus horizontes.
+  Conecta con el talento universitario recorriendo los stands de nuestros g
+ rupos estudiantiles y semilleros de investigación\, e interactúa directa
+ mente con empresas invitadas para resolver dudas\, intercambiar experienci
+ as y construir tu red profesional.\n\nMás información: https://semanasis
+ temas.vercel.app/evento.html?id=feria
+URL:https://semanasistemas.vercel.app/evento.html?id=feria
+END:VEVENT
+BEGIN:VEVENT
+UID:datos@semanasistemas.vercel.app
+DTSTAMP:20261112T224209Z
+DTSTART:20261118T160000Z
+DTEND:20261118T170000Z
+SUMMARY:Más allá del código: de estudiante a ingeniero en la era de la i
+ nteligencia artificial
+LOCATION:Aula Máxima\, Facultad de Minas\, UNAL Medellín
+DESCRIPTION:¿Qué significa realmente ser un buen ingeniero de sistemas en
+  un mundo donde la inteligencia artificial puede generar código\, las tec
+ nologías cambian constantemente y los problemas reales exigen mucho más 
+ que conocimientos técnicos?\n\nMás información: https://semanasistemas.
+ vercel.app/evento.html?id=datos
+URL:https://semanasistemas.vercel.app/evento.html?id=datos
+END:VEVENT
+BEGIN:VEVENT
+UID:taller-llm@semanasistemas.vercel.app
+DTSTAMP:20261112T224209Z
+DTSTART:20261118T173000Z
+DTEND:20261118T190000Z
+SUMMARY:Agentes de IA para todos - Todo lo que necesitas saber
+LOCATION:Aula M3-224\, Facultad de Minas\, UNAL Medellín
+DESCRIPTION:La inteligencia artificial pasó de responder preguntas a ejecu
+ tar tareas: crear archivos\, revisar su propio trabajo\, conectarse con ot
+ ras herramientas y seguir procedimientos. A esto se le llama agente. En es
+ te taller vas a entender qué hay detrás de un agente y vas a trabajar co
+ n uno en clase.\n\nMás información: https://semanasistemas.vercel.app/ev
+ ento.html?id=taller-llm
+URL:https://semanasistemas.vercel.app/evento.html?id=taller-llm
+END:VEVENT
+BEGIN:VEVENT
+UID:taller-aperture@semanasistemas.vercel.app
+DTSTAMP:20261112T224209Z
+DTSTART:20261118T190000Z
+DTEND:20261118T210000Z
+SUMMARY:De Prompts a Agentes: Inteligencia Artificial Agéntica con Python
+LOCATION:Aula M3-224\, Facultad de Minas\, UNAL Medellín
+DESCRIPTION:¿Qué pasa cuando un LLM deja de solo responder y empieza a ac
+ tuar?\n\nMás información: https://semanasistemas.vercel.app/evento.html?
+ id=taller-aperture
+URL:https://semanasistemas.vercel.app/evento.html?id=taller-aperture
+END:VEVENT
+BEGIN:VEVENT
+UID:ia-decisiones@semanasistemas.vercel.app
+DTSTAMP:20261112T224209Z
+DTSTART:20261118T220000Z
+DTEND:20261118T233000Z
+SUMMARY:El dato es el nuevo petróleo. La IA es la nueva refinería
+LOCATION:Virtual
+DESCRIPTION:Nunca habíamos tenido tantos datos. ¿Por qué seguimos decidi
+ endo igual?\n\nMás información: https://semanasistemas.vercel.app/evento
+ .html?id=ia-decisiones
+URL:https://semanasistemas.vercel.app/evento.html?id=ia-decisiones
+END:VEVENT
+BEGIN:VEVENT
+UID:observacion@semanasistemas.vercel.app
+DTSTAMP:20261112T224209Z
+DTSTART:20261119T120000Z
+DTEND:20261119T150000Z
+SUMMARY:Carrera de observación
+LOCATION:Hall M10\, Facultad de Minas\, UNAL Medellín
+DESCRIPTION:Una verdadera prueba de velocidad\, lógica y trabajo en equipo
+ . Recorre las estaciones distribuidas alrededor del campus resolviendo ace
+ rtijos y desafíos en el menor tiempo posible.\n\nMás información: https
+ ://semanasistemas.vercel.app/evento.html?id=observacion
+URL:https://semanasistemas.vercel.app/evento.html?id=observacion
+END:VEVENT
+BEGIN:VEVENT
+UID:clash-royale@semanasistemas.vercel.app
+DTSTAMP:20261112T224209Z
+DTSTART:20261119T153000Z
+DTEND:20261119T173000Z
+SUMMARY:Torneo de Clash Royale
+LOCATION:Virtual
+DESCRIPTION:Torneo oficial de Clash Royale en modalidad virtual con formato
+  competitivo real\, a cargo de Santiago Escobar (exjugador competitivo del
+  juego). Puedes participar desde donde estés a través del clan exclusivo
+  creado para el evento en Modo Elección (Draft) para estandarizar niveles
+  y minimizar la ventaja entre jugadores\, garantizando que gane la mejor e
+ strategia y lectura de partida en la arena.\n\nMás información: https://
+ semanasistemas.vercel.app/evento.html?id=clash-royale
+URL:https://semanasistemas.vercel.app/evento.html?id=clash-royale
+END:VEVENT
+BEGIN:VEVENT
+UID:maraton@semanasistemas.vercel.app
+DTSTAMP:20261112T224209Z
+DTSTART:20261119T190000Z
+DTEND:20261119T230000Z
+SUMMARY:Maratón de programación
+LOCATION:Salones M7-501 y M7-502B\, Facultad de Minas\, UNAL Medellín
+DESCRIPTION:Llega la Maratón de Programación\, el evento insignia en la s
+ ede Medellín para medir el pensamiento algorítmico\, la lógica y el tra
+ bajo colaborativo en equipos de tres personas frente a retos de programaci
+ ón.\n\nMás información: https://semanasistemas.vercel.app/evento.html?i
+ d=maraton
+URL:https://semanasistemas.vercel.app/evento.html?id=maraton
+END:VEVENT
+BEGIN:VEVENT
+UID:atletismo@semanasistemas.vercel.app
+DTSTAMP:20261112T224209Z
+DTSTART:20261120T130000Z
+DTEND:20261120T140000Z
+SUMMARY:Carrera de atletismo 8‑bit
+LOCATION:Hall M10\, Facultad de Minas\, UNAL Medellín
+DESCRIPTION:Pon a prueba tu velocidad y resistencia en un circuito a lo lar
+ go de todo el campus. Prepárate para enfrentar los cambios de inclinació
+ n del terreno\, superar cada nivel y retarte a ti mismo en una carrera con
+  pura alma de videojuego retro.\n\nMás información: https://semanasistem
+ as.vercel.app/evento.html?id=atletismo
+URL:https://semanasistemas.vercel.app/evento.html?id=atletismo
+END:VEVENT
+BEGIN:VEVENT
+UID:futbol@semanasistemas.vercel.app
+DTSTAMP:20261112T224209Z
+DTSTART:20261120T140000Z
+DTEND:20261120T160000Z
+SUMMARY:Torneo de fútbol
+LOCATION:Placa polideportiva\, Facultad de Minas\, UNAL Medellín
+DESCRIPTION:Reúne a tu equipo y demuestra tu nivel en la cancha en un torn
+ eo de eliminación directa por brackets. Avanza llave a llave\, supera a t
+ us rivales en cada partido y compite hasta alcanzar la gran final.\n\nMás
+  información: https://semanasistemas.vercel.app/evento.html?id=futbol
+URL:https://semanasistemas.vercel.app/evento.html?id=futbol
+END:VEVENT
+BEGIN:VEVENT
+UID:videojuegos@semanasistemas.vercel.app
+DTSTAMP:20261112T224209Z
+DTSTART:20261120T150000Z
+DTEND:20261120T170000Z
+SUMMARY:Torneo de videojuegos
+LOCATION:Sala Lovelace Turing\, Facultad de Minas\, UNAL Medellín
+DESCRIPTION:Toma el control\, demuestra tu talento en la pantalla y compite
+  codo a codo con otros jugadores para coronarte como el campeón del torne
+ o.\n\nMás información: https://semanasistemas.vercel.app/evento.html?id=
+ videojuegos
+URL:https://semanasistemas.vercel.app/evento.html?id=videojuegos
+END:VEVENT
+BEGIN:VEVENT
+UID:just-dance@semanasistemas.vercel.app
+DTSTAMP:20261112T224209Z
+DTSTART:20261120T190000Z
+DTEND:20261120T200000Z
+SUMMARY:Torneo de Just Dance
+LOCATION:Sala Lovelace Turing\, Facultad de Minas\, UNAL Medellín
+DESCRIPTION:El reto en la pista de baile. Sigue las coreografías en pantal
+ la\, acumula estrellas al ritmo de la música y compite con la comunidad p
+ ara demostrar quién domina la pista de Just Dance.\n\nMás información: 
+ https://semanasistemas.vercel.app/evento.html?id=just-dance
+URL:https://semanasistemas.vercel.app/evento.html?id=just-dance
+END:VEVENT
+BEGIN:VEVENT
+UID:premiacion@semanasistemas.vercel.app
+DTSTAMP:20261112T224209Z
+DTSTART:20261120T200000Z
+DTEND:20261120T210000Z
+SUMMARY:Premiación
+LOCATION:Sala Lovelace Turing\, Facultad de Minas\, UNAL Medellín
+DESCRIPTION:¡Llegó el momento de la verdad! Acompaña a tus equipos y com
+ petidores favoritos en la entrega oficial de premios y la clausura del eve
+ nto.\n\nMás información: https://semanasistemas.vercel.app/evento.html?i
+ d=premiacion
+URL:https://semanasistemas.vercel.app/evento.html?id=premiacion
+END:VEVENT
+BEGIN:VEVENT
+UID:ia-cuantica@semanasistemas.vercel.app
+DTSTAMP:20261112T224209Z
+DTSTART:20261120T210000Z
+DTEND:20261120T220000Z
+SUMMARY:El futuro de los LLM está en la computación cuántica\, fotónica
+  y térmica
+LOCATION:Aula M3-224\, Facultad de Minas\, UNAL Medellín
+DESCRIPTION:El problema de la IA es el consumo de energía\, pero ¿qué pa
+ sa si no calculamos con energía?\n\nMás información: https://semanasist
+ emas.vercel.app/evento.html?id=ia-cuantica
+URL:https://semanasistemas.vercel.app/evento.html?id=ia-cuantica
+END:VEVENT
+END:VCALENDAR
