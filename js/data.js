@@ -182,6 +182,15 @@ const COMPANIES = [
     link: 'https://www.globant.com/',
     stand: '¿Te gusta combinar creatividad, tecnología e innovación? Globant es una compañía tecnológica internacional que desarrolla soluciones digitales para transformar negocios y experiencias. Explora campos como inteligencia artificial, desarrollo de software y nuevas tecnologías, conectando el talento y las ideas para crear soluciones que impactan el mundo.',
   },
+  {
+    id: 'unergy',
+    name: 'Unergy',
+    type: 'Empresa aliada',
+    color: '#7a45c9',   // Unergy's purple, a bit darker so the white name on its pennant reads
+    logo: 'img/company-unergy.png',
+    link: 'https://unergy.io/',
+    stand: '¿Te interesa descubrir cómo la tecnología puede impulsar la transición energética? Unergy es una empresa colombiana que apuesta por un futuro más sostenible a través de la energía solar. Desarrolla y opera minigranjas solares que permiten generar energía limpia, conectar a más personas con proyectos de energías renovables y crear nuevas oportunidades para las comunidades. ¡Una apuesta por transformar la manera en que producimos y aprovechamos la energía!',
+  },
 ];
 
 // Times in 'HH:MM' format (24 h). Keep them sorted by day and time.
