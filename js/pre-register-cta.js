@@ -82,7 +82,7 @@
       const left = count === null ? null : Math.max(0, max - count);
       const spots = count === null
         ? 'cupos: —'
-        : (alreadyIn ? '✓ ya estás pre-inscrito' : (full ? 'cupos agotados' : `quedan ${left} de ${max} cupos`));
+        : (alreadyIn ? '✓ ya estás inscrito' : (full ? 'cupos agotados' : `quedan ${left} de ${max} cupos`));
 
       return `
         <button class="prereg-option ${c.id === selectedId ? 'prereg-option--active' : ''}"
@@ -106,7 +106,7 @@
 
     if (!currentUser) {
       return `
-        <p class="registration__text">Inicia sesión con tu carnet para pre-inscribirte.</p>
+        <p class="registration__text">Inicia sesión con tu carnet para inscribirte.</p>
         <button class="hero__button auth-form__submit prereg-modal__cta" type="button" data-action="login">Iniciar sesión o crear carnet</button>
       `;
     }
@@ -119,19 +119,19 @@
     }
     if (count !== null && count >= max) {
       return `
-        <p class="registration__text">Se agotaron los ${max} cupos de pre-inscripción de esta conferencia. Aún puedes asistir el día del evento y recibir 8 puntos.</p>
+        <p class="registration__text">Se agotaron los ${max} cupos de inscripción de esta conferencia. Aún puedes asistir el día del evento y recibir 8 puntos.</p>
       `;
     }
     return `
       <button class="hero__button auth-form__submit prereg-modal__cta" type="button" data-action="preregister">
-        Pre-inscribirme ${ICONS.arrow}
+        Inscribirme ${ICONS.arrow}
       </button>
     `;
   }
 
   function render() {
     if (!CONFERENCES.length) {
-      body.innerHTML = '<p class="registration__text">Aún no hay conferencias con pre-inscripción abierta.</p>';
+      body.innerHTML = '<p class="registration__text">Aún no hay conferencias con inscripción abierta.</p>';
       return;
     }
     if (!loaded) {
