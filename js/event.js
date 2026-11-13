@@ -159,21 +159,21 @@ function preRegisterSection() {
 
       <div class="pre-register__hook">
         <p class="pre-register__headline">
-          🎟️ Asegura tu cupo y gánate <strong>10 puntos</strong> en el Sustómetro
-          + participa por un <strong>peluche de Nacho</strong> 🦉
+          🎟️ Asegura tu cupo: asiste y suma <strong>10 puntos</strong> en el Sustómetro.
+          Quienes más puntos acumulen se llevan un <strong>peluche de Nacho</strong> 🦉
         </p>
         <ul class="pre-register__rules">
           <li class="pre-register__rule pre-register__rule--win">
-            <span class="pre-register__points">10 pts</span>
-            Te pre-inscribes <strong>y asistes</strong>: ganas 10 puntos y entras al sorteo del peluche de Nacho.
+            <span class="pre-register__points">+10</span>
+            <span>Te pre-inscribes <strong>y asistes</strong></span>
           </li>
           <li class="pre-register__rule">
-            <span class="pre-register__points">8 pts</span>
-            Llegas sin pre-inscribirte: recibes 8 puntos (y no entras al sorteo).
+            <span class="pre-register__points">+8</span>
+            <span>Asistes <strong>sin</strong> pre-inscribirte</span>
           </li>
           <li class="pre-register__rule pre-register__rule--zero">
-            <span class="pre-register__points">0 pts</span>
-            Te pre-inscribes pero <strong>no asistes</strong>: no recibes nada.
+            <span class="pre-register__points">+0</span>
+            <span>Te pre-inscribes pero <strong>no asistes</strong></span>
           </li>
         </ul>
         <p class="pre-register__note">

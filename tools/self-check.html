@@ -183,15 +183,17 @@
     // Conference pre-registration: caps by modality must match supabase/preinscripciones-conferencias.sql
     // (cupos_conferencia): aula-maxima = 100, aula = 40, virtual = 70.
     const capByModality = { 'aula-maxima': 100, 'aula': 40, 'virtual': 70 };
-    const talks = ACTIVITIES.filter((a) => a.type === 'talk');
-    for (const talk of talks) {
-      if (!talk.preRegister) continue;
-      check(`pre-register modality valid (${talk.id})`, Object.prototype.hasOwnProperty.call(capByModality, talk.preRegister.modalidad), true);
-      check(`pre-register cap matches modality (${talk.id})`, talk.preRegister.max, capByModality[talk.preRegister.modalidad]);
+    const preRegActivities = ACTIVITIES.filter((a) => a.preRegister);
+    for (const act of preRegActivities) {
+      check(`pre-register modality valid (${act.id})`, Object.prototype.hasOwnProperty.call(capByModality, act.preRegister.modalidad), true);
+      check(`pre-register cap matches modality (${act.id})`, act.preRegister.max, capByModality[act.preRegister.modalidad]);
     }
     check('inaugural pre-register cap', findActivity('inaugural')?.preRegister?.max, 100);
     check('datos pre-register cap', findActivity('datos')?.preRegister?.max, 100);
     check('ia-cuantica pre-register cap', findActivity('ia-cuantica')?.preRegister?.max, 40);
+    check('ia-decisiones pre-register virtual', findActivity('ia-decisiones')?.preRegister?.max, 70);
+    check('taller-llm pre-register aula', findActivity('taller-llm')?.preRegister?.max, 40);
+    check('taller-aperture pre-register aula', findActivity('taller-aperture')?.preRegister?.max, 40);
 
     document.getElementById('result').textContent = failures.length ? `FAILED\n${failures.join('\n')}` : 'ALL PASSED';
   </script>

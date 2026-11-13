@@ -16,8 +16,8 @@
   const body = document.getElementById('prereg-modal-body');
   const messageEl = document.getElementById('prereg-modal-message');
 
-  // Conferences that take pre-registration, in schedule order.
-  const CONFERENCES = ACTIVITIES.filter((activity) => activity.type === 'talk' && activity.preRegister);
+  // Conferences and workshops that take pre-registration, in schedule order.
+  const CONFERENCES = ACTIVITIES.filter((activity) => activity.preRegister);
 
   let selectedId = CONFERENCES[0]?.id || null;
   let counts = {};          // activityId -> number pre-registered
@@ -110,8 +110,8 @@
     if (mine.has(c.id)) {
       return `
         <p class="registration__text">
-          Ya tienes tu cupo en <strong>${escapeHtml(c.title)}</strong>. Recuerda: ganas los 10 puntos
-          y entras al sorteo del peluche de Nacho solo si <strong>asistes</strong>.
+          Ya tienes tu cupo en <strong>${escapeHtml(c.title)}</strong>. Sumas los 10 puntos solo si
+          <strong>asistes</strong>. Mientras más puntos acumules, más cerca del peluche de Nacho.
         </p>
         <a class="week-button" href="${activityLink(c.id)}">Ver la conferencia ${ICONS.arrow}</a>
       `;
@@ -157,7 +157,7 @@
     button.disabled = false;
     if (error) return showMessage(translate(error));
     await loadAll();
-    showMessage(`¡Listo! Reservaste tu cupo en "${c.title}". Asiste para ganar tus 10 puntos y participar por el peluche de Nacho.`, false);
+    showMessage(`¡Listo! Reservaste tu cupo en "${c.title}". Asiste para sumar tus 10 puntos y acercarte al peluche de Nacho.`, false);
   }
 
   body.addEventListener('click', async (event) => {
