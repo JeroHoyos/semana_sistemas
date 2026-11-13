@@ -10,6 +10,7 @@
   <script src="../js/data.js"></script>
   <script src="../js/icons.js"></script>
   <script src="../js/common.js"></script>
+  <script src="../js/pixel-art.js"></script>
   <script src="../js/doom.js"></script>
   <script>const activity = null;   // brackets.js runs on an activity page; here it only lends its functions</script>
   <script src="../js/brackets.js"></script>
@@ -194,6 +195,11 @@
     check('ia-decisiones pre-register virtual', findActivity('ia-decisiones')?.preRegister?.max, 70);
     check('taller-llm pre-register aula', findActivity('taller-llm')?.preRegister?.max, 40);
     check('taller-aperture pre-register aula', findActivity('taller-aperture')?.preRegister?.max, 40);
+
+    // Pixel art: every row of a drawing has the same length, or the SVG comes out torn
+    for (const [name, art] of Object.entries(PIXEL_ART)) {
+      check(`pixel art rows (${name})`, art.rows.every((row) => row.length === art.rows[0].length), true);
+    }
 
     document.getElementById('result').textContent = failures.length ? `FAILED\n${failures.join('\n')}` : 'ALL PASSED';
   </script>
