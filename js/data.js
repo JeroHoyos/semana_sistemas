@@ -112,6 +112,10 @@ const SPEAKERS = [
     photo: 'img/speaker-eduardo-ospina.jpg', link: 'https://unergy.io/',
     bio: 'Emprendedor en tecnología climática y sostenibilidad, apasionado por el desarrollo de hardware, firmware y software. Es cofundador y CEO de Unergy, que construye minigranjas solares para democratizar y descentralizar la energía limpia en Colombia, y cofundador de Solenium. Estudió en la Universidad Nacional de Colombia.\n' +
       'Con Unergy construyó en Luruaco la primera minigranja solar del país y hoy opera más de 50. La empresa cerró una ronda pre-serie A de US$4 millones, con un compromiso de coinversión de más de US$80 millones para construir 80 minigranjas más, y tiene el primer proyecto legalizado bajo la regulación de comunidades energéticas en Colombia. MIT Technology Review lo seleccionó como uno de los Innovators Under 35 de Latinoamérica.' },
+  { id: 'jose', name: 'Jose Miguel Pulgarin Agudelo', role: 'Frontend Developer en Solē', credential: 'Ponente', color: '#2f9e5b',
+    photo: 'img/speaker-jose-pulgarin.jpg' },
+  { id: 'david', name: 'David Zapata Naranjo', role: 'Cloud Engineer en Blend360', credential: 'Ponente', color: '#e07b00',
+    photo: 'img/speaker-david-zapata.jpg' },
 ];
 
 // Student groups taking part in the week. Each one shows as a pennant in its color.
@@ -257,6 +261,19 @@ const ACTIVITIES = [
       { title: 'Entorno cerrado e integridad', text: 'Queda estrictamente prohibido el acceso a internet y el uso de herramientas de inteligencia artificial (Google, ChatGPT, Copilot, Stack Overflow, entre otros); el incumplimiento implicará la expulsión inmediata del equipo. Sí se permitirá consultar la documentación de los lenguajes de programación.' },
     ],
     decorations: ['balloon', 'computer', 'hourglass'] },
+  { id: 'kiro-aws', day: 'thu', start: '18:30', end: '20:00', type: 'talk', title: 'De local a AWS: desarrolla y despliega con Kiro', speakers: ['jose', 'david'], place: 'Virtual',
+    preRegister: { modalidad: 'virtual', max: 70 },
+    description: 'Acompáñanos a explorar Kiro como copiloto de infraestructura y desarrollo. Iniciaremos revisando su instalación, el consumo de créditos y la metodología SDD (Spec-Driven Development) que estructura sus tareas.\n' +
+      'Levantaremos un juego de tanques en local, diseñaremos la arquitectura de distribución en la nube y explicaremos el rol de algunos servicios de Amazon Web Services (AWS). Finalmente, veremos en vivo cómo Kiro automatiza la creación de recursos y el despliegue a producción.',
+    image: 'img/flyers/talk-kiro-aws.jpg',
+    rules: [
+      { title: '¿Qué es Kiro?', text: 'Qué es y cómo trabaja como copiloto de infraestructura y desarrollo.' },
+      { title: 'Instalación y gestión de créditos', text: 'Pasos de instalación rápida, cómo funcionan los créditos universitarios y cómo monitorear el consumo de tokens.' },
+      { title: 'Spec-Driven Development (SDD)', text: 'El flujo de trabajo basado en especificaciones: requirements.md, design.md y tasks.md.' },
+      { title: 'El proyecto base, en local', text: 'Presentación del juego de tanques y cómo correrlo en tu computador.' },
+      { title: 'Despliegue en la nube, en vivo', text: 'Kiro analiza el juego y propone la arquitectura ideal en AWS; explicamos en pantalla los servicios elegidos y el flujo de la arquitectura; Kiro genera la infraestructura como código (IaC) o los scripts de despliegue, y ejecutamos el aprovisionamiento hasta obtener la URL pública.' },
+    ],
+    decorations: ['terminal', 'rocket', 'computer'] },
 
   // Friday
   { id: 'atletismo', day: 'fri', start: '08:00', end: '09:00', type: 'competition', title: 'Carrera de atletismo 8‑bit', individual: { tab: 'Atletismo', max: 45 },
