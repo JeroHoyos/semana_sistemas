@@ -256,7 +256,8 @@ function groupSection(group) {
 }
 
 // Stands fair (stands field): every company and group with a stand text gets its stand drawn
-// in its color, with its logo on the counter and someone minding it. Companies go first.
+// in its color, someone minding it and its logo big on the counter. Companies go first.
+// Each one has an id (stand-<id>) so the pennants on the home page can link straight to it.
 function standsSection() {
   if (!activity.stands) return '';
 
@@ -275,7 +276,7 @@ function standCard(group, i) {
   const booth = { ...PIXEL_ART.stand, palette: { ...PIXEL_ART.stand.palette, c: group.color } };
 
   return `
-    <li class="stand" style="--color: ${group.color}; --i: ${i}">
+    <li class="stand" id="stand-${group.id}" style="--color: ${group.color}; --i: ${i}">
       <div class="stand__booth">
         ${drawPixelArt(booth)}
         ${group.logo ? `<img class="stand__logo" src="${group.logo}" alt="Logo de ${group.name}">` : ''}
@@ -303,8 +304,10 @@ function standMascot(group) {
     <span class="stand__piece stand__window" style="--x: 5; --y: 5">
       <span class="stand__piece stand__mascot" style="--x: 3; --y: 1">
         ${body(robot ? 'mascotRobot' : 'mascot')}
-        ${robot ? piece(drawPixelArt(PIXEL_ART.mascotRobotLight), 7, 0, 'light') : ''}
-        ${piece(drawPixelArt(PIXEL_ART.mascotIris), 6, 5, 'iris')}
+        ${robot ? piece(drawPixelArt(PIXEL_ART.mascotRobotLight), 2, 0, 'light') : ''}
+        ${robot
+          ? piece(drawPixelArt(PIXEL_ART.mascotRobotEyes), 5, 5, 'iris')
+          : piece(drawPixelArt(PIXEL_ART.mascotIris), 6, 5, 'iris')}
         ${piece(body(robot ? 'mascotRobotBlink' : 'mascotBlink'), 0, 0, 'blink')}
       </span>
     </span>

@@ -498,9 +498,12 @@ function renderCompetitions() {
 
 let currentAffiliateTab = 'groups';
 
+// The pennant takes you to its stand on the fair page; without a stand, to its own page in another tab
 function affiliateCard(item) {
-  const tag = item.link ? 'a' : 'span';
-  const target = item.link ? `href="${item.link}" target="_blank" rel="noopener"` : '';
+  const tag = item.stand || item.link ? 'a' : 'span';
+  const target = item.stand
+    ? `href="${activityLink('feria')}#stand-${item.id}"`
+    : item.link ? `href="${item.link}" target="_blank" rel="noopener"` : '';
   return `
     <li class="group" style="--color: ${item.color}; --letters: ${item.name.length}">
       <${tag} class="pennant ${item.logo ? 'pennant--with-logo' : ''}" ${target}>
@@ -548,7 +551,7 @@ function setAffiliateTab(tab) {
 
 // --letters adjusts the name's size so it fits on the pennant.
 // A group with a logo gets it as a round patch on the pole.
-// A group with a link makes the pennant a link that opens its page in another tab.
+// A group with a stand or a link makes the pennant a link (see affiliateCard).
 function renderGroups() {
   const btnGroups = $('#btn-show-groups');
   const btnCompanies = $('#btn-show-companies');

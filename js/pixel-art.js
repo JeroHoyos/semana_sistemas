@@ -60,7 +60,7 @@ function medal(number, palette) {
 // Who minds each stand at the fair: a one-eyed monster (js/event.js paints c and C in the
 // stand's color) or, at Aperture's, a robot with an antenna. Same letters, so they share the paws.
 const MASCOT_PALETTE = { k: '#1b2440', c: '#5fd3e3', C: '#2bb5c9', H: '#ffffff', w: '#ffffff', p: '#ff8fb8' };
-const ROBOT_PALETTE = { k: '#0b3b45', c: '#c4e9ef', C: '#8fc3cd', H: '#ffffff', w: '#ffffff', p: '#ff8fb8', a: '#1aa3b8', L: '#5ff0ff' };
+const ROBOT_PALETTE = { k: '#1b2440', f: '#1aa3b8', F: '#127b8c', s: '#c9f3f8', e: '#0b1e2b', E: '#ffffff', p: '#ff8fb8', h: '#5b8fd6', c: '#5b8fd6', w: '#ffffff', L: '#ffd23f' };
 
 const PIXEL_ART = {
   // Athletics race: gold, silver and bronze
@@ -378,7 +378,7 @@ const PIXEL_ART = {
     ],
   },
   // One group's stand: striped awning, two posts and the counter. c is the group's color
-  // (js/event.js swaps it) and the logo goes on the counter front, rows 21 to 32.
+  // (js/event.js swaps it) and the logo goes big on the counter front, rows 21 to 34.
   stand: {
     palette: { k: '#1b2440', c: '#1667c2', w: '#ffffff', p: '#a8703f', b: '#f6efe1', B: '#e6d9bf', T: '#c98f5a' },
     rows: [
@@ -403,6 +403,8 @@ const PIXEL_ART = {
       '.kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.',
       '.kTTTTTTTTTTTTTTTTTTTTTTTTTTTTk.',
       '.kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.',
+      '.kcccccccccccccccccccccccccccck.',
+      '.kcccccccccccccccccccccccccccck.',
       '.kcccccccccccccccccccccccccccck.',
       '.kcccccccccccccccccccccccccccck.',
       '.kcccccccccccccccccccccccccccck.',
@@ -456,47 +458,56 @@ const PIXEL_ART = {
       'kccccccccccccCCk',
     ],
   },
-  // Aperture's robot, with its eye open and closed; its antenna light blinks (mascotRobotLight).
-  // Not "robot": that one is the workshop's drawing, further down.
+  // Aperture's robot: a TV head with its face on the screen, two antennas and a hoodie.
+  // Its eyes (mascotRobotEyes) move on the screen; mascotRobotBlink shows them closed and
+  // mascotRobotLight blinks on the antennas. Not "robot": that one is the workshop's drawing.
   mascotRobot: {
     palette: ROBOT_PALETTE,
     rows: [
-      '......kLLk......',
-      '.......kk.......',
+      '..L..........L..',
+      '...k........k...',
       '.kkkkkkkkkkkkkk.',
-      '.kcHckkkkkkccCk.',
-      '.kcckwwwwwwkcCk.',
-      '.kckwwwwwwwwkCk.',
-      'akckwwwwwwwwkCka',
-      'akckwwwwwwwwkCka',
-      '.kcckwwwwwwkcCk.',
-      '.kppckkkkkkcppk.',
-      '.kcccckcckcccCk.',
-      '.kccccckkccccCk.',
-      '.kcccccccccccCk.',
+      '.kfffffffffffFk.',
+      '.kfssssssssssFk.',
+      '.kfssssssssssFk.',
+      '.kfssssssssssFk.',
+      '.kfssssssssssFk.',
+      '.kfspsskksspsFk.',
+      '.kfffffffffffFk.',
+      '.kkkkkkkkkkkkkk.',
+      'khhhhhwhhwhhhhhk',
+      'khhhhhwhhwhhhhhk',
     ],
   },
   mascotRobotBlink: {
     palette: ROBOT_PALETTE,
     rows: [
-      '......kLLk......',
-      '.......kk.......',
+      '..L..........L..',
+      '...k........k...',
       '.kkkkkkkkkkkkkk.',
-      '.kcHcccccccccCk.',
-      '.kcccccccccccCk.',
-      '.kcccccccccccCk.',
-      'akcckcccccckcCka',
-      'akccckkkkkkccCka',
-      '.kcccccccccccCk.',
-      '.kppccccccccppk.',
-      '.kcccckcckcccCk.',
-      '.kccccckkccccCk.',
-      '.kcccccccccccCk.',
+      '.kfffffffffffFk.',
+      '.kfssssssssssFk.',
+      '.kfssssssssssFk.',
+      '.kfssssssssssFk.',
+      '.kfsseesseessFk.',
+      '.kfspsskksspsFk.',
+      '.kfffffffffffFk.',
+      '.kkkkkkkkkkkkkk.',
+      'khhhhhwhhwhhhhhk',
+      'khhhhhwhhwhhhhhk',
+    ],
+  },
+  mascotRobotEyes: {
+    palette: ROBOT_PALETTE,
+    rows: [
+      'Ee..Ee',
+      'ee..ee',
+      'ee..ee',
     ],
   },
   mascotRobotLight: {
     palette: { L: '#ff6fae' },
-    rows: ['LL'],
+    rows: ['L..........L'],
   },
   mascotIris: {
     palette: { i: '#1aa3b8', N: '#0b1e2b', h: '#ffffff' },

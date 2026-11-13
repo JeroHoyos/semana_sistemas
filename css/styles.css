@@ -2981,6 +2981,9 @@ button.bracket__side:hover { background: #e4effa; }
   border-radius: 22px;
 }
 .stand:nth-child(even) { flex-direction: row-reverse; }   /* zigzag down the list */
+/* Arriving from a pennant on the home page (#stand-<id>): leave room above and mark it */
+.stand { scroll-margin-top: 24px; }
+.stand:target { border-color: var(--color); box-shadow: 0 0 0 2px var(--color); }
 .stand__text { flex: 1 1 260px; }
 .stand__text strong {
   display: block;
@@ -2994,10 +2997,10 @@ button.bracket__side:hover { background: #e4effa; }
 .stand .pixel-art { animation: none; margin: 0; }
 .stand__logo {
   position: absolute;
-  left: calc(var(--px) * 11);
-  top: calc(var(--px) * 22);
-  width: calc(var(--px) * 10);
-  height: calc(var(--px) * 10);
+  left: calc(var(--px) * 9.5);
+  top: calc(var(--px) * 21.5);
+  width: calc(var(--px) * 13);
+  height: calc(var(--px) * 13);
   border: calc(var(--px) / 2) solid #fff;
   border-radius: var(--px);
   background: #fff;
