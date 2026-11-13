@@ -124,9 +124,9 @@
     check('code attempt blocked above 3 fails', isCodeAttemptAllowed(4), false);
     check('supervisor bypasses code attempts limit', isCodeAttemptAllowed(5, true), true);
 
-    // Night suspension schedule (10:30 PM to 7:00 AM Colombia time, America/Bogota UTC-5)
-    check('suspension before 22:30', isNightSuspension(new Date('2026-11-05T03:29:00Z')), false);
-    check('suspension at 22:30', isNightSuspension(new Date('2026-11-05T03:30:00Z')), true);
+    // Night suspension schedule (11:59 PM to 7:00 AM Colombia time, America/Bogota UTC-5)
+    check('suspension before 23:59', isNightSuspension(new Date('2026-11-05T04:58:00Z')), false);
+    check('suspension at 23:59', isNightSuspension(new Date('2026-11-05T04:59:00Z')), true);
     check('suspension at midnight', isNightSuspension(new Date('2026-11-05T05:00:00Z')), true);
     check('suspension at 06:59', isNightSuspension(new Date('2026-11-05T11:59:00Z')), true);
     check('suspension ends at 07:00', isNightSuspension(new Date('2026-11-05T12:00:00Z')), false);
@@ -137,6 +137,14 @@
     check('supervisor rejected from titulos array in user_metadata', isCurrentSupervisor({ user_metadata: { titulos: ['supervisor'] } }), false);
     check('supervisor rejected from titulo string in user_metadata', isCurrentSupervisor({ user_metadata: { titulo: 'supervisor' } }), false);
     check('supervisor rejected on empty user', isCurrentSupervisor(null), false);
+
+    // Strict supervisor (destructive controls: deleting sign-ups, granting points) trusts ONLY
+    // app_metadata.supervisor: a forged name/email/title must NOT reveal the admin buttons.
+    check('strict supervisor valid in app_metadata', isStrictSupervisor({ app_metadata: { supervisor: true } }), true);
+    check('strict supervisor rejects forged name', isStrictSupervisor({ user_metadata: { full_name: 'Santiago Escobar' } }), false);
+    check('strict supervisor rejects forged email', isStrictSupervisor({ email: 'saescobara@unal.edu.co' }), false);
+    check('strict supervisor rejects forged title', isStrictSupervisor({ user_metadata: { titulos: ['supervisor'] } }), false);
+    check('strict supervisor rejects empty user', isStrictSupervisor(null), false);
     check('supervisor recognized by email', isSupervisorAccount('saescobara@unal.edu.co'), true);
     check('supervisor recognized by handle', isSupervisorAccount('linavarrop'), true);
     check('supervisor recognized by name', isSupervisorAccount('x@unal.edu.co', 'Juan David Perez Lopez'), true);
@@ -155,6 +163,19 @@
     check('clash-royale individual max', findActivity('clash-royale')?.individual?.max, 32);
     check('clash-royale day', findActivity('clash-royale')?.day, 'thu');
     check('clash-royale place virtual', findActivity('clash-royale')?.place, 'Virtual');
+
+    // Conference pre-registration: caps by modality must match supabase/preinscripciones-conferencias.sql
+    // (cupos_conferencia): aula-maxima = 100, aula = 40, virtual = 70.
+    const capByModality = { 'aula-maxima': 100, 'aula': 40, 'virtual': 70 };
+    const talks = ACTIVITIES.filter((a) => a.type === 'talk');
+    for (const talk of talks) {
+      if (!talk.preRegister) continue;
+      check(`pre-register modality valid (${talk.id})`, Object.prototype.hasOwnProperty.call(capByModality, talk.preRegister.modalidad), true);
+      check(`pre-register cap matches modality (${talk.id})`, talk.preRegister.max, capByModality[talk.preRegister.modalidad]);
+    }
+    check('inaugural pre-register cap', findActivity('inaugural')?.preRegister?.max, 100);
+    check('datos pre-register cap', findActivity('datos')?.preRegister?.max, 100);
+    check('ia-cuantica pre-register cap', findActivity('ia-cuantica')?.preRegister?.max, 40);
 
     document.getElementById('result').textContent = failures.length ? `FAILED\n${failures.join('\n')}` : 'ALL PASSED';
   </script>

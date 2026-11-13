@@ -37,6 +37,15 @@ function isCurrentSupervisor(user = (typeof currentUser !== 'undefined' ? curren
   return typeof isSupervisorAccount === 'function' ? isSupervisorAccount(email, name) : false;
 }
 
+// Strict supervisor check for DESTRUCTIVE controls (deleting sign-ups, granting points).
+// It trusts ONLY app_metadata.supervisor, the flag set by hand with SQL in Supabase that the
+// browser cannot forge. Unlike isCurrentSupervisor, it does NOT fall back to name/email, so
+// someone who renames their account "Santiago Escobar" never even sees these buttons. The server
+// functions (es_supervisor()) enforce the same, so this only hides the UI; it is not the gate.
+function isStrictSupervisor(user = (typeof currentUser !== 'undefined' ? currentUser : null)) {
+  return Boolean(user && user.app_metadata && user.app_metadata.supervisor === true);
+}
+
 
 // What goes before the @ in an email
 const handleOf = (email) => (email?.includes('@') ? email.split('@')[0] : 'estudiante');
@@ -84,7 +93,7 @@ function findOverlapping(activity) {
   return ACTIVITIES.filter((other) => other !== activity && overlaps(other, activity));
 }
 
-// Night suspension mode (10:30 PM to 7:00 AM Colombia time, America/Bogota UTC-5)
+// Night suspension mode (11:59 PM to 7:00 AM Colombia time, America/Bogota UTC-5)
 function isNightSuspension(date = new Date()) {
   try {
     const f = new Intl.DateTimeFormat('en-US', {
@@ -96,11 +105,11 @@ function isNightSuspension(date = new Date()) {
     const h = Number(f.find((x) => x.type === 'hour')?.value || 0);
     const m = Number(f.find((x) => x.type === 'minute')?.value || 0);
     const mins = h * 60 + m;
-    return mins >= 1350 || mins < 420;
+    return mins >= 1439 || mins < 420;
   } catch (e) {
     const utcMins = date.getUTCHours() * 60 + date.getUTCMinutes();
     const bogotaMins = (utcMins - 300 + 1440) % 1440;
-    return bogotaMins >= 1350 || bogotaMins < 420;
+    return bogotaMins >= 1439 || bogotaMins < 420;
   }
 }
 

@@ -7134,3 +7134,164 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   width: 17px;
   height: 17px;
 }
+
+/* =============================================
+   CONFERENCE PRE-REGISTRATION (evento.html)
+   Marketing hook + capacity + sign-up for talks. See js/pre-register.js.
+   ============================================= */
+.pre-register { margin-top: 8px; }
+
+.pre-register__hook {
+  margin: 4px 0 18px;
+  padding: 18px 20px;
+  border: 1px solid #ffe08a;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #fffaf0 0%, #fff3cf 100%);
+  box-shadow: 0 6px 16px rgba(201, 138, 0, .12);
+}
+.pre-register__headline {
+  margin: 0 0 14px;
+  font-size: 1.12rem;
+  line-height: 1.4;
+  color: var(--navy);
+  font-weight: 600;
+}
+.pre-register__headline strong { color: #b36b00; }
+
+.pre-register__rules {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.pre-register__rule {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: .96rem;
+  line-height: 1.35;
+}
+.pre-register__rule strong { color: var(--navy); }
+.pre-register__points {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: .9rem;
+  background: #eef4fc;
+  color: var(--blue);
+}
+.pre-register__rule--win { border-color: #b7ebc6; background: #f3fbf6; }
+.pre-register__rule--win .pre-register__points { background: #e6f7ec; color: #1a7f37; }
+.pre-register__rule--zero { opacity: .9; }
+.pre-register__rule--zero .pre-register__points { background: #fdecec; color: #c0282d; }
+
+.pre-register__note {
+  margin: 0;
+  font-size: .95rem;
+  color: var(--ink-soft);
+}
+.pre-register__note strong { color: #b36b00; }
+
+.pre-register__count {
+  margin: 4px 0 0;
+  font-weight: 600;
+  color: var(--navy);
+}
+.pre-register__status { margin-bottom: 8px; }
+.pre-register__status .team__badge { margin-bottom: 8px; }
+
+.pre-register__admin {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--line);
+}
+.pre-register__admin-actions {
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+#pre-register-manual { margin-bottom: 16px; }
+
+/* Admin action rows on team / participant cards */
+.team__buttons--admin { margin-top: 8px; }
+.participant-card__admin-remove { margin-left: auto; }
+
+/* =============================================
+   PRE-REGISTER CTA (index.html speakers section + modal)
+   Big button to pick a conference and pre-register. See js/pre-register-cta.js.
+   ============================================= */
+.prereg-cta {
+  margin: 26px auto 0;
+  max-width: 640px;
+  text-align: center;
+  padding: 20px 22px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #fffaf0 0%, #fff3cf 100%);
+  border: 1px solid #ffe08a;
+  box-shadow: 0 10px 24px rgba(201, 138, 0, .18);
+}
+.prereg-cta__pitch {
+  margin: 0 0 16px;
+  font-size: 1.05rem;
+  line-height: 1.45;
+  color: var(--navy);
+  font-weight: 600;
+}
+.prereg-cta__pitch strong { color: #b36b00; }
+.prereg-cta__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.08rem;
+  padding: 15px 30px;
+}
+.prereg-cta__button svg { width: 20px; height: 20px; }
+
+/* Modal: conference picker */
+.prereg-modal__hook { margin-bottom: 16px; }
+.prereg-modal__hook .pre-register__rules { gap: 8px; }
+
+.prereg-options {
+  display: grid;
+  gap: 10px;
+  margin: 10px 0 18px;
+}
+.prereg-option {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1.5px solid var(--line);
+  background: #fff;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s, transform .1s;
+}
+.prereg-option:hover { border-color: #b9d3ef; }
+.prereg-option--active {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(22, 103, 194, .15);
+}
+.prereg-option__title { font-weight: 700; color: var(--navy); }
+.prereg-option__meta { font-size: .88rem; color: var(--ink-soft); }
+.prereg-option__spots {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--blue);
+  margin-top: 2px;
+}
+.prereg-option__spots--full { color: #c0282d; }
+.prereg-option__spots--in { color: #1a7f37; }
+
+.prereg-modal__action { margin-top: 6px; }
+.prereg-modal__cta { width: 100%; margin-top: 4px; }

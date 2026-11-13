@@ -166,17 +166,22 @@ const COMPANIES = [
 // stats (list of { value, label } shown as big boxes below the text, e.g. { value: 16, label: 'jugadores' }),
 // team ({ tab, size, maxTeams }: its short name on the inscripciones.html tabs, people per team and, optionally,
 // how many teams fit; the activity takes team sign-ups. The same limits live in supabase/teams.sql: change both),
+// preRegister ({ modalidad, max }: a talk opens a pre-registration (pre-inscripción) with limited spots.
+// modalidad is 'aula-maxima' (100 cupos), 'aula' (40) or 'virtual' (70); max must match the modality and the
+// mapping in supabase/preinscripciones-conferencias.sql, change both together),
 // unconfirmed: true (shows an "Información por confirmar" notice on its page)
 // and decorations (three pixel art drawings from js/pixel-art.js for its page header; the middle one sits higher).
 const ACTIVITIES = [
   // Wednesday
   { id: 'inaugural', day: 'wed', start: '09:00', end: '10:00', type: 'talk', title: 'Conferencia inaugural', place: 'Aula Máxima',
+    preRegister: { modalidad: 'aula-maxima', max: 100 },
     description: 'La charla de apertura aún no está definida.',
     decorations: ['flag', 'microphone', 'rocket'] },
   { id: 'feria', day: 'wed', start: '09:00', end: '12:00', type: 'social', title: 'Feria de stands', place: 'Hall M10',
     description: 'Descubre la innovación desde adentro y amplía tus horizontes. Conecta con el talento universitario recorriendo los stands de nuestros grupos estudiantiles y semilleros de investigación, e interactúa directamente con empresas invitadas para resolver dudas, intercambiar experiencias y construir tu red profesional.',
     decorations: ['briefcase', 'tent', 'lanyard'] },
   { id: 'datos', day: 'wed', start: '11:00', end: '12:00', type: 'talk', title: 'Más allá del código: de estudiante a ingeniero en la era de la inteligencia artificial', speakers: ['mariano'], place: 'Aula Máxima',
+    preRegister: { modalidad: 'aula-maxima', max: 100 },
     description: '¿Qué significa realmente ser un buen ingeniero de sistemas en un mundo donde la inteligencia artificial puede generar código, las tecnologías cambian constantemente y los problemas reales exigen mucho más que conocimientos técnicos?\n' +
       'Durante esta charla exploraremos cómo pasar de aprender herramientas a desarrollar un perfil profesional integral, capaz de comprender problemas, tomar decisiones técnicas y construir soluciones que generen valor. Abordaremos la importancia de los fundamentos de la ingeniería, el pensamiento crítico y el uso responsable de la inteligencia artificial, así como el papel de las habilidades humanas, la comunicación, el trabajo en equipo y el aprendizaje continuo.\n' +
       'A través de ejemplos prácticos y situaciones del mundo tecnológico, reflexionaremos sobre cómo se conectan los conocimientos adquiridos en la universidad con los desafíos de la industria y qué pueden hacer los estudiantes, desde cualquier semestre, para prepararse para su futuro profesional.\n' +
@@ -257,6 +262,7 @@ const ACTIVITIES = [
     image: 'img/activity-awards.jpg',
     decorations: ['star', 'cup', 'star'] },
   { id: 'ia-cuantica', day: 'fri', start: '16:00', end: '17:00', type: 'talk', place: 'Aula M3-224',
+    preRegister: { modalidad: 'aula', max: 40 },
     title: 'El futuro de los LLM está en la computación cuántica, fotónica y térmica', speakers: ['daniel'],
     description: 'El problema de la IA es el consumo de energía, pero ¿qué pasa si no calculamos con energía?\n' +
       'Durante esta charla veremos el proceso para llegar a hacer diferentes modelos de lenguaje estado del arte, autorregresivos y de difusión, y entender cómo llegar a la mejor configuración de capas entre los diferentes paradigmas de computación. ¿Dónde puedo usar la cuántica? ¿Dónde puedo poner la térmica? ¿Para qué sirve y qué es eso? ¿Y cómo multiplicar a la velocidad de la luz de forma paralelizada?\n' +
