@@ -9,9 +9,10 @@
 --   'virtual'     →  70 cupos   (conferencias virtuales)
 --
 -- GANCHO (marketing) que muestra la página:
---   • Te pre-inscribes Y asistes  → 10 puntos en el Sustómetro + participas por un peluche de Nacho.
+--   • Te pre-inscribes Y asistes  → 10 puntos en el Sustómetro.
 --   • Asistes sin pre-inscribirte →  8 puntos.
 --   • Te pre-inscribes pero NO asistes → 0 puntos.
+-- Premio: quienes MÁS puntos acumulen en el Sustómetro se llevan un peluche de Nacho (no es un sorteo).
 --
 -- La pre-inscripción solo reserva el cupo. La asistencia la confirma un supervisor el día del evento
 -- con marcar_asistencia_conferencia, que suma los puntos correctos al perfil.

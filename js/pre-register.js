@@ -108,8 +108,8 @@
           </span>
           <p class="registration__text">
             ${attended
-              ? '¡Gracias por asistir! Ya recibiste tus 10 puntos y estás participando por el peluche de Nacho.'
-              : 'Tienes tu cupo reservado. Recuerda: solo ganas los 10 puntos y entras al sorteo del peluche de Nacho si <strong>asistes</strong> el día de la conferencia.'}
+              ? '¡Gracias por asistir! Ya sumaste tus 10 puntos en el Sustómetro. Sigue acumulando: los que más puntos tengan se llevan un peluche de Nacho.'
+              : 'Tienes tu cupo reservado. Recuerda: solo sumas los 10 puntos si <strong>asistes</strong> el día de la conferencia. Mientras más puntos acumules, más cerca del peluche de Nacho.'}
           </p>
         </div>
         ${attended ? '' : `
@@ -208,7 +208,7 @@
       button.disabled = false;
       if (error) return showMessage(translate(error));
       await reload();
-      showMessage('¡Listo! Reservaste tu cupo. Asiste para ganar tus 10 puntos y participar por el peluche de Nacho.', false);
+      showMessage('¡Listo! Reservaste tu cupo. Asiste para sumar tus 10 puntos y acercarte al peluche de Nacho.', false);
     } else if (action === 'cancel' && confirm('¿Cancelar tu pre-inscripción? Perderás tu cupo reservado.')) {
       button.disabled = true;
       const { error } = await supabaseClient.rpc('cancelar_preinscripcion_conferencia', { p_actividad: activityId });

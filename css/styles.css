@@ -7437,18 +7437,39 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 52px;
-  padding: 6px 8px;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: .9rem;
+  min-width: 46px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: .3px;
   background: #eef4fc;
   color: var(--blue);
 }
 .pre-register__rule--win { border-color: #b7ebc6; background: #f3fbf6; }
-.pre-register__rule--win .pre-register__points { background: #e6f7ec; color: #1a7f37; }
-.pre-register__rule--zero { opacity: .9; }
+.pre-register__rule--win .pre-register__points { background: #1a7f37; color: #fff; }
+.pre-register__rule--zero { opacity: .92; }
 .pre-register__rule--zero .pre-register__points { background: #fdecec; color: #c0282d; }
+
+/* Pre-register modal title: smaller and lighter than the login title */
+.prereg-modal__title {
+  font-size: clamp(22px, 5.2vw, 30px);
+  -webkit-text-stroke-width: 3px;
+}
+
+/* The Nacho prize line, below the three rules */
+.prereg-prize {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #fff7e6;
+  border: 1px solid #ffe08a;
+  font-size: .96rem;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+.prereg-prize strong { color: #b36b00; }
 
 .pre-register__note {
   margin: 0;

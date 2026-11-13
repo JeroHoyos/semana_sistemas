@@ -200,6 +200,7 @@ const ACTIVITIES = [
     image: 'img/flyers/talk-beyond-code.jpg',
     decorations: ['gradCap', 'helmet', 'database'] },
   { id: 'taller-llm', day: 'wed', start: '12:30', end: '14:00', type: 'workshop', title: 'Agentes de IA para todos - Todo lo que necesitas saber', speakers: ['yohan', 'juan'], organizer: 'turing-box', place: 'Aula M3-224',
+    preRegister: { modalidad: 'aula', max: 40 },
     description: 'La inteligencia artificial pasó de responder preguntas a ejecutar tareas: crear archivos, revisar su propio trabajo, conectarse con otras herramientas y seguir procedimientos. A esto se le llama agente. En este taller vas a entender qué hay detrás de un agente y vas a trabajar con uno en clase.',
     image: 'img/flyers/ai-agents-workshop.jpg',
     rules: [
@@ -210,12 +211,14 @@ const ACTIVITIES = [
     ],
     decorations: ['chat', 'chip', 'plug'] },
   { id: 'taller-aperture', day: 'wed', start: '14:00', end: '16:00', type: 'workshop', title: 'De Prompts a Agentes: Inteligencia Artificial Agéntica con Python', organizer: 'aperture', place: 'Aula M3-224',
+    preRegister: { modalidad: 'aula', max: 40 },
     description: '¿Qué pasa cuando un LLM deja de solo responder y empieza a actuar?\n' +
       'En este taller veremos cómo crear un agente, hacerlo más capaz y llevarlo a producción. Lo haremos con LangChain, uno de los frameworks de Python más usados para construir aplicaciones y agentes con LLMs.\n' +
       '¡Ven a descubrir cómo funciona un agente!',
     image: 'img/flyers/aperture-workshop.jpg',
     decorations: ['terminal', 'robot', 'lightning'] },
   { id: 'ia-decisiones', day: 'wed', start: '17:00', end: '18:30', type: 'talk', title: 'El dato es el nuevo petróleo. La IA es la nueva refinería', speakers: ['carlos'], place: 'Virtual',
+    preRegister: { modalidad: 'virtual', max: 70 },
     description: 'Nunca habíamos tenido tantos datos. ¿Por qué seguimos decidiendo igual?\n' +
       'Casi todas las empresas ya usan inteligencia artificial, pero muy pocas ven resultados: tableros que nadie usa para decidir, tres versiones de la misma cifra y pilotos que nunca llegan a operación. En esta charla veremos por qué los análisis de hoy no mueven la aguja aunque sobren datos, y cómo la IA acelera cada paso del camino que va del dato crudo a la decisión.\n' +
       'Con el caso de una cadena de tiendas responderemos cuatro preguntas de negocio: dónde y por qué se cae la venta, quién se va a ir y cuánto vale retenerlo, qué parte de la operación nos está costando clientes y cuánto pedir sin perder plata. Verás cómo auditar los datos puede cambiar la respuesta, cómo cruzar fuentes revela lo que ninguna tabla muestra sola y cómo un equipo de agentes de IA revisa, limpia, compara y grafica antes de responder.\n' +
