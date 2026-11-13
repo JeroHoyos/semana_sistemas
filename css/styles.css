@@ -2965,6 +2965,119 @@ button.bracket__side:hover { background: #e4effa; }
 .event__overlaps span { margin-left: auto; font-size: 14px; color: var(--gray); white-space: nowrap; }
 .event__overlaps svg { width: 16px; height: 16px; flex: none; color: var(--blue); }
 
+/* Stands fair (stands field, js/event.js): each stand is a pixel art drawing (PIXEL_ART.stand)
+   with the logo on its counter. --px is one drawing pixel; --x and --y place each extra piece
+   in drawing pixels from the stand's top-left corner, so everything lines up with it. */
+.stands { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.stand {
+  --px: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 18px 28px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+}
+.stand:nth-child(even) { flex-direction: row-reverse; }   /* zigzag down the list */
+.stand__text { flex: 1 1 260px; }
+.stand__text strong {
+  display: block;
+  font-family: var(--font-varsity);
+  font-weight: 400;
+  font-size: 19px;
+  color: var(--navy);
+}
+.stand__text > span { color: var(--gray); }
+.stand__booth { position: relative; flex: none; }
+.stand .pixel-art { animation: none; margin: 0; }
+.stand__logo {
+  position: absolute;
+  left: calc(var(--px) * 12.5);
+  top: calc(var(--px) * 21.5);
+  width: calc(var(--px) * 7);
+  height: calc(var(--px) * 7);
+  border: calc(var(--px) / 2) solid #fff;
+  border-radius: var(--px);
+  background: #fff;
+  object-fit: cover;
+}
+
+/* Aperture's stand: bigger, on a dotted cyan card, with room around it for the balloons and hearts */
+.stand--featured {
+  --px: 8px;
+  padding: 20px 24px;
+  border: 2px solid color-mix(in srgb, var(--color) 40%, #fff);
+  background:
+    radial-gradient(color-mix(in srgb, var(--color) 28%, transparent) 1.2px, transparent 1.6px) 0 0 / 16px 16px,
+    color-mix(in srgb, var(--color) 8%, #fff);
+}
+.stand--featured .stand__booth { margin: calc(var(--px) * 10) calc(var(--px) * 9) var(--px) calc(var(--px) * 8); }
+.stand--featured .stand__text strong { font-size: 24px; }
+
+/* Its mascot and the pieces around it. Most move a whole pixel at a time, like a video game. */
+.stand__piece {
+  position: absolute;
+  left: calc(var(--px) * var(--x));
+  top: calc(var(--px) * var(--y));
+}
+.stand__window {               /* the space between the posts: the mascot hides behind the counter */
+  width: calc(var(--px) * 22);
+  height: calc(var(--px) * 13);
+  overflow: hidden;
+}
+.stand__mascot .pixel-art { filter: none; }
+.stand__mascot { animation: bounce 1.2s steps(1) infinite; }
+.stand--featured:hover .stand__mascot { animation-duration: .4s; }   /* happier when someone comes by */
+.stand__iris { animation: stand-look 6s steps(1) infinite; }
+.stand__blink { opacity: 0; animation: stand-blink 4s steps(1) infinite; }
+.stand__wave { transform-origin: 0 100%; animation: stand-wave .8s steps(1) infinite; }
+.stand__balloon { animation: bounce 1.6s steps(1) var(--delay) infinite; }
+.stand__heart { opacity: 0; animation: stand-heart 3s steps(8) var(--delay) infinite; }
+.stand__sparkle { animation: stand-twinkle 1.5s steps(1) var(--delay) infinite; }
+.stand__bubble {
+  padding: calc(var(--px) * .4) calc(var(--px) * 1.2);
+  border: calc(var(--px) / 2) solid #0b3b45;
+  background: #fff;
+  font-family: var(--font-title);
+  font-size: calc(var(--px) * 2.2);
+  line-height: 1.2;
+  color: #0b3b45;
+  white-space: nowrap;
+  animation: bounce 1.2s steps(1) .6s infinite;
+}
+.stand__bubble::after {        /* two-pixel tail pointing down to the mascot */
+  content: '';
+  position: absolute;
+  left: var(--px);
+  bottom: calc(var(--px) * -1.5);
+  width: var(--px);
+  height: var(--px);
+  background: #0b3b45;
+  box-shadow: calc(var(--px) * -1) var(--px) 0 #0b3b45;
+}
+@keyframes stand-look {
+  30% { translate: calc(var(--px) * -1) 0; }
+  50% { translate: 0 0; }
+  75% { translate: var(--px) 0; }
+  95% { translate: 0 0; }
+}
+@keyframes stand-blink {
+  90% { opacity: 1; }
+  94% { opacity: 0; }
+}
+@keyframes stand-wave {
+  50% { rotate: -25deg; }
+}
+@keyframes stand-heart {
+  from { opacity: 1; translate: 0 0; }
+  to { opacity: 0; translate: 0 calc(var(--px) * -8); }
+}
+@keyframes stand-twinkle {
+  50% { scale: .4; }
+}
+
 @media (max-width: 640px) {
   .event-hero .container { padding: 16px 0 60px; }
   .event-hero__content { margin-top: 28px; }
@@ -2978,6 +3091,10 @@ button.bracket__side:hover { background: #e4effa; }
   .event__intro--wide .event__image { max-width: none; }   /* the wide one uses the full width */
   .event__stats strong { font-size: 30px; }
   .event__avatar--photo { width: 120px; height: 120px; }
+  .stand { --px: 5px; padding: 16px 12px; }
+}
+@media (max-width: 380px) {
+  .stand--featured { --px: 4px; }   /* the balloons fit on the smallest phones */
 }
 
 

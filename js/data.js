@@ -120,20 +120,25 @@ const SPEAKERS = [
 
 // Student groups taking part in the week. Each one shows as a pennant in its color.
 // type: the small text below the pennant.
-// Optional: logo (square image in img/), link (social network or web page: the pennant links to it)
-// and description (shown on the pages of the activities it organizes, with the link as "Saber más").
+// Optional: logo (square image in img/), link (social network or web page: the pennant links to it),
+// description (shown on the pages of the activities it organizes, with the link as "Saber más")
+// and stand (its text on the Feria de stands page, next to its drawn stand; companies take it too).
 const GROUPS = [
   { id: 'unalgoritmo', name: 'UNAlgoritmo', type: 'Grupo estudiantil', color: '#9128d9', logo: 'img/group-unalgoritmo.jpg',
     link: 'https://www.linkedin.com/company/unalgoritmo/',
+    stand: 'UNAlgoritmo es un grupo estudiantil dedicado a la programación competitiva, donde podrás fortalecer tus habilidades en algoritmos, estructuras de datos y lógica de programación. Participan en competencias nacionales e internacionales y organizan entrenamientos para aprender, compartir conocimientos y superar nuevos desafíos.',
     description: 'UN Algoritmo es un grupo estudiantil adscrito a la Facultad de Minas de la Universidad Nacional de Colombia (Sede Medellín) dedicado a impulsar la programación competitiva, el pensamiento algorítmico y las estructuras de datos. Mediante entrenamientos semanales estructurados tanto para principiantes como para niveles avanzados, el grupo prepara equipos para competir en la Maratón Nacional de Programación, en las rondas clasificatorias del ICPC (International Collegiate Programming Contest) y en la Maratona Feminina de Programação (MFP), fortaleciendo la comunicación, la resolución rápida de problemas y el trabajo en equipo bajo el formato de un computador por terna.' },
   { id: 'aperture', name: 'Aperture', type: 'Semillero', color: '#1aa3b8', logo: 'img/group-aperture.jpg',
     link: 'https://aperture-systems-lab.github.io',
+    stand: 'Aperture es una comunidad estudiantil que busca llevar estos conocimientos más allá de la teoría, desarrollando proyectos que aporten soluciones a problemas reales. Es un espacio para experimentar, compartir ideas, aprender nuevas herramientas y explorar el potencial de los datos y la IA.',
     description: 'Aperture es un Semillero de Investigación estudiantil donde se explora la ciencia de datos, el machine learning y la IA. Es un espacio para aprender haciendo: desarrollamos proyectos, compartimos conocimientos y conectamos esa teoría con problemas de la vida real, impulsando una comunidad colaborativa en la universidad.' },
   { id: 'turing-box', name: 'Turing Box', type: 'Grupo estudiantil', color: '#c4358c', logo: 'img/group-turing-box.jpg',
     link: 'https://www.instagram.com/turingbox_med/',
+    stand: 'TuringBox es una comunidad estudiantil que busca acercar a los estudiantes a las tecnologías de la Cuarta Revolución Industrial. A través de proyectos STEM, talleres y actividades, exploran temas como inteligencia artificial, desarrollo web, blockchain e Internet de las Cosas. ¡Un espacio para aprender, experimentar e innovar!',
     description: 'Turing Box es un grupo estudiantil intersedes de la Universidad Nacional de Colombia que abre un espacio de pruebas (sandbox) para explorar tecnologías que no suelen estar en los currículos, como inteligencia artificial, blockchain, web3, realidad aumentada y creación de videojuegos. Funciona a través de nodos temáticos y busca crear comunidad alrededor de la tecnología con eventos, hackathons, charlas, podcasts y creación de contenidos, además de entrenar habilidades técnicas y blandas para impulsar las carreras profesionales de sus integrantes.' },
   { id: 'uneural', name: 'UNeural', type: 'Grupo estudiantil', color: '#4a4fd8', logo: 'img/group-uneural.jpg',
-    link: 'https://www.instagram.com/uneuralgroup' },
+    link: 'https://www.instagram.com/uneuralgroup',
+    stand: 'UNeural es un semillero de investigación enfocado en inteligencia artificial, donde el aprendizaje, la exploración y la innovación son protagonistas. Es un espacio para acercarse a nuevas tecnologías, conocer sus aplicaciones y descubrir cómo pueden transformar diferentes áreas del conocimiento.' },
 ];
 
 // Companies confirmed to participate in the week
@@ -146,6 +151,7 @@ const COMPANIES = [
     logo: 'img/company-lovelytics.png',
     link: 'https://lovelytics.com/es/',
     description: 'Lovelytics es una firma boutique de consultoría en analítica avanzada, inteligencia artificial y arquitectura de datos moderna en la nube. Trabaja junto a organizaciones globales para transformar sus datos en valor e innovación tecnológica real.',
+    stand: '¿Te apasionan los datos, la tecnología y la inteligencia artificial? Lovelytics es una empresa especializada en ayudar a las organizaciones a aprovechar todo el potencial de sus datos. A través de herramientas de analítica, inteligencia artificial y soluciones tecnológicas, transforma información en ideas y oportunidades para resolver problemas del mundo real.',
   },
   {
     id: 'sole',
@@ -155,6 +161,7 @@ const COMPANIES = [
     logo: 'img/company-sole.png',
     link: 'https://sole.tech/',
     description: 'Solē es una compañía tecnológica e innovadora enfocada en el desarrollo de soluciones de software, ingeniería de datos y transformación digital de alto impacto.',
+    stand: '¿Te interesa la tecnología aplicada a un futuro más sostenible? Solē trabaja para impulsar la transición energética a través de soluciones innovadoras relacionadas con la energía solar. Su apuesta es aprovechar el potencial de las energías renovables para transformar la manera en que producimos y consumimos energía.',
   },
   {
     id: 'tcs',
@@ -164,6 +171,16 @@ const COMPANIES = [
     logo: 'img/company-tcs.png',
     link: 'https://www.tcs.com/',
     description: 'Tata Consultancy Services (TCS) es una de las mayores empresas globales en servicios de TI, consultoría y soluciones de negocios, impulsando la transformación digital de las industrias más importantes del mundo.',
+    stand: '¿Te imaginas trabajar en proyectos tecnológicos que llegan a todo el mundo? TCS es una compañía global de tecnología y consultoría que acompaña a empresas de diferentes sectores en sus procesos de transformación digital. Trabaja en áreas como desarrollo de software, inteligencia artificial, ingeniería y soluciones en la nube.',
+  },
+  {
+    id: 'globant',
+    name: 'Globant',
+    type: 'Empresa aliada',
+    color: '#6f8a00',   // Globant's lime, darkened so the white name on its pennant reads
+    logo: 'img/company-globant.png',
+    link: 'https://www.globant.com/',
+    stand: '¿Te gusta combinar creatividad, tecnología e innovación? Globant es una compañía tecnológica internacional que desarrolla soluciones digitales para transformar negocios y experiencias. Explora campos como inteligencia artificial, desarrollo de software y nuevas tecnologías, conectando el talento y las ideas para crear soluciones que impactan el mundo.',
   },
 ];
 
@@ -182,6 +199,7 @@ const COMPANIES = [
 // modalidad is 'aula-maxima' (100 cupos), 'aula' (40) or 'virtual' (70); max must match the modality and the
 // mapping in supabase/preinscripciones-conferencias.sql, change both together),
 // bracket: true (its knockout bracket, "Llaves", shows on its page: js/brackets.js, supabase/brackets.sql),
+// stands: true (its page draws a stand for every group and company with a stand text: js/event.js),
 // unconfirmed: true (shows an "Información por confirmar" notice on its page)
 // and decorations (three pixel art drawings from js/pixel-art.js for its page header; the middle one sits higher).
 const ACTIVITIES = [
@@ -192,7 +210,7 @@ const ACTIVITIES = [
       'Un espacio abierto al diálogo, al intercambio de ideas y a las preguntas de la comunidad universitaria. Súmate a la conversación: trae tus preguntas y participa.',
     image: 'img/flyers/talk-tech-companies.jpg',
     decorations: ['flag', 'microphone', 'rocket'] },
-  { id: 'feria', day: 'wed', start: '09:00', end: '12:00', type: 'social', title: 'Feria de stands', place: 'Hall M10',
+  { id: 'feria', day: 'wed', start: '09:00', end: '12:00', type: 'social', title: 'Feria de stands', place: 'Hall M10', stands: true,
     description: 'Descubre la innovación desde adentro y amplía tus horizontes. Conecta con el talento universitario recorriendo los stands de nuestros grupos estudiantiles y semilleros de investigación, e interactúa directamente con empresas invitadas para resolver dudas, intercambiar experiencias y construir tu red profesional.',
     decorations: ['briefcase', 'tent', 'lanyard'] },
   { id: 'datos', day: 'wed', start: '11:00', end: '12:00', type: 'talk', title: 'Más allá del código: de estudiante a ingeniero en la era de la inteligencia artificial', speakers: ['mariano'], place: 'Aula Máxima',
