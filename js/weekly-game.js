@@ -893,7 +893,7 @@ function recordRow(row, place, isMine) {
         </span>
         <span class="record__info">
           <span class="record__name">${escapeHtml(row.nombre)}${isMine ? ' <small>(tú)</small>' : ''}</span>
-          <span class="record__user">${user}${user ? ' · ' : ''}${games}</span>
+          <span class="record__user">${user}${user ? ', ' : ''}${games}</span>
         </span>
         <span class="record__points">${scoring.table(row.mejor_puntaje)}</span>
       </li>`;

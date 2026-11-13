@@ -17,7 +17,7 @@ function dayText(day) {
 function renderHero() {
   const type = ACTIVITY_TYPES[activity.type];
 
-  document.title = `${activity.title} · Semana de Sistemas`;
+  document.title = `${activity.title} | Semana de Sistemas`;
 
   // Pixel art drawings above the type, if the activity has any (see pixel-art.js)
   const decorations = activity.decorations
@@ -157,35 +157,22 @@ function preRegisterSection() {
       data-actividad="${activity.id}" data-modalidad="${modalidad}" data-max="${max}">
       <h2 class="event__subtitle">Pre-inscripción</h2>
 
-      <div class="pre-register__hook">
-        <p class="pre-register__headline">
-          🎟️ Asegura tu cupo: asiste y suma <strong>10 puntos</strong> en el Sustómetro.
-          Quienes más puntos acumulen se llevan un <strong>peluche de Nacho</strong> 🦉
-        </p>
-        <ul class="pre-register__rules">
-          <li class="pre-register__rule pre-register__rule--win">
-            <span class="pre-register__points">+10</span>
-            <span>Te pre-inscribes <strong>y asistes</strong></span>
-          </li>
-          <li class="pre-register__rule">
-            <span class="pre-register__points">+8</span>
-            <span>Asistes <strong>sin</strong> pre-inscribirte</span>
-          </li>
-          <li class="pre-register__rule pre-register__rule--zero">
-            <span class="pre-register__points">+0</span>
-            <span>Te pre-inscribes pero <strong>no asistes</strong></span>
-          </li>
+      <div class="pre-register__card">
+        <img class="pre-register__plush" src="img/nacho-plush.webp" width="440" height="435" alt="">
+        <h3 class="pre-register__title">Asegura tu cupo</h3>
+        <p class="pre-register__prize">Quienes más puntos acumulen en el Sustómetro se llevan a <strong>Nacho</strong>.</p>
+        <ul class="prereg-points">
+          <li class="prereg-point prereg-point--top"><strong>+10</strong> Te pre-inscribes y asistes</li>
+          <li class="prereg-point"><strong>+8</strong> Asistes sin pre-inscribirte</li>
+          <li class="prereg-point prereg-point--zero"><strong>+0</strong> Te pre-inscribes y no asistes</li>
         </ul>
-        <p class="pre-register__note">
-          Cupos limitados para la modalidad <strong>${modalidadText}</strong>: solo ${max} pre-inscripciones.
-          ¡Reserva el tuyo antes de que se agoten!
-        </p>
-      </div>
+        <p class="pre-register__note">Cupos limitados en la modalidad <strong>${modalidadText}</strong>: solo ${max} pre-inscripciones.</p>
 
-      <div class="pre-register__body" id="pre-register-body">
-        <p class="registration__text">Cargando pre-inscripción…</p>
+        <div class="pre-register__body" id="pre-register-body">
+          <p class="registration__text">Cargando pre-inscripción…</p>
+        </div>
+        <p class="auth-message" id="pre-register-message" hidden></p>
       </div>
-      <p class="auth-message" id="pre-register-message" hidden></p>
 
       <!-- Supervisor tools: list of pre-registered people and attendance -->
       <div class="pre-register__admin" id="pre-register-admin" hidden></div>

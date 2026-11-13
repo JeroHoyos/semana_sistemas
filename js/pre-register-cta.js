@@ -26,9 +26,9 @@
 
   const selected = () => CONFERENCES.find((c) => c.id === selectedId) || CONFERENCES[0];
 
-  function showMessage(text, isError = true) {
+  function showError(text) {
     messageEl.textContent = text;
-    messageEl.className = `auth-message ${isError ? 'auth-message--error' : 'auth-message--success'}`;
+    messageEl.className = 'auth-message auth-message--error';
     messageEl.hidden = false;
   }
 
@@ -88,7 +88,10 @@
         <button class="prereg-option ${c.id === selectedId ? 'prereg-option--active' : ''}"
           type="button" data-id="${c.id}" aria-pressed="${c.id === selectedId}">
           <span class="prereg-option__title">${escapeHtml(c.title)}</span>
-          <span class="prereg-option__meta">${escapeHtml(dayLabel(c))} · ${escapeHtml(c.place || '')}</span>
+          <span class="prereg-option__meta">
+            <span>${ICONS.calendar}${escapeHtml(dayLabel(c))}</span>
+            ${c.place ? `<span>${ICONS.pin}${escapeHtml(c.place)}</span>` : ''}
+          </span>
           <span class="prereg-option__spots ${alreadyIn ? 'prereg-option__spots--in' : (full ? 'prereg-option__spots--full' : '')}">${spots}</span>
         </button>
       `;
@@ -109,11 +112,9 @@
     }
     if (mine.has(c.id)) {
       return `
-        <p class="registration__text">
-          Ya tienes tu cupo en <strong>${escapeHtml(c.title)}</strong>. Sumas los 10 puntos solo si
-          <strong>asistes</strong>. Mientras más puntos acumules, más cerca del peluche de Nacho.
-        </p>
-        <a class="week-button" href="${activityLink(c.id)}">Ver la conferencia ${ICONS.arrow}</a>
+        <a class="hero__button auth-form__submit prereg-modal__cta" href="${activityLink(c.id)}">
+          Ver conferencia ${ICONS.arrow}
+        </a>
       `;
     }
     if (count !== null && count >= max) {
@@ -155,15 +156,15 @@
       p_modalidad: c.preRegister.modalidad,
     });
     button.disabled = false;
-    if (error) return showMessage(translate(error));
-    await loadAll();
-    showMessage(`¡Listo! Reservaste tu cupo en "${c.title}". Asiste para sumar tus 10 puntos y acercarte al peluche de Nacho.`, false);
+    if (error) return showError(translate(error));
+    await loadAll();   // the action area now shows the "Ver conferencia" button
   }
 
   body.addEventListener('click', async (event) => {
     const option = event.target.closest('.prereg-option');
     if (option) {
       selectedId = option.dataset.id;
+      messageEl.hidden = true;
       render();
       return;
     }

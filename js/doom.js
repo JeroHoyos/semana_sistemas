@@ -1038,8 +1038,8 @@ const DOOM_CARTRIDGE = {
   create: (canvas, events) => createDoom(canvas, events),
   splash: {
     text: 'Llega a la salida. Si mueres, pierdes la partida',
-    keyboardHelp: 'WASD y mouse · Clic dispara · P pausa',
-    touchHelp: 'Cruceta camina · A dispara · B abre',
+    keyboardHelp: 'WASD y mouse, clic dispara, P pausa',
+    touchHelp: 'Cruceta camina, A dispara, B abre',
   },
   controls: {
     keyboard: [
