@@ -123,7 +123,7 @@
     }
     return `
       <button class="hero__button auth-form__submit prereg-modal__cta" type="button" data-action="preregister">
-        Pre-inscribirme a esta conferencia ${ICONS.arrow}
+        Pre-inscribirme ${ICONS.arrow}
       </button>
     `;
   }
@@ -187,6 +187,7 @@
   }
 
   openButton.addEventListener('click', open);
+  document.getElementById('prereg-plush').addEventListener('click', open);
   document.getElementById('btn-prereg-close').addEventListener('click', () => modal.close());
   modal.addEventListener('click', (event) => { if (event.target === modal) modal.close(); });
 
