@@ -41,6 +41,7 @@ function renderInfo() {
     noticeSection(),
     factsSection(),
     registrationSection(),
+    preRegisterSection(),
     descriptionSection(),
     activity.team || activity.individual ? '<div id="participants"></div>' : '',   // filled by js/brackets.js
     activity.bracket ? '<div id="bracket"></div>' : '',   // filled by js/brackets.js
@@ -139,6 +140,57 @@ function registrationSection() {
     `;
   }
   return '';
+}
+
+// Pre-registration (pre-inscripción) for conferences with limited spots.
+// The interactive part (session, capacity, sign-up, supervisor tools) lives in js/pre-register.js,
+// which fills #pre-register once the page knows who is logged in. Here we only place the container
+// and the fixed marketing copy that explains the reward.
+function preRegisterSection() {
+  if (!activity.preRegister) return '';
+
+  const { max, modalidad } = activity.preRegister;
+  const modalidadText = { 'aula-maxima': 'Aula Máxima', 'aula': 'aula', 'virtual': 'virtual' }[modalidad] || modalidad;
+
+  return `
+    <section class="pre-register" id="pre-register"
+      data-actividad="${activity.id}" data-modalidad="${modalidad}" data-max="${max}">
+      <h2 class="event__subtitle">Pre-inscripción</h2>
+
+      <div class="pre-register__hook">
+        <p class="pre-register__headline">
+          🎟️ Asegura tu cupo y gánate <strong>10 puntos</strong> en el Sustómetro
+          + participa por un <strong>peluche de Nacho</strong> 🦉
+        </p>
+        <ul class="pre-register__rules">
+          <li class="pre-register__rule pre-register__rule--win">
+            <span class="pre-register__points">10 pts</span>
+            Te pre-inscribes <strong>y asistes</strong>: ganas 10 puntos y entras al sorteo del peluche de Nacho.
+          </li>
+          <li class="pre-register__rule">
+            <span class="pre-register__points">8 pts</span>
+            Llegas sin pre-inscribirte: recibes 8 puntos (y no entras al sorteo).
+          </li>
+          <li class="pre-register__rule pre-register__rule--zero">
+            <span class="pre-register__points">0 pts</span>
+            Te pre-inscribes pero <strong>no asistes</strong>: no recibes nada.
+          </li>
+        </ul>
+        <p class="pre-register__note">
+          Cupos limitados para la modalidad <strong>${modalidadText}</strong>: solo ${max} pre-inscripciones.
+          ¡Reserva el tuyo antes de que se agoten!
+        </p>
+      </div>
+
+      <div class="pre-register__body" id="pre-register-body">
+        <p class="registration__text">Cargando pre-inscripción…</p>
+      </div>
+      <p class="auth-message" id="pre-register-message" hidden></p>
+
+      <!-- Supervisor tools: list of pre-registered people and attendance -->
+      <div class="pre-register__admin" id="pre-register-admin" hidden></div>
+    </section>
+  `;
 }
 
 // YouTube video (video field). youtube-nocookie leaves no cookies until someone presses play.

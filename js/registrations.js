@@ -263,6 +263,7 @@ function renderTeamList() {
       return;
     }
 
+    const admin = isStrictSupervisor();
     $('#team-list').innerHTML = individualRegistrations.map((p, index) => {
       const isMe = p.usuario_id === currentUser?.id;
       const cleanPhone = (p.celular || '').replace(/\D/g, '');
@@ -277,6 +278,12 @@ function renderTeamList() {
            </div>`
         : '<span class="free-agent__anon">Inicia sesión para ver el contacto</span>';
 
+      // A supervisor can remove any participant inscribed in the individual competition.
+      const adminBtn = admin
+        ? `<button class="week-button team__danger participant-card__admin-remove" type="button"
+            data-action="admin-remove-individual" data-user="${p.usuario_id}">Eliminar participante (admin)</button>`
+        : '';
+
       return `
         <li class="participant-card ${isMe ? 'participant-card--me' : ''}">
           <span class="participant-card__num">#${index + 1}</span>
@@ -288,6 +295,7 @@ function renderTeamList() {
             </div>
             <div class="participant-card__actions">
               ${phoneDisplay}
+              ${adminBtn}
             </div>
           </div>
         </li>
@@ -377,6 +385,8 @@ function teamCard(team, manage = false) {
     ? `<a href="tel:${escapeHtml(team.celular)}">${escapeHtml(team.celular)}</a>`
     : 'inicia sesión para verlo';
 
+  const admin = isStrictSupervisor();
+
   let actions = '';
   if (captainTools) {
     const addForm = full ? '' : `
@@ -400,6 +410,15 @@ function teamCard(team, manage = false) {
     `;
   }
 
+  // Supervisors can dissolve any team from the public list
+  if (admin && !captainTools) {
+    actions += `
+      <div class="team__buttons team__buttons--admin">
+        <button class="week-button team__danger" type="button" data-action="admin-dissolve" data-team="${team.id}">Disolver equipo (admin)</button>
+      </div>
+    `;
+  }
+
   return `
     <article class="team ${manage ? 'team--mine' : ''}">
       <div class="team__banner">${drawBanner(team.bandera)}</div>
@@ -410,16 +429,22 @@ function teamCard(team, manage = false) {
           ${full ? '<span class="team__badge team__badge--full">Completo</span>' : ''}
         </p>
         <ul class="team__members">
-          ${members.map((member) => `
+          ${members.map((member) => {
+            // A supervisor can remove any member (even the captain) of any team.
+            const canAdminRemove = admin;
+            const canCaptainRemove = captainTools && member.id !== team.capitan_id;
+            const removeBtn = (canCaptainRemove || canAdminRemove)
+              ? `<button class="team__remove" type="button" data-action="${canCaptainRemove ? 'remove' : 'admin-remove'}" data-team="${team.id}" data-member="${member.id}" aria-label="Quitar a ${escapeHtml(member.nombre)}">✕</button>`
+              : '';
+            return `
             <li>
               <span class="team__avatar">${drawCustomMonster(member.monstruo || {})}</span>
               <span class="team__who">${escapeHtml(member.nombre)}<small>@${escapeHtml(member.usuario)}</small></span>
               ${member.id === team.capitan_id ? '<span class="team__badge">Capitán</span>' : ''}
-              ${captainTools && member.id !== team.capitan_id
-                ? `<button class="team__remove" type="button" data-action="remove" data-team="${team.id}" data-member="${member.id}" aria-label="Quitar a ${escapeHtml(member.nombre)}">✕</button>`
-                : ''}
+              ${removeBtn}
             </li>
-          `).join('')}
+          `;
+          }).join('')}
           ${freeSpots}
         </ul>
         <p class="team__captain">Celular del capitán: ${phone}</p>
@@ -504,6 +529,36 @@ $('#my-team').addEventListener('click', async (event) => {
     changeTeam(button, 'quitar_miembro', { p_equipo: team, p_usuario: member }, 'Quitaste a la persona del equipo.');
   } else if (action === 'dissolve' && confirm('¿Disolver el equipo? Sus integrantes quedarán libres para unirse a otro.')) {
     changeTeam(button, 'eliminar_equipo', { p_equipo: team }, 'Disolviste el equipo.');
+  } else if (action === 'admin-remove' && confirm('ADMIN: ¿Quitar a esta persona del equipo? Si es el capitán, se reasigna o se disuelve el equipo.')) {
+    changeTeam(button, 'admin_quitar_miembro', { p_equipo: team, p_usuario: member }, 'Quitaste a la persona del equipo (admin).');
+  } else if (action === 'admin-dissolve' && confirm('ADMIN: ¿Disolver este equipo por completo?')) {
+    changeTeam(button, 'admin_eliminar_equipo', { p_equipo: team }, 'Disolviste el equipo (admin).');
+  }
+});
+
+// Admin actions on the public lists (#team-list): remove any member / dissolve any team / remove any participant
+$('#team-list').addEventListener('click', async (event) => {
+  const button = event.target.closest('[data-action]');
+  if (!button || !isStrictSupervisor()) return;
+  const { action, team, member, user } = button.dataset;
+
+  if (action === 'admin-remove' && confirm('ADMIN: ¿Quitar a esta persona del equipo? Si es el capitán, se reasigna o se disuelve el equipo.')) {
+    changeTeam(button, 'admin_quitar_miembro', { p_equipo: team, p_usuario: member }, 'Quitaste a la persona del equipo (admin).');
+  } else if (action === 'admin-dissolve' && confirm('ADMIN: ¿Disolver este equipo por completo?')) {
+    changeTeam(button, 'admin_eliminar_equipo', { p_equipo: team }, 'Disolviste el equipo (admin).');
+  } else if (action === 'admin-remove-individual' && confirm('ADMIN: ¿Eliminar a este participante de la competencia?')) {
+    button.disabled = true;
+    const { error } = await supabaseClient.rpc('admin_eliminar_inscripcion_individual', {
+      p_actividad: shownActivity.id,
+      p_usuario: user,
+    });
+    button.disabled = false;
+    if (error) {
+      showMessage($('#team-message'), translateError(error));
+      return;
+    }
+    await loadIndividualRegistrations();
+    showMessage($('#team-message'), 'Eliminaste al participante (admin).', false);
   }
 });
 
