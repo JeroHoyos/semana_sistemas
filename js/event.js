@@ -293,22 +293,18 @@ function standCard(group, i) {
 }
 
 // Whoever minds the stand peeks over the counter: it hops, blinks, looks around and waves.
-// A monster in the stand's color, or a robot at Aperture's. x and y are in stand drawing pixels.
+// A one-eyed monster in the stand's color. x and y are in stand drawing pixels.
 function standMascot(group) {
-  const robot = group.id === 'aperture';
-  const palette = robot ? ROBOT_PALETTE : { ...MASCOT_PALETTE, c: group.color, C: group.color };
+  const palette = { ...MASCOT_PALETTE, c: group.color, C: group.color };
   const body = (name) => drawPixelArt({ rows: PIXEL_ART[name].rows, palette });
   const piece = (svg, x, y, kind) => `<span class="stand__piece stand__${kind}" style="--x: ${x}; --y: ${y}">${svg}</span>`;
 
   return `
     <span class="stand__piece stand__window" style="--x: 5; --y: 5">
       <span class="stand__piece stand__mascot" style="--x: 3; --y: 1">
-        ${body(robot ? 'mascotRobot' : 'mascot')}
-        ${robot ? piece(drawPixelArt(PIXEL_ART.mascotRobotLight), 2, 0, 'light') : ''}
-        ${robot
-          ? piece(drawPixelArt(PIXEL_ART.mascotRobotEyes), 5, 5, 'iris')
-          : piece(drawPixelArt(PIXEL_ART.mascotIris), 6, 5, 'iris')}
-        ${piece(body(robot ? 'mascotRobotBlink' : 'mascotBlink'), 0, 0, 'blink')}
+        ${body('mascot')}
+        ${piece(drawPixelArt(PIXEL_ART.mascotIris), 6, 5, 'iris')}
+        ${piece(body('mascotBlink'), 0, 0, 'blink')}
       </span>
     </span>
     ${piece(body('mascotPaw'), 7, 15, 'paw')}

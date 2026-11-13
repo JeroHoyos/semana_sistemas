@@ -57,10 +57,8 @@ function medal(number, palette) {
   return { palette, rows: writeNumber(MEDAL_TEMPLATE, number, 4, 12, 'n') };
 }
 
-// Who minds each stand at the fair: a one-eyed monster (js/event.js paints c and C in the
-// stand's color) or, at Aperture's, a robot with an antenna. Same letters, so they share the paws.
+// Who minds each stand at the fair: a one-eyed monster (js/event.js paints c and C in the stand's color)
 const MASCOT_PALETTE = { k: '#1b2440', c: '#5fd3e3', C: '#2bb5c9', H: '#ffffff', w: '#ffffff', p: '#ff8fb8' };
-const ROBOT_PALETTE = { k: '#1b2440', f: '#1aa3b8', F: '#127b8c', s: '#c9f3f8', e: '#0b1e2b', E: '#ffffff', p: '#ff8fb8', h: '#5b8fd6', c: '#5b8fd6', w: '#ffffff', L: '#ffd23f' };
 
 const PIXEL_ART = {
   // Athletics race: gold, silver and bronze
@@ -457,57 +455,6 @@ const PIXEL_ART = {
       'kcccccckkcccccCk',
       'kccccccccccccCCk',
     ],
-  },
-  // Aperture's robot: a TV head with its face on the screen, two antennas and a hoodie.
-  // Its eyes (mascotRobotEyes) move on the screen; mascotRobotBlink shows them closed and
-  // mascotRobotLight blinks on the antennas. Not "robot": that one is the workshop's drawing.
-  mascotRobot: {
-    palette: ROBOT_PALETTE,
-    rows: [
-      '..L..........L..',
-      '...k........k...',
-      '.kkkkkkkkkkkkkk.',
-      '.kfffffffffffFk.',
-      '.kfssssssssssFk.',
-      '.kfssssssssssFk.',
-      '.kfssssssssssFk.',
-      '.kfssssssssssFk.',
-      '.kfspsskksspsFk.',
-      '.kfffffffffffFk.',
-      '.kkkkkkkkkkkkkk.',
-      'khhhhhwhhwhhhhhk',
-      'khhhhhwhhwhhhhhk',
-    ],
-  },
-  mascotRobotBlink: {
-    palette: ROBOT_PALETTE,
-    rows: [
-      '..L..........L..',
-      '...k........k...',
-      '.kkkkkkkkkkkkkk.',
-      '.kfffffffffffFk.',
-      '.kfssssssssssFk.',
-      '.kfssssssssssFk.',
-      '.kfssssssssssFk.',
-      '.kfsseesseessFk.',
-      '.kfspsskksspsFk.',
-      '.kfffffffffffFk.',
-      '.kkkkkkkkkkkkkk.',
-      'khhhhhwhhwhhhhhk',
-      'khhhhhwhhwhhhhhk',
-    ],
-  },
-  mascotRobotEyes: {
-    palette: ROBOT_PALETTE,
-    rows: [
-      'Ee..Ee',
-      'ee..ee',
-      'ee..ee',
-    ],
-  },
-  mascotRobotLight: {
-    palette: { L: '#ff6fae' },
-    rows: ['L..........L'],
   },
   mascotIris: {
     palette: { i: '#1aa3b8', N: '#0b1e2b', h: '#ffffff' },

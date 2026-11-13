@@ -3007,7 +3007,7 @@ button.bracket__side:hover { background: #e4effa; }
   object-fit: cover;
 }
 
-/* Whoever minds the stand (a monster, or Aperture's robot). It moves a whole pixel at a time,
+/* Whoever minds the stand (a monster in its color). It moves a whole pixel at a time,
    like a video game; --i offsets each stand's timing so they do not all move together. */
 .stand__piece {
   position: absolute;
@@ -3025,7 +3025,6 @@ button.bracket__side:hover { background: #e4effa; }
 .stand__iris { animation: stand-look 6s steps(1) infinite; }
 .stand__blink { opacity: 0; animation: stand-blink 4s steps(1) infinite; }
 .stand__wave { transform-origin: 0 100%; animation: stand-wave .8s steps(1) infinite; }
-.stand__light { animation: stand-light 1s steps(1) infinite; }
 .stand__mascot, .stand__iris, .stand__blink, .stand__wave { animation-delay: calc(var(--i) * -.7s); }
 @keyframes stand-look {
   30% { translate: calc(var(--px) * -1) 0; }
@@ -3039,9 +3038,6 @@ button.bracket__side:hover { background: #e4effa; }
 }
 @keyframes stand-wave {
   50% { rotate: -25deg; }
-}
-@keyframes stand-light {
-  50% { opacity: 0; }
 }
 
 @media (max-width: 640px) {
