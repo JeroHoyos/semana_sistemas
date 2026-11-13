@@ -7426,15 +7426,8 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   color: var(--ink-soft);
   text-wrap: balance;
 }
-.pre-register__prize strong,
-.pre-register__note strong { color: var(--blue); }
+.pre-register__prize strong { color: var(--blue); }
 .pre-register .prereg-points { width: 100%; margin-bottom: 14px; }
-.pre-register__note {
-  margin: 0 0 16px;
-  font-size: .95rem;
-  color: var(--ink-soft);
-  text-wrap: balance;
-}
 
 .pre-register__body { width: min(100%, 520px); }
 .pre-register__body .registration__text { margin: 12px 0 0; }
@@ -7451,6 +7444,14 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   letter-spacing: .1em;
   line-height: 1.3;
 }
+/* Cancel: the same pill as Inscribirme, white with a soft red line */
+.pre-register__cancel {
+  border: 0;
+  color: #b42340;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 4px #fff, inset 0 0 0 6px #f5b6c3, 0 10px 22px -12px rgba(180, 35, 64, .45);
+}
+.pre-register__cancel:hover { background: #fff5f7; }
 .pre-register__status { margin-top: 14px; }
 .pre-register__status .team__badge { display: inline-block; background: var(--blue); color: #fff; }
 .pre-register .auth-message--success { background: #eef4fc; color: var(--blue-dark); border-color: #b9d3ef; }

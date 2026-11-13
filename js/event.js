@@ -145,7 +145,7 @@ function registrationSection() {
   return '';
 }
 
-// Pre-registration (pre-inscripción) for conferences with limited spots.
+// Pre-registration (inscripción) for conferences with limited spots.
 // The interactive part (session, capacity, sign-up, supervisor tools) lives in js/pre-register.js,
 // which fills #pre-register once the page knows who is logged in. Here we only place the container
 // and the fixed marketing copy that explains the reward.
@@ -153,26 +153,24 @@ function preRegisterSection() {
   if (!activity.preRegister) return '';
 
   const { max, modalidad } = activity.preRegister;
-  const modalidadText = { 'aula-maxima': 'Aula Máxima', 'aula': 'aula', 'virtual': 'virtual' }[modalidad] || modalidad;
 
   return `
     <section class="pre-register" id="pre-register"
       data-actividad="${activity.id}" data-modalidad="${modalidad}" data-max="${max}">
-      <h2 class="event__subtitle">Pre-inscripción</h2>
+      <h2 class="event__subtitle">Inscripción</h2>
 
       <div class="pre-register__card">
         <img class="pre-register__plush" src="img/nacho-plush.webp" width="440" height="435" alt="">
         <h3 class="pre-register__title">Asegura tu cupo</h3>
         <p class="pre-register__prize">Quienes más puntos acumulen en el Sustómetro se llevan a <strong>Nacho</strong>.</p>
         <ul class="prereg-points">
-          <li class="prereg-point prereg-point--top"><strong>+10</strong> Te pre-inscribes y asistes</li>
-          <li class="prereg-point"><strong>+8</strong> Asistes sin pre-inscribirte</li>
-          <li class="prereg-point prereg-point--zero"><strong>+0</strong> Te pre-inscribes y no asistes</li>
+          <li class="prereg-point prereg-point--top"><strong>+10</strong> Te inscribes y asistes</li>
+          <li class="prereg-point"><strong>+8</strong> Asistes sin inscribirte</li>
+          <li class="prereg-point prereg-point--zero"><strong>+0</strong> Te inscribes y no asistes</li>
         </ul>
-        <p class="pre-register__note">Cupos limitados en la modalidad <strong>${modalidadText}</strong>: solo ${max} pre-inscripciones.</p>
 
         <div class="pre-register__body" id="pre-register-body">
-          <p class="registration__text">Cargando pre-inscripción…</p>
+          <p class="registration__text">Cargando inscripción…</p>
         </div>
         <p class="auth-message" id="pre-register-message" hidden></p>
       </div>
