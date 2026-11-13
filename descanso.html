@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&family=Graduate&family=Share+Tech+Mono&display=swap">
   <style>
     /* =========================================================
-       NIGHT SUSPENSION / MODO DESCANSO (11:59 PM - 7:00 AM COT)
+       NIGHT SUSPENSION / MODO DESCANSO (1:00 AM - 7:00 AM COT)
        Semana de Sistemas · Facultad de Minas · UNAL Medellín
        ========================================================= */
     :root {
@@ -806,7 +806,7 @@
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
-        <span>Horario de suspensión: 11:59 p.m. – 7:00 a.m. (Hora Colombia)</span>
+        <span>Horario de suspensión: 1:00 a.m. – 7:00 a.m. (Hora Colombia)</span>
       </div>
 
       <div class="clock-display">
@@ -867,8 +867,8 @@
       }
 
       function isNightTime(time) {
-        // 11:59 PM (1439 mins) to 7:00 AM (420 mins)
-        return time.mins >= 1439 || time.mins < 420;
+        // 1:00 AM (60 mins) to 7:00 AM (420 mins)
+        return time.mins >= 60 && time.mins < 420;
       }
 
       function pad(num) {
@@ -892,10 +892,8 @@
 
         if (reopenEl) {
           var remainingSecs = 0;
-          if (t.mins < 420) {
+          if (t.mins >= 60 && t.mins < 420) {
             remainingSecs = (420 - t.mins) * 60 - t.s;
-          } else if (t.mins >= 1439) {
-            remainingSecs = ((1440 - t.mins) + 420) * 60 - t.s;
           } else {
             remainingSecs = 0;
           }
