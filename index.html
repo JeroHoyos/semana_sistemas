@@ -37,7 +37,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Cinzel:wght@600;700&family=Graduate&family=Press+Start+2P&display=swap" crossorigin>
   <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/pricedown">
-  <link rel="stylesheet" href="css/styles.css?v=20261110_v3">
+  <link rel="stylesheet" href="css/styles.css?v=20261113_v1">
 </head>
 <body>
 
@@ -95,14 +95,16 @@
 
         <!-- Big CTA: pre-register to any conference (js/pre-register-cta.js) -->
         <div class="prereg-cta">
-          <p class="prereg-cta__pitch">
-            🎟️ Pre-inscríbete a las conferencias: asiste y gánate <strong>10 puntos</strong> en el Sustómetro.
-            Los que más puntos acumulen se llevan un <strong>peluche de Nacho</strong> 🦉
-          </p>
-          <button class="hero__button prereg-cta__button" id="btn-prereg-open" type="button">
-            Pre-inscribirme a una conferencia
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </button>
+          <img class="prereg-cta__plush" id="prereg-plush" src="img/nacho-plush.webp" width="440" height="435" alt="Peluche de Nacho, el búho de la UNAL, con su buzo verde">
+          <div class="prereg-cta__content">
+            <h3 class="prereg-cta__title">Llévate a <span>Nacho</span></h3>
+            <p class="prereg-cta__pitch">Quienes más puntos acumulen en el Sustómetro se llevan el peluche.</p>
+            <p class="prereg-cta__points"><strong>+10 puntos</strong> al pre-inscribirte y asistir a una conferencia</p>
+            <button class="hero__button prereg-cta__button" id="btn-prereg-open" type="button">
+              Pre-inscribirme
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -457,32 +459,21 @@
   </dialog>
 
   <!-- PRE-REGISTER MODAL: pick a conference and pre-register (js/pre-register-cta.js) -->
-  <dialog class="auth-modal" id="prereg-modal" aria-labelledby="prereg-modal-title">
+  <dialog class="auth-modal prereg-modal" id="prereg-modal" aria-labelledby="prereg-modal-title">
     <div class="auth-modal__box">
       <button class="auth-modal__close" id="btn-prereg-close" type="button" aria-label="Cerrar ventana">✕</button>
 
-      <div class="auth-modal__header">
-        <p class="section-title__eyebrow">Charlas y conferencias · UNAL</p>
-        <h2 class="auth-modal__title prereg-modal__title" id="prereg-modal-title">Pre-inscríbete</h2>
+      <div class="prereg-modal__header">
+        <img class="prereg-modal__plush" src="img/nacho-plush.webp" width="440" height="435" alt="">
+        <h2 class="prereg-modal__title" id="prereg-modal-title">Pre-inscríbete</h2>
+        <p class="prereg-modal__prize">Quienes más puntos acumulen en el Sustómetro se llevan a <strong>Nacho</strong>.</p>
       </div>
 
-      <div class="prereg-modal__hook">
-        <ul class="pre-register__rules">
-          <li class="pre-register__rule pre-register__rule--win">
-            <span class="pre-register__points">+10</span>
-            <span>Te pre-inscribes <strong>y asistes</strong></span>
-          </li>
-          <li class="pre-register__rule">
-            <span class="pre-register__points">+8</span>
-            <span>Asistes <strong>sin</strong> pre-inscribirte</span>
-          </li>
-          <li class="pre-register__rule pre-register__rule--zero">
-            <span class="pre-register__points">+0</span>
-            <span>Te pre-inscribes pero <strong>no asistes</strong></span>
-          </li>
-        </ul>
-        <p class="prereg-prize">🦉 Quienes <strong>más puntos</strong> acumulen en el Sustómetro se llevan un <strong>peluche de Nacho</strong>.</p>
-      </div>
+      <ul class="prereg-modal__points">
+        <li class="prereg-modal__point prereg-modal__point--top"><strong>+10</strong> Te pre-inscribes y asistes</li>
+        <li class="prereg-modal__point"><strong>+8</strong> Asistes sin pre-inscribirte</li>
+        <li class="prereg-modal__point prereg-modal__point--zero"><strong>+0</strong> Te pre-inscribes y no asistes</li>
+      </ul>
 
       <div class="prereg-modal__body" id="prereg-modal-body">
         <p class="registration__text">Cargando conferencias…</p>
