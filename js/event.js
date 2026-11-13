@@ -255,33 +255,31 @@ function groupSection(group) {
   `;
 }
 
-// Stands fair (stands field): every group and company with a stand text gets its stand drawn
-// in its color, with its logo on the counter. Aperture's goes first and big, with its mascot.
+// Stands fair (stands field): every company and group with a stand text gets its stand drawn
+// in its color, with its logo on the counter and someone minding it. Companies go first.
 function standsSection() {
   if (!activity.stands) return '';
 
-  const aperture = GROUPS.filter((group) => group.id === 'aperture' && group.stand);
-  const groups = GROUPS.filter((group) => group.id !== 'aperture' && group.stand);
-  const list = (items) => `<ul class="stands">${items.map(standCard).join('')}</ul>`;
+  const list = (items) => `<ul class="stands">${items.filter((item) => item.stand).map(standCard).join('')}</ul>`;
 
   return `
-    <h2 class="event__subtitle">Grupos estudiantiles</h2>
-    ${list([...aperture, ...groups])}
     <h2 class="event__subtitle">Empresas aliadas</h2>
-    ${list(COMPANIES.filter((company) => company.stand))}
+    ${list(COMPANIES)}
+    <h2 class="event__subtitle">Grupos estudiantiles</h2>
+    ${list(GROUPS)}
   `;
 }
 
-function standCard(group) {
-  const featured = group.id === 'aperture';
+// i (its place in the list) offsets its animations so the stands do not move together
+function standCard(group, i) {
   const booth = { ...PIXEL_ART.stand, palette: { ...PIXEL_ART.stand.palette, c: group.color } };
 
   return `
-    <li class="stand ${featured ? 'stand--featured' : ''}" style="--color: ${group.color}">
+    <li class="stand" style="--color: ${group.color}; --i: ${i}">
       <div class="stand__booth">
         ${drawPixelArt(booth)}
         ${group.logo ? `<img class="stand__logo" src="${group.logo}" alt="Logo de ${group.name}">` : ''}
-        ${featured ? apertureMascot() : ''}
+        ${standMascot(group)}
       </div>
       <div class="stand__text">
         <strong>${group.name}</strong>
@@ -293,31 +291,25 @@ function standCard(group) {
   `;
 }
 
-// Aperture's mascot peeks over its counter: it hops, blinks, looks around and waves,
-// between two balloons, with hearts rising and sparkles. x and y are in stand drawing pixels.
-function apertureMascot() {
-  const piece = (name, x, y, kind, delay = '0s') =>
-    `<span class="stand__piece stand__${kind}" style="--x: ${x}; --y: ${y}; --delay: ${delay}">${drawPixelArt(PIXEL_ART[name])}</span>`;
+// Whoever minds the stand peeks over the counter: it hops, blinks, looks around and waves.
+// A monster in the stand's color, or a robot at Aperture's. x and y are in stand drawing pixels.
+function standMascot(group) {
+  const robot = group.id === 'aperture';
+  const palette = robot ? ROBOT_PALETTE : { ...MASCOT_PALETTE, c: group.color, C: group.color };
+  const body = (name) => drawPixelArt({ rows: PIXEL_ART[name].rows, palette });
+  const piece = (svg, x, y, kind) => `<span class="stand__piece stand__${kind}" style="--x: ${x}; --y: ${y}">${svg}</span>`;
 
   return `
-    ${piece('balloonCyan', -8, -7, 'balloon')}
-    ${piece('balloonPink', 31, -3, 'balloon', '-.8s')}
     <span class="stand__piece stand__window" style="--x: 5; --y: 5">
       <span class="stand__piece stand__mascot" style="--x: 3; --y: 1">
-        ${drawPixelArt(PIXEL_ART.mascot)}
-        ${piece('mascotIris', 6, 5, 'iris')}
-        ${piece('mascotBlink', 0, 0, 'blink')}
+        ${body(robot ? 'mascotRobot' : 'mascot')}
+        ${robot ? piece(drawPixelArt(PIXEL_ART.mascotRobotLight), 7, 0, 'light') : ''}
+        ${piece(drawPixelArt(PIXEL_ART.mascotIris), 6, 5, 'iris')}
+        ${piece(body(robot ? 'mascotRobotBlink' : 'mascotBlink'), 0, 0, 'blink')}
       </span>
     </span>
-    ${piece('mascotPaw', 7, 15, 'paw')}
-    ${piece('mascotPaw', 24, 10, 'wave')}
-    ${piece('heart', 2, -2, 'heart')}
-    ${piece('heart', 9, -2, 'heart', '-1s')}
-    ${piece('heart', 16, -2, 'heart', '-2s')}
-    ${piece('sparkle', -7, 14, 'sparkle')}
-    ${piece('sparkle', 34, 14, 'sparkle', '-.5s')}
-    ${piece('sparkle', 33, 25, 'sparkle', '-1s')}
-    <span class="stand__piece stand__bubble" style="--x: 23; --y: -9" aria-hidden="true">¡Hola!</span>
+    ${piece(body('mascotPaw'), 7, 15, 'paw')}
+    ${piece(body('mascotPaw'), 24, 10, 'wave')}
   `;
 }
 
