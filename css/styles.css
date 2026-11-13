@@ -2994,29 +2994,18 @@ button.bracket__side:hover { background: #e4effa; }
 .stand .pixel-art { animation: none; margin: 0; }
 .stand__logo {
   position: absolute;
-  left: calc(var(--px) * 12.5);
-  top: calc(var(--px) * 21.5);
-  width: calc(var(--px) * 7);
-  height: calc(var(--px) * 7);
+  left: calc(var(--px) * 11);
+  top: calc(var(--px) * 22);
+  width: calc(var(--px) * 10);
+  height: calc(var(--px) * 10);
   border: calc(var(--px) / 2) solid #fff;
   border-radius: var(--px);
   background: #fff;
   object-fit: cover;
 }
 
-/* Aperture's stand: bigger, on a dotted cyan card, with room around it for the balloons and hearts */
-.stand--featured {
-  --px: 8px;
-  padding: 20px 24px;
-  border: 2px solid color-mix(in srgb, var(--color) 40%, #fff);
-  background:
-    radial-gradient(color-mix(in srgb, var(--color) 28%, transparent) 1.2px, transparent 1.6px) 0 0 / 16px 16px,
-    color-mix(in srgb, var(--color) 8%, #fff);
-}
-.stand--featured .stand__booth { margin: calc(var(--px) * 10) calc(var(--px) * 9) var(--px) calc(var(--px) * 8); }
-.stand--featured .stand__text strong { font-size: 24px; }
-
-/* Its mascot and the pieces around it. Most move a whole pixel at a time, like a video game. */
+/* Whoever minds the stand (a monster, or Aperture's robot). It moves a whole pixel at a time,
+   like a video game; --i offsets each stand's timing so they do not all move together. */
 .stand__piece {
   position: absolute;
   left: calc(var(--px) * var(--x));
@@ -3029,34 +3018,12 @@ button.bracket__side:hover { background: #e4effa; }
 }
 .stand__mascot .pixel-art { filter: none; }
 .stand__mascot { animation: bounce 1.2s steps(1) infinite; }
-.stand--featured:hover .stand__mascot { animation-duration: .4s; }   /* happier when someone comes by */
+.stand:hover .stand__mascot { animation-duration: .4s; }   /* happier when someone comes by */
 .stand__iris { animation: stand-look 6s steps(1) infinite; }
 .stand__blink { opacity: 0; animation: stand-blink 4s steps(1) infinite; }
 .stand__wave { transform-origin: 0 100%; animation: stand-wave .8s steps(1) infinite; }
-.stand__balloon { animation: bounce 1.6s steps(1) var(--delay) infinite; }
-.stand__heart { opacity: 0; animation: stand-heart 3s steps(8) var(--delay) infinite; }
-.stand__sparkle { animation: stand-twinkle 1.5s steps(1) var(--delay) infinite; }
-.stand__bubble {
-  padding: calc(var(--px) * .4) calc(var(--px) * 1.2);
-  border: calc(var(--px) / 2) solid #0b3b45;
-  background: #fff;
-  font-family: var(--font-title);
-  font-size: calc(var(--px) * 2.2);
-  line-height: 1.2;
-  color: #0b3b45;
-  white-space: nowrap;
-  animation: bounce 1.2s steps(1) .6s infinite;
-}
-.stand__bubble::after {        /* two-pixel tail pointing down to the mascot */
-  content: '';
-  position: absolute;
-  left: var(--px);
-  bottom: calc(var(--px) * -1.5);
-  width: var(--px);
-  height: var(--px);
-  background: #0b3b45;
-  box-shadow: calc(var(--px) * -1) var(--px) 0 #0b3b45;
-}
+.stand__light { animation: stand-light 1s steps(1) infinite; }
+.stand__mascot, .stand__iris, .stand__blink, .stand__wave { animation-delay: calc(var(--i) * -.7s); }
 @keyframes stand-look {
   30% { translate: calc(var(--px) * -1) 0; }
   50% { translate: 0 0; }
@@ -3070,12 +3037,8 @@ button.bracket__side:hover { background: #e4effa; }
 @keyframes stand-wave {
   50% { rotate: -25deg; }
 }
-@keyframes stand-heart {
-  from { opacity: 1; translate: 0 0; }
-  to { opacity: 0; translate: 0 calc(var(--px) * -8); }
-}
-@keyframes stand-twinkle {
-  50% { scale: .4; }
+@keyframes stand-light {
+  50% { opacity: 0; }
 }
 
 @media (max-width: 640px) {
@@ -3092,9 +3055,6 @@ button.bracket__side:hover { background: #e4effa; }
   .event__stats strong { font-size: 30px; }
   .event__avatar--photo { width: 120px; height: 120px; }
   .stand { --px: 5px; padding: 16px 12px; }
-}
-@media (max-width: 380px) {
-  .stand--featured { --px: 4px; }   /* the balloons fit on the smallest phones */
 }
 
 

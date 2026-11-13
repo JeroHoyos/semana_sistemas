@@ -57,8 +57,10 @@ function medal(number, palette) {
   return { palette, rows: writeNumber(MEDAL_TEMPLATE, number, 4, 12, 'n') };
 }
 
-// Aperture's mascot on its stand at the fair: a one-eyed blob, like the eye on its logo
-const MASCOT_PALETTE = { k: '#0b3b45', c: '#5fd3e3', C: '#2bb5c9', H: '#ffffff', w: '#ffffff', p: '#ff8fb8' };
+// Who minds each stand at the fair: a one-eyed monster (js/event.js paints c and C in the
+// stand's color) or, at Aperture's, a robot with an antenna. Same letters, so they share the paws.
+const MASCOT_PALETTE = { k: '#1b2440', c: '#5fd3e3', C: '#2bb5c9', H: '#ffffff', w: '#ffffff', p: '#ff8fb8' };
+const ROBOT_PALETTE = { k: '#0b3b45', c: '#c4e9ef', C: '#8fc3cd', H: '#ffffff', w: '#ffffff', p: '#ff8fb8', a: '#1aa3b8', L: '#5ff0ff' };
 
 const PIXEL_ART = {
   // Athletics race: gold, silver and bronze
@@ -376,7 +378,7 @@ const PIXEL_ART = {
     ],
   },
   // One group's stand: striped awning, two posts and the counter. c is the group's color
-  // (js/event.js swaps it) and the logo goes on the counter front, rows 21 to 28.
+  // (js/event.js swaps it) and the logo goes on the counter front, rows 21 to 32.
   stand: {
     palette: { k: '#1b2440', c: '#1667c2', w: '#ffffff', p: '#a8703f', b: '#f6efe1', B: '#e6d9bf', T: '#c98f5a' },
     rows: [
@@ -409,10 +411,14 @@ const PIXEL_ART = {
       '.kcccccccccccccccccccccccccccck.',
       '.kcccccccccccccccccccccccccccck.',
       '.kcccccccccccccccccccccccccccck.',
+      '.kcccccccccccccccccccccccccccck.',
+      '.kcccccccccccccccccccccccccccck.',
+      '.kcccccccccccccccccccccccccccck.',
+      '.kcccccccccccccccccccccccccccck.',
       '.kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.',
     ],
   },
-  // Aperture's mascot: the eye's white is empty because the iris moves on top of it (mascotIris)
+  // The monster: the eye's white is empty because the iris moves on top of it (mascotIris)
   mascot: {
     palette: MASCOT_PALETTE,
     rows: [
@@ -450,6 +456,48 @@ const PIXEL_ART = {
       'kccccccccccccCCk',
     ],
   },
+  // Aperture's robot, with its eye open and closed; its antenna light blinks (mascotRobotLight).
+  // Not "robot": that one is the workshop's drawing, further down.
+  mascotRobot: {
+    palette: ROBOT_PALETTE,
+    rows: [
+      '......kLLk......',
+      '.......kk.......',
+      '.kkkkkkkkkkkkkk.',
+      '.kcHckkkkkkccCk.',
+      '.kcckwwwwwwkcCk.',
+      '.kckwwwwwwwwkCk.',
+      'akckwwwwwwwwkCka',
+      'akckwwwwwwwwkCka',
+      '.kcckwwwwwwkcCk.',
+      '.kppckkkkkkcppk.',
+      '.kcccckcckcccCk.',
+      '.kccccckkccccCk.',
+      '.kcccccccccccCk.',
+    ],
+  },
+  mascotRobotBlink: {
+    palette: ROBOT_PALETTE,
+    rows: [
+      '......kLLk......',
+      '.......kk.......',
+      '.kkkkkkkkkkkkkk.',
+      '.kcHcccccccccCk.',
+      '.kcccccccccccCk.',
+      '.kcccccccccccCk.',
+      'akcckcccccckcCka',
+      'akccckkkkkkccCka',
+      '.kcccccccccccCk.',
+      '.kppccccccccppk.',
+      '.kcccckcckcccCk.',
+      '.kccccckkccccCk.',
+      '.kcccccccccccCk.',
+    ],
+  },
+  mascotRobotLight: {
+    palette: { L: '#ff6fae' },
+    rows: ['LL'],
+  },
   mascotIris: {
     palette: { i: '#1aa3b8', N: '#0b1e2b', h: '#ffffff' },
     rows: [
@@ -466,27 +514,6 @@ const PIXEL_ART = {
       'kcck',
       'kcck',
       '.kk.',
-    ],
-  },
-  heart: {
-    palette: { k: '#7a1f45', p: '#ff6fae', P: '#ffd1e6' },
-    rows: [
-      '.kk.kk.',
-      'kPpkppk',
-      'kpppppk',
-      '.kpppk.',
-      '..kpk..',
-      '...k...',
-    ],
-  },
-  sparkle: {
-    palette: { y: '#ffd23f', Y: '#fff8d6' },
-    rows: [
-      '..y..',
-      '..y..',
-      'yyYyy',
-      '..y..',
-      '..y..',
     ],
   },
 
@@ -925,10 +952,6 @@ const PIXEL_ART = {
     ],
   },
 };
-
-// The marathon balloon in Aperture's cyan and in pink, for its stand
-PIXEL_ART.balloonCyan = { rows: PIXEL_ART.balloon.rows, palette: { k: '#0b3b45', W: '#c9f6fb', R: '#5fd3e3', r: '#1aa3b8', s: '#8f9aa8' } };
-PIXEL_ART.balloonPink = { rows: PIXEL_ART.balloon.rows, palette: { k: '#5a1638', W: '#ffd1e6', R: '#ff6fae', r: '#d23c7a', s: '#8f9aa8' } };
 
 // Turns a drawing into SVG. Consecutive pixels of the same color share one rectangle.
 // --width and --height (in drawing pixels) let the CSS keep the same pixel size in all of them.
