@@ -91,7 +91,7 @@
       body.innerHTML = `
         ${capacityBar()}
         <p class="registration__text">Inicia sesión con tu carnet para pre-inscribirte a esta conferencia.</p>
-        <div class="team__actions-row">
+        <div class="pre-register__actions">
           <a class="hero__button auth-form__submit" href="inscripciones.html">Iniciar sesión o crear carnet ${ICONS.arrow}</a>
         </div>
       `;
@@ -103,7 +103,7 @@
       body.innerHTML = `
         ${capacityBar()}
         <div class="pre-register__status">
-          <span class="team__badge" style="background: #e6f7ec; color: #1a7f37; border: 1px solid #b7ebc6;">
+          <span class="team__badge">
             ✓ Pre-inscrito${attended ? ', asistencia confirmada' : ''}
           </span>
           <p class="registration__text">
@@ -113,7 +113,7 @@
           </p>
         </div>
         ${attended ? '' : `
-          <div class="team__actions-row">
+          <div class="pre-register__actions">
             <button class="week-button team__danger" type="button" data-action="cancel">Cancelar pre-inscripción</button>
           </div>
         `}
@@ -131,7 +131,7 @@
 
     body.innerHTML = `
       ${capacityBar()}
-      <div class="team__actions-row">
+      <div class="pre-register__actions">
         <button class="hero__button auth-form__submit" type="button" data-action="preregister">Pre-inscribirme ${ICONS.arrow}</button>
       </div>
     `;
@@ -170,19 +170,24 @@
       `;
     }).join('');
 
+    // Folded under its title (the .fold of js/brackets.js), closed at first. Every action draws it
+    // again, so it keeps whatever state the supervisor left it in.
+    const open = adminBox.querySelector('.fold')?.open ? 'open' : '';
     adminBox.innerHTML = `
-      <h3 class="event__subtitle">Gestión de asistencia (admin)</h3>
-      <p class="registration__text">
-        Marca asistencia a quien se pre-inscribió (gana 10 puntos). Para quien llega sin pre-inscripción,
-        agrégalo con su correo y recibirá 8 puntos.
-      </p>
-      <form class="team__add" id="pre-register-manual">
-        <input type="email" name="correo" placeholder="correo@unal.edu.co" required aria-label="Correo de quien asistió sin pre-inscribirse">
-        <button class="week-button" type="submit">Agregar asistente (8 pts)</button>
-      </form>
-      <ul class="team-list" id="pre-register-admin-list">
-        ${people && people.length ? list : '<li class="registration__text">Aún no hay pre-inscritos.</li>'}
-      </ul>
+      <details class="fold" ${open}>
+        <summary><h3 class="event__subtitle">Gestión de asistencia (admin)</h3></summary>
+        <p class="registration__text">
+          Marca asistencia a quien se pre-inscribió (gana 10 puntos). Para quien llega sin pre-inscripción,
+          agrégalo con su correo y recibirá 8 puntos.
+        </p>
+        <form class="team__add" id="pre-register-manual">
+          <input type="email" name="correo" placeholder="correo@unal.edu.co" required aria-label="Correo de quien asistió sin pre-inscribirse">
+          <button class="week-button" type="submit">Agregar asistente (8 pts)</button>
+        </form>
+        <ul class="team-list" id="pre-register-admin-list">
+          ${people && people.length ? list : '<li class="registration__text">Aún no hay pre-inscritos.</li>'}
+        </ul>
+      </details>
     `;
   }
 
