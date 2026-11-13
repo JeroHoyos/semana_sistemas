@@ -86,8 +86,10 @@ function factsSection() {
 
 // The activity's text (each \n is a paragraph), with its stats below if it has any.
 // If there is an image, it goes next to the text (on phones, above it).
+// After a pre-registration it gets its own title, so the two read as separate sections.
 function descriptionSection() {
   const description = activity.description || activity.summary || 'Pronto publicaremos más detalles de esta actividad.';
+  const title = activity.preRegister ? '<h2 class="event__subtitle">Información</h2>' : '';
   const text = `
     <div class="event__description">
       ${description.split('\n').map((paragraph) => `<p>${paragraph}</p>`).join('')}
@@ -95,9 +97,10 @@ function descriptionSection() {
     ${activity.stats ? statBoxes(activity.stats) : ''}
   `;
 
-  if (!activity.image) return text;
+  if (!activity.image) return title + text;
 
   return `
+    ${title}
     <div class="event__intro">
       <img class="event__image" src="${activity.image}" alt="Imagen de ${activity.title}">
       <div>${text}</div>
