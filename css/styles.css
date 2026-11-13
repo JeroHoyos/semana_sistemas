@@ -2977,7 +2977,7 @@ button.bracket__side:hover { background: #e4effa; }
   align-items: center;
   gap: 18px 28px;
   padding: 18px 20px;
-  border: 1px solid var(--line);
+  border: 2px solid color-mix(in srgb, var(--color) 55%, #fff);   /* each box framed in its stand's color */
   border-radius: 22px;
 }
 .stand:nth-child(even) { flex-direction: row-reverse; }   /* zigzag down the list */
