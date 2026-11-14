@@ -191,6 +191,15 @@ const COMPANIES = [
     link: 'https://unergy.io/',
     stand: '¿Te interesa descubrir cómo la tecnología puede impulsar la transición energética? Unergy es una empresa colombiana que apuesta por un futuro más sostenible a través de la energía solar. Desarrolla y opera minigranjas solares que permiten generar energía limpia, conectar a más personas con proyectos de energías renovables y crear nuevas oportunidades para las comunidades. ¡Una apuesta por transformar la manera en que producimos y aprovechamos la energía!',
   },
+  {
+    id: 'mia',
+    name: 'M.IA',
+    type: 'Empresa aliada',
+    color: '#b86200',   // M.IA's orange, darkened so the white name on its pennant reads
+    logo: 'img/company-mia.png',
+    link: 'https://www.instagram.com/e.mahanb/',
+    stand: '¿Cómo sería un modelo educativo donde el aprendizaje se adapta a ti, y no eres tú quien busca la forma de adaptarse al aprendizaje? M.IA es la respuesta a esa pregunta: un software que identifica la forma de aprender y las herramientas de aprendizaje de los estudiantes de 7.°, 8.° y 9.° grado, para luego enseñarles de una manera que potencie su aprendizaje en física, química y matemáticas. Si te interesa conocer más del proyecto o hacer parte de él, escribe a @e.mahanb en Instagram.',
+  },
 ];
 
 // Times in 'HH:MM' format (24 h). Keep them sorted by day and time.
