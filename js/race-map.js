@@ -33,6 +33,7 @@ const ROADS = [   // [points, width in units, color, has a center line]
   [[[640, 768], [800, 774], [960, 770], [1100, 754], [1132, 712]], 7, BRICK],                              // south of M3
   [[[752, 590], [790, 630], [866, 650], [940, 630], [985, 585]], 8, BRICK],                                // M5 forecourt
   [[[570, 893], [580, 876], [619, 858], [661, 842], [703, 815], [736, 790], [746, 772]], 3.2, 0xd8d2c4],          // footpath from M9 up to M3: not part of the race
+  [[[706, 598], [714, 560], [692, 512], [672, 470], [652, 434]], 2.6, 0x9b7a55],                                 // dirt trail from the route up to M6
 ];
 
 // A block is a group of parts at a spot of the plan, turned some degrees (counterclockwise).
