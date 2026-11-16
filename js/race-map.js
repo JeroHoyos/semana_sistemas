@@ -12,11 +12,11 @@ const GROUND = [40, 330, 1240, 1300];    // left, top, right and bottom of the p
 const MAP_CENTER = [690, 790];           // the camera looks here
 
 // Starts at M10, goes up between the courts, through the M3 gate, west past M5 and M4 to the M7
-// parking, down west of M9 to Carrera 80 and back east along it
+// parking, over the footbridge, down west of the grove and M9 to Carrera 80 and back east along it
 const ROUTE = [
   [932, 935], [947, 858], [939, 797], [913, 758], [910, 695], [895, 645], [818, 641], [769, 619],
-  [715, 605], [654, 603], [572, 608], [489, 619], [418, 634], [405, 674], [418, 746], [402, 827],
-  [390, 908], [397, 975], [428, 998], [561, 995], [715, 990], [869, 985], [935, 968],
+  [715, 605], [654, 603], [572, 608], [489, 619], [440, 625], [400, 628], [378, 642],
+  [388, 682], [422, 735], [432, 800], [412, 865], [392, 920], [397, 975], [428, 998], [561, 995], [715, 990], [869, 985], [935, 968],
 ];
 
 const TILE = 0x8a4636;     // clay tile roofs
@@ -88,16 +88,16 @@ const FLATS = [             // [x, y, width, depth, color or 'tennis' / 'basketb
   [315, 862, 144, 90, BRICK],
 ];
 const PALMS = [665, 693, 721, 749, 777, 805, 833, 861].map((x) => [x, 790]);   // the row in front of M3
-const CREEK = [[462, 636], [486, 684], [474, 736], [503, 786], [512, 826]];   // the stream through the grove, from the M7 parking down to M9
+const CREEK = [[350, 520], [355, 545], [377, 590], [400, 629], [450, 657], [490, 708], [512, 758], [518, 787], [512, 828]];   // the stream: past M8a, under the footbridge, through the grove down to M9
+const BRIDGE = [400, 628];   // where the route crosses it
 const GROVE = [430, 630, 590, 835];   // left, top, right and bottom of that grove: trees stand closer here
 
-const IGUANAS = [[600, 700, 30], [535, 742, 160], [690, 830, 200], [1010, 612, 300], [280, 950, 60]];   // [x, y, facing]
-const MONSTERS = [[450, 680], [455, 790], [690, 950], [895, 948], [645, 560], [360, 760], [352, 985], [985, 792]];
+const IGUANAS = [[600, 700, 30], [565, 765, 160], [690, 830, 200], [1010, 612, 300], [280, 950, 60]];   // [x, y, facing]
+const MONSTERS = [[345, 690], [472, 805], [690, 950], [895, 948], [645, 560], [360, 760], [352, 985], [985, 792]];
 const MONSTER_COLORS = [0x8e5bd6, 0x1f6fc5, 0xf08a24, 0xe24f6b, 0x22b5a6];
 const CRANE = [700, 470];
 const TURBINE = [130, 560];
 const RAILS = [[300, 470], [450, 470]];   // the mine cart goes back and forth on them
-const LEVELS = [[0.14, 'NIVEL 1'], [0.45, 'NIVEL 2'], [0.76, 'NIVEL 3']];
 
 const THREE_URLS = [
   'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
@@ -361,7 +361,7 @@ const CREEK_SAMPLES = samples(CREEK);
 function isFree(x, y) {
   const near = (list, distance) => list.some(([px, py]) => Math.hypot(px - x, py - y) < distance);
   if (near(ROUTE_SAMPLES, 30) || near(ROAD_SAMPLES, 50) || near(samples(RAILS), 20) || near(CREEK_SAMPLES, 11)) return false;
-  if (near(IGUANAS, 45) || near([...MONSTERS, ...PALMS, CRANE, TURBINE, GATE], 24)) return false;
+  if (near(IGUANAS, 45) || near([...MONSTERS, ...PALMS, CRANE, TURBINE, GATE, BRIDGE], 24)) return false;
   if (ARCS.some(([, ax, ay, outer]) => Math.hypot(ax - x, ay - y) < outer + 14)) return false;
   if (FLATS.some(([fx, fy, w, d]) => Math.abs(fx - x) < w / 2 + 12 && Math.abs(fy - y) < d / 2 + 12)) return false;
   // Inside a block? Turn the point back into the block's own frame and compare with each part
@@ -618,6 +618,20 @@ function buildRaceMap(box) {
     scene.add(mesh(new THREE.DodecahedronGeometry(0.7 + random() * 0.5, 0), 0x8f969d, new THREE.Vector3(point.x + side, 0.4, point.z + random())));
   });
 
+  // The wooden footbridge where the route crosses the stream
+  const bridgeAt = toWorld(BRIDGE);
+  const bridgeT = Array.from({ length: 400 }, (_, i) => i / 400)
+    .reduce((a, b) => (route.getPointAt(a).distanceTo(bridgeAt) < route.getPointAt(b).distanceTo(bridgeAt) ? a : b));
+  const bridge = new THREE.Group();
+  bridge.add(mesh(new THREE.BoxGeometry(11, 0.5, 15), 0x9a6b43, new THREE.Vector3(0, 0.6, 0)));
+  for (const side of [-5.2, 5.2]) {
+    bridge.add(mesh(new THREE.BoxGeometry(0.4, 0.4, 15), 0x7a4a2b, new THREE.Vector3(side, 3, 0)));   // handrail
+    for (const z of [-7, -2.3, 2.3, 7]) bridge.add(mesh(new THREE.BoxGeometry(0.5, 2.6, 0.5), 0x7a4a2b, new THREE.Vector3(side, 1.9, z)));
+  }
+  bridge.position.copy(route.getPointAt(bridgeT)).setY(0);
+  bridge.lookAt(bridge.position.clone().add(route.getTangentAt(bridgeT).setY(0)));
+  scene.add(bridge);
+
   // Trees: the campus is an arboretum. The first ones fill the grove, the rest go anywhere.
   const [groveLeft, groveTop, groveRight, groveBottom] = GROVE;
   for (let placed = 0, tries = 0; placed < 200 && tries < 5000; tries++) {
@@ -672,7 +686,7 @@ function buildRaceMap(box) {
     return item;
   });
 
-  // 8-bit touches: coins over the route; pennants across it at each level
+  // 8-bit touch: coins over the route
   const coins = [];
   for (let i = 0; i < 16; i++) {
     const coin = mesh(new THREE.CylinderGeometry(1.6, 1.6, 0.5, 12), 0xffd23f);
@@ -680,15 +694,6 @@ function buildRaceMap(box) {
     coin.position.copy(route.getPointAt((i + 0.5) / 16)).setY(8);
     scene.add(coin);
     coins.push(coin);
-  }
-  for (const [t, text] of LEVELS) {
-    const point = route.getPointAt(t);
-    const tangent = route.getTangentAt(t);
-    const across = new THREE.Vector3(-tangent.z, 0, tangent.x).multiplyScalar(7);
-    scene.add(pennants(point.clone().add(across), point.clone().sub(across), color));
-    const tag = label(text, '#1f6fc5', 0.7);
-    tag.position.copy(point).setY(18);
-    scene.add(tag);
   }
 
   // Start and finish arch, with a checkered banner, pennants and traffic cones

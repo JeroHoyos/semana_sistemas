@@ -192,7 +192,7 @@ function routeMapSection() {
   return `
     <h2 class="event__subtitle">El recorrido</h2>
     <div class="race-map" id="race-map" role="img"
-      aria-label="Mapa 3D del recorrido por el campus Robledo: sale y llega al Hall del M10, sube entre las canchas, cruza el M3 por su portal, pasa frente al M5, sigue hacia el oeste por el M4 hasta el parqueadero del M7, baja por el lado oeste del M9 y vuelve por el borde de la Carrera 80."></div>
+      aria-label="Mapa 3D del recorrido por el campus Robledo: sale y llega al Hall del M10, sube entre las canchas, cruza el M3 por su portal, pasa frente al M5, sigue hacia el oeste por el M4 hasta el parqueadero del M7, cruza el puente del riachuelo, baja por el lado oeste del bosque y del M9 y vuelve por el borde de la Carrera 80."></div>
     <p class="race-map__hint">
       <span class="race-map__hint--mouse">Arrastra el mapa para girarlo y usa la rueda del mouse para acercarte.</span>
       <span class="race-map__hint--touch">Gira el mapa con un dedo y pellizca para acercarte.</span>
