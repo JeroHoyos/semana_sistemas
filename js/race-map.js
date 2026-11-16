@@ -97,6 +97,7 @@ const IGUANAS = [[600, 700, 30], [565, 765, 160], [640, 905, 200], [1010, 612, 3
 const MONSTERS = [[345, 690], [472, 805], [690, 950], [895, 948], [645, 560], [360, 760], [352, 985], [985, 792]];
 const MONSTER_COLORS = [0x8e5bd6, 0x1f6fc5, 0xf08a24, 0xe24f6b, 0x22b5a6];
 const TURBINE = [130, 560];
+const CAT = [396, 838];   // the brown campus cat, sitting by the route
 const RAILS = [[300, 470], [450, 470]];   // the mine cart goes back and forth on them
 
 const THREE_URLS = [
@@ -347,7 +348,7 @@ const CREEK_SAMPLES = samples(CREEK);
 function isFree(x, y) {
   const near = (list, distance) => list.some(([px, py]) => Math.hypot(px - x, py - y) < distance);
   if (near(ROUTE_SAMPLES, 30) || near(ROAD_SAMPLES, 50) || near(PATH_SAMPLES, 16) || near(samples(RAILS), 20) || near(CREEK_SAMPLES, 11)) return false;
-  if (near(IGUANAS, 45) || near([...MONSTERS, TURBINE, GATE, BRIDGE], 24)) return false;
+  if (near(IGUANAS, 45) || near([...MONSTERS, TURBINE, GATE, BRIDGE, CAT], 24)) return false;
   if (ARCS.some(([, ax, ay, outer]) => Math.hypot(ax - x, ay - y) < outer + 14)) return false;
   if (FLATS.some(([fx, fy, w, d]) => Math.abs(fx - x) < w / 2 + 12 && Math.abs(fy - y) < d / 2 + 12)) return false;
   // Inside a block? Turn the point back into the block's own frame and compare with each part
@@ -436,6 +437,29 @@ function pennants(from, to, color) {
     flag.rotation.x = Math.PI;
     group.add(flag);
   }
+  return group;
+}
+
+// Sitting brown cat, tail up. Faces +z.
+function cat() {
+  const group = new THREE.Group();
+  const brown = 0x8b5a2b;
+  const body = mesh(new THREE.BoxGeometry(1.6, 2, 2.2), brown, new THREE.Vector3(0, 1.1, 0));
+  body.rotation.x = -0.35;   // sitting: chest up
+  group.add(body);
+  group.add(mesh(new THREE.BoxGeometry(1.6, 1.3, 1.3), brown, new THREE.Vector3(0, 2.7, 0.9)));        // head
+  group.add(mesh(new THREE.BoxGeometry(0.7, 0.5, 0.4), 0xe8d5b5, new THREE.Vector3(0, 2.45, 1.6)));     // muzzle
+  for (const side of [-1, 1]) {
+    group.add(mesh(new THREE.ConeGeometry(0.35, 0.7, 4), brown, new THREE.Vector3(side * 0.5, 3.6, 0.8)));   // ears
+    group.add(mesh(new THREE.BoxGeometry(0.25, 0.3, 0.1), 0x2e7d32, new THREE.Vector3(side * 0.4, 2.9, 1.56)));   // green eyes
+    group.add(mesh(new THREE.BoxGeometry(0.4, 1.5, 0.4), 0x7a4a22, new THREE.Vector3(side * 0.45, 0.75, 0.9)));   // front legs
+  }
+  const tail = new THREE.Group();
+  tail.position.set(0, 0.5, -1.1);
+  tail.add(mesh(new THREE.BoxGeometry(0.35, 2.4, 0.35), 0x7a4a22, new THREE.Vector3(0, 1.2, 0)));
+  group.add(tail);
+  group.userData.tail = tail;
+  group.scale.setScalar(1.4);
   return group;
 }
 
@@ -629,6 +653,11 @@ function buildRaceMap(box) {
   const cart = mineCart();
   scene.add(cart);
 
+  const catItem = cat();
+  catItem.position.copy(toWorld(CAT));
+  catItem.lookAt(toWorld([430, 838]));   // watching the runners go by
+  scene.add(catItem);
+
   const iguanas = IGUANAS.map(([x, y, facing]) => {
     const item = iguana();
     item.position.copy(toWorld([x, y]));
@@ -728,6 +757,7 @@ function buildRaceMap(box) {
       item.position.y = Math.max(0, Math.sin(time * 5 + i)) * 1.2;   // jumping with joy
       item.userData.arms.forEach((arm, side) => { arm.rotation.z = (side ? -1 : 1) * (0.3 + Math.sin(time * 6 + i) * 0.3); });
     });
+    catItem.userData.tail.rotation.z = Math.sin(time * 2.5) * 0.5;
     coins.forEach((coin) => { coin.rotation.z = time * 2; });
 
     controls.update();
