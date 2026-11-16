@@ -192,7 +192,7 @@ function routeMapSection() {
   return `
     <h2 class="event__subtitle">El recorrido</h2>
     <div class="race-map" id="race-map" role="img"
-      aria-label="Mapa 3D del recorrido: una vuelta completa al núcleo de bloques, con salida y meta en el mismo punto, junto a la Carrera 80. Sube hacia el M8, cruza por el norte, baja junto al M9 y vuelve."></div>
+      aria-label="Mapa 3D del recorrido por el campus Robledo: sale y llega al Hall del M10, cruza el M3 por su portal, sigue hacia el oeste junto al M4 y el M7, baja entre el M8 y el M9 y vuelve por la Carrera 80."></div>
     <p class="race-map__hint">Arrastra para girar el mapa; pellizca o usa la rueda para acercarte.</p>
   `;
 }

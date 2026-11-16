@@ -7767,7 +7767,7 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   width: 100%;
   overflow: hidden;
   border-radius: 18px;
-  background: #eaf2fb;
+  background: linear-gradient(#a9d6f5, #e6f2fb 70%);
   color: var(--gray);
   box-shadow: 0 18px 30px -18px rgba(10, 44, 82, .55);
   cursor: grab;
