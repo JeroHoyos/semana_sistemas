@@ -32,6 +32,7 @@ const ROADS = [   // [points, width in units, color, has a center line]
   [[[700, 1040], [665, 1150], [630, 1300]], 10, 0xb9b3a6, true],                                           // Carrera 78a
   [[[640, 768], [800, 774], [960, 770], [1100, 754], [1132, 712]], 7, BRICK],                              // south of M3
   [[[752, 590], [790, 630], [866, 650], [940, 630], [985, 585]], 8, BRICK],                                // M5 forecourt
+  [[[570, 893], [580, 876], [619, 858], [661, 842], [703, 815], [736, 790], [746, 772]], 3.2, 0xd8d2c4],          // footpath from M9 up to M3: not part of the race
 ];
 
 // A block is a group of parts at a spot of the plan, turned some degrees (counterclockwise).
@@ -91,7 +92,7 @@ const CREEK = [[350, 520], [355, 545], [377, 590], [400, 629], [450, 657], [490,
 const BRIDGE = [400, 628];   // where the route crosses it
 const GROVES = [[430, 630, 590, 835], [320, 490, 475, 618]];   // left, top, right and bottom: south of the footbridge and north of it, trees stand closer
 
-const IGUANAS = [[600, 700, 30], [565, 765, 160], [690, 830, 200], [1010, 612, 300], [280, 950, 60]];   // [x, y, facing]
+const IGUANAS = [[600, 700, 30], [565, 765, 160], [640, 905, 200], [1010, 612, 300], [280, 950, 60]];   // [x, y, facing]
 const MONSTERS = [[345, 690], [472, 805], [690, 950], [895, 948], [645, 560], [360, 760], [352, 985], [985, 792]];
 const MONSTER_COLORS = [0x8e5bd6, 0x1f6fc5, 0xf08a24, 0xe24f6b, 0x22b5a6];
 const CRANE = [700, 470];
@@ -339,12 +340,13 @@ function samples(points, closed) {
 }
 
 const ROUTE_SAMPLES = samples(ROUTE, true);
-const ROAD_SAMPLES = ROADS.flatMap(([points]) => samples(points));
+const ROAD_SAMPLES = ROADS.filter(([, width]) => width >= 7).flatMap(([points]) => samples(points));
+const PATH_SAMPLES = ROADS.filter(([, width]) => width < 7).flatMap(([points]) => samples(points));   // narrow ones need less room
 const CREEK_SAMPLES = samples(CREEK);
 
 function isFree(x, y) {
   const near = (list, distance) => list.some(([px, py]) => Math.hypot(px - x, py - y) < distance);
-  if (near(ROUTE_SAMPLES, 30) || near(ROAD_SAMPLES, 50) || near(samples(RAILS), 20) || near(CREEK_SAMPLES, 11)) return false;
+  if (near(ROUTE_SAMPLES, 30) || near(ROAD_SAMPLES, 50) || near(PATH_SAMPLES, 16) || near(samples(RAILS), 20) || near(CREEK_SAMPLES, 11)) return false;
   if (near(IGUANAS, 45) || near([...MONSTERS, CRANE, TURBINE, GATE, BRIDGE], 24)) return false;
   if (ARCS.some(([, ax, ay, outer]) => Math.hypot(ax - x, ay - y) < outer + 14)) return false;
   if (FLATS.some(([fx, fy, w, d]) => Math.abs(fx - x) < w / 2 + 12 && Math.abs(fy - y) < d / 2 + 12)) return false;
