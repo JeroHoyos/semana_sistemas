@@ -31,6 +31,7 @@ const ROADS = [   // [points, width in units, color, has a center line]
     [740, 1040], [560, 1045], [460, 1065], [380, 1100], [310, 1160], [270, 1300]], 17.5, 0xb9b3a6, true],   // Carrera 80
   [[[700, 1040], [665, 1150], [630, 1300]], 10, 0xb9b3a6, true],                                           // Carrera 78a
   [[[640, 768], [800, 774], [960, 770], [1100, 754], [1132, 712]], 7, BRICK],                              // south of M3
+  [[[648, 603], [626, 640], [620, 700], [627, 745], [648, 770]], 7, BRICK],                                // west of M3: joins the M7 parking and the road south of M3
   [[[752, 590], [790, 630], [866, 650], [940, 630], [985, 585]], 8, BRICK],                                // M5 forecourt
   [[[570, 893], [580, 876], [619, 858], [661, 842], [703, 815], [736, 790], [746, 772]], 3.2, 0xd8d2c4],          // footpath from M9 up to M3: not part of the race
   [[[706, 598], [714, 560], [692, 512], [672, 470], [652, 434]], 2.6, 0x9b7a55],                                 // dirt trail from the route up to M6
@@ -93,7 +94,7 @@ const CREEK = [[350, 520], [355, 545], [377, 590], [400, 629], [450, 657], [490,
 const BRIDGE = [400, 628];   // where the route crosses it
 const GROVES = [[430, 630, 590, 835], [320, 490, 475, 618]];   // left, top, right and bottom: south of the footbridge and north of it, trees stand closer
 
-const IGUANAS = [[600, 700, 30], [565, 765, 160], [640, 905, 200], [1010, 612, 300], [280, 950, 60]];   // [x, y, facing]
+const IGUANAS = [[572, 700, 30], [565, 765, 160], [640, 905, 200], [1010, 612, 300], [280, 950, 60]];   // [x, y, facing]
 const MONSTERS = [[345, 690], [472, 805], [690, 950], [895, 948], [645, 560], [360, 760], [352, 985], [985, 792]];
 const MONSTER_COLORS = [0x8e5bd6, 0x1f6fc5, 0xf08a24, 0xe24f6b, 0x22b5a6];
 const CAT = [396, 838];   // the brown campus cat, sitting by the route
