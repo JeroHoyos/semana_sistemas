@@ -1898,9 +1898,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
   /* Taller hours and wider days (the week slides sideways): so the place fits in each block */
   .week-grid__grid { --hour: 104px; grid-template-columns: 50px repeat(3, 215px); min-width: 0; }
 
-  /* Tabs: become chips that wrap instead of overflowing the screen */
-  .schedule__tabs { flex-wrap: wrap; gap: 6px; border-bottom: 0; }
-  .tab { flex: 0 1 auto; padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; }
+  /* Tabs: a two-column grid of equal chips; "Todo" takes the whole first row */
+  .schedule__tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; border-bottom: 0; }
+  .tab { padding: 7px 10px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; }
+  .tab:first-child { grid-column: 1 / -1; }
   .tab[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff; }
   .tab[aria-pressed="true"]::after { display: none; }
 
