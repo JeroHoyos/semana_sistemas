@@ -88,8 +88,10 @@ const FLATS = [             // [x, y, width, depth, color or 'tennis' / 'basketb
   [315, 862, 144, 90, BRICK],
 ];
 const PALMS = [665, 693, 721, 749, 777, 805, 833, 861].map((x) => [x, 790]);   // the row in front of M3
+const CREEK = [[462, 636], [486, 684], [474, 736], [503, 786], [512, 826]];   // the stream through the grove, from the M7 parking down to M9
+const GROVE = [430, 630, 590, 835];   // left, top, right and bottom of that grove: trees stand closer here
 
-const IGUANAS = [[600, 700, 30], [470, 740, 120], [690, 830, 200], [1010, 612, 300], [280, 950, 60]];   // [x, y, facing]
+const IGUANAS = [[600, 700, 30], [535, 742, 160], [690, 830, 200], [1010, 612, 300], [280, 950, 60]];   // [x, y, facing]
 const MONSTERS = [[450, 680], [455, 790], [690, 950], [895, 948], [645, 560], [360, 760], [352, 985], [985, 792]];
 const MONSTER_COLORS = [0x8e5bd6, 0x1f6fc5, 0xf08a24, 0xe24f6b, 0x22b5a6];
 const CRANE = [700, 470];
@@ -354,10 +356,11 @@ function samples(points, closed) {
 
 const ROUTE_SAMPLES = samples(ROUTE, true);
 const ROAD_SAMPLES = ROADS.flatMap(([points]) => samples(points));
+const CREEK_SAMPLES = samples(CREEK);
 
 function isFree(x, y) {
   const near = (list, distance) => list.some(([px, py]) => Math.hypot(px - x, py - y) < distance);
-  if (near(ROUTE_SAMPLES, 30) || near(ROAD_SAMPLES, 50) || near(samples(RAILS), 20)) return false;
+  if (near(ROUTE_SAMPLES, 30) || near(ROAD_SAMPLES, 50) || near(samples(RAILS), 20) || near(CREEK_SAMPLES, 11)) return false;
   if (near(IGUANAS, 45) || near([...MONSTERS, ...PALMS, CRANE, TURBINE, GATE], 24)) return false;
   if (ARCS.some(([, ax, ay, outer]) => Math.hypot(ax - x, ay - y) < outer + 14)) return false;
   if (FLATS.some(([fx, fy, w, d]) => Math.abs(fx - x) < w / 2 + 12 && Math.abs(fy - y) < d / 2 + 12)) return false;
@@ -606,10 +609,21 @@ function buildRaceMap(box) {
   sign.position.copy(toWorld([764, 761], 8));
   scene.add(sign);
 
-  // Trees: the campus is an arboretum
-  for (let placed = 0, tries = 0; placed < 160 && tries < 4000; tries++) {
-    const x = left + 14 + random() * (right - left - 28);
-    const y = top + 14 + random() * (bottom - top - 28);
+  // The stream, with stones on its banks
+  const creek = new THREE.CatmullRomCurve3(CREEK.map((p) => toWorld(p))).getSpacedPoints(60);
+  scene.add(ribbon(creek, 2.4, 0x5fb7d9, 0.25, false));
+  creek.forEach((point, i) => {
+    if (i % 5) return;
+    const side = i % 10 ? 1.9 : -1.9;
+    scene.add(mesh(new THREE.DodecahedronGeometry(0.7 + random() * 0.5, 0), 0x8f969d, new THREE.Vector3(point.x + side, 0.4, point.z + random())));
+  });
+
+  // Trees: the campus is an arboretum. The first ones fill the grove, the rest go anywhere.
+  const [groveLeft, groveTop, groveRight, groveBottom] = GROVE;
+  for (let placed = 0, tries = 0; placed < 200 && tries < 5000; tries++) {
+    const inGrove = placed < 40;
+    const x = inGrove ? groveLeft + random() * (groveRight - groveLeft) : left + 14 + random() * (right - left - 28);
+    const y = inGrove ? groveTop + random() * (groveBottom - groveTop) : top + 14 + random() * (bottom - top - 28);
     if (!isFree(x, y)) continue;
     const item = tree(random);
     item.position.copy(toWorld([x, y]));
