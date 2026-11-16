@@ -6050,13 +6050,6 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 @media (max-width: 640px) {
   .competitions__actions { grid-template-columns: 1fr; }
 }
-.competitions__find-team {
-  background: #f0f6ff;
-  color: var(--blue-dark);
-}
-.competitions__find-team:hover {
-  background: #e4effd;
-}
 
 .team__actions-row {
   display: grid;
