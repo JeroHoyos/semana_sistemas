@@ -87,7 +87,6 @@ const FLATS = [             // [x, y, width, depth, color or 'tennis' / 'basketb
   [546, 598, 216, 50, BRICK],
   [315, 862, 144, 90, BRICK],
 ];
-const PALMS = [665, 693, 721, 749, 777, 805, 833, 861].map((x) => [x, 790]);   // the row in front of M3
 const CREEK = [[350, 520], [355, 545], [377, 590], [400, 629], [450, 657], [490, 708], [512, 758], [518, 787], [512, 828]];   // the stream: past M8a, under the footbridge, through the grove down to M9
 const BRIDGE = [400, 628];   // where the route crosses it
 const GROVE = [430, 630, 590, 835];   // left, top, right and bottom of that grove: trees stand closer here
@@ -232,21 +231,6 @@ function courtMaterial(kind) {
   return new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas) });
 }
 
-function palm() {
-  const group = new THREE.Group();
-  group.add(mesh(new THREE.CylinderGeometry(0.35, 0.5, 11, 6), 0x9a8468, new THREE.Vector3(0, 5.5, 0)));
-  for (let i = 0; i < 6; i++) {
-    const leaf = new THREE.Group();
-    leaf.position.y = 11;
-    leaf.rotation.y = (i * Math.PI) / 3;
-    const blade = mesh(new THREE.BoxGeometry(4.6, 0.25, 1.1), 0x4f8a3a, new THREE.Vector3(2.2, -0.5, 0));
-    blade.rotation.z = -0.4;
-    leaf.add(blade);
-    group.add(leaf);
-  }
-  return group;
-}
-
 // A flat band of the given width (units) along the points (roads)
 function ribbon(points, width, color, height, closed) {
   const vertices = [];
@@ -361,7 +345,7 @@ const CREEK_SAMPLES = samples(CREEK);
 function isFree(x, y) {
   const near = (list, distance) => list.some(([px, py]) => Math.hypot(px - x, py - y) < distance);
   if (near(ROUTE_SAMPLES, 30) || near(ROAD_SAMPLES, 50) || near(samples(RAILS), 20) || near(CREEK_SAMPLES, 11)) return false;
-  if (near(IGUANAS, 45) || near([...MONSTERS, ...PALMS, CRANE, TURBINE, GATE, BRIDGE], 24)) return false;
+  if (near(IGUANAS, 45) || near([...MONSTERS, CRANE, TURBINE, GATE, BRIDGE], 24)) return false;
   if (ARCS.some(([, ax, ay, outer]) => Math.hypot(ax - x, ay - y) < outer + 14)) return false;
   if (FLATS.some(([fx, fy, w, d]) => Math.abs(fx - x) < w / 2 + 12 && Math.abs(fy - y) < d / 2 + 12)) return false;
   // Inside a block? Turn the point back into the block's own frame and compare with each part
@@ -555,11 +539,6 @@ function buildRaceMap(box) {
     const sides = typeof floor === 'string' ? 0xd9d6cc : floor;
     scene.add(mesh(new THREE.BoxGeometry(w * S, 0.4, d * S), [sides, sides, top, sides, sides, sides], toWorld([x, y], 0.2)));
   }
-  for (const spot of PALMS) {
-    const item = palm();
-    item.position.copy(toWorld(spot));
-    scene.add(item);
-  }
 
   const route = new THREE.CatmullRomCurve3(ROUTE.map((p) => toWorld(p, 1)), true);
   scene.add(ribbon(route.getSpacedPoints(300).slice(0, -1), 9, 0xe3d8c3, 0.35, true));
@@ -606,7 +585,7 @@ function buildRaceMap(box) {
 
   // The big banner on M3, facing the courts
   const sign = banner();
-  sign.position.copy(toWorld([764, 761], 8));
+  sign.position.copy(toWorld([764, 762], 9.6));
   scene.add(sign);
 
   // The stream, with stones on its banks
