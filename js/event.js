@@ -43,6 +43,7 @@ function renderInfo() {
     registrationSection(),
     preRegisterSection(),
     descriptionSection(),
+    routeMapSection(),
     standsSection(),
     activity.team || activity.individual ? '<div id="participants"></div>' : '',   // filled by js/brackets.js
     activity.bracket ? '<div id="bracket"></div>' : '',   // filled by js/brackets.js
@@ -184,6 +185,21 @@ function preRegisterSection() {
 
 // YouTube video (video field). youtube-nocookie leaves no cookies until someone presses play.
 // enablejsapi lets the page know when it plays and when it ends (js/secrets.js).
+// Empty box that js/race-map.js fills with the 3D route
+function routeMapSection() {
+  if (!activity.routeMap) return '';
+
+  return `
+    <h2 class="event__subtitle">El recorrido</h2>
+    <div class="race-map" id="race-map" role="img"
+      aria-label="Mapa 3D del recorrido por el campus Robledo: sale y llega al Hall del M10, sube entre las canchas, cruza el M3 por su portal, pasa frente al M5, sigue hacia el oeste por el M4 hasta el parqueadero del M7, cruza el puente del riachuelo, baja por el lado oeste del bosque y del M9 y vuelve por el borde de la Carrera 80."></div>
+    <p class="race-map__hint">
+      <span class="race-map__hint--mouse">Arrastra el mapa para girarlo y usa la rueda del mouse para acercarte.</span>
+      <span class="race-map__hint--touch">Gira el mapa con un dedo y pellizca para acercarte.</span>
+    </p>
+  `;
+}
+
 function videoSection(video) {
   if (!video) return '';
 

@@ -315,7 +315,7 @@ const ACTIVITIES = [
   { id: 'atletismo', day: 'fri', start: '08:00', end: '09:00', type: 'competition', title: 'Carrera de atletismo 8‑bit', individual: { tab: 'Atletismo', max: 45 },
     icon: 'pixel', color: '#f08a24', summary: 'Una carrera con alma de videojuego retro.', place: 'Hall M10',
     description: 'Pon a prueba tu velocidad y resistencia en un circuito a lo largo de todo el campus. Prepárate para enfrentar los cambios de inclinación del terreno, superar cada nivel y retarte a ti mismo en una carrera con pura alma de videojuego retro.',
-    image: 'img/flyers/athletics.jpg',
+    image: 'img/flyers/athletics.jpg', routeMap: true,
     decorations: ['medal10', 'medal01', 'medal11'] },
   { id: 'futbol', day: 'fri', start: '09:00', end: '11:00', type: 'competition', title: 'Torneo de fútbol', team: { tab: 'Fútbol', size: 5, maxTeams: 8 }, bracket: true,
     icon: 'ball', color: '#1667c2', summary: 'Arma tu equipo y sal a la cancha.', place: 'Placa polideportiva',
