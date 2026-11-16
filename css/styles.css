@@ -1869,10 +1869,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* Mobile */
 @media (max-width: 640px) {
   /* Hero */
-  .hero__content { padding: 56px 0 64px; }
+  .hero__content { padding: 96px 0 72px; }   /* room for the Sustómetro and session buttons above */
   .hero__place { font-size: 12px; letter-spacing: .16em; }
-  .varsity-letters { font-size: 15.2vw; }
-  .hero__actions { margin-top: 32px; }
+  .hero__title { margin-top: 14px; }
+  .varsity-letters { font-size: 14vw; }      /* leaves a margin at the screen edges */
+  .hero__actions { flex-direction: column; align-items: center; gap: 16px; margin-top: 36px; }
   .hero__days li { height: 48px; padding: 0 16px; font-size: 15px; }
   .hero__button { height: 52px; }
 
@@ -2234,17 +2235,22 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 @media (max-width: 640px) {
   .scare-meter-bar {
-    top: 14px;
-    left: 14px;
+    top: 18px;
+    left: 16px;
   }
   .session-bar {
-    top: 14px;
-    right: 14px;
+    top: 18px;
+    right: 16px;
+    max-width: calc(100% - 176px);   /* a long name never runs into the Sustómetro button */
   }
+  .session-bar .hero__button--session { max-width: 100%; }
+  #session-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .hero__button--session {
     height: 38px;
     padding: 0 14px 0 16px;
+    gap: 8px;
     font-size: 11px;
+    letter-spacing: .08em;
   }
   .auth-modal__box {
     padding: 24px 18px 26px;
