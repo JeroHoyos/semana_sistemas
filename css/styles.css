@@ -7756,3 +7756,23 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 .prereg-option__spots--in { background: var(--blue); color: #fff; }
 
 .prereg-modal__cta { width: min(100%, 380px); }
+
+/* ---------- Race map (js/race-map.js) ---------- */
+
+.race-map {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  max-height: 520px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #eaf2fb;
+  color: var(--gray);
+  box-shadow: 0 18px 30px -18px rgba(10, 44, 82, .55);
+  cursor: grab;
+}
+.race-map:active { cursor: grabbing; }
+@media (max-width: 640px) { .race-map { aspect-ratio: 1; } }
+.race-map canvas { display: block; }
+.race-map__hint { margin-top: 8px; font-size: 13px; color: var(--gray); text-align: center; }

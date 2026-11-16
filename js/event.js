@@ -43,6 +43,7 @@ function renderInfo() {
     registrationSection(),
     preRegisterSection(),
     descriptionSection(),
+    routeMapSection(),
     standsSection(),
     activity.team || activity.individual ? '<div id="participants"></div>' : '',   // filled by js/brackets.js
     activity.bracket ? '<div id="bracket"></div>' : '',   // filled by js/brackets.js
@@ -184,6 +185,18 @@ function preRegisterSection() {
 
 // YouTube video (video field). youtube-nocookie leaves no cookies until someone presses play.
 // enablejsapi lets the page know when it plays and when it ends (js/secrets.js).
+// Empty box that js/race-map.js fills with the 3D route
+function routeMapSection() {
+  if (!activity.routeMap) return '';
+
+  return `
+    <h2 class="event__subtitle">El recorrido</h2>
+    <div class="race-map" id="race-map" role="img"
+      aria-label="Mapa 3D del recorrido: una vuelta completa al núcleo de bloques, con salida y meta en el mismo punto, junto a la Carrera 80. Sube hacia el M8, cruza por el norte, baja junto al M9 y vuelve."></div>
+    <p class="race-map__hint">Arrastra para girar el mapa; pellizca o usa la rueda para acercarte.</p>
+  `;
+}
+
 function videoSection(video) {
   if (!video) return '';
 
