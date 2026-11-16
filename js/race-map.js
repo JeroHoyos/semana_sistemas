@@ -96,9 +96,7 @@ const GROVES = [[430, 630, 590, 835], [320, 490, 475, 618]];   // left, top, rig
 const IGUANAS = [[600, 700, 30], [565, 765, 160], [640, 905, 200], [1010, 612, 300], [280, 950, 60]];   // [x, y, facing]
 const MONSTERS = [[345, 690], [472, 805], [690, 950], [895, 948], [645, 560], [360, 760], [352, 985], [985, 792]];
 const MONSTER_COLORS = [0x8e5bd6, 0x1f6fc5, 0xf08a24, 0xe24f6b, 0x22b5a6];
-const TURBINE = [130, 560];
 const CAT = [396, 838];   // the brown campus cat, sitting by the route
-const RAILS = [[300, 470], [450, 470]];   // the mine cart goes back and forth on them
 
 const THREE_URLS = [
   'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
@@ -347,8 +345,8 @@ const CREEK_SAMPLES = samples(CREEK);
 
 function isFree(x, y) {
   const near = (list, distance) => list.some(([px, py]) => Math.hypot(px - x, py - y) < distance);
-  if (near(ROUTE_SAMPLES, 30) || near(ROAD_SAMPLES, 50) || near(PATH_SAMPLES, 16) || near(samples(RAILS), 20) || near(CREEK_SAMPLES, 11)) return false;
-  if (near(IGUANAS, 45) || near([...MONSTERS, TURBINE, GATE, BRIDGE, CAT], 24)) return false;
+  if (near(ROUTE_SAMPLES, 30) || near(ROAD_SAMPLES, 50) || near(PATH_SAMPLES, 16) || near(CREEK_SAMPLES, 11)) return false;
+  if (near(IGUANAS, 45) || near([...MONSTERS, GATE, BRIDGE, CAT], 24)) return false;
   if (ARCS.some(([, ax, ay, outer]) => Math.hypot(ax - x, ay - y) < outer + 14)) return false;
   if (FLATS.some(([fx, fy, w, d]) => Math.abs(fx - x) < w / 2 + 12 && Math.abs(fy - y) < d / 2 + 12)) return false;
   // Inside a block? Turn the point back into the block's own frame and compare with each part
@@ -463,23 +461,6 @@ function cat() {
   return group;
 }
 
-function windTurbine() {
-  const group = new THREE.Group();
-  group.add(mesh(new THREE.CylinderGeometry(0.8, 1.5, 44, 10), 0xf4f6f8, new THREE.Vector3(0, 22, 0)));
-  group.add(mesh(new THREE.BoxGeometry(5, 2.4, 2.4), 0xf4f6f8, new THREE.Vector3(0.5, 44, 0)));
-  const rotor = new THREE.Group();
-  rotor.position.set(3.4, 44, 0);
-  for (let i = 0; i < 3; i++) {
-    const arm = new THREE.Group();
-    arm.rotation.x = (i * Math.PI * 2) / 3;
-    arm.add(mesh(new THREE.BoxGeometry(0.4, 18, 1.4), 0xffffff, new THREE.Vector3(0, 9, 0)));
-    rotor.add(arm);
-  }
-  group.add(rotor);
-  group.userData.spin = rotor;
-  return group;
-}
-
 function satelliteDish() {
   const group = new THREE.Group();
   group.add(mesh(new THREE.CylinderGeometry(0.4, 0.6, 4, 6), 0x9aa1a8, new THREE.Vector3(0, 2, 0)));
@@ -490,20 +471,6 @@ function satelliteDish() {
   turn.add(dish);
   group.add(turn);
   group.userData.spin = turn;
-  return group;
-}
-
-function mineCart() {
-  const group = new THREE.Group();
-  group.add(mesh(new THREE.BoxGeometry(5, 3, 3.4), 0x8b5a2b, new THREE.Vector3(0, 2.4, 0)));
-  for (let i = 0; i < 4; i++) {   // ore
-    group.add(mesh(new THREE.DodecahedronGeometry(0.9, 0), [0x6b6f75, 0xc9a227][i % 2], new THREE.Vector3(-1.5 + i, 4.2, (i % 2) - 0.5)));
-  }
-  for (const [x, z] of [[1.6, 1.8], [-1.6, 1.8], [1.6, -1.8], [-1.6, -1.8]]) {
-    const wheel = mesh(new THREE.CylinderGeometry(0.8, 0.8, 0.4, 10), 0x333333, new THREE.Vector3(x, 0.8, z));
-    wheel.rotation.x = Math.PI / 2;
-    group.add(wheel);
-  }
   return group;
 }
 
@@ -634,24 +601,10 @@ function buildRaceMap(box) {
     placed++;
   }
 
-  // Engineering bits
-  const turbine = windTurbine();
-  turbine.position.copy(toWorld(TURBINE));
-  turbine.rotation.y = 0.6;
-  scene.add(turbine);
+  // The dish of Computación
   const dish = satelliteDish();
   dish.position.copy(toWorld([279, 608], 17));   // on the flat roof of M8a
   scene.add(dish);
-
-  const [railStart, railEnd] = RAILS.map((p) => toWorld(p, 0.3));
-  for (const z of [-1.8, 1.8]) {
-    scene.add(mesh(new THREE.BoxGeometry(railEnd.x - railStart.x, 0.4, 0.4), 0x6b6f75, new THREE.Vector3((railStart.x + railEnd.x) / 2, 0.4, railStart.z + z)));
-  }
-  for (let x = railStart.x; x <= railEnd.x; x += 3) {
-    scene.add(mesh(new THREE.BoxGeometry(0.8, 0.3, 5), 0x7a5a3c, new THREE.Vector3(x, 0.2, railStart.z)));
-  }
-  const cart = mineCart();
-  scene.add(cart);
 
   const catItem = cat();
   catItem.position.copy(toWorld(CAT));
@@ -749,9 +702,7 @@ function buildRaceMap(box) {
     runnerItem.rotateY(-Math.PI / 2);
     runnerItem.userData.legs.forEach((leg, i) => { leg.rotation.z = Math.sin(time * 10 + i * Math.PI) * 0.6; });
 
-    turbine.userData.spin.rotation.x = time * 1.5;
     dish.userData.spin.rotation.y = time * 0.4;
-    cart.position.lerpVectors(railStart, railEnd, (Math.sin(time * 0.5) + 1) / 2);
     iguanas.forEach((item, i) => { item.userData.head.rotation.z = Math.max(0, Math.sin(time * 2 + i * 1.7)) * 0.35; });   // the head bob
     fans.forEach((item, i) => {
       item.position.y = Math.max(0, Math.sin(time * 5 + i)) * 1.2;   // jumping with joy
