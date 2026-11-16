@@ -5205,7 +5205,25 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 .codes__action:hover { background: var(--blue); }
 
 .codes__collection-box { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+/* Dropdown: the count and the bar open and close the list */
+.codes__collection-box summary { list-style: none; cursor: pointer; }
+.codes__collection-box summary::-webkit-details-marker { display: none; }
+.codes__collection-box summary::after {   /* chevron, turns when open */
+  content: '';
+  display: block;
+  width: 9px;
+  height: 9px;
+  margin: 12px auto 0;
+  border: solid var(--gray);
+  border-width: 0 2px 2px 0;
+  rotate: 45deg;
+  transition: rotate .2s;
+}
+.codes__collection-box[open] summary::after { rotate: 225deg; }
+.codes__collection-box:has(.codes__collection:empty) summary { pointer-events: none; }   /* signed out: nothing to open */
+.codes__collection-box:has(.codes__collection:empty) summary::after { display: none; }
 .codes__count {
+  display: block;
   font-family: var(--font-varsity);
   font-size: 13px;
   letter-spacing: .18em;
@@ -5214,6 +5232,7 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 }
 /* Collection progress bar (how many titles they have) */
 .codes__progress {
+  display: block;
   width: min(220px, 70%);
   height: 6px;
   margin: 10px auto 0;
