@@ -32,6 +32,8 @@ const ROADS = [   // [points, width in units, color, has a center line]
   [[[700, 1040], [665, 1150], [630, 1300]], 10, 0xb9b3a6, true],                                           // Carrera 78a
   [[[640, 768], [800, 774], [960, 770], [1100, 754], [1132, 712]], 7, BRICK],                              // south of M3
   [[[752, 590], [790, 630], [866, 650], [940, 630], [985, 585]], 8, BRICK],                                // M5 forecourt
+  [[[570, 893], [580, 876], [619, 858], [661, 842], [703, 815], [736, 790], [746, 772]], 3.2, 0xd8d2c4],          // footpath from M9 up to M3: not part of the race
+  [[[706, 598], [714, 560], [692, 512], [672, 470], [652, 434]], 2.6, 0x9b7a55],                                 // dirt trail from the route up to M6
 ];
 
 // A block is a group of parts at a spot of the plan, turned some degrees (counterclockwise).
@@ -91,11 +93,11 @@ const CREEK = [[350, 520], [355, 545], [377, 590], [400, 629], [450, 657], [490,
 const BRIDGE = [400, 628];   // where the route crosses it
 const GROVES = [[430, 630, 590, 835], [320, 490, 475, 618]];   // left, top, right and bottom: south of the footbridge and north of it, trees stand closer
 
-const IGUANAS = [[600, 700, 30], [565, 765, 160], [690, 830, 200], [1010, 612, 300], [280, 950, 60]];   // [x, y, facing]
+const IGUANAS = [[600, 700, 30], [565, 765, 160], [640, 905, 200], [1010, 612, 300], [280, 950, 60]];   // [x, y, facing]
 const MONSTERS = [[345, 690], [472, 805], [690, 950], [895, 948], [645, 560], [360, 760], [352, 985], [985, 792]];
 const MONSTER_COLORS = [0x8e5bd6, 0x1f6fc5, 0xf08a24, 0xe24f6b, 0x22b5a6];
-const CRANE = [700, 470];
 const TURBINE = [130, 560];
+const CAT = [396, 838];   // the brown campus cat, sitting by the route
 const RAILS = [[300, 470], [450, 470]];   // the mine cart goes back and forth on them
 
 const THREE_URLS = [
@@ -339,13 +341,14 @@ function samples(points, closed) {
 }
 
 const ROUTE_SAMPLES = samples(ROUTE, true);
-const ROAD_SAMPLES = ROADS.flatMap(([points]) => samples(points));
+const ROAD_SAMPLES = ROADS.filter(([, width]) => width >= 7).flatMap(([points]) => samples(points));
+const PATH_SAMPLES = ROADS.filter(([, width]) => width < 7).flatMap(([points]) => samples(points));   // narrow ones need less room
 const CREEK_SAMPLES = samples(CREEK);
 
 function isFree(x, y) {
   const near = (list, distance) => list.some(([px, py]) => Math.hypot(px - x, py - y) < distance);
-  if (near(ROUTE_SAMPLES, 30) || near(ROAD_SAMPLES, 50) || near(samples(RAILS), 20) || near(CREEK_SAMPLES, 11)) return false;
-  if (near(IGUANAS, 45) || near([...MONSTERS, CRANE, TURBINE, GATE, BRIDGE], 24)) return false;
+  if (near(ROUTE_SAMPLES, 30) || near(ROAD_SAMPLES, 50) || near(PATH_SAMPLES, 16) || near(samples(RAILS), 20) || near(CREEK_SAMPLES, 11)) return false;
+  if (near(IGUANAS, 45) || near([...MONSTERS, TURBINE, GATE, BRIDGE, CAT], 24)) return false;
   if (ARCS.some(([, ax, ay, outer]) => Math.hypot(ax - x, ay - y) < outer + 14)) return false;
   if (FLATS.some(([fx, fy, w, d]) => Math.abs(fx - x) < w / 2 + 12 && Math.abs(fy - y) < d / 2 + 12)) return false;
   // Inside a block? Turn the point back into the block's own frame and compare with each part
@@ -437,19 +440,26 @@ function pennants(from, to, color) {
   return group;
 }
 
-function crane() {
+// Sitting brown cat, tail up. Faces +z.
+function cat() {
   const group = new THREE.Group();
-  const yellow = 0xf2b705;
-  group.add(mesh(new THREE.BoxGeometry(2, 46, 2), yellow, new THREE.Vector3(0, 23, 0)));
-  const top = new THREE.Group();
-  top.position.y = 46;
-  top.add(mesh(new THREE.BoxGeometry(44, 1.6, 1.6), yellow, new THREE.Vector3(12, 0, 0)));
-  top.add(mesh(new THREE.BoxGeometry(5, 3, 3), 0x555b61, new THREE.Vector3(-8, -1, 0)));   // counterweight
-  top.add(mesh(new THREE.BoxGeometry(2.6, 3, 2.6), 0x0a2c52, new THREE.Vector3(0, 2, 0)));   // cabin
-  top.add(mesh(new THREE.BoxGeometry(0.2, 18, 0.2), 0x333333, new THREE.Vector3(26, -9, 0)));  // cable
-  top.add(mesh(new THREE.BoxGeometry(4, 2, 4), 0xd2691e, new THREE.Vector3(26, -19, 0)));       // load: beams
-  group.add(top);
-  group.userData.spin = top;
+  const brown = 0x8b5a2b;
+  const body = mesh(new THREE.BoxGeometry(1.6, 2, 2.2), brown, new THREE.Vector3(0, 1.1, 0));
+  body.rotation.x = -0.35;   // sitting: chest up
+  group.add(body);
+  group.add(mesh(new THREE.BoxGeometry(1.6, 1.3, 1.3), brown, new THREE.Vector3(0, 2.7, 0.9)));        // head
+  group.add(mesh(new THREE.BoxGeometry(0.7, 0.5, 0.4), 0xe8d5b5, new THREE.Vector3(0, 2.45, 1.6)));     // muzzle
+  for (const side of [-1, 1]) {
+    group.add(mesh(new THREE.ConeGeometry(0.35, 0.7, 4), brown, new THREE.Vector3(side * 0.5, 3.6, 0.8)));   // ears
+    group.add(mesh(new THREE.BoxGeometry(0.25, 0.3, 0.1), 0x2e7d32, new THREE.Vector3(side * 0.4, 2.9, 1.56)));   // green eyes
+    group.add(mesh(new THREE.BoxGeometry(0.4, 1.5, 0.4), 0x7a4a22, new THREE.Vector3(side * 0.45, 0.75, 0.9)));   // front legs
+  }
+  const tail = new THREE.Group();
+  tail.position.set(0, 0.5, -1.1);
+  tail.add(mesh(new THREE.BoxGeometry(0.35, 2.4, 0.35), 0x7a4a22, new THREE.Vector3(0, 1.2, 0)));
+  group.add(tail);
+  group.userData.tail = tail;
+  group.scale.setScalar(1.4);
   return group;
 }
 
@@ -625,9 +635,6 @@ function buildRaceMap(box) {
   }
 
   // Engineering bits
-  const craneItem = crane();
-  craneItem.position.copy(toWorld(CRANE));
-  scene.add(craneItem);
   const turbine = windTurbine();
   turbine.position.copy(toWorld(TURBINE));
   turbine.rotation.y = 0.6;
@@ -645,6 +652,11 @@ function buildRaceMap(box) {
   }
   const cart = mineCart();
   scene.add(cart);
+
+  const catItem = cat();
+  catItem.position.copy(toWorld(CAT));
+  catItem.lookAt(toWorld([430, 838]));   // watching the runners go by
+  scene.add(catItem);
 
   const iguanas = IGUANAS.map(([x, y, facing]) => {
     const item = iguana();
@@ -737,7 +749,6 @@ function buildRaceMap(box) {
     runnerItem.rotateY(-Math.PI / 2);
     runnerItem.userData.legs.forEach((leg, i) => { leg.rotation.z = Math.sin(time * 10 + i * Math.PI) * 0.6; });
 
-    craneItem.userData.spin.rotation.y = time * 0.15;
     turbine.userData.spin.rotation.x = time * 1.5;
     dish.userData.spin.rotation.y = time * 0.4;
     cart.position.lerpVectors(railStart, railEnd, (Math.sin(time * 0.5) + 1) / 2);
@@ -746,6 +757,7 @@ function buildRaceMap(box) {
       item.position.y = Math.max(0, Math.sin(time * 5 + i)) * 1.2;   // jumping with joy
       item.userData.arms.forEach((arm, side) => { arm.rotation.z = (side ? -1 : 1) * (0.3 + Math.sin(time * 6 + i) * 0.3); });
     });
+    catItem.userData.tail.rotation.z = Math.sin(time * 2.5) * 0.5;
     coins.forEach((coin) => { coin.rotation.z = time * 2; });
 
     controls.update();
