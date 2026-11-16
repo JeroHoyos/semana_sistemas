@@ -89,7 +89,7 @@ const FLATS = [             // [x, y, width, depth, color or 'tennis' / 'basketb
 ];
 const CREEK = [[350, 520], [355, 545], [377, 590], [400, 629], [450, 657], [490, 708], [512, 758], [518, 787], [512, 828]];   // the stream: past M8a, under the footbridge, through the grove down to M9
 const BRIDGE = [400, 628];   // where the route crosses it
-const GROVE = [430, 630, 590, 835];   // left, top, right and bottom of that grove: trees stand closer here
+const GROVES = [[430, 630, 590, 835], [320, 490, 475, 618]];   // left, top, right and bottom: south of the footbridge and north of it, trees stand closer
 
 const IGUANAS = [[600, 700, 30], [565, 765, 160], [690, 830, 200], [1010, 612, 300], [280, 950, 60]];   // [x, y, facing]
 const MONSTERS = [[345, 690], [472, 805], [690, 950], [895, 948], [645, 560], [360, 760], [352, 985], [985, 792]];
@@ -611,10 +611,10 @@ function buildRaceMap(box) {
   bridge.lookAt(bridge.position.clone().add(route.getTangentAt(bridgeT).setY(0)));
   scene.add(bridge);
 
-  // Trees: the campus is an arboretum. The first ones fill the grove, the rest go anywhere.
-  const [groveLeft, groveTop, groveRight, groveBottom] = GROVE;
-  for (let placed = 0, tries = 0; placed < 200 && tries < 5000; tries++) {
-    const inGrove = placed < 40;
+  // Trees: the campus is an arboretum. The first ones fill the groves, the rest go anywhere.
+  for (let placed = 0, tries = 0; placed < 235 && tries < 6000; tries++) {
+    const inGrove = placed < 75;
+    const [groveLeft, groveTop, groveRight, groveBottom] = GROVES[placed < 40 ? 0 : 1];
     const x = inGrove ? groveLeft + random() * (groveRight - groveLeft) : left + 14 + random() * (right - left - 28);
     const y = inGrove ? groveTop + random() * (groveBottom - groveTop) : top + 14 + random() * (bottom - top - 28);
     if (!isFree(x, y)) continue;
