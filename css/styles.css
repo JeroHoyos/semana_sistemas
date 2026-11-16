@@ -6019,15 +6019,18 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 
 /* ---------- 15. Team registration (inscripciones.html) ---------- */
 
+/* Two buttons of the same width, side by side; stacked on phones */
 .competitions__actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 14px;
-  margin-top: 22px;
+  width: fit-content;
+  margin: 22px auto 0;
 }
-.competitions__actions .hero__button { margin-top: 0; }
+.competitions__actions .hero__button { margin-top: 0; justify-content: center; padding: 0 26px; }
+@media (max-width: 640px) {
+  .competitions__actions { grid-template-columns: 1fr; }
+}
 .competitions__find-team {
   background: #f0f6ff;
   color: var(--blue-dark);
