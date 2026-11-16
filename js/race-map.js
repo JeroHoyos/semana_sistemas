@@ -95,7 +95,6 @@ const GROVES = [[430, 630, 590, 835], [320, 490, 475, 618]];   // left, top, rig
 const IGUANAS = [[600, 700, 30], [565, 765, 160], [640, 905, 200], [1010, 612, 300], [280, 950, 60]];   // [x, y, facing]
 const MONSTERS = [[345, 690], [472, 805], [690, 950], [895, 948], [645, 560], [360, 760], [352, 985], [985, 792]];
 const MONSTER_COLORS = [0x8e5bd6, 0x1f6fc5, 0xf08a24, 0xe24f6b, 0x22b5a6];
-const CRANE = [700, 470];
 const TURBINE = [130, 560];
 const RAILS = [[300, 470], [450, 470]];   // the mine cart goes back and forth on them
 
@@ -347,7 +346,7 @@ const CREEK_SAMPLES = samples(CREEK);
 function isFree(x, y) {
   const near = (list, distance) => list.some(([px, py]) => Math.hypot(px - x, py - y) < distance);
   if (near(ROUTE_SAMPLES, 30) || near(ROAD_SAMPLES, 50) || near(PATH_SAMPLES, 16) || near(samples(RAILS), 20) || near(CREEK_SAMPLES, 11)) return false;
-  if (near(IGUANAS, 45) || near([...MONSTERS, CRANE, TURBINE, GATE, BRIDGE], 24)) return false;
+  if (near(IGUANAS, 45) || near([...MONSTERS, TURBINE, GATE, BRIDGE], 24)) return false;
   if (ARCS.some(([, ax, ay, outer]) => Math.hypot(ax - x, ay - y) < outer + 14)) return false;
   if (FLATS.some(([fx, fy, w, d]) => Math.abs(fx - x) < w / 2 + 12 && Math.abs(fy - y) < d / 2 + 12)) return false;
   // Inside a block? Turn the point back into the block's own frame and compare with each part
@@ -436,22 +435,6 @@ function pennants(from, to, color) {
     flag.rotation.x = Math.PI;
     group.add(flag);
   }
-  return group;
-}
-
-function crane() {
-  const group = new THREE.Group();
-  const yellow = 0xf2b705;
-  group.add(mesh(new THREE.BoxGeometry(2, 46, 2), yellow, new THREE.Vector3(0, 23, 0)));
-  const top = new THREE.Group();
-  top.position.y = 46;
-  top.add(mesh(new THREE.BoxGeometry(44, 1.6, 1.6), yellow, new THREE.Vector3(12, 0, 0)));
-  top.add(mesh(new THREE.BoxGeometry(5, 3, 3), 0x555b61, new THREE.Vector3(-8, -1, 0)));   // counterweight
-  top.add(mesh(new THREE.BoxGeometry(2.6, 3, 2.6), 0x0a2c52, new THREE.Vector3(0, 2, 0)));   // cabin
-  top.add(mesh(new THREE.BoxGeometry(0.2, 18, 0.2), 0x333333, new THREE.Vector3(26, -9, 0)));  // cable
-  top.add(mesh(new THREE.BoxGeometry(4, 2, 4), 0xd2691e, new THREE.Vector3(26, -19, 0)));       // load: beams
-  group.add(top);
-  group.userData.spin = top;
   return group;
 }
 
@@ -627,9 +610,6 @@ function buildRaceMap(box) {
   }
 
   // Engineering bits
-  const craneItem = crane();
-  craneItem.position.copy(toWorld(CRANE));
-  scene.add(craneItem);
   const turbine = windTurbine();
   turbine.position.copy(toWorld(TURBINE));
   turbine.rotation.y = 0.6;
@@ -739,7 +719,6 @@ function buildRaceMap(box) {
     runnerItem.rotateY(-Math.PI / 2);
     runnerItem.userData.legs.forEach((leg, i) => { leg.rotation.z = Math.sin(time * 10 + i * Math.PI) * 0.6; });
 
-    craneItem.userData.spin.rotation.y = time * 0.15;
     turbine.userData.spin.rotation.x = time * 1.5;
     dish.userData.spin.rotation.y = time * 0.4;
     cart.position.lerpVectors(railStart, railEnd, (Math.sin(time * 0.5) + 1) / 2);
