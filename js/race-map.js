@@ -19,46 +19,78 @@ const ROUTE = [
   [390, 908], [397, 975], [428, 998], [561, 995], [715, 990], [869, 985], [935, 968],
 ];
 
-const ROADS = [   // [points, width in units]
-  [[[960, 380], [1010, 460], [1090, 560], [1150, 660], [1175, 770], [1155, 880], [1080, 975], [920, 1022],
-    [740, 1040], [560, 1045], [460, 1065], [380, 1100], [310, 1160], [270, 1300]], 17.5],   // Carrera 80
-  [[[700, 1040], [665, 1150], [630, 1300]], 10],                                           // Carrera 78a
-];
-
-const TILE = 0x9c4f3a;
-const CREAM = 0xece3d3;
+const TILE = 0x8a4636;     // clay tile roofs
+const STONE = 0xd6cfc2;    // the old blocks' walls
 const WHITE = 0xe6e4df;
-const GRAY = 0xa3a8ad;
+const CONCRETE = 0xbfc2c4; // flat roofs
 const SLATE = 0x4a4f55;
+const BRICK = 0x8a7466;    // the campus' own paved roads
 
-// at: center on the plan · size: width and depth (plan pixels) · height (units) · turn: degrees, counterclockwise
+const ROADS = [   // [points, width in units, color, has a center line]
+  [[[960, 380], [1010, 460], [1090, 560], [1150, 660], [1175, 770], [1155, 880], [1080, 975], [920, 1022],
+    [740, 1040], [560, 1045], [460, 1065], [380, 1100], [310, 1160], [270, 1300]], 17.5, 0xb9b3a6, true],   // Carrera 80
+  [[[700, 1040], [665, 1150], [630, 1300]], 10, 0xb9b3a6, true],                                           // Carrera 78a
+  [[[640, 768], [800, 774], [960, 770], [1100, 754], [1132, 712]], 7, BRICK],                              // south of M3
+  [[[752, 590], [790, 630], [866, 650], [940, 630], [985, 585]], 8, BRICK],                                // M5 forecourt
+];
+
+// A block is a group of parts at a spot of the plan, turned some degrees (counterclockwise).
+// Part: [x, y from that spot, width, depth (plan pixels), height (units), roof, roof color, walls, lifted (units)]
+// Roofs: 'gable' (ridge along the longer side), 'low' (same, flatter) or 'flat'.
 const BUILDINGS = [
-  { at: [510, 1175], size: [160, 130], height: 14, label: 'M1', roof: TILE, walls: CREAM },
-  { at: [325, 1015], size: [100, 60], height: 14, label: 'M2', turn: 35, roof: TILE, walls: CREAM },
-  { at: [764, 707], size: [241, 107], height: 16, roof: TILE, walls: CREAM },     // M3, west wing
-  { at: [1025, 697], size: [180, 97], height: 16, roof: TILE, walls: CREAM },     // M3, east wing
-  { at: [712, 645], size: [92, 40], height: 9, label: 'M4', turn: -12, roof: TILE, walls: CREAM },
-  { at: [556, 390], size: [175, 95], height: 8, label: 'M6', turn: -8, roof: TILE, walls: CREAM },
-  { at: [561, 527], size: [123, 102], height: 30, label: 'M7', roof: GRAY, walls: WHITE },
-  { at: [279, 608], size: [120, 45], height: 18, label: 'M8a', turn: 40, roof: GRAY, walls: WHITE },
-  { at: [279, 695], size: [150, 60], height: 14, label: 'M8 · Computación', turn: 20, roof: TILE, walls: CREAM },
-  { at: [248, 761], size: [140, 55], height: 14, label: 'M8b', turn: -35, roof: GRAY, walls: WHITE },
-  { at: [520, 852], size: [133, 50], height: 11, label: 'M9', turn: 12, roof: SLATE, walls: WHITE },
-  { at: [746, 903], size: [50, 80], height: 5, label: 'M9a', roof: 0x6d8f4e, walls: CREAM },
-];
-const ROUND_BUILDINGS = [   // [x, y, radius, height, label]
-  [869, 565, 64, 18, 'M5'],
-  [975, 925, 34, 7, 'M10'],
-];
-const GATE = [910, 702];    // the M3 portal, between both wings
-const FLATS = [             // [x, y, width, depth, color]: courts and parking lots
-  [851, 866, 138, 87, 0xb5654a],
-  [1028, 852, 123, 102, 0xd9d6cc],
-  [549, 937, 165, 80, 0xcfcac0],
+  { label: 'M1', at: [507, 1170], parts: [                     // a C around a courtyard, with the dark auditorium
+    [0, -52, 150, 36, 12, 'gable', TILE, STONE], [-58, 2, 36, 130, 12, 'gable', TILE, STONE],
+    [-5, 55, 140, 36, 12, 'gable', TILE, STONE], [22, 2, 62, 50, 10, 'gable', 0x2f3136, STONE],
+  ] },
+  { label: 'M2', at: [325, 1015], turn: 38, parts: [[0, 0, 118, 42, 13, 'gable', TILE, STONE]] },
+  { at: [764, 707], parts: [                                   // M3, west wing: a long bar and pavilions to the north
+    [0, 28, 241, 50, 14, 'gable', TILE, STONE],
+    [-83, -24, 67, 54, 14, 'gable', TILE, STONE], [13, -24, 33, 54, 14, 'gable', TILE, STONE], [93, -24, 46, 54, 14, 'gable', TILE, STONE],
+  ] },
+  { at: [1025, 697], parts: [                                  // M3, east wing
+    [0, 24, 180, 48, 14, 'gable', TILE, STONE],
+    [-67, -24, 44, 50, 14, 'gable', TILE, STONE], [15, -24, 44, 50, 14, 'gable', TILE, STONE], [70, -24, 40, 50, 14, 'gable', TILE, STONE],
+  ] },
+  { label: 'M3', at: [910, 724], parts: [[0, 0, 50, 46, 8, 'flat', CONCRETE, STONE, 9]] },   // the portal: the route goes under
+  { label: 'M4', at: [712, 636], turn: -15, parts: [[0, 0, 92, 34, 7, 'gable', TILE, STONE]] },
+  { label: 'M6', at: [556, 390], turn: -8, parts: [           // colonial house around a patio, and a wing to the west
+    [45, -32, 90, 22, 6, 'gable', TILE, WHITE], [45, 32, 90, 22, 6, 'gable', TILE, WHITE],
+    [79, 0, 22, 86, 6, 'gable', TILE, WHITE], [11, 0, 22, 86, 6, 'gable', TILE, WHITE], [-48, -26, 96, 24, 6, 'gable', TILE, WHITE],
+  ] },
+  { label: 'M7', at: [561, 527], parts: [                      // two towers, a glass middle set back, a roof slab on top
+    [-39, 0, 46, 96, 28, 'flat', CONCRETE, WHITE], [39, 0, 46, 96, 28, 'flat', CONCRETE, WHITE],
+    [0, -10, 34, 72, 26, 'flat', CONCRETE, 0x9db0c0], [0, -4, 130, 86, 1.2, 'flat', CONCRETE, CONCRETE, 28.6],
+    [0, -12, 60, 40, 4, 'flat', CONCRETE, WHITE, 29.8],
+  ] },
+  { label: 'M8a', at: [279, 608], turn: 40, parts: [[0, 0, 125, 42, 17, 'flat', CONCRETE, WHITE]] },
+  { label: 'M8', at: [270, 695], turn: 20, parts: [           // two tiled houses
+    [-36, 6, 60, 36, 9, 'gable', TILE, STONE], [34, -6, 70, 50, 10, 'gable', TILE, STONE],
+  ] },
+  { label: 'M8b', at: [248, 761], turn: -43, parts: [         // two long bars side by side
+    [0, -16, 140, 26, 13, 'flat', WHITE, WHITE], [-8, 16, 120, 26, 11, 'flat', WHITE, WHITE],
+  ] },
+  { label: 'M9', at: [520, 852], turn: 12, parts: [[0, 0, 133, 50, 10, 'low', SLATE, 0xb8c4cc]] },
+  { label: 'M9a', at: [746, 903], turn: -8, parts: [[0, 0, 46, 80, 5, 'low', 0x6d8f4e, STONE]] },
 ];
 
-const IGUANAS = [[600, 700, 30], [470, 740, 120], [820, 785, 200], [1010, 612, 300], [300, 905, 60]];   // [x, y, facing]
-const MONSTERS = [[450, 680], [455, 790], [690, 950], [895, 948], [645, 575], [360, 760], [350, 880], [985, 775]];
+// Curved blocks: [label, x, y, outer and inner radius (plan pixels), from and to (degrees on the plan, 90 is south), height]
+const ARCS = [
+  ['M5', 866, 550, 86, 50, -25, 195, 13],    // wraps its dome, open to the north
+  ['M10', 961, 919, 38, 18, 0, 180, 6],      // half a ring
+];
+const GATE = [910, 724];
+
+const FLATS = [             // [x, y, width, depth, color or 'tennis' / 'basketball']: courts and parking lots
+  [851, 866, 138, 87, 'tennis'],
+  [1028, 852, 123, 102, 'basketball'],
+  [549, 937, 165, 80, 0xd8d2c4],
+  [546, 598, 216, 50, BRICK],
+  [315, 862, 144, 90, BRICK],
+];
+const PALMS = [665, 693, 721, 749, 777, 805, 833, 861].map((x) => [x, 790]);   // the row in front of M3
+
+const IGUANAS = [[600, 700, 30], [470, 740, 120], [690, 830, 200], [1010, 612, 300], [280, 950, 60]];   // [x, y, facing]
+const MONSTERS = [[450, 680], [455, 790], [690, 950], [895, 948], [645, 560], [360, 760], [352, 985], [985, 792]];
 const MONSTER_COLORS = [0x8e5bd6, 0x1f6fc5, 0xf08a24, 0xe24f6b, 0x22b5a6];
 const CRANE = [700, 470];
 const TURBINE = [130, 560];
@@ -104,8 +136,8 @@ function hexColor(color) {
   return `#${color.toString(16).padStart(6, '0')}`;
 }
 
-// A wall with rows of windows, repeated to fit its size
-function wallMaterial(color, width, height) {
+// A wall with rows of windows, repeated across and up as many times as asked
+function wallMaterial(color, across, up) {
   const canvas = document.createElement('canvas');
   canvas.width = 32;
   canvas.height = 32;
@@ -118,8 +150,99 @@ function wallMaterial(color, width, height) {
   context.fillRect(9, 10, 14, 3);
   const texture = new THREE.CanvasTexture(canvas);
   texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(Math.max(1, Math.round(width / 4)), Math.max(1, Math.round(height / 4)));
+  texture.repeat.set(across, up);
   return new THREE.MeshLambertMaterial({ map: texture });
+}
+
+// A block of walls with windows (units), its roof on top
+function part(width, depth, height, roof, roofColor, walls) {
+  const group = new THREE.Group();
+  const floors = Math.max(1, Math.round(height / 3.5));
+  const front = wallMaterial(walls, Math.max(1, Math.round(width / 3.5)), floors);
+  const side = wallMaterial(walls, Math.max(1, Math.round(depth / 3.5)), floors);
+  group.add(mesh(new THREE.BoxGeometry(width, height, depth), [side, side, roofColor, roofColor, front, front], new THREE.Vector3(0, height / 2, 0)));
+  if (roof === 'flat') return group;
+
+  // Gable: a triangle as wide as the short side, stretched along the long one, with a small overhang
+  const along = width >= depth;
+  const span = (along ? depth : width) + 1.4;
+  const length = (along ? width : depth) + 1.4;
+  const rise = span * (roof === 'low' ? 0.14 : 0.34);
+  const triangle = new THREE.Shape([new THREE.Vector2(-span / 2, 0), new THREE.Vector2(span / 2, 0), new THREE.Vector2(0, rise)]);
+  const geometry = new THREE.ExtrudeGeometry(triangle, { depth: length, bevelEnabled: false });
+  geometry.translate(0, 0, -length / 2);
+  if (along) geometry.rotateY(Math.PI / 2);
+  group.add(mesh(geometry, roofColor, new THREE.Vector3(0, height, 0)));
+  return group;
+}
+
+// A curved block: a slice of a ring (units, plan degrees), tiled on top
+function arcBlock(outer, inner, from, to, height) {
+  const shape = new THREE.Shape();
+  const steps = 40;
+  for (let i = 0; i <= steps * 2 + 1; i++) {
+    const back = i > steps;
+    const angle = ((from + (to - from) * (back ? steps * 2 + 1 - i : i) / steps) * Math.PI) / 180;
+    const radius = back ? inner : outer;
+    shape[i ? 'lineTo' : 'moveTo'](radius * Math.cos(angle), -radius * Math.sin(angle));
+  }
+  const geometry = new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: false });
+  geometry.rotateX(-Math.PI / 2);
+  return mesh(geometry, [TILE, wallMaterial(STONE, 0.28, 0.28)]);   // its walls repeat by distance, not by face
+}
+
+// The lines of a court, painted on its floor
+function courtMaterial(kind) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 192;
+  const context = canvas.getContext('2d');
+  context.fillStyle = kind === 'tennis' ? '#b5654a' : '#d9d6cc';
+  context.fillRect(0, 0, 256, 192);
+  context.strokeStyle = '#fff';
+  context.lineWidth = 3;
+  if (kind === 'tennis') {   // two courts side by side
+    for (const x of [14, 136]) {
+      context.strokeRect(x, 16, 106, 160);
+      context.strokeRect(x + 14, 16, 78, 160);
+      context.strokeRect(x + 14, 56, 78, 80);
+      context.beginPath();
+      context.moveTo(x - 4, 96);
+      context.lineTo(x + 110, 96);
+      context.moveTo(x + 53, 56);
+      context.lineTo(x + 53, 136);
+      context.stroke();
+    }
+  } else {
+    context.strokeStyle = '#8a8f96';
+    context.strokeRect(12, 12, 232, 168);
+    context.beginPath();
+    context.moveTo(128, 12);
+    context.lineTo(128, 180);
+    context.moveTo(152, 96);
+    context.arc(128, 96, 24, 0, Math.PI * 2);
+    context.moveTo(12, 56);
+    context.arc(12, 96, 40, -Math.PI / 2, Math.PI / 2);
+    context.moveTo(244, 136);
+    context.arc(244, 96, 40, Math.PI / 2, -Math.PI / 2);
+    context.stroke();
+  }
+  return new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas) });
+}
+
+function palm() {
+  const group = new THREE.Group();
+  group.add(mesh(new THREE.CylinderGeometry(0.35, 0.5, 11, 6), 0x9a8468, new THREE.Vector3(0, 5.5, 0)));
+  for (let i = 0; i < 6; i++) {
+    const leaf = new THREE.Group();
+    leaf.position.y = 11;
+    leaf.rotation.y = (i * Math.PI) / 3;
+    const blade = mesh(new THREE.BoxGeometry(4.6, 0.25, 1.1), 0x4f8a3a, new THREE.Vector3(2.2, -0.5, 0));
+    blade.rotation.z = -0.4;
+    leaf.add(blade);
+    group.add(leaf);
+  }
+  return group;
 }
 
 // A flat band of the given width (units) along the points (roads)
@@ -204,7 +327,7 @@ function banner() {
   context.fillText('SEMANA DE SISTEMAS', 512, 84);
   const texture = new THREE.CanvasTexture(canvas);
   texture.anisotropy = 4;
-  return new THREE.Mesh(new THREE.PlaneGeometry(56, 8.8), new THREE.MeshLambertMaterial({ map: texture }));
+  return new THREE.Mesh(new THREE.PlaneGeometry(50, 7.8), new THREE.MeshLambertMaterial({ map: texture }));
 }
 
 // Same random numbers on every visit, so the trees never move
@@ -235,10 +358,16 @@ const ROAD_SAMPLES = ROADS.flatMap(([points]) => samples(points));
 function isFree(x, y) {
   const near = (list, distance) => list.some(([px, py]) => Math.hypot(px - x, py - y) < distance);
   if (near(ROUTE_SAMPLES, 30) || near(ROAD_SAMPLES, 50) || near(samples(RAILS), 20)) return false;
-  if (near(IGUANAS, 45) || near([...MONSTERS, CRANE, TURBINE, GATE], 24)) return false;
-  if (ROUND_BUILDINGS.some(([bx, by, r]) => Math.hypot(bx - x, by - y) < r + 14)) return false;
-  const boxes = [...BUILDINGS.map(({ at, size }) => [...at, ...size]), ...FLATS];
-  return !boxes.some(([bx, by, w, d]) => Math.hypot(bx - x, by - y) < Math.hypot(w, d) / 2 + 10);
+  if (near(IGUANAS, 45) || near([...MONSTERS, ...PALMS, CRANE, TURBINE, GATE], 24)) return false;
+  if (ARCS.some(([, ax, ay, outer]) => Math.hypot(ax - x, ay - y) < outer + 14)) return false;
+  if (FLATS.some(([fx, fy, w, d]) => Math.abs(fx - x) < w / 2 + 12 && Math.abs(fy - y) < d / 2 + 12)) return false;
+  // Inside a block? Turn the point back into the block's own frame and compare with each part
+  return !BUILDINGS.some(({ at, turn = 0, parts }) => {
+    const angle = (turn * Math.PI) / 180;
+    const localX = (x - at[0]) * Math.cos(angle) - (y - at[1]) * Math.sin(angle);
+    const localY = (x - at[0]) * Math.sin(angle) + (y - at[1]) * Math.cos(angle);
+    return parts.some(([px, py, w, d]) => Math.abs(localX - px) < w / 2 + 14 && Math.abs(localY - py) < d / 2 + 14);
+  });
 }
 
 function tree(random) {
@@ -409,17 +538,24 @@ function buildRaceMap(box) {
 
   // The ground: a piece of campus like a model on a table, soil on the sides
   const [left, top, right, bottom] = GROUND;
-  const base = mesh(new THREE.BoxGeometry((right - left) * S, 10, (bottom - top) * S), [0x8a6a4a, 0x8a6a4a, 0x9fcb83, 0x6f5238, 0x8a6a4a, 0x8a6a4a]);
+  const base = mesh(new THREE.BoxGeometry((right - left) * S, 10, (bottom - top) * S), [0x8a6a4a, 0x8a6a4a, 0x9dbd6f, 0x6f5238, 0x8a6a4a, 0x8a6a4a]);
   base.position.copy(toWorld([(left + right) / 2, (top + bottom) / 2], -5));
   scene.add(base);
 
-  for (const [points, width] of ROADS) {
+  for (const [points, width, roadColor, line] of ROADS) {
     const road = new THREE.CatmullRomCurve3(points.map((p) => toWorld(p))).getSpacedPoints(160);
-    scene.add(ribbon(road, width, 0x8f969d, 0.15, false));
-    scene.add(ribbon(road, 0.5, 0xf4f4f2, 0.2, false));   // center line
+    scene.add(ribbon(road, width, roadColor, 0.15, false));
+    if (line) scene.add(ribbon(road, 0.5, 0xf4f4f2, 0.2, false));
   }
-  for (const [x, y, w, d, flatColor] of FLATS) {
-    scene.add(mesh(new THREE.BoxGeometry(w * S, 0.5, d * S), flatColor, toWorld([x, y], 0.25)));
+  for (const [x, y, w, d, floor] of FLATS) {
+    const top = typeof floor === 'string' ? courtMaterial(floor) : floor;
+    const sides = typeof floor === 'string' ? 0xd9d6cc : floor;
+    scene.add(mesh(new THREE.BoxGeometry(w * S, 0.4, d * S), [sides, sides, top, sides, sides, sides], toWorld([x, y], 0.2)));
+  }
+  for (const spot of PALMS) {
+    const item = palm();
+    item.position.copy(toWorld(spot));
+    scene.add(item);
   }
 
   const route = new THREE.CatmullRomCurve3(ROUTE.map((p) => toWorld(p, 1)), true);
@@ -435,34 +571,39 @@ function buildRaceMap(box) {
     scene.add(arrow);
   }
 
-  // Blocks, with windows on the walls
-  for (const { at, size: [w, d], height, label: name, turn = 0, roof, walls } of BUILDINGS) {
-    const front = wallMaterial(walls, w * S, height);
-    const side = wallMaterial(walls, d * S, height);
-    const building = mesh(new THREE.BoxGeometry(w * S, height, d * S), [side, side, roof, roof, front, front], toWorld(at, height / 2));
-    building.rotation.y = (turn * Math.PI) / 180;
-    scene.add(building);
-    if (name) {
-      const tag = label(name, name.startsWith('M8 ') ? '#1f6fc5' : '#0a2c52', 0.8);
-      tag.position.copy(toWorld(at, height + 7));
-      scene.add(tag);
-    }
-  }
-  for (const [x, y, r, height, name] of ROUND_BUILDINGS) {
-    scene.add(mesh(new THREE.CylinderGeometry(r * S, r * S, height, 32), [wallMaterial(CREAM, 2 * Math.PI * r * S, height), TILE, TILE], toWorld([x, y], height / 2)));
-    const tag = label(name, '#0a2c52', 0.8);
-    tag.position.copy(toWorld([x, y], height + 9));
+  // Blocks, each made of its parts
+  const tagAt = (name, spot, height) => {
+    const tag = label(name, name === 'M8' ? '#1f6fc5' : '#0a2c52', 0.8);   // M8 is the home of Sistemas
+    tag.position.copy(toWorld(spot, height + 9));
     scene.add(tag);
+  };
+  for (const { label: name, at, turn = 0, parts } of BUILDINGS) {
+    const building = new THREE.Group();
+    building.position.copy(toWorld(at));
+    building.rotation.y = (turn * Math.PI) / 180;
+    for (const [x, y, w, d, height, roof, roofColor, walls, lifted = 0] of parts) {
+      const item = part(w * S, d * S, height, roof, roofColor, walls);
+      item.position.set(x * S, lifted, y * S);
+      building.add(item);
+    }
+    scene.add(building);
+    if (name) tagAt(name, at, Math.max(...parts.map((p) => p[4] + (p[8] || 0))));
   }
-  scene.add(mesh(new THREE.SphereGeometry(7, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), 0xd6d3cc, toWorld(ROUND_BUILDINGS[0], 18)));   // M5 dome
+  for (const [name, x, y, outer, inner, from, to, height] of ARCS) {
+    const block = arcBlock(outer * S, inner * S, from, to, height);
+    block.position.copy(toWorld([x, y]));
+    scene.add(block);
+    tagAt(name, [x, y], height + 4);
+  }
+  // M5: the paved court inside the arc and the dome on its drum
+  const [, domeX, domeY] = ARCS[0];
+  scene.add(mesh(new THREE.CylinderGeometry(13, 13, 0.4, 32), 0xd8d2c4, toWorld([domeX, domeY], 0.2)));
+  scene.add(mesh(new THREE.CylinderGeometry(8, 8, 9, 24), STONE, toWorld([domeX, domeY - 8], 4.5)));
+  scene.add(mesh(new THREE.SphereGeometry(8, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), 0xc9ccce, toWorld([domeX, domeY - 8], 9)));
 
-  // M3: the portal over the route, its tag and the big banner facing the courts
-  scene.add(mesh(new THREE.BoxGeometry(13, 6, 15), [CREAM, CREAM, TILE, CREAM, CREAM, CREAM], toWorld(GATE, 13)));
-  const gateTag = label('M3', '#0a2c52', 0.8);
-  gateTag.position.copy(toWorld(GATE, 24));
-  scene.add(gateTag);
+  // The big banner on M3, facing the courts
   const sign = banner();
-  sign.position.copy(toWorld([770, 761], 9));
+  sign.position.copy(toWorld([764, 761], 8));
   scene.add(sign);
 
   // Trees: the campus is an arboretum
@@ -485,7 +626,7 @@ function buildRaceMap(box) {
   turbine.rotation.y = 0.6;
   scene.add(turbine);
   const dish = satelliteDish();
-  dish.position.copy(toWorld([279, 695], 14));
+  dish.position.copy(toWorld([279, 608], 17));   // on the flat roof of M8a
   scene.add(dish);
 
   const [railStart, railEnd] = RAILS.map((p) => toWorld(p, 0.3));
@@ -560,7 +701,7 @@ function buildRaceMap(box) {
   arch.lookAt(start.clone().add(startTangent));
   scene.add(arch);
   scene.add(pennants(start.clone().add(startAcross).addScaledVector(startTangent, 6), start.clone().sub(startAcross).addScaledVector(startTangent, 6), color));
-  const startTag = label('Salida y meta · Hall M10', color);
+  const startTag = label('Salida y meta', color);
   startTag.position.set(start.x, 32, start.z);
   scene.add(startTag);
 
