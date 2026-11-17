@@ -142,6 +142,12 @@ const GROUPS = [
   { id: 'unvesting', name: 'Unvesting', type: 'Grupo estudiantil', color: '#1e7d4a', logo: 'img/group-unvesting.jpg',
     link: 'https://www.instagram.com/unvesting_unalmed',
     stand: 'Unvesting es un grupo estudiantil de la Universidad Nacional de Colombia dedicado al estudio, la investigación y el análisis de los mercados financieros. A través de espacios de formación, debates, simulaciones de inversión y proyectos académicos, sus integrantes fortalecen sus conocimientos en economía, finanzas y mercados de capitales, promoviendo el pensamiento crítico, el trabajo colaborativo y la aplicación práctica de lo aprendido.' },
+  { id: 'ieee', name: 'IEEE', type: 'Grupo estudiantil', color: '#00629b', logo: 'img/group-ieee.jpg',
+    link: 'https://www.instagram.com/ieeeudeastudentbranch',
+    stand: 'IEEE (Instituto de Ingenieros Eléctricos y Electrónicos) es la organización técnica profesional más grande del mundo dedicada al avance de la tecnología en beneficio de la humanidad. Con presencia en más de 160 países y cientos de miles de miembros, conecta a estudiantes, investigadores y profesionales de áreas como ciencias de la computación, ingeniería de sistemas, analítica de datos, telecomunicaciones, inteligencia artificial y gestión tecnológica para impulsar la innovación, la estandarización técnica y el desarrollo profesional.' },
+  { id: 'qpt-ai', name: 'QPT-AI', type: 'Grupo estudiantil', color: '#d9822b', logo: 'img/group-qpt-ai.jpg',
+    link: 'https://www.qpt-ai.com/',
+    stand: 'El futuro de la IA no le pertenece a la electricidad. ¿Cómo hacemos IA sin electricidad? ¿Cómo hacemos IA con computación cuántica, fotónica y térmica, y cómo se beneficia la IA de estos tipos de computación? Esa es la pregunta que QPT-AI quiere responder.' },
 ];
 
 // Companies confirmed to participate in the week
