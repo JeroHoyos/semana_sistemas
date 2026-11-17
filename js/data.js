@@ -139,6 +139,9 @@ const GROUPS = [
   { id: 'uneural', name: 'UNeural', type: 'Grupo estudiantil', color: '#4a4fd8', logo: 'img/group-uneural.jpg',
     link: 'https://www.instagram.com/uneuralgroup',
     stand: 'UNeural es un semillero de investigación enfocado en inteligencia artificial, donde el aprendizaje, la exploración y la innovación son protagonistas. Es un espacio para acercarse a nuevas tecnologías, conocer sus aplicaciones y descubrir cómo pueden transformar diferentes áreas del conocimiento.' },
+  { id: 'unvesting', name: 'Unvesting', type: 'Grupo estudiantil', color: '#1e7d4a',
+    link: 'https://www.instagram.com/unvesting_unalmed',
+    stand: 'Unvesting es un grupo estudiantil de la Universidad Nacional de Colombia dedicado al estudio, la investigación y el análisis de los mercados financieros. A través de espacios de formación, debates, simulaciones de inversión y proyectos académicos, sus integrantes fortalecen sus conocimientos en economía, finanzas y mercados de capitales, promoviendo el pensamiento crítico, el trabajo colaborativo y la aplicación práctica de lo aprendido.' },
 ];
 
 // Companies confirmed to participate in the week
