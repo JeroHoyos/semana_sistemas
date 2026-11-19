@@ -575,9 +575,40 @@ const isVideo = (item) => item.file.endsWith('.mp4');
 // Each row carries its photos twice in a row: the animation reaches the middle and restarts
 // with no visible jump (see .gallery__track in the CSS). The copies and the second row are hidden
 // from screen readers and the keyboard, so each photo is announced only once.
+let galleryItems = [];   // the photos of the chosen edition; the viewer moves through these
+
 function renderGallery() {
-  const indexes = GALLERY.map((_, i) => i);
-  const middle = Math.ceil(GALLERY.length / 2);
+  const editions = [...new Set(GALLERY.map((item) => item.edition))].sort((a, b) => b - a);
+  $('#gallery-editions').innerHTML = editions.map((edition) =>
+    `<button type="button" class="groups__tab" role="tab" data-edition="${edition}">${edition}</button>`).join('');
+  $('#gallery-editions').addEventListener('click', (event) => {
+    const tab = event.target.closest('[data-edition]');
+    if (tab) showEdition(Number(tab.dataset.edition));
+  });
+
+  $('#galeria').addEventListener('click', (event) => {
+    const photo = event.target.closest('.gallery__photo');
+    if (photo) openViewer(Number(photo.dataset.index));
+  });
+
+  $('#gallery-toggle').addEventListener('click', () => {
+    const showAll = $('#gallery-grid').hidden;
+    $('#gallery-grid').hidden = !showAll;
+    $('#gallery-carousel').hidden = showAll;
+    $('#gallery-toggle').setAttribute('aria-pressed', showAll);
+    $('#gallery-toggle-text').textContent = showAll ? 'Ver carrusel' : 'Ver todo';
+  });
+
+  showEdition(editions[0]);
+}
+
+function showEdition(edition) {
+  galleryItems = GALLERY.filter((item) => item.edition === edition);
+  $$('#gallery-editions [data-edition]').forEach((tab) =>
+    tab.setAttribute('aria-selected', tab.dataset.edition === String(edition)));
+
+  const indexes = galleryItems.map((_, i) => i);
+  const middle = Math.ceil(galleryItems.length / 2);
   const rows = [indexes, [...indexes.slice(middle), ...indexes.slice(0, middle)]];
 
   const photos = (order, hidden) => order.map((i) => galleryPhoto(i, hidden)).join('');
@@ -593,24 +624,11 @@ function renderGallery() {
 
   $('#gallery-grid').innerHTML = photos(indexes, false);
 
-  $('#galeria').addEventListener('click', (event) => {
-    const photo = event.target.closest('.gallery__photo');
-    if (photo) openViewer(Number(photo.dataset.index));
-  });
-
-  $('#gallery-toggle').addEventListener('click', () => {
-    const showAll = $('#gallery-grid').hidden;
-    $('#gallery-grid').hidden = !showAll;
-    $('#gallery-carousel').hidden = showAll;
-    $('#gallery-toggle').setAttribute('aria-pressed', showAll);
-    $('#gallery-toggle-text').textContent = showAll ? 'Ver carrusel' : 'Ver todo';
-  });
-
   watchVideos();
 }
 
 function galleryPhoto(index, hidden) {
-  const item = GALLERY[index];
+  const item = galleryItems[index];
   const media = isVideo(item)
     ? `<video src="${item.file}" poster="${item.poster || ''}" muted loop playsinline preload="none"
         disablepictureinpicture disableremoteplayback></video>`
@@ -619,6 +637,7 @@ function galleryPhoto(index, hidden) {
     <li>
       <button class="gallery__photo" data-index="${index}" aria-label="Ampliar: ${item.text}" ${hidden ? 'tabindex="-1"' : ''}>
         ${media}
+        ${item.day ? `<span class="gallery__day">${item.day}</span>` : ''}
       </button>
     </li>
   `;
@@ -635,7 +654,7 @@ function watchVideos() {
       else video.pause();
     });
   });
-  $('#gallery-carousel video').forEach((video) => observer.observe(video));
+  $$('#gallery-carousel video').forEach((video) => observer.observe(video));
 }
 
 
@@ -644,14 +663,14 @@ function watchVideos() {
 let viewerPhoto = 0;
 
 function openViewer(index) {
-  viewerPhoto = (index + GALLERY.length) % GALLERY.length;   // from the last it goes to the first and back
-  const item = GALLERY[viewerPhoto];
+  viewerPhoto = (index + galleryItems.length) % galleryItems.length;   // from the last it goes to the first and back
+  const item = galleryItems[viewerPhoto];
 
   $('#viewer-media').innerHTML = isVideo(item)
     ? `<video src="${item.file}" poster="${item.poster || ''}" controls autoplay muted loop playsinline
         disablepictureinpicture disableremoteplayback aria-label="${item.text}"></video>`
     : `<img src="${item.file}" alt="${item.text}">`;
-  $('#viewer-count').textContent = `${viewerPhoto + 1} / ${GALLERY.length}`;
+  $('#viewer-count').textContent = `${viewerPhoto + 1} / ${galleryItems.length}`;
 
   if (!$('#viewer').open) $('#viewer').showModal();
 }

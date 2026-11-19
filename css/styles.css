@@ -4916,6 +4916,32 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 
 .gallery__button { margin-top: 26px; border: 0; }
 
+/* Edition tabs: the groups tabs, on a light background */
+.gallery__editions {
+  display: flex;
+  width: fit-content;
+  margin-inline: auto;
+  background: rgba(0, 0, 0, .05);
+  border-color: rgba(0, 0, 0, .08);
+}
+.gallery__editions .groups__tab { color: var(--ink-soft); }
+.gallery__editions .groups__tab:hover { color: var(--ink); background: rgba(0, 0, 0, .05); }
+.gallery__editions .groups__tab[aria-selected="true"] { color: #fff; }
+
+/* "Día 1" label in a corner of the photo */
+.gallery__day {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--blue);
+  color: #fff;
+  font-family: var(--font-varsity);
+  font-size: 12px;
+  letter-spacing: .08em;
+}
+
 /* Carousel: full width, fading out at the edges */
 .gallery__carousel {
   display: grid;
@@ -4954,6 +4980,7 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 
 /* Each photo or video: square, with a white frame like the competition cards */
 .gallery__photo {
+  position: relative;
   display: block;
   width: 280px;
   aspect-ratio: 1;

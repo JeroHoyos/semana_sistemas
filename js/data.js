@@ -413,18 +413,28 @@ const TITLES = [
 // SCARE METER: fed in real time from Supabase (table 'perfiles'),
 // showing registered people with their monster and points in sustometro.html.
 
-// Photos and videos from past editions for the gallery (the files go in img/gallery/).
+// Photos and videos for the gallery (the files go in img/gallery/), by edition: the gallery
+// has one tab per edition, newest first. day (optional) shows as a label on the photo.
 // The .mp4 files show as short silent videos; poster is the image shown while they load.
 // text: what is in the image. Not shown on screen: screen readers read it.
 const GALLERY = [
-  { file: 'img/gallery/group-photo.jpg', text: 'Foto grupal en las escaleras de la entrada de la Facultad de Minas' },
-  { file: 'img/gallery/marathon.jpg', text: 'Sala de computadores llena de globos durante la maratón de programación' },
-  { file: 'img/gallery/balloons.mp4', poster: 'img/gallery/balloons-poster.jpg', text: 'Carrera con globos en la placa polideportiva' },
-  { file: 'img/gallery/soccer.jpg', text: 'Partido de fútbol con petos en la placa polideportiva' },
-  { file: 'img/gallery/talk.jpg', text: 'Conferencia sobre agentes de inteligencia artificial en el auditorio' },
-  { file: 'img/gallery/fair.mp4', poster: 'img/gallery/fair-poster.jpg', text: 'Recorrido por la feria de stands' },
-  { file: 'img/gallery/marathon-team.jpg', text: 'Un equipo concentrado frente al computador en la maratón' },
-  { file: 'img/gallery/race.jpg', text: 'Estudiantes sentados en fila durante un juego en la placa' },
-  { file: 'img/gallery/auditorium.mp4', poster: 'img/gallery/auditorium-poster.jpg', text: 'Público en el auditorio durante una charla' },
-  { file: 'img/gallery/balloons.jpg', text: 'Estudiantes jugando con un globo en la placa polideportiva' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-talk.jpg', text: 'Charla en el escenario del auditorio, frente al mural' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-klima.jpg', text: 'Stand de Klima, con Unergy, Zentrack y Solē, en la feria' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-ai-engineer.jpg', text: 'Charla sobre qué hace un AI Engineer en un salón' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-panel-photo.jpg', text: 'Foto de los panelistas frente al mural del auditorio' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-qpt-ai.jpg', text: 'Stand de QPT-AI en la feria' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-auditorium.jpg', text: 'Charla en el auditorio con la presentación en pantalla y el público' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-lovelytics.jpg', text: 'Stand de Lovelytics en la feria' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-panel.jpg', text: 'Panel sentado en el escenario del auditorio' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-hall.jpg', text: 'El auditorio con sus murales antes de una charla' },
+  { edition: 2025, file: 'img/gallery/group-photo.jpg', text: 'Foto grupal en las escaleras de la entrada de la Facultad de Minas' },
+  { edition: 2025, file: 'img/gallery/marathon.jpg', text: 'Sala de computadores llena de globos durante la maratón de programación' },
+  { edition: 2025, file: 'img/gallery/balloons.mp4', poster: 'img/gallery/balloons-poster.jpg', text: 'Carrera con globos en la placa polideportiva' },
+  { edition: 2025, file: 'img/gallery/soccer.jpg', text: 'Partido de fútbol con petos en la placa polideportiva' },
+  { edition: 2025, file: 'img/gallery/talk.jpg', text: 'Conferencia sobre agentes de inteligencia artificial en el auditorio' },
+  { edition: 2025, file: 'img/gallery/fair.mp4', poster: 'img/gallery/fair-poster.jpg', text: 'Recorrido por la feria de stands' },
+  { edition: 2025, file: 'img/gallery/marathon-team.jpg', text: 'Un equipo concentrado frente al computador en la maratón' },
+  { edition: 2025, file: 'img/gallery/race.jpg', text: 'Estudiantes sentados en fila durante un juego en la placa' },
+  { edition: 2025, file: 'img/gallery/auditorium.mp4', poster: 'img/gallery/auditorium-poster.jpg', text: 'Público en el auditorio durante una charla' },
+  { edition: 2025, file: 'img/gallery/balloons.jpg', text: 'Estudiantes jugando con un globo en la placa polideportiva' },
 ];
