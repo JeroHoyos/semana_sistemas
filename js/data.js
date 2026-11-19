@@ -419,6 +419,7 @@ const TITLES = [
 // text: what is in the image. Not shown on screen: screen readers read it.
 const GALLERY = [
   { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-talk.jpg', text: 'Charla en el escenario del auditorio, frente al mural' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-aperture.jpg', text: 'Stand de Aperture en la feria' },
   { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-klima.jpg', text: 'Stand de Klima, con Unergy, Zentrack y Solē, en la feria' },
   { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-ai-engineer.jpg', text: 'Charla sobre qué hace un AI Engineer en un salón' },
   { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-panel-photo.jpg', text: 'Foto de los panelistas frente al mural del auditorio' },
