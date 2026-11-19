@@ -2934,12 +2934,37 @@ button.bracket__side:hover { background: #e4effa; }
 .standings__participant {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
-.standings__participant .bracket__flag {
-  margin-right: 0;
+.standings__flag,
+.standings-editor__flag,
+.standings__participant .bracket__flag,
+.standings-editor__participant .bracket__flag {
+  flex: none;
   width: 24px;
+  height: 30px;
+  margin-right: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5px;
+}
+
+.standings__participant svg,
+.standings-editor__participant svg {
+  width: 24px;
+  height: 30px;
+  max-width: 24px;
+  max-height: 30px;
+  flex: none;
+}
+
+.standings__participant .monster-flag,
+.standings-editor__participant .monster-flag {
+  width: 24px;
+  height: 30px;
+  font-size: 5px;
 }
 
 .standings__name {
@@ -3059,11 +3084,6 @@ button.bracket__side:hover { background: #e4effa; }
   gap: 10px;
   min-width: 0;
   flex: 1;
-}
-
-.standings-editor__participant .bracket__flag {
-  margin-right: 0;
-  width: 22px;
 }
 
 .standings-editor__name {
