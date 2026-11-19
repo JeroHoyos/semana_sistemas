@@ -2,6 +2,9 @@
 *.patch text eol=lf
 *.sh text eol=lf
 
+# Calendar files need CRLF line endings (RFC 5545): git keeps them byte for byte
+*.ics -text
+
 # Binary files: git neither compares nor changes them
 *.wad binary
 *.wasm binary

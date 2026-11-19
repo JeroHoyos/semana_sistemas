@@ -385,7 +385,7 @@ const SNAKE_CARTRIDGE = {
   splash: {
     text: 'Atrapa los bugs y no choques',
     items: () => `<span class="overlay__item"><span class="overlay__sprite">${drawPixelArt(SNAKE_SPRITES.bug)}</span>10 pts</span>`,
-    keyboardHelp: 'Flechas o WASD · P pausa · M sonido',
+    keyboardHelp: 'Flechas o WASD, P pausa, M sonido',
     touchHelp: 'Cruceta o desliza el dedo',
   },
   controls: {

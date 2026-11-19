@@ -267,8 +267,8 @@ function scarerIdCard(name, email, monster, title = BASE_TITLE, medal = null) {
 
   const nose = clown ? '<div class="clown-nose" title="Tramposo">⚠️</div>' : '';
   const roleLine = clown
-    ? `<div class="idcard__role idcard__role--clown">@${escapeHtml(handle)} · TRAMPOSO DETECTADO</div>`
-    : `<div class="idcard__role">@${escapeHtml(handle)} · UNAL</div>`;
+    ? `<div class="idcard__role idcard__role--clown">@${escapeHtml(handle)} | TRAMPOSO DETECTADO</div>`
+    : `<div class="idcard__role">@${escapeHtml(handle)} | UNAL</div>`;
 
   return `
     <article class="${cardClass}">

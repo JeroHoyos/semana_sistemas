@@ -116,7 +116,7 @@ function showIdCard(index) {
 // --letters adjusts the name's size so it fits on the card.
 function speakerIdCard(speaker) {
   const isMystery = !speaker.name;
-  const name = speaker.name || '· · ·';
+  const name = speaker.name || '???';
   let stamp = '';
   if (isMystery) stamp = '<span class="idcard__stamp">Clasificado</span>';
   else if (speaker.unconfirmed) stamp = '<span class="idcard__stamp idcard__stamp--pending">Por confirmar</span>';
@@ -353,7 +353,7 @@ function activityCard(activity) {
   const overlapping = findOverlapping(activity);
 
   // Searching mixes all three days, so each activity shows its day
-  const day = schedule.search ? (findDay(activity.day) ? `${findDay(activity.day).name} · ` : 'Por definir · ') : '';
+  const day = schedule.search ? (findDay(activity.day) ? `${findDay(activity.day).name}, ` : 'Por definir, ') : '';
 
   const details = findSpeakers(activity).map((speaker) =>
     `<span><span class="avatar">${speakerPortrait(speaker)}</span>${speaker.name || 'Por anunciar'}</span>`);
@@ -477,7 +477,7 @@ function renderCompetitions() {
     const day = findDay(activity.day);
     const group = findGroup(activity.organizer);
     const dayPill = day ? day.short : 'Por definir';
-    const timeText = (day && activity.start) ? `${day.name} · ${activity.start} – ${activity.end}` : 'Fecha y hora por definir';
+    const timeText = (day && activity.start) ? `${day.name}, ${activity.start} – ${activity.end}` : 'Fecha y hora por definir';
     return `
       <a class="competition" href="${activityLink(activity.id)}" style="--color: ${activity.color}">
         <span class="competition__image">
@@ -498,9 +498,12 @@ function renderCompetitions() {
 
 let currentAffiliateTab = 'groups';
 
+// The pennant takes you to its stand on the fair page; without a stand, to its own page in another tab
 function affiliateCard(item) {
-  const tag = item.link ? 'a' : 'span';
-  const target = item.link ? `href="${item.link}" target="_blank" rel="noopener"` : '';
+  const tag = item.stand || item.link ? 'a' : 'span';
+  const target = item.stand
+    ? `href="${activityLink('feria')}#stand-${item.id}"`
+    : item.link ? `href="${item.link}" target="_blank" rel="noopener"` : '';
   return `
     <li class="group" style="--color: ${item.color}; --letters: ${item.name.length}">
       <${tag} class="pennant ${item.logo ? 'pennant--with-logo' : ''}" ${target}>
@@ -548,7 +551,7 @@ function setAffiliateTab(tab) {
 
 // --letters adjusts the name's size so it fits on the pennant.
 // A group with a logo gets it as a round patch on the pole.
-// A group with a link makes the pennant a link that opens its page in another tab.
+// A group with a stand or a link makes the pennant a link (see affiliateCard).
 function renderGroups() {
   const btnGroups = $('#btn-show-groups');
   const btnCompanies = $('#btn-show-companies');
@@ -572,9 +575,40 @@ const isVideo = (item) => item.file.endsWith('.mp4');
 // Each row carries its photos twice in a row: the animation reaches the middle and restarts
 // with no visible jump (see .gallery__track in the CSS). The copies and the second row are hidden
 // from screen readers and the keyboard, so each photo is announced only once.
+let galleryItems = [];   // the photos of the chosen edition; the viewer moves through these
+
 function renderGallery() {
-  const indexes = GALLERY.map((_, i) => i);
-  const middle = Math.ceil(GALLERY.length / 2);
+  const editions = [...new Set(GALLERY.map((item) => item.edition))].sort((a, b) => b - a);
+  $('#gallery-editions').innerHTML = editions.map((edition) =>
+    `<button type="button" class="gallery__edition" role="tab" data-edition="${edition}">${edition}</button>`).join('');
+  $('#gallery-editions').addEventListener('click', (event) => {
+    const tab = event.target.closest('[data-edition]');
+    if (tab) showEdition(Number(tab.dataset.edition));
+  });
+
+  $('#galeria').addEventListener('click', (event) => {
+    const photo = event.target.closest('.gallery__photo');
+    if (photo) openViewer(Number(photo.dataset.index));
+  });
+
+  $('#gallery-toggle').addEventListener('click', () => {
+    const showAll = $('#gallery-grid').hidden;
+    $('#gallery-grid').hidden = !showAll;
+    $('#gallery-carousel').hidden = showAll;
+    $('#gallery-toggle').setAttribute('aria-pressed', showAll);
+    $('#gallery-toggle-text').textContent = showAll ? 'Ver carrusel' : 'Ver todo';
+  });
+
+  showEdition(editions[0]);
+}
+
+function showEdition(edition) {
+  galleryItems = GALLERY.filter((item) => item.edition === edition);
+  $$('#gallery-editions [data-edition]').forEach((tab) =>
+    tab.setAttribute('aria-selected', tab.dataset.edition === String(edition)));
+
+  const indexes = galleryItems.map((_, i) => i);
+  const middle = Math.ceil(galleryItems.length / 2);
   const rows = [indexes, [...indexes.slice(middle), ...indexes.slice(0, middle)]];
 
   const photos = (order, hidden) => order.map((i) => galleryPhoto(i, hidden)).join('');
@@ -590,24 +624,11 @@ function renderGallery() {
 
   $('#gallery-grid').innerHTML = photos(indexes, false);
 
-  $('#galeria').addEventListener('click', (event) => {
-    const photo = event.target.closest('.gallery__photo');
-    if (photo) openViewer(Number(photo.dataset.index));
-  });
-
-  $('#gallery-toggle').addEventListener('click', () => {
-    const showAll = $('#gallery-grid').hidden;
-    $('#gallery-grid').hidden = !showAll;
-    $('#gallery-carousel').hidden = showAll;
-    $('#gallery-toggle').setAttribute('aria-pressed', showAll);
-    $('#gallery-toggle-text').textContent = showAll ? 'Ver carrusel' : 'Ver todo';
-  });
-
   watchVideos();
 }
 
 function galleryPhoto(index, hidden) {
-  const item = GALLERY[index];
+  const item = galleryItems[index];
   const media = isVideo(item)
     ? `<video src="${item.file}" poster="${item.poster || ''}" muted loop playsinline preload="none"
         disablepictureinpicture disableremoteplayback></video>`
@@ -616,6 +637,7 @@ function galleryPhoto(index, hidden) {
     <li>
       <button class="gallery__photo" data-index="${index}" aria-label="Ampliar: ${item.text}" ${hidden ? 'tabindex="-1"' : ''}>
         ${media}
+        ${item.day ? `<span class="gallery__day">${item.day}</span>` : ''}
       </button>
     </li>
   `;
@@ -632,7 +654,7 @@ function watchVideos() {
       else video.pause();
     });
   });
-  $('#gallery-carousel video').forEach((video) => observer.observe(video));
+  $$('#gallery-carousel video').forEach((video) => observer.observe(video));
 }
 
 
@@ -641,14 +663,14 @@ function watchVideos() {
 let viewerPhoto = 0;
 
 function openViewer(index) {
-  viewerPhoto = (index + GALLERY.length) % GALLERY.length;   // from the last it goes to the first and back
-  const item = GALLERY[viewerPhoto];
+  viewerPhoto = (index + galleryItems.length) % galleryItems.length;   // from the last it goes to the first and back
+  const item = galleryItems[viewerPhoto];
 
   $('#viewer-media').innerHTML = isVideo(item)
     ? `<video src="${item.file}" poster="${item.poster || ''}" controls autoplay muted loop playsinline
         disablepictureinpicture disableremoteplayback aria-label="${item.text}"></video>`
     : `<img src="${item.file}" alt="${item.text}">`;
-  $('#viewer-count').textContent = `${viewerPhoto + 1} / ${GALLERY.length}`;
+  $('#viewer-count').textContent = `${viewerPhoto + 1} / ${galleryItems.length}`;
 
   if (!$('#viewer').open) $('#viewer').showModal();
 }

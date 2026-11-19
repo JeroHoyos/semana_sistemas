@@ -1869,10 +1869,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* Mobile */
 @media (max-width: 640px) {
   /* Hero */
-  .hero__content { padding: 56px 0 64px; }
+  .hero__content { padding: 96px 0 72px; }   /* room for the Sustómetro and session buttons above */
   .hero__place { font-size: 12px; letter-spacing: .16em; }
-  .varsity-letters { font-size: 15.2vw; }
-  .hero__actions { margin-top: 32px; }
+  .hero__title { margin-top: 14px; }
+  .varsity-letters { font-size: 14vw; }      /* leaves a margin at the screen edges */
+  .hero__actions { flex-direction: column; align-items: center; gap: 16px; margin-top: 36px; }
   .hero__days li { height: 48px; padding: 0 16px; font-size: 15px; }
   .hero__button { height: 52px; }
 
@@ -1898,9 +1899,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
   /* Taller hours and wider days (the week slides sideways): so the place fits in each block */
   .week-grid__grid { --hour: 104px; grid-template-columns: 50px repeat(3, 215px); min-width: 0; }
 
-  /* Tabs: become chips that wrap instead of overflowing the screen */
-  .schedule__tabs { flex-wrap: wrap; gap: 6px; border-bottom: 0; }
-  .tab { flex: 0 1 auto; padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; }
+  /* Tabs: a two-column grid of equal chips; "Todo" takes the whole first row */
+  .schedule__tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; border-bottom: 0; }
+  .tab { padding: 7px 10px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; }
+  .tab:first-child { grid-column: 1 / -1; }
   .tab[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff; }
   .tab[aria-pressed="true"]::after { display: none; }
 
@@ -2233,17 +2235,22 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 @media (max-width: 640px) {
   .scare-meter-bar {
-    top: 14px;
-    left: 14px;
+    top: 18px;
+    left: 16px;
   }
   .session-bar {
-    top: 14px;
-    right: 14px;
+    top: 18px;
+    right: 16px;
+    max-width: calc(100% - 176px);   /* a long name never runs into the Sustómetro button */
   }
+  .session-bar .hero__button--session { max-width: 100%; }
+  #session-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .hero__button--session {
     height: 38px;
     padding: 0 14px 0 16px;
+    gap: 8px;
     font-size: 11px;
+    letter-spacing: .08em;
   }
   .auth-modal__box {
     padding: 24px 18px 26px;
@@ -3256,6 +3263,81 @@ button.bracket__side:hover { background: #e4effa; }
 .event__overlaps span { margin-left: auto; font-size: 14px; color: var(--gray); white-space: nowrap; }
 .event__overlaps svg { width: 16px; height: 16px; flex: none; color: var(--blue); }
 
+/* Stands fair (stands field, js/event.js): each stand is a pixel art drawing (PIXEL_ART.stand)
+   with the logo on its counter. --px is one drawing pixel; --x and --y place each extra piece
+   in drawing pixels from the stand's top-left corner, so everything lines up with it. */
+.stands { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.stand {
+  --px: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 18px 28px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+}
+.stand:nth-child(even) { flex-direction: row-reverse; }   /* zigzag down the list */
+/* Arriving from a pennant on the home page (#stand-<id>): leave room above and mark it */
+.stand { scroll-margin-top: 24px; }
+.stand:target { border-color: var(--color); box-shadow: 0 0 0 2px var(--color); }
+.stand__text { flex: 1 1 260px; }
+.stand__text strong {
+  display: block;
+  font-family: var(--font-varsity);
+  font-weight: 400;
+  font-size: 19px;
+  color: var(--navy);
+}
+.stand__text > span { color: var(--gray); }
+.stand__booth { position: relative; flex: none; }
+.stand .pixel-art { animation: none; margin: 0; }
+.stand__logo {
+  position: absolute;
+  left: calc(var(--px) * 9.5);
+  top: calc(var(--px) * 21.5);
+  width: calc(var(--px) * 13);
+  height: calc(var(--px) * 13);
+  border: calc(var(--px) / 2) solid #fff;
+  border-radius: var(--px);
+  background: #fff;
+  object-fit: cover;
+}
+
+/* Whoever minds the stand (a monster in its color). It moves a whole pixel at a time,
+   like a video game; --i offsets each stand's timing so they do not all move together. */
+.stand__piece {
+  position: absolute;
+  left: calc(var(--px) * var(--x));
+  top: calc(var(--px) * var(--y));
+}
+.stand__window {               /* the space between the posts: the mascot hides behind the counter */
+  width: calc(var(--px) * 22);
+  height: calc(var(--px) * 13);
+  overflow: hidden;
+}
+.stand__mascot .pixel-art { filter: none; }
+.stand__mascot { animation: bounce 1.2s steps(1) infinite; }
+.stand:hover .stand__mascot { animation-duration: .4s; }   /* happier when someone comes by */
+.stand__iris { animation: stand-look 6s steps(1) infinite; }
+.stand__blink { opacity: 0; animation: stand-blink 4s steps(1) infinite; }
+.stand__wave { transform-origin: 0 100%; animation: stand-wave .8s steps(1) infinite; }
+.stand__mascot, .stand__iris, .stand__blink, .stand__wave { animation-delay: calc(var(--i) * -.7s); }
+@keyframes stand-look {
+  30% { translate: calc(var(--px) * -1) 0; }
+  50% { translate: 0 0; }
+  75% { translate: var(--px) 0; }
+  95% { translate: 0 0; }
+}
+@keyframes stand-blink {
+  90% { opacity: 1; }
+  94% { opacity: 0; }
+}
+@keyframes stand-wave {
+  50% { rotate: -25deg; }
+}
+
 @media (max-width: 640px) {
   .event-hero .container { padding: 16px 0 60px; }
   .event-hero__content { margin-top: 28px; }
@@ -3269,6 +3351,7 @@ button.bracket__side:hover { background: #e4effa; }
   .event__intro--wide .event__image { max-width: none; }   /* the wide one uses the full width */
   .event__stats strong { font-size: 30px; }
   .event__avatar--photo { width: 120px; height: 120px; }
+  .stand { --px: 5px; padding: 16px 12px; }
 }
 
 
@@ -5122,7 +5205,54 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 
 .gallery { padding: 80px 0 90px; }
 
-.gallery__button { margin-top: 26px; border: 0; }
+/* Edition tabs and "Ver todo" side by side, both with the same white capsule and blue line */
+.gallery__controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 26px;
+}
+.gallery__button { border: 0; }
+
+.gallery__editions {
+  display: flex;
+  gap: 4px;
+  height: 56px;
+  padding: 8px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: inset 0 0 0 4px #fff, inset 0 0 0 6px var(--blue), 0 12px 26px -10px rgba(0, 0, 0, .6);
+}
+.gallery__edition {
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--navy);
+  font-family: var(--font-varsity);
+  font-size: 15px;
+  letter-spacing: .16em;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.gallery__edition:hover { color: var(--blue); }
+.gallery__edition[aria-selected="true"] { background: var(--blue); color: #fff; }
+.gallery__edition:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+/* "Día 1" label in a corner of the photo */
+.gallery__day {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--blue);
+  color: #fff;
+  font-family: var(--font-varsity);
+  font-size: 12px;
+  letter-spacing: .08em;
+}
 
 /* Carousel: full width, fading out at the edges */
 .gallery__carousel {
@@ -5162,6 +5292,7 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 
 /* Each photo or video: square, with a white frame like the competition cards */
 .gallery__photo {
+  position: relative;
   display: block;
   width: 280px;
   aspect-ratio: 1;
@@ -5413,7 +5544,25 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 .codes__action:hover { background: var(--blue); }
 
 .codes__collection-box { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+/* Dropdown: the count and the bar open and close the list */
+.codes__collection-box summary { list-style: none; cursor: pointer; }
+.codes__collection-box summary::-webkit-details-marker { display: none; }
+.codes__collection-box summary::after {   /* chevron, turns when open */
+  content: '';
+  display: block;
+  width: 9px;
+  height: 9px;
+  margin: 12px auto 0;
+  border: solid var(--gray);
+  border-width: 0 2px 2px 0;
+  rotate: 45deg;
+  transition: rotate .2s;
+}
+.codes__collection-box[open] summary::after { rotate: 225deg; }
+.codes__collection-box:has(.codes__collection:empty) summary { pointer-events: none; }   /* signed out: nothing to open */
+.codes__collection-box:has(.codes__collection:empty) summary::after { display: none; }
 .codes__count {
+  display: block;
   font-family: var(--font-varsity);
   font-size: 13px;
   letter-spacing: .18em;
@@ -5422,6 +5571,7 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 }
 /* Collection progress bar (how many titles they have) */
 .codes__progress {
+  display: block;
   width: min(220px, 70%);
   height: 6px;
   margin: 10px auto 0;
@@ -6227,21 +6377,17 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 
 /* ---------- 15. Team registration (inscripciones.html) ---------- */
 
+/* Two buttons of the same width, side by side; stacked on phones */
 .competitions__actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 14px;
-  margin-top: 22px;
+  width: fit-content;
+  margin: 22px auto 0;
 }
-.competitions__actions .hero__button { margin-top: 0; }
-.competitions__find-team {
-  background: #f0f6ff;
-  color: var(--blue-dark);
-}
-.competitions__find-team:hover {
-  background: #e4effd;
+.competitions__actions .hero__button { margin-top: 0; justify-content: center; padding: 0 26px; }
+@media (max-width: 640px) {
+  .competitions__actions { grid-template-columns: 1fr; }
 }
 
 .team__actions-row {
@@ -7686,102 +7832,70 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
    ============================================= */
 .pre-register { margin-top: 8px; }
 
-.pre-register__hook {
-  margin: 4px 0 18px;
-  padding: 18px 20px;
-  border: 1px solid #ffe08a;
-  border-radius: 20px;
-  background: linear-gradient(180deg, #fffaf0 0%, #fff3cf 100%);
-  box-shadow: 0 6px 16px rgba(201, 138, 0, .12);
-}
-.pre-register__headline {
-  margin: 0 0 14px;
-  font-size: 1.12rem;
-  line-height: 1.4;
-  color: var(--navy);
-  font-weight: 600;
-}
-.pre-register__headline strong { color: #b36b00; }
-
-.pre-register__rules {
-  list-style: none;
-  margin: 0 0 12px;
-  padding: 0;
+/* Same look as the home page card: white with the blue line inside, Nacho poking out
+   over the top and everything centered. The point boxes are .prereg-points. */
+.pre-register__card {
   display: grid;
-  gap: 10px;
-}
-.pre-register__rule {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 14px;
+  justify-items: center;
+  margin-top: 84px;
+  padding: 0 28px 28px;
+  border-radius: 26px;
   background: #fff;
-  border: 1px solid var(--line);
-  color: var(--ink-soft);
-  font-size: .96rem;
-  line-height: 1.35;
+  text-align: center;
+  box-shadow: inset 0 0 0 4px #fff, inset 0 0 0 6px var(--blue), 0 18px 36px -20px rgba(10, 44, 82, .55);
 }
-.pre-register__rule strong { color: var(--navy); }
-.pre-register__points {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 46px;
-  height: 32px;
-  padding: 0 10px;
-  border-radius: 999px;
-  font-weight: 800;
-  font-size: 1rem;
-  letter-spacing: .3px;
-  background: #eef4fc;
-  color: var(--blue);
+.pre-register__plush {
+  width: 150px;
+  height: auto;
+  margin: -78px 0 6px;
+  transform: rotate(-5deg);
+  filter: drop-shadow(0 10px 10px rgba(10, 44, 82, .3));
 }
-.pre-register__rule--win { border-color: #b7ebc6; background: #f3fbf6; }
-.pre-register__rule--win .pre-register__points { background: #1a7f37; color: #fff; }
-.pre-register__rule--zero { opacity: .92; }
-.pre-register__rule--zero .pre-register__points { background: #fdecec; color: #c0282d; }
-
-/* Pre-register modal title: smaller and lighter than the login title */
-.prereg-modal__title {
-  font-size: clamp(22px, 5.2vw, 30px);
-  -webkit-text-stroke-width: 3px;
-}
-
-/* The Nacho prize line, below the three rules */
-.prereg-prize {
-  margin: 12px 0 0;
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: #fff7e6;
-  border: 1px solid #ffe08a;
-  font-size: .96rem;
-  line-height: 1.4;
-  color: var(--ink-soft);
-}
-.prereg-prize strong { color: #b36b00; }
-
-.pre-register__note {
-  margin: 0;
-  font-size: .95rem;
-  color: var(--ink-soft);
-}
-.pre-register__note strong { color: #b36b00; }
-
-.pre-register__count {
-  margin: 4px 0 0;
-  font-weight: 600;
+.pre-register__title {
+  font-family: var(--font-title);
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.1;
   color: var(--navy);
 }
-.pre-register__status { margin-bottom: 8px; }
-.pre-register__status .team__badge { margin-bottom: 8px; }
-
-.pre-register__admin {
-  margin-top: 22px;
-  padding-top: 18px;
-  border-top: 1px dashed var(--line);
+.pre-register__prize {
+  margin: 6px 0 18px;
+  color: var(--ink-soft);
+  text-wrap: balance;
 }
+.pre-register__prize strong { color: var(--blue); }
+.pre-register .prereg-points { width: 100%; margin-bottom: 14px; }
+
+.pre-register__body { width: min(100%, 520px); }
+.pre-register__body .registration__text { margin: 12px 0 0; }
+.pre-register__count { font-weight: 600; color: var(--navy); }
+.pre-register__actions { margin-top: 16px; }
+/* As wide as its text; a long label wraps inside the pill instead of spilling out */
+.pre-register__actions .hero__button {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  min-height: 52px;
+  padding: 10px 22px;
+  font-size: 14px;
+  letter-spacing: .1em;
+  line-height: 1.3;
+}
+/* Cancel: the same pill as Inscribirme, white with a soft red line */
+.pre-register__cancel {
+  border: 0;
+  color: #b42340;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 4px #fff, inset 0 0 0 6px #f5b6c3, 0 10px 22px -12px rgba(180, 35, 64, .45);
+}
+.pre-register__cancel:hover { background: #fff5f7; }
+.pre-register__status { margin-top: 14px; }
+.pre-register__status .team__badge { display: inline-block; background: var(--blue); color: #fff; }
+.pre-register .auth-message--success { background: #eef4fc; color: var(--blue-dark); border-color: #b9d3ef; }
+@media (max-width: 480px) {
+  .pre-register__card { padding: 0 14px 22px; }
+}
+
 .pre-register__admin-actions {
   flex-wrap: wrap;
   margin-top: 6px;
@@ -7796,68 +7910,207 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
    PRE-REGISTER CTA (index.html speakers section + modal)
    Big button to pick a conference and pre-register. See js/pre-register-cta.js.
    ============================================= */
+/* As wide as the ID card above it. Nacho pokes his head out over the top, the text goes
+   centered below. The blue line inside the white card is the one the hero buttons use. */
 .prereg-cta {
-  margin: 26px auto 0;
-  max-width: 640px;
+  display: grid;
+  justify-items: center;
+  width: min(540px, 100%);
+  margin: 116px auto 0;
+  padding: 0 24px 26px;
+  border-radius: 26px;
+  background: #fff;
   text-align: center;
-  padding: 20px 22px;
-  border-radius: 22px;
-  background: linear-gradient(180deg, #fffaf0 0%, #fff3cf 100%);
-  border: 1px solid #ffe08a;
-  box-shadow: 0 10px 24px rgba(201, 138, 0, .18);
+  box-shadow: inset 0 0 0 4px #fff, inset 0 0 0 6px var(--blue), 0 22px 40px -18px rgba(10, 44, 82, .7);
 }
+/* Clicking Nacho opens the same modal as the button */
+.prereg-cta__plush {
+  width: 180px;
+  height: auto;
+  margin: -96px 0 8px;
+  cursor: pointer;
+  transform: rotate(-5deg);
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 12px 10px rgba(10, 44, 82, .35));
+  transition: transform .25s;
+}
+.prereg-cta:hover .prereg-cta__plush { transform: rotate(3deg) translateY(-4px); }
+
+.prereg-cta__title {
+  font-family: var(--font-title);
+  font-weight: 400;
+  font-size: clamp(28px, 4vw, 34px);
+  line-height: 1.1;
+  color: var(--navy);
+}
+.prereg-cta__title span { color: var(--blue); }
 .prereg-cta__pitch {
-  margin: 0 0 16px;
+  margin: 8px 0 12px;
   font-size: 1.05rem;
   line-height: 1.45;
-  color: var(--navy);
+  color: var(--ink-soft);
+  text-wrap: balance;
+}
+.prereg-cta__points {
+  margin-bottom: 20px;
+  font-size: .95rem;
+  line-height: 1.7;
   font-weight: 600;
+  color: var(--navy);
+  text-wrap: balance;
 }
-.prereg-cta__pitch strong { color: #b36b00; }
-.prereg-cta__button {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 1.08rem;
-  padding: 15px 30px;
+.prereg-cta__points strong {
+  margin-right: 3px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--blue);
+  color: #fff;
+  white-space: nowrap;
 }
-.prereg-cta__button svg { width: 20px; height: 20px; }
+.prereg-cta__button { height: 50px; }
 
-/* Modal: conference picker */
-.prereg-modal__hook { margin-bottom: 16px; }
-.prereg-modal__hook .pre-register__rules { gap: 8px; }
+/* Modal: Nacho and the title on top, the three point values, then the conference picker.
+   Same look as the card: white, blue, centered. */
+.prereg-modal { max-width: 760px; }
+.prereg-modal__header {
+  margin-bottom: 18px;
+  text-align: center;
+}
+.prereg-modal__plush {
+  display: block;
+  width: 108px;
+  height: auto;
+  margin: 0 auto 6px;
+  transform: rotate(-5deg);
+  filter: drop-shadow(0 8px 8px rgba(10, 44, 82, .25));
+}
+.prereg-modal__title {
+  font-family: var(--font-title);
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 1.1;
+  color: var(--navy);
+}
+.prereg-modal__prize {
+  margin-top: 6px;
+  color: var(--ink-soft);
+  text-wrap: balance;
+}
+.prereg-modal__prize strong { color: var(--blue); }
 
+/* The three point values as boxes: here and on each conference page (js/event.js) */
+.prereg-points {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 0 0 22px;
+  padding: 0;
+  list-style: none;
+}
+.prereg-point {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  padding: 12px 6px;
+  border-radius: 16px;
+  background: #eef4fc;
+  color: var(--blue-dark);
+  font-size: 13px;
+  line-height: 1.25;
+  text-align: center;
+  text-wrap: balance;
+}
+.prereg-point strong {
+  font-family: var(--font-title);
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1.1;
+  color: var(--blue);
+}
+.prereg-point--top { background: var(--blue); color: #fff; }
+.prereg-point--top strong { color: #fff; }
+.prereg-point--zero { background: #f3f5f8; color: var(--gray); }
+.prereg-point--zero strong { color: var(--gray); }
+@media (max-width: 480px) {
+  .prereg-point { padding: 10px 3px; font-size: 12px; }
+}
+
+.prereg-modal__body { text-align: center; }
+
+/* Two columns of conferences (one on phones). Each one: the title, the day and room,
+   and the spots left. */
 .prereg-options {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 10px;
-  margin: 10px 0 18px;
+  margin: 0 0 20px;
 }
 .prereg-option {
   display: grid;
-  gap: 2px;
+  justify-items: start;
+  align-content: start;
+  gap: 6px;
   text-align: left;
   padding: 12px 14px;
-  border-radius: 14px;
+  border-radius: 16px;
   border: 1.5px solid var(--line);
   background: #fff;
   cursor: pointer;
-  transition: border-color .15s, box-shadow .15s, transform .1s;
+  transition: border-color .15s, box-shadow .15s, background .15s;
 }
 .prereg-option:hover { border-color: #b9d3ef; }
 .prereg-option--active {
   border-color: var(--blue);
+  background: #f5f9fe;
   box-shadow: 0 0 0 3px rgba(22, 103, 194, .15);
 }
-.prereg-option__title { font-weight: 700; color: var(--navy); }
-.prereg-option__meta { font-size: .88rem; color: var(--ink-soft); }
+.prereg-option__title { font-weight: 700; line-height: 1.3; color: var(--navy); }
+/* Day and room side by side, each with its icon */
+.prereg-option__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-size: .88rem;
+  color: var(--ink-soft);
+}
+.prereg-option__meta span { display: inline-flex; align-items: center; gap: 5px; }
+.prereg-option__meta svg { flex: none; width: 15px; height: 15px; color: var(--blue); }
 .prereg-option__spots {
-  font-size: .85rem;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #eef4fc;
+  font-size: .8rem;
   font-weight: 600;
   color: var(--blue);
-  margin-top: 2px;
+  white-space: nowrap;
 }
-.prereg-option__spots--full { color: #c0282d; }
-.prereg-option__spots--in { color: #1a7f37; }
+.prereg-option__spots--full { background: #f3f5f8; color: var(--gray); }
+.prereg-option__spots--in { background: var(--blue); color: #fff; }
 
-.prereg-modal__action { margin-top: 6px; }
-.prereg-modal__cta { width: 100%; margin-top: 4px; }
+.prereg-modal__cta { width: min(100%, 380px); }
+
+/* ---------- Race map (js/race-map.js) ---------- */
+
+.race-map {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  max-height: 520px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 18px;
+  background: linear-gradient(#a9d6f5, #e6f2fb 70%);
+  color: var(--gray);
+  box-shadow: 0 18px 30px -18px rgba(10, 44, 82, .55);
+  cursor: grab;
+}
+.race-map:active { cursor: grabbing; }
+@media (max-width: 640px) { .race-map { aspect-ratio: 1; } }
+.race-map canvas { display: block; }
+.race-map__hint { margin-top: 10px; font-size: 14px; color: var(--gray); text-align: center; }
+/* One hint for the mouse and another for fingers */
+.race-map__hint--touch { display: none; }
+@media (hover: none) and (pointer: coarse) {
+  .race-map__hint--mouse { display: none; }
+  .race-map__hint--touch { display: inline; }
+}
