@@ -4914,19 +4914,40 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 
 .gallery { padding: 80px 0 90px; }
 
-.gallery__button { margin-top: 26px; border: 0; }
+/* Edition tabs and "Ver todo" side by side, both with the same white capsule and blue line */
+.gallery__controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 26px;
+}
+.gallery__button { border: 0; }
 
-/* Edition tabs: the groups tabs, on a light background */
 .gallery__editions {
   display: flex;
-  width: fit-content;
-  margin-inline: auto;
-  background: rgba(0, 0, 0, .05);
-  border-color: rgba(0, 0, 0, .08);
+  gap: 4px;
+  height: 56px;
+  padding: 8px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: inset 0 0 0 4px #fff, inset 0 0 0 6px var(--blue), 0 12px 26px -10px rgba(0, 0, 0, .6);
 }
-.gallery__editions .groups__tab { color: var(--ink-soft); }
-.gallery__editions .groups__tab:hover { color: var(--ink); background: rgba(0, 0, 0, .05); }
-.gallery__editions .groups__tab[aria-selected="true"] { color: #fff; }
+.gallery__edition {
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--navy);
+  font-family: var(--font-varsity);
+  font-size: 15px;
+  letter-spacing: .16em;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.gallery__edition:hover { color: var(--blue); }
+.gallery__edition[aria-selected="true"] { background: var(--blue); color: #fff; }
+.gallery__edition:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 
 /* "Día 1" label in a corner of the photo */
 .gallery__day {
