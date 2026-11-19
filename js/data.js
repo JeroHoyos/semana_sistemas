@@ -425,7 +425,6 @@ const GALLERY = [
   { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-panel-photo.jpg', text: 'Foto de los panelistas frente al mural del auditorio' },
   { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-qpt-ai.jpg', text: 'Stand de QPT-AI en la feria' },
   { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-auditorium.jpg', text: 'Charla en el auditorio con la presentación en pantalla y el público' },
-  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-lovelytics.jpg', text: 'Stand de Lovelytics en la feria' },
   { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-panel.jpg', text: 'Panel sentado en el escenario del auditorio' },
   { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-hall.jpg', text: 'El auditorio con sus murales antes de una charla' },
   { edition: 2025, file: 'img/gallery/group-photo.jpg', text: 'Foto grupal en las escaleras de la entrada de la Facultad de Minas' },
