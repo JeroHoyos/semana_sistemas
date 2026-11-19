@@ -30,14 +30,14 @@
       }
     })();
   </script>
-  <title>Semana de Sistemas · Facultad de Minas</title>
+  <title>Semana de Sistemas | Facultad de Minas</title>
   <meta name="description" content="Tres días de conferencias, talleres y competencias en la Facultad de Minas.">
   <link rel="icon" href="img/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Cinzel:wght@600;700&family=Graduate&family=Press+Start+2P&display=swap" crossorigin>
   <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/pricedown">
-  <link rel="stylesheet" href="css/styles.css?v=20261110_v3">
+  <link rel="stylesheet" href="css/styles.css?v=20261113_v9">
 </head>
 <body>
 
@@ -64,7 +64,7 @@
     </div>
 
     <div class="container hero__content">
-      <p class="hero__place">Facultad de Minas · Medellín</p>
+      <p class="hero__place">Facultad de Minas, Medellín</p>
 
       <h1 class="hero__title">
         <span class="hero__eyebrow">Semana de</span>
@@ -95,14 +95,16 @@
 
         <!-- Big CTA: pre-register to any conference (js/pre-register-cta.js) -->
         <div class="prereg-cta">
-          <p class="prereg-cta__pitch">
-            🎟️ Pre-inscríbete a las conferencias: asiste y gánate <strong>10 puntos</strong> en el Sustómetro.
-            Los que más puntos acumulen se llevan un <strong>peluche de Nacho</strong> 🦉
-          </p>
-          <button class="hero__button prereg-cta__button" id="btn-prereg-open" type="button">
-            Pre-inscribirme a una conferencia
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </button>
+          <img class="prereg-cta__plush" id="prereg-plush" src="img/nacho-plush.webp" width="440" height="435" alt="Peluche de Nacho, el búho de la UNAL, con su buzo verde">
+          <div class="prereg-cta__content">
+            <h3 class="prereg-cta__title">Llévate a <span>Nacho</span></h3>
+            <p class="prereg-cta__pitch">Quienes más puntos acumulen en el Sustómetro se llevan el peluche.</p>
+            <p class="prereg-cta__points"><strong>+10 puntos</strong> al inscribirte y asistir a una conferencia</p>
+            <button class="hero__button prereg-cta__button" id="btn-prereg-open" type="button">
+              Inscribirme
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -155,7 +157,7 @@
               Inscribe tu equipo
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </a>
-            <a class="hero__button competitions__find-team" href="inscripciones.html#buscando-equipo">
+            <a class="hero__button" href="inscripciones.html#buscando-equipo">
               Buscar equipo
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </a>
@@ -192,11 +194,14 @@
         <div class="section-title">
           <p class="section-title__eyebrow">Galería</p>
           <h2>La Semana en fotos</h2>
-          <p class="section-title__intro">Así se vivió la edición anterior: las charlas, las competencias y los momentos que hacen especial la Semana de Sistemas.</p>
-          <button class="hero__button gallery__button" id="gallery-toggle" type="button" aria-pressed="false">
-            <span id="gallery-toggle-text">Ver todo</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>
-          </button>
+          <p class="section-title__intro">Así se vive la Semana de Sistemas: las charlas, las competencias y los momentos que la hacen especial.</p>
+          <div class="gallery__controls">
+            <div class="gallery__editions" id="gallery-editions" role="tablist" aria-label="Elegir la edición"></div>
+            <button class="hero__button gallery__button" id="gallery-toggle" type="button" aria-pressed="false">
+              <span id="gallery-toggle-text">Ver todo</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>
+            </button>
+          </div>
         </div>
       </div>
       <div class="gallery__carousel" id="gallery-carousel"></div>
@@ -217,11 +222,11 @@
         @sistemasunalmed
       </span>
     </a>
-    <p>Semana de Sistemas · Facultad de Minas · Medellín</p>
+    <p>Semana de Sistemas, Facultad de Minas, Medellín</p>
     <p class="site-footer__authors">Web hecha por <strong>Santiago Escobar Arias</strong> y <strong>Jerónimo Hoyos Botero</strong></p>
-    <p class="site-footer__disclaimer">Proyecto estudiantil sin ánimo de lucro · Iniciativa académica e informativa para la comunidad universitaria de la Universidad Nacional de Colombia — Sede Medellín.</p>
+    <p class="site-footer__disclaimer">Proyecto estudiantil sin ánimo de lucro. Iniciativa académica e informativa para la comunidad universitaria de la Universidad Nacional de Colombia — Sede Medellín.</p>
     <p class="site-footer__legal"><strong>Aviso de Propiedad Intelectual y Seguridad:</strong> El diseño, arquitectura de software, código fuente, experiencia de usuario (UX/UI), herramientas interactivas e imágenes de vista previa están protegidos por la Ley 23 de 1982, Decisión Andina 351 y Arts. 270 y 271 del Código Penal Colombiano. Queda prohibida la reproducción parcial o total, plagio, copia de funcionalidades o ingeniería inversa sin autorización previa y por escrito del autor. Los logotipos e identidad visual son obra de la representación estudiantil y su uso requiere autorización expresa de la misma. Cualquier intento de vulneración o alteración informática será sancionado conforme a la Ley 1273 de 2009 (Delitos Informáticos).</p>
-    <p class="site-footer__copyright">© 2026 · Todos los derechos reservados · <a href="politica-datos.html" class="site-footer__link">Política de Tratamiento de Datos Personales</a></p>
+    <p class="site-footer__copyright">© 2026. Todos los derechos reservados. <a href="politica-datos.html" class="site-footer__link">Política de Tratamiento de Datos Personales</a></p>
   </footer>
 
   <!-- LOGIN MODAL / SCARER ID CARD -->
@@ -231,7 +236,7 @@
 
       <div class="auth-modal__header">
         <div class="auth-modal__eye" id="auth-eye-icon"></div>
-        <p class="section-title__eyebrow">Facultad de Minas · UNAL</p>
+        <p class="section-title__eyebrow">Facultad de Minas, UNAL</p>
         <h2 class="auth-modal__title" id="auth-title">Acceso</h2>
       </div>
 
@@ -457,32 +462,21 @@
   </dialog>
 
   <!-- PRE-REGISTER MODAL: pick a conference and pre-register (js/pre-register-cta.js) -->
-  <dialog class="auth-modal" id="prereg-modal" aria-labelledby="prereg-modal-title">
+  <dialog class="auth-modal prereg-modal" id="prereg-modal" aria-labelledby="prereg-modal-title">
     <div class="auth-modal__box">
       <button class="auth-modal__close" id="btn-prereg-close" type="button" aria-label="Cerrar ventana">✕</button>
 
-      <div class="auth-modal__header">
-        <p class="section-title__eyebrow">Charlas y conferencias · UNAL</p>
-        <h2 class="auth-modal__title prereg-modal__title" id="prereg-modal-title">Pre-inscríbete</h2>
+      <div class="prereg-modal__header">
+        <img class="prereg-modal__plush" src="img/nacho-plush.webp" width="440" height="435" alt="">
+        <h2 class="prereg-modal__title" id="prereg-modal-title">Pre-inscríbete</h2>
+        <p class="prereg-modal__prize">Quienes más puntos acumulen en el Sustómetro se llevan a <strong>Nacho</strong>.</p>
       </div>
 
-      <div class="prereg-modal__hook">
-        <ul class="pre-register__rules">
-          <li class="pre-register__rule pre-register__rule--win">
-            <span class="pre-register__points">+10</span>
-            <span>Te pre-inscribes <strong>y asistes</strong></span>
-          </li>
-          <li class="pre-register__rule">
-            <span class="pre-register__points">+8</span>
-            <span>Asistes <strong>sin</strong> pre-inscribirte</span>
-          </li>
-          <li class="pre-register__rule pre-register__rule--zero">
-            <span class="pre-register__points">+0</span>
-            <span>Te pre-inscribes pero <strong>no asistes</strong></span>
-          </li>
-        </ul>
-        <p class="prereg-prize">🦉 Quienes <strong>más puntos</strong> acumulen en el Sustómetro se llevan un <strong>peluche de Nacho</strong>.</p>
-      </div>
+      <ul class="prereg-points">
+        <li class="prereg-point prereg-point--top"><strong>+10</strong> Te inscribes y asistes</li>
+        <li class="prereg-point"><strong>+8</strong> Asistes sin inscribirte</li>
+        <li class="prereg-point prereg-point--zero"><strong>+0</strong> Te inscribes y no asistes</li>
+      </ul>
 
       <div class="prereg-modal__body" id="prereg-modal-body">
         <p class="registration__text">Cargando conferencias…</p>
@@ -494,7 +488,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0"></script>
   <script src="js/supabase.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
-  <script src="js/data.js?v=20261112_v1"></script>
+  <script src="js/data.js?v=20261114_v1"></script>
   <script src="js/icons.js"></script>
   <script src="js/common.js?v=20261116"></script>
   <script src="js/main.js"></script>

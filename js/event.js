@@ -17,7 +17,7 @@ function dayText(day) {
 function renderHero() {
   const type = ACTIVITY_TYPES[activity.type];
 
-  document.title = `${activity.title} · Semana de Sistemas`;
+  document.title = `${activity.title} | Semana de Sistemas`;
 
   // Pixel art drawings above the type, if the activity has any (see pixel-art.js)
   const decorations = activity.decorations
@@ -43,6 +43,8 @@ function renderInfo() {
     registrationSection(),
     preRegisterSection(),
     descriptionSection(),
+    routeMapSection(),
+    standsSection(),
     activity.team || activity.individual ? '<div id="participants"></div>' : '',   // filled by js/brackets.js
     activity.bracket ? '<div id="bracket"></div>' : '',   // filled by js/brackets.js
     (activity.team || activity.individual) && !activity.bracket ? '<div id="standings"></div>' : '',
@@ -87,8 +89,10 @@ function factsSection() {
 
 // The activity's text (each \n is a paragraph), with its stats below if it has any.
 // If there is an image, it goes next to the text (on phones, above it).
+// After a pre-registration it gets its own title, so the two read as separate sections.
 function descriptionSection() {
   const description = activity.description || activity.summary || 'Pronto publicaremos más detalles de esta actividad.';
+  const title = activity.preRegister ? '<h2 class="event__subtitle">Información</h2>' : '';
   const text = `
     <div class="event__description">
       ${description.split('\n').map((paragraph) => `<p>${paragraph}</p>`).join('')}
@@ -96,9 +100,10 @@ function descriptionSection() {
     ${activity.stats ? statBoxes(activity.stats) : ''}
   `;
 
-  if (!activity.image) return text;
+  if (!activity.image) return title + text;
 
   return `
+    ${title}
     <div class="event__intro">
       <img class="event__image" src="${activity.image}" alt="Imagen de ${activity.title}">
       <div>${text}</div>
@@ -143,7 +148,7 @@ function registrationSection() {
   return '';
 }
 
-// Pre-registration (pre-inscripción) for conferences with limited spots.
+// Pre-registration (inscripción) for conferences with limited spots.
 // The interactive part (session, capacity, sign-up, supervisor tools) lives in js/pre-register.js,
 // which fills #pre-register once the page knows who is logged in. Here we only place the container
 // and the fixed marketing copy that explains the reward.
@@ -151,42 +156,27 @@ function preRegisterSection() {
   if (!activity.preRegister) return '';
 
   const { max, modalidad } = activity.preRegister;
-  const modalidadText = { 'aula-maxima': 'Aula Máxima', 'aula': 'aula', 'virtual': 'virtual' }[modalidad] || modalidad;
 
   return `
     <section class="pre-register" id="pre-register"
       data-actividad="${activity.id}" data-modalidad="${modalidad}" data-max="${max}">
-      <h2 class="event__subtitle">Pre-inscripción</h2>
+      <h2 class="event__subtitle">Inscripción</h2>
 
-      <div class="pre-register__hook">
-        <p class="pre-register__headline">
-          🎟️ Asegura tu cupo: asiste y suma <strong>10 puntos</strong> en el Sustómetro.
-          Quienes más puntos acumulen se llevan un <strong>peluche de Nacho</strong> 🦉
-        </p>
-        <ul class="pre-register__rules">
-          <li class="pre-register__rule pre-register__rule--win">
-            <span class="pre-register__points">+10</span>
-            <span>Te pre-inscribes <strong>y asistes</strong></span>
-          </li>
-          <li class="pre-register__rule">
-            <span class="pre-register__points">+8</span>
-            <span>Asistes <strong>sin</strong> pre-inscribirte</span>
-          </li>
-          <li class="pre-register__rule pre-register__rule--zero">
-            <span class="pre-register__points">+0</span>
-            <span>Te pre-inscribes pero <strong>no asistes</strong></span>
-          </li>
+      <div class="pre-register__card">
+        <img class="pre-register__plush" src="img/nacho-plush.webp" width="440" height="435" alt="">
+        <h3 class="pre-register__title">Asegura tu cupo</h3>
+        <p class="pre-register__prize">Quienes más puntos acumulen en el Sustómetro se llevan a <strong>Nacho</strong>.</p>
+        <ul class="prereg-points">
+          <li class="prereg-point prereg-point--top"><strong>+10</strong> Te inscribes y asistes</li>
+          <li class="prereg-point"><strong>+8</strong> Asistes sin inscribirte</li>
+          <li class="prereg-point prereg-point--zero"><strong>+0</strong> Te inscribes y no asistes</li>
         </ul>
-        <p class="pre-register__note">
-          Cupos limitados para la modalidad <strong>${modalidadText}</strong>: solo ${max} pre-inscripciones.
-          ¡Reserva el tuyo antes de que se agoten!
-        </p>
-      </div>
 
-      <div class="pre-register__body" id="pre-register-body">
-        <p class="registration__text">Cargando pre-inscripción…</p>
+        <div class="pre-register__body" id="pre-register-body">
+          <p class="registration__text">Cargando inscripción…</p>
+        </div>
+        <p class="auth-message" id="pre-register-message" hidden></p>
       </div>
-      <p class="auth-message" id="pre-register-message" hidden></p>
 
       <!-- Supervisor tools: list of pre-registered people and attendance -->
       <div class="pre-register__admin" id="pre-register-admin" hidden></div>
@@ -196,6 +186,21 @@ function preRegisterSection() {
 
 // YouTube video (video field). youtube-nocookie leaves no cookies until someone presses play.
 // enablejsapi lets the page know when it plays and when it ends (js/secrets.js).
+// Empty box that js/race-map.js fills with the 3D route
+function routeMapSection() {
+  if (!activity.routeMap) return '';
+
+  return `
+    <h2 class="event__subtitle">El recorrido</h2>
+    <div class="race-map" id="race-map" role="img"
+      aria-label="Mapa 3D del recorrido por el campus Robledo: sale y llega al Hall del M10, sube entre las canchas, cruza el M3 por su portal, pasa frente al M5, sigue hacia el oeste por el M4 hasta el parqueadero del M7, cruza el puente del riachuelo, baja por el lado oeste del bosque y del M9 y vuelve por el borde de la Carrera 80."></div>
+    <p class="race-map__hint">
+      <span class="race-map__hint--mouse">Arrastra el mapa para girarlo y usa la rueda del mouse para acercarte.</span>
+      <span class="race-map__hint--touch">Gira el mapa con un dedo y pellizca para acercarte.</span>
+    </p>
+  `;
+}
+
 function videoSection(video) {
   if (!video) return '';
 
@@ -264,6 +269,63 @@ function groupSection(group) {
         ${moreLink(group.link, group.name)}
       </div>
     </div>
+  `;
+}
+
+// Stands fair (stands field): every company and group with a stand text gets its stand drawn
+// in its color, someone minding it and its logo big on the counter. Companies go first.
+// Each one has an id (stand-<id>) so the pennants on the home page can link straight to it.
+function standsSection() {
+  if (!activity.stands) return '';
+
+  const list = (items) => `<ul class="stands">${items.filter((item) => item.stand).map(standCard).join('')}</ul>`;
+
+  return `
+    <h2 class="event__subtitle">Empresas aliadas</h2>
+    ${list(COMPANIES)}
+    <h2 class="event__subtitle">Grupos estudiantiles</h2>
+    ${list(GROUPS)}
+  `;
+}
+
+// i (its place in the list) offsets its animations so the stands do not move together
+function standCard(group, i) {
+  const booth = { ...PIXEL_ART.stand, palette: { ...PIXEL_ART.stand.palette, c: group.color } };
+
+  return `
+    <li class="stand" id="stand-${group.id}" style="--color: ${group.color}; --i: ${i}">
+      <div class="stand__booth">
+        ${drawPixelArt(booth)}
+        ${group.logo ? `<img class="stand__logo" src="${group.logo}" alt="Logo de ${group.name}">` : ''}
+        ${standMascot(group)}
+      </div>
+      <div class="stand__text">
+        <strong>${group.name}</strong>
+        <span>${group.type}</span>
+        <p class="event__bio">${group.stand}</p>
+        ${moreLink(group.link, group.name)}
+      </div>
+    </li>
+  `;
+}
+
+// Whoever minds the stand peeks over the counter: it hops, blinks, looks around and waves.
+// A one-eyed monster in the stand's color. x and y are in stand drawing pixels.
+function standMascot(group) {
+  const palette = { ...MASCOT_PALETTE, c: group.color, C: group.color };
+  const body = (name) => drawPixelArt({ rows: PIXEL_ART[name].rows, palette });
+  const piece = (svg, x, y, kind) => `<span class="stand__piece stand__${kind}" style="--x: ${x}; --y: ${y}">${svg}</span>`;
+
+  return `
+    <span class="stand__piece stand__window" style="--x: 5; --y: 5">
+      <span class="stand__piece stand__mascot" style="--x: 3; --y: 1">
+        ${body('mascot')}
+        ${piece(drawPixelArt(PIXEL_ART.mascotIris), 6, 5, 'iris')}
+        ${piece(body('mascotBlink'), 0, 0, 'blink')}
+      </span>
+    </span>
+    ${piece(body('mascotPaw'), 7, 15, 'paw')}
+    ${piece(body('mascotPaw'), 24, 10, 'wave')}
   `;
 }
 

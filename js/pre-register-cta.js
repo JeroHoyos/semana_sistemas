@@ -26,9 +26,9 @@
 
   const selected = () => CONFERENCES.find((c) => c.id === selectedId) || CONFERENCES[0];
 
-  function showMessage(text, isError = true) {
+  function showError(text) {
     messageEl.textContent = text;
-    messageEl.className = `auth-message ${isError ? 'auth-message--error' : 'auth-message--success'}`;
+    messageEl.className = 'auth-message auth-message--error';
     messageEl.hidden = false;
   }
 
@@ -82,13 +82,16 @@
       const left = count === null ? null : Math.max(0, max - count);
       const spots = count === null
         ? 'cupos: —'
-        : (alreadyIn ? '✓ ya estás pre-inscrito' : (full ? 'cupos agotados' : `quedan ${left} de ${max} cupos`));
+        : (alreadyIn ? '✓ ya estás inscrito' : (full ? 'cupos agotados' : `quedan ${left} de ${max} cupos`));
 
       return `
         <button class="prereg-option ${c.id === selectedId ? 'prereg-option--active' : ''}"
           type="button" data-id="${c.id}" aria-pressed="${c.id === selectedId}">
           <span class="prereg-option__title">${escapeHtml(c.title)}</span>
-          <span class="prereg-option__meta">${escapeHtml(dayLabel(c))} · ${escapeHtml(c.place || '')}</span>
+          <span class="prereg-option__meta">
+            <span>${ICONS.calendar}${escapeHtml(dayLabel(c))}</span>
+            ${c.place ? `<span>${ICONS.pin}${escapeHtml(c.place)}</span>` : ''}
+          </span>
           <span class="prereg-option__spots ${alreadyIn ? 'prereg-option__spots--in' : (full ? 'prereg-option__spots--full' : '')}">${spots}</span>
         </button>
       `;
@@ -103,34 +106,32 @@
 
     if (!currentUser) {
       return `
-        <p class="registration__text">Inicia sesión con tu carnet para pre-inscribirte.</p>
+        <p class="registration__text">Inicia sesión con tu carnet para inscribirte.</p>
         <button class="hero__button auth-form__submit prereg-modal__cta" type="button" data-action="login">Iniciar sesión o crear carnet</button>
       `;
     }
     if (mine.has(c.id)) {
       return `
-        <p class="registration__text">
-          Ya tienes tu cupo en <strong>${escapeHtml(c.title)}</strong>. Sumas los 10 puntos solo si
-          <strong>asistes</strong>. Mientras más puntos acumules, más cerca del peluche de Nacho.
-        </p>
-        <a class="week-button" href="${activityLink(c.id)}">Ver la conferencia ${ICONS.arrow}</a>
+        <a class="hero__button auth-form__submit prereg-modal__cta" href="${activityLink(c.id)}">
+          Ver conferencia ${ICONS.arrow}
+        </a>
       `;
     }
     if (count !== null && count >= max) {
       return `
-        <p class="registration__text">Se agotaron los ${max} cupos de pre-inscripción de esta conferencia. Aún puedes asistir el día del evento y recibir 8 puntos.</p>
+        <p class="registration__text">Se agotaron los ${max} cupos de inscripción de esta conferencia. Aún puedes asistir el día del evento y recibir 8 puntos.</p>
       `;
     }
     return `
       <button class="hero__button auth-form__submit prereg-modal__cta" type="button" data-action="preregister">
-        Pre-inscribirme a esta conferencia ${ICONS.arrow}
+        Inscribirme ${ICONS.arrow}
       </button>
     `;
   }
 
   function render() {
     if (!CONFERENCES.length) {
-      body.innerHTML = '<p class="registration__text">Aún no hay conferencias con pre-inscripción abierta.</p>';
+      body.innerHTML = '<p class="registration__text">Aún no hay conferencias con inscripción abierta.</p>';
       return;
     }
     if (!loaded) {
@@ -155,15 +156,15 @@
       p_modalidad: c.preRegister.modalidad,
     });
     button.disabled = false;
-    if (error) return showMessage(translate(error));
-    await loadAll();
-    showMessage(`¡Listo! Reservaste tu cupo en "${c.title}". Asiste para sumar tus 10 puntos y acercarte al peluche de Nacho.`, false);
+    if (error) return showError(translate(error));
+    await loadAll();   // the action area now shows the "Ver conferencia" button
   }
 
   body.addEventListener('click', async (event) => {
     const option = event.target.closest('.prereg-option');
     if (option) {
       selectedId = option.dataset.id;
+      messageEl.hidden = true;
       render();
       return;
     }
@@ -187,6 +188,7 @@
   }
 
   openButton.addEventListener('click', open);
+  document.getElementById('prereg-plush').addEventListener('click', open);
   document.getElementById('btn-prereg-close').addEventListener('click', () => modal.close());
   modal.addEventListener('click', (event) => { if (event.target === modal) modal.close(); });
 

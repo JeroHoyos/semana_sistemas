@@ -1,7 +1,7 @@
 /* =============================================
    CONFERENCE PRE-REGISTRATION (evento.html?id=<conferencia>)
    Fills the #pre-register section that event.js places for talks with a preRegister config.
-   Talks open a pre-inscripción with limited spots by modality (see js/data.js and
+   Talks open a sign-up (inscripción) with limited spots by modality (see js/data.js and
    supabase/preinscripciones-conferencias.sql). The reward copy lives in event.js; here lives
    the interactive part: session, capacity bar, sign-up / cancel and the supervisor tools.
 
@@ -68,7 +68,7 @@
     const filled = count === null ? 0 : Math.min(100, (count / max) * 100);
     const label = count === null
       ? 'Cargando cupos…'
-      : `${count} de ${max} cupos ocupados${spotsLeft() > 0 ? ` · quedan ${spotsLeft()}` : ' · ¡cupos agotados!'}`;
+      : `${count} de ${max} cupos ocupados${spotsLeft() > 0 ? `, quedan ${spotsLeft()}` : ', ¡cupos agotados!'}`;
     return `
       <p class="pre-register__count">${label}</p>
       <span class="registration__bar" style="--filled: ${filled}%"></span>
@@ -90,8 +90,8 @@
     if (!sessionUser) {
       body.innerHTML = `
         ${capacityBar()}
-        <p class="registration__text">Inicia sesión con tu carnet para pre-inscribirte a esta conferencia.</p>
-        <div class="team__actions-row">
+        <p class="registration__text">Inicia sesión con tu carnet para inscribirte a esta conferencia.</p>
+        <div class="pre-register__actions">
           <a class="hero__button auth-form__submit" href="inscripciones.html">Iniciar sesión o crear carnet ${ICONS.arrow}</a>
         </div>
       `;
@@ -103,18 +103,14 @@
       body.innerHTML = `
         ${capacityBar()}
         <div class="pre-register__status">
-          <span class="team__badge" style="background: #e6f7ec; color: #1a7f37; border: 1px solid #b7ebc6;">
-            ✓ Pre-inscrito${attended ? ' · asistencia confirmada' : ''}
+          <span class="team__badge">
+            ✓ Inscrito${attended ? ', asistencia confirmada' : ''}
           </span>
-          <p class="registration__text">
-            ${attended
-              ? '¡Gracias por asistir! Ya sumaste tus 10 puntos en el Sustómetro. Sigue acumulando: los que más puntos tengan se llevan un peluche de Nacho.'
-              : 'Tienes tu cupo reservado. Recuerda: solo sumas los 10 puntos si <strong>asistes</strong> el día de la conferencia. Mientras más puntos acumules, más cerca del peluche de Nacho.'}
-          </p>
+          ${attended ? '<p class="registration__text">¡Gracias por asistir! Ya sumaste tus 10 puntos en el Sustómetro. Sigue acumulando: los que más puntos tengan se llevan un peluche de Nacho.</p>' : ''}
         </div>
         ${attended ? '' : `
-          <div class="team__actions-row">
-            <button class="week-button team__danger" type="button" data-action="cancel">Cancelar pre-inscripción</button>
+          <div class="pre-register__actions">
+            <button class="hero__button pre-register__cancel" type="button" data-action="cancel">Cancelar inscripción</button>
           </div>
         `}
       `;
@@ -124,15 +120,15 @@
     if (noSpotsLeft()) {
       body.innerHTML = `
         ${capacityBar()}
-        <p class="registration__text">Ya se llenaron los ${max} cupos de pre-inscripción. Aún puedes asistir el día de la conferencia y recibir 8 puntos.</p>
+        <p class="registration__text">Ya se llenaron los ${max} cupos de inscripción. Aún puedes asistir el día de la conferencia y recibir 8 puntos.</p>
       `;
       return;
     }
 
     body.innerHTML = `
       ${capacityBar()}
-      <div class="team__actions-row">
-        <button class="hero__button auth-form__submit" type="button" data-action="preregister">Pre-inscribirme ${ICONS.arrow}</button>
+      <div class="pre-register__actions">
+        <button class="hero__button auth-form__submit" type="button" data-action="preregister">Inscribirme ${ICONS.arrow}</button>
       </div>
     `;
   }
@@ -154,7 +150,7 @@
           <div class="participant-card__info">
             <div class="participant-card__top">
               <span class="team__who">${escapeHtml(person.nombre)}<small>@${escapeHtml(person.usuario)}</small></span>
-              ${attended ? '<span class="team__badge">Asistió · 10 pts</span>' : ''}
+              ${attended ? '<span class="team__badge">Asistió, 10 pts</span>' : ''}
             </div>
             <div class="participant-card__actions pre-register__admin-actions">
               <button class="week-button" type="button" data-action="toggle-attendance"
@@ -170,19 +166,24 @@
       `;
     }).join('');
 
+    // Folded under its title (the .fold of js/brackets.js), closed at first. Every action draws it
+    // again, so it keeps whatever state the supervisor left it in.
+    const open = adminBox.querySelector('.fold')?.open ? 'open' : '';
     adminBox.innerHTML = `
-      <h3 class="event__subtitle">Gestión de asistencia (admin)</h3>
-      <p class="registration__text">
-        Marca asistencia a quien se pre-inscribió (gana 10 puntos). Para quien llega sin pre-inscripción,
-        agrégalo con su correo y recibirá 8 puntos.
-      </p>
-      <form class="team__add" id="pre-register-manual">
-        <input type="email" name="correo" placeholder="correo@unal.edu.co" required aria-label="Correo de quien asistió sin pre-inscribirse">
-        <button class="week-button" type="submit">Agregar asistente (8 pts)</button>
-      </form>
-      <ul class="team-list" id="pre-register-admin-list">
-        ${people && people.length ? list : '<li class="registration__text">Aún no hay pre-inscritos.</li>'}
-      </ul>
+      <details class="fold" ${open}>
+        <summary><h3 class="event__subtitle">Gestión de asistencia (admin)</h3></summary>
+        <p class="registration__text">
+          Marca asistencia a quien se inscribió (gana 10 puntos). Para quien llega sin inscripción,
+          agrégalo con su correo y recibirá 8 puntos.
+        </p>
+        <form class="team__add" id="pre-register-manual">
+          <input type="email" name="correo" placeholder="correo@unal.edu.co" required aria-label="Correo de quien asistió sin inscribirse">
+          <button class="week-button" type="submit">Agregar asistente (8 pts)</button>
+        </form>
+        <ul class="team-list" id="pre-register-admin-list">
+          ${people && people.length ? list : '<li class="registration__text">Aún no hay inscritos.</li>'}
+        </ul>
+      </details>
     `;
   }
 
@@ -209,13 +210,13 @@
       if (error) return showMessage(translate(error));
       await reload();
       showMessage('¡Listo! Reservaste tu cupo. Asiste para sumar tus 10 puntos y acercarte al peluche de Nacho.', false);
-    } else if (action === 'cancel' && confirm('¿Cancelar tu pre-inscripción? Perderás tu cupo reservado.')) {
+    } else if (action === 'cancel' && confirm('¿Cancelar tu inscripción? Perderás tu cupo reservado.')) {
       button.disabled = true;
       const { error } = await supabaseClient.rpc('cancelar_preinscripcion_conferencia', { p_actividad: activityId });
       button.disabled = false;
       if (error) return showMessage(translate(error));
       await reload();
-      showMessage('Cancelaste tu pre-inscripción.', false);
+      showMessage('Cancelaste tu inscripción.', false);
     }
   });
 
@@ -238,7 +239,7 @@
       if (error) return showMessage(translate(error));
       await reload();
       showMessage(willAttend ? 'Asistencia marcada: +10 puntos.' : 'Asistencia retirada.', false);
-    } else if (action === 'admin-remove-pre' && confirm('ADMIN: ¿Eliminar la pre-inscripción de esta persona?')) {
+    } else if (action === 'admin-remove-pre' && confirm('ADMIN: ¿Eliminar la inscripción de esta persona?')) {
       button.disabled = true;
       const { error } = await supabaseClient.rpc('admin_eliminar_preinscripcion_conferencia', {
         p_actividad: activityId,
@@ -247,7 +248,7 @@
       button.disabled = false;
       if (error) return showMessage(translate(error));
       await reload();
-      showMessage('Eliminaste la pre-inscripción (admin).', false);
+      showMessage('Eliminaste la inscripción (admin).', false);
     }
   });
 
