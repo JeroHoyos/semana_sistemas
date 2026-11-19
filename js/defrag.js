@@ -1047,7 +1047,7 @@ function defragSprite(type) {
 const DEFRAG_CARTRIDGE = {
   id: 'defrag',
   scoring: 'points',
-  dailyGames: 10,
+  dailyGames: 30,
   create: (canvas, events) => createDefrag(canvas, events),
   splash: {
     text: 'Completa filas y libera la memoria',

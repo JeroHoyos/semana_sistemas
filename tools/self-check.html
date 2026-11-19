@@ -201,6 +201,31 @@
       check(`pixel art rows (${name})`, art.rows.every((row) => row.length === art.rows[0].length), true);
     }
 
+    // Standings & Non-bracket competitions (observacion, atletismo, maraton)
+    const obs = findActivity('observacion');
+    const atl = findActivity('atletismo');
+    const mar = findActivity('maraton');
+    check('observacion has team and no bracket', Boolean(obs?.team && !obs?.bracket), true);
+    check('atletismo has individual and no bracket', Boolean(atl?.individual && !atl?.bracket), true);
+    check('maraton has team and no bracket', Boolean(mar?.team && !mar?.bracket), true);
+
+    // Standings sorting logic: 1st, 2nd, 3rd, numerical order, then DNF, DNF preserved
+    const testResults = [
+      { nombre: 'Equipo Gamma', puesto: 'DNF' },
+      { nombre: 'Equipo Beta', puesto: 2 },
+      { nombre: 'Equipo Alfa', puesto: 1 },
+      { nombre: 'Equipo Delta', puesto: 3 },
+      { nombre: 'Equipo Epsilon', puesto: 'DNF' },
+    ];
+    const sortedNames = sortStandings(testResults).map((r) => `${r.puesto}:${r.nombre}`);
+    check('standings sorting orders numerical then dnf', sortedNames, [
+      '1:Equipo Alfa',
+      '2:Equipo Beta',
+      '3:Equipo Delta',
+      'DNF:Equipo Epsilon',
+      'DNF:Equipo Gamma'
+    ]);
+
     document.getElementById('result').textContent = failures.length ? `FAILED\n${failures.join('\n')}` : 'ALL PASSED';
   </script>
 </body>
