@@ -45,6 +45,7 @@ function renderInfo() {
     descriptionSection(),
     activity.team || activity.individual ? '<div id="participants"></div>' : '',   // filled by js/brackets.js
     activity.bracket ? '<div id="bracket"></div>' : '',   // filled by js/brackets.js
+    (activity.team || activity.individual) && !activity.bracket ? '<div id="standings"></div>' : '',
     videoSection(activity.video),
     rulesSection(activity.rules),
     speakerSection(findSpeakers(activity)),

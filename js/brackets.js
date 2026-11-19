@@ -82,8 +82,9 @@ function standings() {
 
 // A section folded under its title, closed at first so the page stays short. When it is drawn
 // again it stays as the person left it.
-function foldHtml(container, title, body) {
-  const open = $(`${container} > .fold`)?.open ? 'open' : '';
+function foldHtml(container, title, body, defaultOpen = false) {
+  const existing = $(`${container} > .fold`);
+  const open = existing ? (existing.open ? 'open' : '') : (defaultOpen ? 'open' : '');
   return `<details class="fold" ${open}><summary><h2 class="event__subtitle">${title}</h2></summary>${body}</details>`;
 }
 
@@ -272,17 +273,313 @@ $('#bracket')?.addEventListener('click', (event) => {
   if (action === 'load') loadRegistered();
 });
 
+
+/* ---------- Standings (competencias sin llaves) ---------- */
+
+let standingsData = [];       // array of { nombre, puesto } (puesto: number | 'DNF')
+let standingsBusy = false;
+
+function sortStandings(list) {
+  return [...list].sort((a, b) => {
+    const isDnfA = a.puesto === 'DNF';
+    const isDnfB = b.puesto === 'DNF';
+    if (isDnfA && !isDnfB) return 1;
+    if (!isDnfA && isDnfB) return -1;
+    if (isDnfA && isDnfB) return String(a.nombre).localeCompare(String(b.nombre));
+    const numA = Number(a.puesto);
+    const numB = Number(b.puesto);
+    if (numA !== numB) return numA - numB;
+    return String(a.nombre).localeCompare(String(b.nombre));
+  });
+}
+
+function standingsTableHtml() {
+  if (!standingsData.length) {
+    return '<p class="event__bio">La tabla de posiciones oficial se publicará una vez los jueces registren los resultados de la competencia.</p>';
+  }
+
+  const sorted = sortStandings(standingsData);
+  const rows = sorted.map((item) => {
+    const p = participants.find((part) => part.name === item.nombre) || { name: item.nombre };
+    const isDnf = item.puesto === 'DNF';
+    const num = Number(item.puesto);
+    let rankHtml = '';
+    let statusHtml = '';
+    let rowClass = 'standings__row';
+
+    if (isDnf) {
+      rowClass += ' standings__row--dnf';
+      rankHtml = '<span class="standings__rank standings__rank--dnf">DNF</span>';
+      statusHtml = '<span class="standings__tag standings__tag--dnf">No terminó</span>';
+    } else if (num === 1) {
+      rowClass += ' standings__row--gold';
+      rankHtml = '<span class="standings__rank standings__rank--gold">1.º</span>';
+      statusHtml = '<span class="standings__tag standings__tag--gold">🥇 Campeón</span>';
+    } else if (num === 2) {
+      rowClass += ' standings__row--silver';
+      rankHtml = '<span class="standings__rank standings__rank--silver">2.º</span>';
+      statusHtml = '<span class="standings__tag standings__tag--silver">🥈 Subcampeón</span>';
+    } else if (num === 3) {
+      rowClass += ' standings__row--bronze';
+      rankHtml = '<span class="standings__rank standings__rank--bronze">3.º</span>';
+      statusHtml = '<span class="standings__tag standings__tag--bronze">🥉 Tercer lugar</span>';
+    } else {
+      rankHtml = `<span class="standings__rank">${num}.º</span>`;
+      statusHtml = '<span class="standings__tag standings__tag--finished">Finalizó</span>';
+    }
+
+    return `
+      <tr class="${rowClass}">
+        <td class="standings__td-rank">${rankHtml}</td>
+        <td class="standings__td-name">
+          <div class="standings__participant">
+            ${flagHtml(p)}
+            <span class="standings__name ${isDnf ? 'standings__name--dnf' : ''}">${escapeHtml(p.name)}</span>
+          </div>
+        </td>
+        <td class="standings__td-status">${statusHtml}</td>
+      </tr>
+    `;
+  }).join('');
+
+  return `
+    <div class="standings__table-wrap">
+      <table class="standings__table">
+        <thead>
+          <tr>
+            <th class="standings__th-rank">Puesto</th>
+            <th class="standings__th-name">Participante</th>
+            <th class="standings__th-status">Resultado</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function standingsEditorHtml() {
+  if (!participants.length) {
+    return `
+      <details class="bracket__editor standings__editor" open>
+        <summary>Editar tabla de posiciones</summary>
+        <p class="event__bio">No hay participantes inscritos todavía en esta competencia.</p>
+      </details>
+    `;
+  }
+
+  const rankedMap = new Map(standingsData.map((r) => [r.nombre, r.puesto]));
+  const sortedParticipants = [...participants].sort((a, b) => {
+    const posA = rankedMap.get(a.name);
+    const posB = rankedMap.get(b.name);
+    if (posA != null && posB == null) return -1;
+    if (posA == null && posB != null) return 1;
+    if (posA == null && posB == null) return a.name.localeCompare(b.name);
+    const isDnfA = posA === 'DNF';
+    const isDnfB = posB === 'DNF';
+    if (isDnfA && !isDnfB) return 1;
+    if (!isDnfA && isDnfB) return -1;
+    if (isDnfA && isDnfB) return a.name.localeCompare(b.name);
+    return Number(posA) - Number(posB);
+  });
+
+  return `
+    <details class="bracket__editor standings__editor" ${standingsData.length ? '' : 'open'}>
+      <summary>${standingsData.length ? 'Editar tabla de posiciones' : 'Registrar tabla de posiciones'}</summary>
+      <p class="event__bio">Asigna el número de puesto (1, 2, 3...) o presiona <strong>DNF</strong> para quienes no terminaron. Deja en blanco para participantes sin puesto asignado.</p>
+      <div class="standings-editor__list">
+        ${sortedParticipants.map((p) => {
+          const current = rankedMap.get(p.name) ?? '';
+          const isDnf = current === 'DNF';
+          return `
+            <div class="standings-editor__row" data-name="${escapeHtml(p.name)}">
+              <div class="standings-editor__participant">
+                ${flagHtml(p)}
+                <span class="standings-editor__name">${escapeHtml(p.name)}</span>
+              </div>
+              <div class="standings-editor__actions">
+                <input type="text"
+                       class="standings-editor__input"
+                       value="${escapeHtml(String(current))}"
+                       placeholder="Puesto o DNF"
+                       data-name="${escapeHtml(p.name)}"
+                       autocomplete="off">
+                <button type="button"
+                        class="standings-editor__dnf-btn ${isDnf ? 'standings-editor__dnf-btn--active' : ''}"
+                        data-action="toggle-dnf"
+                        title="Alternar DNF">
+                  DNF
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+      <div class="auth-edit__buttons standings-editor__buttons">
+        <button type="button" class="week-button auth-edit__cancel" data-action="clear-standings">Limpiar puestos</button>
+        <button type="button" class="hero__button auth-form__submit auth-edit__save" data-action="save-standings">Guardar posiciones</button>
+      </div>
+      <p class="standings__message" role="status"></p>
+    </details>
+  `;
+}
+
+function renderStandings() {
+  const container = $('#standings');
+  if (!container) return;
+  if (!standingsData.length && !bracketAdmin) {
+    container.innerHTML = foldHtml('#standings', 'Tabla de posiciones',
+      '<p class="event__bio">La tabla de posiciones oficial se publicará una vez los jueces registren los resultados de la competencia.</p>',
+      false
+    );
+    return;
+  }
+
+  const defaultOpen = Boolean(standingsData.length || bracketAdmin);
+  container.innerHTML = foldHtml('#standings', 'Tabla de posiciones', `
+    ${standingsTableHtml()}
+    ${bracketAdmin ? standingsEditorHtml() : ''}
+  `, defaultOpen);
+}
+
+async function loadStandings() {
+  const { data, error } = await supabaseClient
+    .from('clasificaciones')
+    .select('resultados')
+    .eq('actividad', activity.id)
+    .maybeSingle();
+  if (error) console.warn('[Clasificaciones]', error.message);
+  else standingsData = Array.isArray(data?.resultados) ? data.resultados : [];
+}
+
+async function saveStandings(newResults) {
+  if (standingsBusy) return false;
+  standingsBusy = true;
+  const msgEl = $('.standings__message');
+  if (msgEl) {
+    msgEl.textContent = 'Guardando…';
+    msgEl.className = 'standings__message';
+  }
+  const { error } = await supabaseClient.rpc('guardar_clasificacion', {
+    p_actividad: activity.id,
+    p_resultados: newResults,
+  });
+  if (!error) await loadStandings();
+  standingsBusy = false;
+  if (error) {
+    if (msgEl) {
+      msgEl.textContent = `No se pudo guardar: ${error.message}`;
+      msgEl.className = 'standings__message standings__message--error';
+    }
+    return false;
+  }
+  renderStandings();
+  const newMsgEl = $('.standings__message');
+  if (newMsgEl) {
+    newMsgEl.textContent = 'Posiciones guardadas con éxito.';
+    newMsgEl.className = 'standings__message standings__message--success';
+  }
+  return true;
+}
+
+$('#standings')?.addEventListener('click', async (event) => {
+  const dnfBtn = event.target.closest('[data-action="toggle-dnf"]');
+  if (dnfBtn) {
+    const row = dnfBtn.closest('.standings-editor__row');
+    const input = row?.querySelector('.standings-editor__input');
+    if (input) {
+      if (input.value.trim().toUpperCase() === 'DNF') {
+        input.value = '';
+        dnfBtn.classList.remove('standings-editor__dnf-btn--active');
+      } else {
+        input.value = 'DNF';
+        dnfBtn.classList.add('standings-editor__dnf-btn--active');
+      }
+    }
+    return;
+  }
+
+  const action = event.target.closest('[data-action]')?.dataset.action;
+  if (action === 'save-standings') {
+    const inputs = document.querySelectorAll('.standings-editor__input');
+    const newResults = [];
+    let hasError = false;
+    const msgEl = $('.standings__message');
+
+    inputs.forEach((input) => {
+      if (hasError) return;
+      const raw = input.value.trim();
+      if (!raw) return;
+      const name = input.dataset.name;
+      if (raw.toUpperCase() === 'DNF') {
+        newResults.push({ nombre: name, puesto: 'DNF' });
+      } else {
+        const num = parseInt(raw, 10);
+        if (isNaN(num) || num < 1 || String(num) !== raw) {
+          if (msgEl) {
+            msgEl.textContent = `Puesto inválido «${raw}» para ${name}. Usa un número entero (1, 2, 3...) o DNF.`;
+            msgEl.className = 'standings__message standings__message--error';
+          }
+          input.focus();
+          hasError = true;
+          return;
+        }
+        newResults.push({ nombre: name, puesto: num });
+      }
+    });
+
+    if (hasError) return;
+    await saveStandings(newResults);
+  }
+
+  if (action === 'clear-standings') {
+    if (!confirm('¿Deseas borrar todas las posiciones y marcas DNF?')) return;
+    document.querySelectorAll('.standings-editor__input').forEach((input) => { input.value = ''; });
+    document.querySelectorAll('.standings-editor__dnf-btn').forEach((btn) => { btn.classList.remove('standings-editor__dnf-btn--active'); });
+    await saveStandings([]);
+  }
+});
+
+$('#standings')?.addEventListener('input', (event) => {
+  const input = event.target.closest('.standings-editor__input');
+  if (input) {
+    const row = input.closest('.standings-editor__row');
+    const btn = row?.querySelector('.standings-editor__dnf-btn');
+    if (btn) {
+      btn.classList.toggle('standings-editor__dnf-btn--active', input.value.trim().toUpperCase() === 'DNF');
+    }
+  }
+});
+
 // The participants come first, so the bracket can show their flags
 async function startCompetition() {
   const error = await loadParticipants();
   if (error) console.warn('[Participantes]', error.message);
   renderParticipants();
-  if (!activity.bracket) return;
 
   const { data } = await supabaseClient.auth.getSession();
   bracketAdmin = isCurrentSupervisor(data.session?.user ?? null);
-  await loadBracket();
-  renderBracket();
+
+  if (activity.bracket) {
+    await loadBracket();
+    renderBracket();
+  } else {
+    await loadStandings();
+    renderStandings();
+  }
+}
+
+if (typeof supabaseClient !== 'undefined' && supabaseClient?.auth) {
+  supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+    const nextAdmin = isCurrentSupervisor(session?.user ?? null);
+    if (nextAdmin !== bracketAdmin) {
+      bracketAdmin = nextAdmin;
+      if (activity?.bracket) renderBracket();
+      else renderStandings();
+    }
+  });
 }
 
 if (activity?.team || activity?.individual) startCompetition();
