@@ -112,24 +112,42 @@ const SPEAKERS = [
     photo: 'img/speaker-eduardo-ospina.jpg', link: 'https://unergy.io/',
     bio: 'Emprendedor en tecnología climática y sostenibilidad, apasionado por el desarrollo de hardware, firmware y software. Es cofundador y CEO de Unergy, que construye minigranjas solares para democratizar y descentralizar la energía limpia en Colombia, y cofundador de Solenium. Estudió en la Universidad Nacional de Colombia.\n' +
       'Con Unergy construyó en Luruaco la primera minigranja solar del país y hoy opera más de 50. La empresa cerró una ronda pre-serie A de US$4 millones, con un compromiso de coinversión de más de US$80 millones para construir 80 minigranjas más, y tiene el primer proyecto legalizado bajo la regulación de comunidades energéticas en Colombia. MIT Technology Review lo seleccionó como uno de los Innovators Under 35 de Latinoamérica.' },
+  { id: 'jose', name: 'Jose Miguel Pulgarin Agudelo', role: 'Frontend Developer en Solē', credential: 'Ponente', color: '#2f9e5b',
+    photo: 'img/speaker-jose-pulgarin.jpg' },
+  { id: 'david', name: 'David Zapata Naranjo', role: 'Cloud Engineer en Blend360', credential: 'Ponente', color: '#e07b00',
+    photo: 'img/speaker-david-zapata.jpg' },
 ];
 
 // Student groups taking part in the week. Each one shows as a pennant in its color.
 // type: the small text below the pennant.
-// Optional: logo (square image in img/), link (social network or web page: the pennant links to it)
-// and description (shown on the pages of the activities it organizes, with the link as "Saber más").
+// Optional: logo (square image in img/), link (social network or web page: the pennant links to it),
+// description (shown on the pages of the activities it organizes, with the link as "Saber más")
+// and stand (its text on the Feria de stands page, next to its drawn stand; companies take it too).
 const GROUPS = [
   { id: 'unalgoritmo', name: 'UNAlgoritmo', type: 'Grupo estudiantil', color: '#9128d9', logo: 'img/group-unalgoritmo.jpg',
     link: 'https://www.linkedin.com/company/unalgoritmo/',
+    stand: 'UNAlgoritmo es un grupo estudiantil dedicado a la programación competitiva, donde podrás fortalecer tus habilidades en algoritmos, estructuras de datos y lógica de programación. Participan en competencias nacionales e internacionales y organizan entrenamientos para aprender, compartir conocimientos y superar nuevos desafíos.',
     description: 'UN Algoritmo es un grupo estudiantil adscrito a la Facultad de Minas de la Universidad Nacional de Colombia (Sede Medellín) dedicado a impulsar la programación competitiva, el pensamiento algorítmico y las estructuras de datos. Mediante entrenamientos semanales estructurados tanto para principiantes como para niveles avanzados, el grupo prepara equipos para competir en la Maratón Nacional de Programación, en las rondas clasificatorias del ICPC (International Collegiate Programming Contest) y en la Maratona Feminina de Programação (MFP), fortaleciendo la comunicación, la resolución rápida de problemas y el trabajo en equipo bajo el formato de un computador por terna.' },
   { id: 'aperture', name: 'Aperture', type: 'Semillero', color: '#1aa3b8', logo: 'img/group-aperture.jpg',
     link: 'https://aperture-systems-lab.github.io',
+    stand: 'Aperture es un semillero de investigación estudiantil que busca llevar estos conocimientos más allá de la teoría, desarrollando proyectos que aporten soluciones a problemas reales. Es un espacio para experimentar, compartir ideas, aprender nuevas herramientas y explorar el potencial de los datos y la IA.',
     description: 'Aperture es un Semillero de Investigación estudiantil donde se explora la ciencia de datos, el machine learning y la IA. Es un espacio para aprender haciendo: desarrollamos proyectos, compartimos conocimientos y conectamos esa teoría con problemas de la vida real, impulsando una comunidad colaborativa en la universidad.' },
   { id: 'turing-box', name: 'Turing Box', type: 'Grupo estudiantil', color: '#c4358c', logo: 'img/group-turing-box.jpg',
     link: 'https://www.instagram.com/turingbox_med/',
+    stand: 'TuringBox es una comunidad estudiantil que busca acercar a los estudiantes a las tecnologías de la Cuarta Revolución Industrial. A través de proyectos STEM, talleres y actividades, exploran temas como inteligencia artificial, desarrollo web, blockchain e Internet de las Cosas. ¡Un espacio para aprender, experimentar e innovar!',
     description: 'Turing Box es un grupo estudiantil intersedes de la Universidad Nacional de Colombia que abre un espacio de pruebas (sandbox) para explorar tecnologías que no suelen estar en los currículos, como inteligencia artificial, blockchain, web3, realidad aumentada y creación de videojuegos. Funciona a través de nodos temáticos y busca crear comunidad alrededor de la tecnología con eventos, hackathons, charlas, podcasts y creación de contenidos, además de entrenar habilidades técnicas y blandas para impulsar las carreras profesionales de sus integrantes.' },
   { id: 'uneural', name: 'UNeural', type: 'Grupo estudiantil', color: '#4a4fd8', logo: 'img/group-uneural.jpg',
-    link: 'https://www.instagram.com/uneuralgroup' },
+    link: 'https://www.instagram.com/uneuralgroup',
+    stand: 'UNeural es un semillero de investigación enfocado en inteligencia artificial, donde el aprendizaje, la exploración y la innovación son protagonistas. Es un espacio para acercarse a nuevas tecnologías, conocer sus aplicaciones y descubrir cómo pueden transformar diferentes áreas del conocimiento.' },
+  { id: 'unvesting', name: 'Unvesting', type: 'Grupo estudiantil', color: '#1e7d4a', logo: 'img/group-unvesting.jpg',
+    link: 'https://www.instagram.com/unvesting_unalmed',
+    stand: 'Unvesting es un grupo estudiantil de la Universidad Nacional de Colombia dedicado al estudio, la investigación y el análisis de los mercados financieros. A través de espacios de formación, debates, simulaciones de inversión y proyectos académicos, sus integrantes fortalecen sus conocimientos en economía, finanzas y mercados de capitales, promoviendo el pensamiento crítico, el trabajo colaborativo y la aplicación práctica de lo aprendido.' },
+  { id: 'ieee', name: 'IEEE', type: 'Grupo estudiantil', color: '#00629b', logo: 'img/group-ieee.jpg',
+    link: 'https://www.instagram.com/ieeeudeastudentbranch',
+    stand: 'IEEE (Instituto de Ingenieros Eléctricos y Electrónicos) es la organización técnica profesional más grande del mundo dedicada al avance de la tecnología en beneficio de la humanidad. Con presencia en más de 160 países y cientos de miles de miembros, conecta a estudiantes, investigadores y profesionales de áreas como ciencias de la computación, ingeniería de sistemas, analítica de datos, telecomunicaciones, inteligencia artificial y gestión tecnológica para impulsar la innovación, la estandarización técnica y el desarrollo profesional.' },
+  { id: 'qpt-ai', name: 'QPT-AI', type: 'Grupo estudiantil', color: '#d9822b', logo: 'img/group-qpt-ai.jpg',
+    link: 'https://www.qpt-ai.com/',
+    stand: 'El futuro de la IA no le pertenece a la electricidad. ¿Cómo hacemos IA sin electricidad? ¿Cómo hacemos IA con computación cuántica, fotónica y térmica, y cómo se beneficia la IA de estos tipos de computación? Esa es la pregunta que QPT-AI quiere responder.' },
 ];
 
 // Companies confirmed to participate in the week
@@ -142,6 +160,7 @@ const COMPANIES = [
     logo: 'img/company-lovelytics.png',
     link: 'https://lovelytics.com/es/',
     description: 'Lovelytics es una firma boutique de consultoría en analítica avanzada, inteligencia artificial y arquitectura de datos moderna en la nube. Trabaja junto a organizaciones globales para transformar sus datos en valor e innovación tecnológica real.',
+    stand: '¿Te apasionan los datos, la tecnología y la inteligencia artificial? Lovelytics es una empresa especializada en ayudar a las organizaciones a aprovechar todo el potencial de sus datos. A través de herramientas de analítica, inteligencia artificial y soluciones tecnológicas, transforma información en ideas y oportunidades para resolver problemas del mundo real.',
   },
   {
     id: 'sole',
@@ -151,6 +170,7 @@ const COMPANIES = [
     logo: 'img/company-sole.png',
     link: 'https://sole.tech/',
     description: 'Solē es una compañía tecnológica e innovadora enfocada en el desarrollo de soluciones de software, ingeniería de datos y transformación digital de alto impacto.',
+    stand: '¿Te interesa la tecnología aplicada a un futuro más sostenible? Solē trabaja para impulsar la transición energética a través de soluciones innovadoras relacionadas con la energía solar. Su apuesta es aprovechar el potencial de las energías renovables para transformar la manera en que producimos y consumimos energía.',
   },
   {
     id: 'tcs',
@@ -160,6 +180,34 @@ const COMPANIES = [
     logo: 'img/company-tcs.png',
     link: 'https://www.tcs.com/',
     description: 'Tata Consultancy Services (TCS) es una de las mayores empresas globales en servicios de TI, consultoría y soluciones de negocios, impulsando la transformación digital de las industrias más importantes del mundo.',
+    stand: '¿Te imaginas trabajar en proyectos tecnológicos que llegan a todo el mundo? TCS es una compañía global de tecnología y consultoría que acompaña a empresas de diferentes sectores en sus procesos de transformación digital. Trabaja en áreas como desarrollo de software, inteligencia artificial, ingeniería y soluciones en la nube.',
+  },
+  {
+    id: 'globant',
+    name: 'Globant',
+    type: 'Empresa aliada',
+    color: '#6f8a00',   // Globant's lime, darkened so the white name on its pennant reads
+    logo: 'img/company-globant.png',
+    link: 'https://www.globant.com/',
+    stand: '¿Te gusta combinar creatividad, tecnología e innovación? Globant es una compañía tecnológica internacional que desarrolla soluciones digitales para transformar negocios y experiencias. Explora campos como inteligencia artificial, desarrollo de software y nuevas tecnologías, conectando el talento y las ideas para crear soluciones que impactan el mundo.',
+  },
+  {
+    id: 'unergy',
+    name: 'Unergy',
+    type: 'Empresa aliada',
+    color: '#7a45c9',   // Unergy's purple, a bit darker so the white name on its pennant reads
+    logo: 'img/company-unergy.png',
+    link: 'https://unergy.io/',
+    stand: '¿Te interesa descubrir cómo la tecnología puede impulsar la transición energética? Unergy es una empresa colombiana que apuesta por un futuro más sostenible a través de la energía solar. Desarrolla y opera minigranjas solares que permiten generar energía limpia, conectar a más personas con proyectos de energías renovables y crear nuevas oportunidades para las comunidades. ¡Una apuesta por transformar la manera en que producimos y aprovechamos la energía!',
+  },
+  {
+    id: 'mia',
+    name: 'M.IA',
+    type: 'Empresa aliada',
+    color: '#b86200',   // M.IA's orange, darkened so the white name on its pennant reads
+    logo: 'img/company-mia.png',
+    link: 'https://www.instagram.com/e.mahanb/',
+    stand: '¿Cómo sería un modelo educativo donde el aprendizaje se adapta a ti, y no eres tú quien busca la forma de adaptarse al aprendizaje? M.IA es la respuesta a esa pregunta: un software que identifica la forma de aprender y las herramientas de aprendizaje de los estudiantes de 7.°, 8.° y 9.° grado, para luego enseñarles de una manera que potencie su aprendizaje en física, química y matemáticas. Si te interesa conocer más del proyecto o hacer parte de él, escribe a @e.mahanb en Instagram.',
   },
 ];
 
@@ -178,6 +226,7 @@ const COMPANIES = [
 // modalidad is 'aula-maxima' (100 cupos), 'aula' (40) or 'virtual' (70); max must match the modality and the
 // mapping in supabase/preinscripciones-conferencias.sql, change both together),
 // bracket: true (its knockout bracket, "Llaves", shows on its page: js/brackets.js, supabase/brackets.sql),
+// stands: true (its page draws a stand for every group and company with a stand text: js/event.js),
 // unconfirmed: true (shows an "Información por confirmar" notice on its page)
 // and decorations (three pixel art drawings from js/pixel-art.js for its page header; the middle one sits higher).
 const ACTIVITIES = [
@@ -188,7 +237,7 @@ const ACTIVITIES = [
       'Un espacio abierto al diálogo, al intercambio de ideas y a las preguntas de la comunidad universitaria. Súmate a la conversación: trae tus preguntas y participa.',
     image: 'img/flyers/talk-tech-companies.jpg',
     decorations: ['flag', 'microphone', 'rocket'] },
-  { id: 'feria', day: 'wed', start: '09:00', end: '12:00', type: 'social', title: 'Feria de stands', place: 'Hall M10',
+  { id: 'feria', day: 'wed', start: '09:00', end: '12:00', type: 'social', title: 'Feria de stands', place: 'Hall M10', stands: true,
     description: 'Descubre la innovación desde adentro y amplía tus horizontes. Conecta con el talento universitario recorriendo los stands de nuestros grupos estudiantiles y semilleros de investigación, e interactúa directamente con empresas invitadas para resolver dudas, intercambiar experiencias y construir tu red profesional.',
     decorations: ['briefcase', 'tent', 'lanyard'] },
   { id: 'datos', day: 'wed', start: '11:00', end: '12:00', type: 'talk', title: 'Más allá del código: de estudiante a ingeniero en la era de la inteligencia artificial', speakers: ['mariano'], place: 'Aula Máxima',
@@ -257,12 +306,25 @@ const ACTIVITIES = [
       { title: 'Entorno cerrado e integridad', text: 'Queda estrictamente prohibido el acceso a internet y el uso de herramientas de inteligencia artificial (Google, ChatGPT, Copilot, Stack Overflow, entre otros); el incumplimiento implicará la expulsión inmediata del equipo. Sí se permitirá consultar la documentación de los lenguajes de programación.' },
     ],
     decorations: ['balloon', 'computer', 'hourglass'] },
+  { id: 'kiro-aws', day: 'thu', start: '18:30', end: '20:00', type: 'talk', title: 'De local a AWS: desarrolla y despliega con Kiro', speakers: ['jose', 'david'], place: 'Virtual',
+    preRegister: { modalidad: 'virtual', max: 70 },
+    description: 'Acompáñanos a explorar Kiro como copiloto de infraestructura y desarrollo. Iniciaremos revisando su instalación, el consumo de créditos y la metodología SDD (Spec-Driven Development) que estructura sus tareas.\n' +
+      'Levantaremos un juego de tanques en local, diseñaremos la arquitectura de distribución en la nube y explicaremos el rol de algunos servicios de Amazon Web Services (AWS). Finalmente, veremos en vivo cómo Kiro automatiza la creación de recursos y el despliegue a producción.',
+    image: 'img/flyers/talk-kiro-aws.jpg',
+    rules: [
+      { title: '¿Qué es Kiro?', text: 'Qué es y cómo trabaja como copiloto de infraestructura y desarrollo.' },
+      { title: 'Instalación y gestión de créditos', text: 'Pasos de instalación rápida, cómo funcionan los créditos universitarios y cómo monitorear el consumo de tokens.' },
+      { title: 'Spec-Driven Development (SDD)', text: 'El flujo de trabajo basado en especificaciones: requirements.md, design.md y tasks.md.' },
+      { title: 'El proyecto base, en local', text: 'Presentación del juego de tanques y cómo correrlo en tu computador.' },
+      { title: 'Despliegue en la nube, en vivo', text: 'Kiro analiza el juego y propone la arquitectura ideal en AWS; explicamos en pantalla los servicios elegidos y el flujo de la arquitectura; Kiro genera la infraestructura como código (IaC) o los scripts de despliegue, y ejecutamos el aprovisionamiento hasta obtener la URL pública.' },
+    ],
+    decorations: ['terminal', 'rocket', 'computer'] },
 
   // Friday
   { id: 'atletismo', day: 'fri', start: '08:00', end: '09:00', type: 'competition', title: 'Carrera de atletismo 8‑bit', individual: { tab: 'Atletismo', max: 45 },
     icon: 'pixel', color: '#f08a24', summary: 'Una carrera con alma de videojuego retro.', place: 'Hall M10',
     description: 'Pon a prueba tu velocidad y resistencia en un circuito a lo largo de todo el campus. Prepárate para enfrentar los cambios de inclinación del terreno, superar cada nivel y retarte a ti mismo en una carrera con pura alma de videojuego retro.',
-    image: 'img/flyers/athletics.jpg',
+    image: 'img/flyers/athletics.jpg', routeMap: true,
     decorations: ['medal10', 'medal01', 'medal11'] },
   { id: 'futbol', day: 'fri', start: '09:00', end: '11:00', type: 'competition', title: 'Torneo de fútbol', team: { tab: 'Fútbol', size: 5, maxTeams: 8 }, bracket: true,
     icon: 'ball', color: '#1667c2', summary: 'Arma tu equipo y sal a la cancha.', place: 'Placa polideportiva',
@@ -351,18 +413,29 @@ const TITLES = [
 // SCARE METER: fed in real time from Supabase (table 'perfiles'),
 // showing registered people with their monster and points in sustometro.html.
 
-// Photos and videos from past editions for the gallery (the files go in img/gallery/).
+// Photos and videos for the gallery (the files go in img/gallery/), by edition: the gallery
+// has one tab per edition, newest first. day (optional) shows as a label on the photo.
 // The .mp4 files show as short silent videos; poster is the image shown while they load.
 // text: what is in the image. Not shown on screen: screen readers read it.
 const GALLERY = [
-  { file: 'img/gallery/group-photo.jpg', text: 'Foto grupal en las escaleras de la entrada de la Facultad de Minas' },
-  { file: 'img/gallery/marathon.jpg', text: 'Sala de computadores llena de globos durante la maratón de programación' },
-  { file: 'img/gallery/balloons.mp4', poster: 'img/gallery/balloons-poster.jpg', text: 'Carrera con globos en la placa polideportiva' },
-  { file: 'img/gallery/soccer.jpg', text: 'Partido de fútbol con petos en la placa polideportiva' },
-  { file: 'img/gallery/talk.jpg', text: 'Conferencia sobre agentes de inteligencia artificial en el auditorio' },
-  { file: 'img/gallery/fair.mp4', poster: 'img/gallery/fair-poster.jpg', text: 'Recorrido por la feria de stands' },
-  { file: 'img/gallery/marathon-team.jpg', text: 'Un equipo concentrado frente al computador en la maratón' },
-  { file: 'img/gallery/race.jpg', text: 'Estudiantes sentados en fila durante un juego en la placa' },
-  { file: 'img/gallery/auditorium.mp4', poster: 'img/gallery/auditorium-poster.jpg', text: 'Público en el auditorio durante una charla' },
-  { file: 'img/gallery/balloons.jpg', text: 'Estudiantes jugando con un globo en la placa polideportiva' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-talk.jpg', text: 'Charla en el escenario del auditorio, frente al mural' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-aperture.jpg', text: 'Stand de Aperture en la feria' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-klima.jpg', text: 'Stand de Klima, con Unergy, Zentrack y Solē, en la feria' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-ai-engineer.jpg', text: 'Charla sobre qué hace un AI Engineer en un salón' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-panel-photo.jpg', text: 'Foto de los panelistas frente al mural del auditorio' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-qpt-ai.jpg', text: 'Stand de QPT-AI en la feria' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-auditorium.jpg', text: 'Charla en el auditorio con la presentación en pantalla y el público' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-lovelytics.jpg', text: 'Stand de Lovelytics en la feria' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-panel.jpg', text: 'Panel sentado en el escenario del auditorio' },
+  { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-hall.jpg', text: 'El auditorio con sus murales antes de una charla' },
+  { edition: 2025, file: 'img/gallery/group-photo.jpg', text: 'Foto grupal en las escaleras de la entrada de la Facultad de Minas' },
+  { edition: 2025, file: 'img/gallery/marathon.jpg', text: 'Sala de computadores llena de globos durante la maratón de programación' },
+  { edition: 2025, file: 'img/gallery/balloons.mp4', poster: 'img/gallery/balloons-poster.jpg', text: 'Carrera con globos en la placa polideportiva' },
+  { edition: 2025, file: 'img/gallery/soccer.jpg', text: 'Partido de fútbol con petos en la placa polideportiva' },
+  { edition: 2025, file: 'img/gallery/talk.jpg', text: 'Conferencia sobre agentes de inteligencia artificial en el auditorio' },
+  { edition: 2025, file: 'img/gallery/fair.mp4', poster: 'img/gallery/fair-poster.jpg', text: 'Recorrido por la feria de stands' },
+  { edition: 2025, file: 'img/gallery/marathon-team.jpg', text: 'Un equipo concentrado frente al computador en la maratón' },
+  { edition: 2025, file: 'img/gallery/race.jpg', text: 'Estudiantes sentados en fila durante un juego en la placa' },
+  { edition: 2025, file: 'img/gallery/auditorium.mp4', poster: 'img/gallery/auditorium-poster.jpg', text: 'Público en el auditorio durante una charla' },
+  { edition: 2025, file: 'img/gallery/balloons.jpg', text: 'Estudiantes jugando con un globo en la placa polideportiva' },
 ];

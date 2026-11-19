@@ -43,6 +43,8 @@ function renderInfo() {
     registrationSection(),
     preRegisterSection(),
     descriptionSection(),
+    routeMapSection(),
+    standsSection(),
     activity.team || activity.individual ? '<div id="participants"></div>' : '',   // filled by js/brackets.js
     activity.bracket ? '<div id="bracket"></div>' : '',   // filled by js/brackets.js
     videoSection(activity.video),
@@ -183,6 +185,21 @@ function preRegisterSection() {
 
 // YouTube video (video field). youtube-nocookie leaves no cookies until someone presses play.
 // enablejsapi lets the page know when it plays and when it ends (js/secrets.js).
+// Empty box that js/race-map.js fills with the 3D route
+function routeMapSection() {
+  if (!activity.routeMap) return '';
+
+  return `
+    <h2 class="event__subtitle">El recorrido</h2>
+    <div class="race-map" id="race-map" role="img"
+      aria-label="Mapa 3D del recorrido por el campus Robledo: sale y llega al Hall del M10, sube entre las canchas, cruza el M3 por su portal, pasa frente al M5, sigue hacia el oeste por el M4 hasta el parqueadero del M7, cruza el puente del riachuelo, baja por el lado oeste del bosque y del M9 y vuelve por el borde de la Carrera 80."></div>
+    <p class="race-map__hint">
+      <span class="race-map__hint--mouse">Arrastra el mapa para girarlo y usa la rueda del mouse para acercarte.</span>
+      <span class="race-map__hint--touch">Gira el mapa con un dedo y pellizca para acercarte.</span>
+    </p>
+  `;
+}
+
 function videoSection(video) {
   if (!video) return '';
 
@@ -251,6 +268,63 @@ function groupSection(group) {
         ${moreLink(group.link, group.name)}
       </div>
     </div>
+  `;
+}
+
+// Stands fair (stands field): every company and group with a stand text gets its stand drawn
+// in its color, someone minding it and its logo big on the counter. Companies go first.
+// Each one has an id (stand-<id>) so the pennants on the home page can link straight to it.
+function standsSection() {
+  if (!activity.stands) return '';
+
+  const list = (items) => `<ul class="stands">${items.filter((item) => item.stand).map(standCard).join('')}</ul>`;
+
+  return `
+    <h2 class="event__subtitle">Empresas aliadas</h2>
+    ${list(COMPANIES)}
+    <h2 class="event__subtitle">Grupos estudiantiles</h2>
+    ${list(GROUPS)}
+  `;
+}
+
+// i (its place in the list) offsets its animations so the stands do not move together
+function standCard(group, i) {
+  const booth = { ...PIXEL_ART.stand, palette: { ...PIXEL_ART.stand.palette, c: group.color } };
+
+  return `
+    <li class="stand" id="stand-${group.id}" style="--color: ${group.color}; --i: ${i}">
+      <div class="stand__booth">
+        ${drawPixelArt(booth)}
+        ${group.logo ? `<img class="stand__logo" src="${group.logo}" alt="Logo de ${group.name}">` : ''}
+        ${standMascot(group)}
+      </div>
+      <div class="stand__text">
+        <strong>${group.name}</strong>
+        <span>${group.type}</span>
+        <p class="event__bio">${group.stand}</p>
+        ${moreLink(group.link, group.name)}
+      </div>
+    </li>
+  `;
+}
+
+// Whoever minds the stand peeks over the counter: it hops, blinks, looks around and waves.
+// A one-eyed monster in the stand's color. x and y are in stand drawing pixels.
+function standMascot(group) {
+  const palette = { ...MASCOT_PALETTE, c: group.color, C: group.color };
+  const body = (name) => drawPixelArt({ rows: PIXEL_ART[name].rows, palette });
+  const piece = (svg, x, y, kind) => `<span class="stand__piece stand__${kind}" style="--x: ${x}; --y: ${y}">${svg}</span>`;
+
+  return `
+    <span class="stand__piece stand__window" style="--x: 5; --y: 5">
+      <span class="stand__piece stand__mascot" style="--x: 3; --y: 1">
+        ${body('mascot')}
+        ${piece(drawPixelArt(PIXEL_ART.mascotIris), 6, 5, 'iris')}
+        ${piece(body('mascotBlink'), 0, 0, 'blink')}
+      </span>
+    </span>
+    ${piece(body('mascotPaw'), 7, 15, 'paw')}
+    ${piece(body('mascotPaw'), 24, 10, 'wave')}
   `;
 }
 

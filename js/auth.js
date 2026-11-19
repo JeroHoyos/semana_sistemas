@@ -918,32 +918,84 @@ $$('.download-button').forEach((button) => {
 });
 
 
-/* ---------- Week 1 prize: Scare Meter points for the 50 best in Snake ----------
-   supabase/week-1-prizes.sql gives them after the game closes and keeps them in premios_juego.
-   Each winner sees the message once; it asks Supabase once per page load. */
+/* ---------- Game prizes (Scare Meter points & notifications) ----------
+   Given after a week closes and stored in public.premios_juego.
+   Each person sees the notification modal once per week. */
 
 let gamePrizeChecked = false;
 
 async function checkGamePrize(user) {
-  if (gamePrizeChecked || Date.now() < WEEK_1_ENDS) return;
-  const seenKey = `week_1_prize_seen_${user.id}`;
-  try {
-    if (localStorage.getItem(seenKey)) return;
-  } catch { return; }
-  gamePrizeChecked = true;
+  if (gamePrizeChecked || !user) return;
 
-  const { data: prize } = await supabaseClient
-    .from('premios_juego')
-    .select('puesto, puntos')
-    .eq('usuario_id', user.id)
-    .eq('juego', 'snake')
-    .maybeSingle();
-  if (!prize) return;   // not a winner, or the prizes have not been given yet
+  // 1. Week 2 (Doom): prioritized when Week 2 is over
+  if (typeof WEEK_2_ENDS !== 'undefined' && Date.now() >= WEEK_2_ENDS) {
+    const seenKey2 = `week_2_prize_seen_${user.id}`;
+    let seen2 = false;
+    try { seen2 = Boolean(localStorage.getItem(seenKey2)); } catch {}
 
-  try { localStorage.setItem(seenKey, '1'); } catch {}
-  showNoticeDialog('🏆', '¡Ganaste puntos!', 'Juego de la semana 1',
-    `Quedaste en el puesto <strong>${Number(prize.puesto)}</strong> de la tabla y ganaste <strong>${Number(prize.puntos)} ${prize.puntos === 1 ? 'punto' : 'puntos'}</strong> en el Sustómetro. ¡Gracias por jugar!`,
-    '<a class="hero__button reward-btn" href="sustometro.html">Ver el Sustómetro</a>');
+    if (!seen2) {
+      gamePrizeChecked = true;
+      const { data: prize2 } = await supabaseClient
+        .from('premios_juego')
+        .select('puesto, puntos')
+        .eq('usuario_id', user.id)
+        .eq('juego', 'doom')
+        .maybeSingle();
+
+      if (prize2) {
+        try { localStorage.setItem(seenKey2, '1'); } catch {}
+        const pts = Number(prize2.puntos);
+        const ptsText = `<strong>${pts} ${pts === 1 ? 'punto' : 'puntos'}</strong> en el Sustómetro`;
+
+        if (prize2.puesto && Number(prize2.puesto) > 0) {
+          showNoticeDialog(
+            '🏆',
+            '¡Ganaste puntos!',
+            'Juego de la semana 2: Doom',
+            `Quedaste en el puesto <strong>#${Number(prize2.puesto)}</strong> de la tabla y ganaste ${ptsText}. ¡Gracias por jugar!`,
+            '<a class="hero__button reward-btn" href="sustometro.html">Ver el Sustómetro</a>'
+          );
+        } else {
+          showNoticeDialog(
+            '🎃',
+            '¡Bienvenido(a)!',
+            'Semana de Sistemas',
+            `Recibiste ${ptsText} de bienvenida para la Semana de Sistemas. ¡Anímate a participar en las actividades y en el juego de la semana 3!`,
+            '<a class="hero__button reward-btn" href="sustometro.html">Ver el Sustómetro</a>'
+          );
+        }
+        return;
+      }
+    }
+  }
+
+  // 2. Week 1 (Snake): fallback if not seen yet
+  if (typeof WEEK_1_ENDS !== 'undefined' && Date.now() >= WEEK_1_ENDS) {
+    const seenKey1 = `week_1_prize_seen_${user.id}`;
+    let seen1 = false;
+    try { seen1 = Boolean(localStorage.getItem(seenKey1)); } catch {}
+
+    if (!seen1) {
+      gamePrizeChecked = true;
+      const { data: prize1 } = await supabaseClient
+        .from('premios_juego')
+        .select('puesto, puntos')
+        .eq('usuario_id', user.id)
+        .eq('juego', 'snake')
+        .maybeSingle();
+
+      if (prize1) {
+        try { localStorage.setItem(seenKey1, '1'); } catch {}
+        showNoticeDialog(
+          '🏆',
+          '¡Ganaste puntos!',
+          'Juego de la semana 1',
+          `Quedaste en el puesto <strong>${Number(prize1.puesto)}</strong> de la tabla y ganaste <strong>${Number(prize1.puntos)} ${prize1.puntos === 1 ? 'punto' : 'puntos'}</strong> en el Sustómetro. ¡Gracias por jugar!`,
+          '<a class="hero__button reward-btn" href="sustometro.html">Ver el Sustómetro</a>'
+        );
+      }
+    }
+  }
 }
 
 

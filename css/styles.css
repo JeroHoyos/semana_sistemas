@@ -1869,10 +1869,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* Mobile */
 @media (max-width: 640px) {
   /* Hero */
-  .hero__content { padding: 56px 0 64px; }
+  .hero__content { padding: 96px 0 72px; }   /* room for the Sustómetro and session buttons above */
   .hero__place { font-size: 12px; letter-spacing: .16em; }
-  .varsity-letters { font-size: 15.2vw; }
-  .hero__actions { margin-top: 32px; }
+  .hero__title { margin-top: 14px; }
+  .varsity-letters { font-size: 14vw; }      /* leaves a margin at the screen edges */
+  .hero__actions { flex-direction: column; align-items: center; gap: 16px; margin-top: 36px; }
   .hero__days li { height: 48px; padding: 0 16px; font-size: 15px; }
   .hero__button { height: 52px; }
 
@@ -1898,9 +1899,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
   /* Taller hours and wider days (the week slides sideways): so the place fits in each block */
   .week-grid__grid { --hour: 104px; grid-template-columns: 50px repeat(3, 215px); min-width: 0; }
 
-  /* Tabs: become chips that wrap instead of overflowing the screen */
-  .schedule__tabs { flex-wrap: wrap; gap: 6px; border-bottom: 0; }
-  .tab { flex: 0 1 auto; padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; }
+  /* Tabs: a two-column grid of equal chips; "Todo" takes the whole first row */
+  .schedule__tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; border-bottom: 0; }
+  .tab { padding: 7px 10px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; }
+  .tab:first-child { grid-column: 1 / -1; }
   .tab[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff; }
   .tab[aria-pressed="true"]::after { display: none; }
 
@@ -2233,17 +2235,22 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 @media (max-width: 640px) {
   .scare-meter-bar {
-    top: 14px;
-    left: 14px;
+    top: 18px;
+    left: 16px;
   }
   .session-bar {
-    top: 14px;
-    right: 14px;
+    top: 18px;
+    right: 16px;
+    max-width: calc(100% - 176px);   /* a long name never runs into the Sustómetro button */
   }
+  .session-bar .hero__button--session { max-width: 100%; }
+  #session-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .hero__button--session {
     height: 38px;
     padding: 0 14px 0 16px;
+    gap: 8px;
     font-size: 11px;
+    letter-spacing: .08em;
   }
   .auth-modal__box {
     padding: 24px 18px 26px;
@@ -2965,6 +2972,81 @@ button.bracket__side:hover { background: #e4effa; }
 .event__overlaps span { margin-left: auto; font-size: 14px; color: var(--gray); white-space: nowrap; }
 .event__overlaps svg { width: 16px; height: 16px; flex: none; color: var(--blue); }
 
+/* Stands fair (stands field, js/event.js): each stand is a pixel art drawing (PIXEL_ART.stand)
+   with the logo on its counter. --px is one drawing pixel; --x and --y place each extra piece
+   in drawing pixels from the stand's top-left corner, so everything lines up with it. */
+.stands { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.stand {
+  --px: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 18px 28px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+}
+.stand:nth-child(even) { flex-direction: row-reverse; }   /* zigzag down the list */
+/* Arriving from a pennant on the home page (#stand-<id>): leave room above and mark it */
+.stand { scroll-margin-top: 24px; }
+.stand:target { border-color: var(--color); box-shadow: 0 0 0 2px var(--color); }
+.stand__text { flex: 1 1 260px; }
+.stand__text strong {
+  display: block;
+  font-family: var(--font-varsity);
+  font-weight: 400;
+  font-size: 19px;
+  color: var(--navy);
+}
+.stand__text > span { color: var(--gray); }
+.stand__booth { position: relative; flex: none; }
+.stand .pixel-art { animation: none; margin: 0; }
+.stand__logo {
+  position: absolute;
+  left: calc(var(--px) * 9.5);
+  top: calc(var(--px) * 21.5);
+  width: calc(var(--px) * 13);
+  height: calc(var(--px) * 13);
+  border: calc(var(--px) / 2) solid #fff;
+  border-radius: var(--px);
+  background: #fff;
+  object-fit: cover;
+}
+
+/* Whoever minds the stand (a monster in its color). It moves a whole pixel at a time,
+   like a video game; --i offsets each stand's timing so they do not all move together. */
+.stand__piece {
+  position: absolute;
+  left: calc(var(--px) * var(--x));
+  top: calc(var(--px) * var(--y));
+}
+.stand__window {               /* the space between the posts: the mascot hides behind the counter */
+  width: calc(var(--px) * 22);
+  height: calc(var(--px) * 13);
+  overflow: hidden;
+}
+.stand__mascot .pixel-art { filter: none; }
+.stand__mascot { animation: bounce 1.2s steps(1) infinite; }
+.stand:hover .stand__mascot { animation-duration: .4s; }   /* happier when someone comes by */
+.stand__iris { animation: stand-look 6s steps(1) infinite; }
+.stand__blink { opacity: 0; animation: stand-blink 4s steps(1) infinite; }
+.stand__wave { transform-origin: 0 100%; animation: stand-wave .8s steps(1) infinite; }
+.stand__mascot, .stand__iris, .stand__blink, .stand__wave { animation-delay: calc(var(--i) * -.7s); }
+@keyframes stand-look {
+  30% { translate: calc(var(--px) * -1) 0; }
+  50% { translate: 0 0; }
+  75% { translate: var(--px) 0; }
+  95% { translate: 0 0; }
+}
+@keyframes stand-blink {
+  90% { opacity: 1; }
+  94% { opacity: 0; }
+}
+@keyframes stand-wave {
+  50% { rotate: -25deg; }
+}
+
 @media (max-width: 640px) {
   .event-hero .container { padding: 16px 0 60px; }
   .event-hero__content { margin-top: 28px; }
@@ -2978,6 +3060,7 @@ button.bracket__side:hover { background: #e4effa; }
   .event__intro--wide .event__image { max-width: none; }   /* the wide one uses the full width */
   .event__stats strong { font-size: 30px; }
   .event__avatar--photo { width: 120px; height: 120px; }
+  .stand { --px: 5px; padding: 16px 12px; }
 }
 
 
@@ -4833,6 +4916,32 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 
 .gallery__button { margin-top: 26px; border: 0; }
 
+/* Edition tabs: the groups tabs, on a light background */
+.gallery__editions {
+  display: flex;
+  width: fit-content;
+  margin-inline: auto;
+  background: rgba(0, 0, 0, .05);
+  border-color: rgba(0, 0, 0, .08);
+}
+.gallery__editions .groups__tab { color: var(--ink-soft); }
+.gallery__editions .groups__tab:hover { color: var(--ink); background: rgba(0, 0, 0, .05); }
+.gallery__editions .groups__tab[aria-selected="true"] { color: #fff; }
+
+/* "Día 1" label in a corner of the photo */
+.gallery__day {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--blue);
+  color: #fff;
+  font-family: var(--font-varsity);
+  font-size: 12px;
+  letter-spacing: .08em;
+}
+
 /* Carousel: full width, fading out at the edges */
 .gallery__carousel {
   display: grid;
@@ -4871,6 +4980,7 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 
 /* Each photo or video: square, with a white frame like the competition cards */
 .gallery__photo {
+  position: relative;
   display: block;
   width: 280px;
   aspect-ratio: 1;
@@ -5122,7 +5232,25 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 .codes__action:hover { background: var(--blue); }
 
 .codes__collection-box { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+/* Dropdown: the count and the bar open and close the list */
+.codes__collection-box summary { list-style: none; cursor: pointer; }
+.codes__collection-box summary::-webkit-details-marker { display: none; }
+.codes__collection-box summary::after {   /* chevron, turns when open */
+  content: '';
+  display: block;
+  width: 9px;
+  height: 9px;
+  margin: 12px auto 0;
+  border: solid var(--gray);
+  border-width: 0 2px 2px 0;
+  rotate: 45deg;
+  transition: rotate .2s;
+}
+.codes__collection-box[open] summary::after { rotate: 225deg; }
+.codes__collection-box:has(.codes__collection:empty) summary { pointer-events: none; }   /* signed out: nothing to open */
+.codes__collection-box:has(.codes__collection:empty) summary::after { display: none; }
 .codes__count {
+  display: block;
   font-family: var(--font-varsity);
   font-size: 13px;
   letter-spacing: .18em;
@@ -5131,6 +5259,7 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 }
 /* Collection progress bar (how many titles they have) */
 .codes__progress {
+  display: block;
   width: min(220px, 70%);
   height: 6px;
   margin: 10px auto 0;
@@ -5936,21 +6065,17 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 
 /* ---------- 15. Team registration (inscripciones.html) ---------- */
 
+/* Two buttons of the same width, side by side; stacked on phones */
 .competitions__actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 14px;
-  margin-top: 22px;
+  width: fit-content;
+  margin: 22px auto 0;
 }
-.competitions__actions .hero__button { margin-top: 0; }
-.competitions__find-team {
-  background: #f0f6ff;
-  color: var(--blue-dark);
-}
-.competitions__find-team:hover {
-  background: #e4effd;
+.competitions__actions .hero__button { margin-top: 0; justify-content: center; padding: 0 26px; }
+@media (max-width: 640px) {
+  .competitions__actions { grid-template-columns: 1fr; }
 }
 
 .team__actions-row {
@@ -7651,3 +7776,29 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 .prereg-option__spots--in { background: var(--blue); color: #fff; }
 
 .prereg-modal__cta { width: min(100%, 380px); }
+
+/* ---------- Race map (js/race-map.js) ---------- */
+
+.race-map {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  max-height: 520px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 18px;
+  background: linear-gradient(#a9d6f5, #e6f2fb 70%);
+  color: var(--gray);
+  box-shadow: 0 18px 30px -18px rgba(10, 44, 82, .55);
+  cursor: grab;
+}
+.race-map:active { cursor: grabbing; }
+@media (max-width: 640px) { .race-map { aspect-ratio: 1; } }
+.race-map canvas { display: block; }
+.race-map__hint { margin-top: 10px; font-size: 14px; color: var(--gray); text-align: center; }
+/* One hint for the mouse and another for fingers */
+.race-map__hint--touch { display: none; }
+@media (hover: none) and (pointer: coarse) {
+  .race-map__hint--mouse { display: none; }
+  .race-map__hint--touch { display: inline; }
+}

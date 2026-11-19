@@ -57,6 +57,9 @@ function medal(number, palette) {
   return { palette, rows: writeNumber(MEDAL_TEMPLATE, number, 4, 12, 'n') };
 }
 
+// Who minds each stand at the fair: a one-eyed monster (js/event.js paints c and C in the stand's color)
+const MASCOT_PALETTE = { k: '#1b2440', c: '#5fd3e3', C: '#2bb5c9', H: '#ffffff', w: '#ffffff', p: '#ff8fb8' };
+
 const PIXEL_ART = {
   // Athletics race: gold, silver and bronze
   medal01: medal('01', { k: '#6b4a0f', c: '#e04848', C: '#a3262f', M: '#fff2a8', m: '#f5c518', o: '#d29a0a', n: '#fff8d6' }),
@@ -370,6 +373,105 @@ const PIXEL_ART = {
       'kwllllllllwk',
       'kwwwwwwwwwwk',
       'kkkkkkkkkkkk',
+    ],
+  },
+  // One group's stand: striped awning, two posts and the counter. c is the group's color
+  // (js/event.js swaps it) and the logo goes big on the counter front, rows 21 to 34.
+  stand: {
+    palette: { k: '#1b2440', c: '#1667c2', w: '#ffffff', p: '#a8703f', b: '#f6efe1', B: '#e6d9bf', T: '#c98f5a' },
+    rows: [
+      '.kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.',
+      'kcccwwwcccwwwcccwwwcccwwwcccwwwk',
+      'kcccwwwcccwwwcccwwwcccwwwcccwwwk',
+      'kcccwwwcccwwwcccwwwcccwwwcccwwwk',
+      '.kckkwkkckkwkkckkwkkckkwkkckkwk.',
+      '..kpkkbbkbbkbbkbbkbbkbbkbbkkpk..',
+      '..kpkBBBBBBBBBBBBBBBBBBBBBBkpk..',
+      '..kpkbbbbbbbbbbbbbbbbbbbbbbkpk..',
+      '..kpkbbbbbbbbbbbbbbbbbbbbbbkpk..',
+      '..kpkbbbbbbbbbbbbbbbbbbbbbbkpk..',
+      '..kpkbbbbbbbbbbbbbbbbbbbbbbkpk..',
+      '..kpkbbbbbbbbbbbbbbbbbbbbbbkpk..',
+      '..kpkbbbbbbbbbbbbbbbbbbbbbbkpk..',
+      '..kpkbbbbbbbbbbbbbbbbbbbbbbkpk..',
+      '..kpkbbbbbbbbbbbbbbbbbbbbbbkpk..',
+      '..kpkbbbbbbbbbbbbbbbbbbbbbbkpk..',
+      '..kpkbbbbbbbbbbbbbbbbbbbbbbkpk..',
+      '..kpkbbbbbbbbbbbbbbbbbbbbbbkpk..',
+      '.kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.',
+      '.kTTTTTTTTTTTTTTTTTTTTTTTTTTTTk.',
+      '.kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.',
+      '.kcccccccccccccccccccccccccccck.',
+      '.kcccccccccccccccccccccccccccck.',
+      '.kcccccccccccccccccccccccccccck.',
+      '.kcccccccccccccccccccccccccccck.',
+      '.kcccccccccccccccccccccccccccck.',
+      '.kcccccccccccccccccccccccccccck.',
+      '.kcccccccccccccccccccccccccccck.',
+      '.kcccccccccccccccccccccccccccck.',
+      '.kcccccccccccccccccccccccccccck.',
+      '.kcccccccccccccccccccccccccccck.',
+      '.kcccccccccccccccccccccccccccck.',
+      '.kcccccccccccccccccccccccccccck.',
+      '.kcccccccccccccccccccccccccccck.',
+      '.kcccccccccccccccccccccccccccck.',
+      '.kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.',
+    ],
+  },
+  // The monster: the eye's white is empty because the iris moves on top of it (mascotIris)
+  mascot: {
+    palette: MASCOT_PALETTE,
+    rows: [
+      '....kkkkkkkk....',
+      '..kkcHcccccckk..',
+      '.kcHcccccccccCk.',
+      '.kccckkkkkkccCk.',
+      'kccckwwwwwwkcCCk',
+      'kcckwwwwwwwwkcCk',
+      'kcckwwwwwwwwkcCk',
+      'kcckwwwwwwwwkcCk',
+      'kccckwwwwwwkcCCk',
+      'kcppckkkkkkcppCk',
+      'kccccckcckcccCCk',
+      'kcccccckkcccccCk',
+      'kccccccccccccCCk',
+    ],
+  },
+  // The same mascot with its eye closed, shown for a moment to blink
+  mascotBlink: {
+    palette: MASCOT_PALETTE,
+    rows: [
+      '....kkkkkkkk....',
+      '..kkcHcccccckk..',
+      '.kcHcccccccccCk.',
+      '.kcccccccccccCk.',
+      'kccccccccccccCCk',
+      'kcccccccccccccCk',
+      'kccckcccccckccCk',
+      'kcccckkkkkkcccCk',
+      'kccccccccccccCCk',
+      'kcppccccccccppCk',
+      'kccccckcckcccCCk',
+      'kcccccckkcccccCk',
+      'kccccccccccccCCk',
+    ],
+  },
+  mascotIris: {
+    palette: { i: '#1aa3b8', N: '#0b1e2b', h: '#ffffff' },
+    rows: [
+      '.ii.',
+      'ihNi',
+      'iNNi',
+      '.ii.',
+    ],
+  },
+  mascotPaw: {
+    palette: MASCOT_PALETTE,
+    rows: [
+      '.kk.',
+      'kcck',
+      'kcck',
+      '.kk.',
     ],
   },
 

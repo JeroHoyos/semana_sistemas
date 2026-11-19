@@ -115,6 +115,8 @@ function isNightSuspension(date = new Date()) {
 
 // The week 1 game (Snake) closes at 8 p.m. Colombia time: the same time is in juego_terminado (supabase/weekly-game.sql)
 const WEEK_1_ENDS = Date.parse('2026-11-08T20:00:00-05:00');
+// The week 2 game (Doom) closes at 8 p.m. Colombia time: the same time is in juego_terminado (supabase/weekly-game.sql)
+const WEEK_2_ENDS = Date.parse('2026-11-15T20:00:00-05:00');
 
 // A notice in the style of the reward window. text and button are HTML.
 function showNoticeDialog(icon, eyebrow, title, text, button) {

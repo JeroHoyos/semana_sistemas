@@ -6,8 +6,8 @@
 -- Stores each person's best score in each game. Highest wins in all of them; on a tie, whoever
 -- played fewer games:
 --   'snake'  (week 1, finished on 2026-11-08 at 8 p.m.): 10 per bug.
---   'doom'   (week 2, opens on 2026-11-09 at 7 a.m.): up to 1000 for enemies, items, secrets and time in E1M1.
---   'defrag' (week 3, locked for now): 50 per row.
+--   'doom'   (week 2, finished on 2026-11-15 at 8 p.m.): up to 1000 for enemies, items, secrets and time in E1M1.
+--   'defrag' (week 3, open to everyone): 50 per row.
 --
 -- Each person saves at most 30 results per day in Snake, 10 in Defrag and 5 in Doom (the day is Colombia's).
 -- To change a limit, change it in registrar_puntaje_juego and in dailyGames of the game's cartridge (js/).
@@ -60,7 +60,7 @@ returns boolean
 language sql
 stable
 as $$
-  select p_juego = 'defrag' or (p_juego = 'doom' and now() < timestamptz '2026-11-09 07:00:00-05');
+  select false;
 $$;
 
 -- ---------- Finished weeks ----------
@@ -72,7 +72,8 @@ returns boolean
 language sql
 stable
 as $$
-  select p_juego = 'snake' and now() >= timestamptz '2026-11-08 20:00:00-05';
+  select (p_juego = 'snake' and now() >= timestamptz '2026-11-08 20:00:00-05')
+      or (p_juego = 'doom' and now() >= timestamptz '2026-11-15 20:00:00-05');
 $$;
 
 -- Supervisor (admin): marked by hand in app_metadata, which only the database can change.
