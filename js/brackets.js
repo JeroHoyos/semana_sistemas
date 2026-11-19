@@ -333,7 +333,7 @@ function standingsTableHtml() {
         <td class="standings__td-rank">${rankHtml}</td>
         <td class="standings__td-name">
           <div class="standings__participant">
-            ${flagHtml(p)}
+            <span class="bracket__flag standings__flag">${flagHtml(p)}</span>
             <span class="standings__name ${isDnf ? 'standings__name--dnf' : ''}">${escapeHtml(p.name)}</span>
           </div>
         </td>
@@ -396,7 +396,7 @@ function standingsEditorHtml() {
           return `
             <div class="standings-editor__row" data-name="${escapeHtml(p.name)}">
               <div class="standings-editor__participant">
-                ${flagHtml(p)}
+                <span class="bracket__flag standings-editor__flag">${flagHtml(p)}</span>
                 <span class="standings-editor__name">${escapeHtml(p.name)}</span>
               </div>
               <div class="standings-editor__actions">
