@@ -580,7 +580,7 @@ let galleryItems = [];   // the photos of the chosen edition; the viewer moves t
 function renderGallery() {
   const editions = [...new Set(GALLERY.map((item) => item.edition))].sort((a, b) => b - a);
   $('#gallery-editions').innerHTML = editions.map((edition) =>
-    `<button type="button" class="groups__tab" role="tab" data-edition="${edition}">${edition}</button>`).join('');
+    `<button type="button" class="gallery__edition" role="tab" data-edition="${edition}">${edition}</button>`).join('');
   $('#gallery-editions').addEventListener('click', (event) => {
     const tab = event.target.closest('[data-edition]');
     if (tab) showEdition(Number(tab.dataset.edition));
