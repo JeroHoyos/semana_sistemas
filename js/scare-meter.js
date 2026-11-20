@@ -30,7 +30,7 @@ function fillTank(points) {
   $('#scare-tank').classList.toggle('scare-tank--burst', points > 100);
 }
 
-const maxPointsOf =(people) => Math.max(100, ...people.map(scarePoints));
+const maxPointsOf = (people) => Math.max(100, ...people.map(scarePoints));
 
 // What the page shows for a person: clowns hiding behind binary names appear under their real identity
 function personView(person) {
