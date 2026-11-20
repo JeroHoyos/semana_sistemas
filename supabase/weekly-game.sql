@@ -73,7 +73,8 @@ language sql
 stable
 as $$
   select (p_juego = 'snake' and now() >= timestamptz '2026-11-08 20:00:00-05')
-      or (p_juego = 'doom' and now() >= timestamptz '2026-11-15 20:00:00-05');
+      or (p_juego = 'doom' and now() >= timestamptz '2026-11-15 20:00:00-05')
+      or (p_juego = 'defrag' and now() >= timestamptz '2026-11-20 14:00:00-05');
 $$;
 
 -- Supervisor (admin): marked by hand in app_metadata, which only the database can change.
