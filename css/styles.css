@@ -1474,6 +1474,29 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .activity:has(:focus-visible) { outline: 3px solid var(--blue); outline-offset: 3px; }
 
+/* Live tracking (activityStatus in js/main.js): the one happening now stands out, finished ones fade */
+.activity__status {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-family: var(--font-narrow);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--gray);
+  background: var(--line);
+}
+.activity--live { border-color: var(--color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 30%, transparent); }
+.activity--live .activity__status { color: #fff; background: #d63a3a; animation: live-pulse 1.6s ease-in-out infinite; }
+.activity--done { opacity: .55; }
+.block--live { outline: 3px solid #d63a3a; outline-offset: 1px; z-index: 1; }
+.block--done { filter: grayscale(.7); }
+@keyframes live-pulse { 50% { opacity: .6; } }
+@media (prefers-reduced-motion: reduce) { .activity--live .activity__status { animation: none; } }
+
 /* Type label: text in the type's color with its icon */
 .activity__type {
   display: inline-flex;

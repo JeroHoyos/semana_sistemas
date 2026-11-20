@@ -72,9 +72,9 @@ function isArgenisAlias(email, name) {
 
 // date: free text, for example '12 nov'. If empty, the page shows "Día 1", "Día 2"...
 const DAYS = [
-  { id: 'wed', name: 'Miércoles', short: 'Mié', date: '18 nov' },
-  { id: 'thu', name: 'Jueves', short: 'Jue', date: '19 nov' },
-  { id: 'fri', name: 'Viernes', short: 'Vie', date: '20 nov' },
+  { id: 'wed', name: 'Miércoles', short: 'Mié', date: '18 nov', iso: '2026-11-18' },
+  { id: 'thu', name: 'Jueves', short: 'Jue', date: '19 nov', iso: '2026-11-19' },
+  { id: 'fri', name: 'Viernes', short: 'Vie', date: '20 nov', iso: '2026-11-20' },
 ];
 
 // Activity types: name on the tabs, label on the cards, colors
@@ -139,9 +139,6 @@ const GROUPS = [
   { id: 'uneural', name: 'UNeural', type: 'Grupo estudiantil', color: '#4a4fd8', logo: 'img/group-uneural.jpg',
     link: 'https://www.instagram.com/uneuralgroup',
     stand: 'UNeural es un semillero de investigación enfocado en inteligencia artificial, donde el aprendizaje, la exploración y la innovación son protagonistas. Es un espacio para acercarse a nuevas tecnologías, conocer sus aplicaciones y descubrir cómo pueden transformar diferentes áreas del conocimiento.' },
-  { id: 'unvesting', name: 'Unvesting', type: 'Grupo estudiantil', color: '#1e7d4a', logo: 'img/group-unvesting.jpg',
-    link: 'https://www.instagram.com/unvesting_unalmed',
-    stand: 'Unvesting es un grupo estudiantil de la Universidad Nacional de Colombia dedicado al estudio, la investigación y el análisis de los mercados financieros. A través de espacios de formación, debates, simulaciones de inversión y proyectos académicos, sus integrantes fortalecen sus conocimientos en economía, finanzas y mercados de capitales, promoviendo el pensamiento crítico, el trabajo colaborativo y la aplicación práctica de lo aprendido.' },
   { id: 'ieee', name: 'IEEE', type: 'Grupo estudiantil', color: '#00629b', logo: 'img/group-ieee.jpg',
     link: 'https://www.instagram.com/ieeeudeastudentbranch',
     stand: 'IEEE (Instituto de Ingenieros Eléctricos y Electrónicos) es la organización técnica profesional más grande del mundo dedicada al avance de la tecnología en beneficio de la humanidad. Con presencia en más de 160 países y cientos de miles de miembros, conecta a estudiantes, investigadores y profesionales de áreas como ciencias de la computación, ingeniería de sistemas, analítica de datos, telecomunicaciones, inteligencia artificial y gestión tecnológica para impulsar la innovación, la estandarización técnica y el desarrollo profesional.' },
@@ -229,6 +226,10 @@ const COMPANIES = [
 // stands: true (its page draws a stand for every group and company with a stand text: js/event.js),
 // unconfirmed: true (shows an "Información por confirmar" notice on its page)
 // and decorations (three pixel art drawings from js/pixel-art.js for its page header; the middle one sits higher).
+// The only activities that still take sign-ups; every other one is closed. Supervisors can still add people.
+// Supabase enforces it with supabase/cerrar-inscripciones.sql: change both together.
+const REGISTRATION_OPEN = ['futbol'];
+
 const ACTIVITIES = [
   // Wednesday
   { id: 'inaugural', day: 'wed', start: '09:00', end: '10:00', type: 'talk', title: 'Conversatorio: Empresas de base tecnológica', speakers: ['eduardo'], place: 'Aula Máxima',
