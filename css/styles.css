@@ -2836,7 +2836,8 @@ button.bracket__side:hover { background: #e4effa; }
   animation: idcard-gold-shimmer 4s ease-in-out infinite;
   pointer-events: none;
 }
-.bracket__champion svg { width: 44px; height: 44px; color: #8a6200; }
+.bracket__champion-cup svg { color: #8a6200; }
+.bracket__champion-flag > svg { width: 44px; height: 44px; }   /* a team's banner */
 .bracket__champion--empty {
   border: 2px dashed #e3c766;
   background: #fffbea;
@@ -2844,7 +2845,7 @@ button.bracket__side:hover { background: #e4effa; }
   color: #8a6200;
 }
 .bracket__champion--empty::before { content: none; }
-.bracket__champion--empty svg { color: #c99a12; }
+.bracket__champion--empty svg { width: 44px; height: 44px; color: #c99a12; }
 
 /* A person's pennant: the cloth in their monster's color, their monster on a cream patch.
    Sized in em so it can shrink (the bracket sets a small font size). */
@@ -6182,7 +6183,6 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 }
 .overlay__podium .overlay__podium-place--2 { --place: #c9d3e6; --edge: #6f7a91; }
 .overlay__podium .overlay__podium-place--3 { --place: #e08a4a; --edge: #8a4a1c; }
-.overlay__podium .overlay__podium-place--1 { font-size: 1.15em; }
 /* The place number: a solid block in the place's color */
 .overlay__podium-rank {
   display: grid;
@@ -6194,7 +6194,7 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   font-size: .7em;
 }
 .overlay__podium-name { flex: 1; min-width: 0; padding: .35em .7em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: left; color: #fff; }
-.overlay__podium strong { padding: .35em .7em; border-left: 2px dashed var(--edge); font-weight: 400; color: var(--place); }
+.overlay__podium strong { min-width: 4.5em; padding: .35em .7em; text-align: center; border-left: 2px dashed var(--edge); font-weight: 400; color: var(--place); }
 .overlay__button:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
 /* With a keyboard it says "Espacio"; on phones, "A" */
