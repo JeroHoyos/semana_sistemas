@@ -866,13 +866,11 @@ function renderRecords(rows) {
   // The top 3 on the screen of a finished week (with ties there can be more)
   $('#finished-podium').innerHTML = visible.map((row, i) => (places[i] > 3 ? '' : `
     <li class="overlay__podium-place--${places[i]}">
-      <span>${PODIUM[places[i]]}</span>
+      <span class="overlay__podium-rank">${places[i]}</span>
       <span class="overlay__podium-name">${escapeHtml(row.nombre)}</span>
       <strong>${scoring.table(row.mejor_puntaje)}</strong>
     </li>`)).join('');
 }
-
-const PODIUM = { 1: '🥇', 2: '🥈', 3: '🥉' };
 
 
 /* ---------- Podium of every game (#podio), once the last week closes ---------- */
