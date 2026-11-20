@@ -206,15 +206,17 @@ function activityStatus(activity) {
   return '';
 }
 
-const today = DAYS.find((day) => day.iso === new Date(Date.now() - 5 * 3600e3).toISOString().slice(0, 10));
+const today = DAYS.find((day) => day.iso === colombiaDay());
 
-// What the person has chosen in the schedule
+// What the person has chosen in the schedule. During the event it always opens on today,
+// even if another day was saved.
 const schedule = {
-  day: today?.id || DAYS[0].id,   // selected day: today during the event
+  day: DAYS[0].id,   // selected day
   type: 'all',       // tab: 'all' or a key of ACTIVITY_TYPES
   search: '',        // search box text
   weekView: false,   // true = grid with the whole week
   ...readSavedSchedule(),
+  ...(today && { day: today.id, weekView: false }),
 };
 
 // Creates the schedule buttons and wires their events (called only once)
