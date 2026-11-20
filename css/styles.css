@@ -6374,6 +6374,75 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
 .records__mine strong { font-weight: 600; color: var(--navy); }
 .records__mine .records__list { align-self: stretch; text-align: left; }   /* your row, when it is not in the table */
 
+/* Podium of every weekly game (#podio in sustometro.html, renderGamesPodium in js/weekly-game.js) */
+.games-podium { max-width: 1100px; margin-top: 64px; text-align: center; }
+.games-podium[hidden] { display: none; }
+.games-podium__title {
+  margin: 6px 0 28px;
+  font-family: 'Press Start 2P', monospace;
+  font-weight: 400;
+  font-size: clamp(16px, 3.4vw, 26px);
+  line-height: 1.4;
+  color: #ffd23f;
+  text-shadow: 3px 3px 0 #8b0009;
+}
+.games-podium__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+.podium-card {
+  padding: 22px 18px 0;
+  overflow: hidden;
+  border-radius: 26px;
+  background: linear-gradient(#1b2342, #10162b);
+  box-shadow: 0 24px 50px -26px rgba(10, 44, 82, .6);
+  color: #fff;
+}
+.podium-card__title {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 22px;
+  font-family: 'Press Start 2P', monospace;
+  font-weight: 400;
+  font-size: 16px;
+  color: #7ee081;
+}
+.podium-card__title small { font-size: 8px; letter-spacing: .1em; color: #7d8bb0; }
+.podium-card__empty { padding: 30px 0 40px; color: #a9b4cf; }
+.podium { display: flex; align-items: flex-end; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.podium-step { display: flex; flex: 1; flex-direction: column; align-items: center; gap: 10px; min-width: 0; }
+.podium-step__person { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; }
+.podium-step__avatar {
+  width: 52px;
+  height: 52px;
+  border: 3px solid;
+  border-radius: 50%;
+  background: linear-gradient(#e4effa, #a9cbee);
+  overflow: hidden;
+}
+.podium-step--1 .podium-step__avatar { width: 66px; height: 66px; }
+.podium-step__name {
+  max-width: 100%;
+  overflow: hidden;
+  font-family: var(--font-narrow);
+  font-weight: 700;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.podium-step__points { font-family: 'Press Start 2P', monospace; font-size: 9px; color: #ffd23f; }
+.podium-step__block {
+  display: grid;
+  place-items: start center;
+  width: 100%;
+  padding-top: 10px;
+  border-radius: 10px 10px 0 0;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 22px;
+  color: rgba(0, 0, 0, .45);
+}
+.podium-step--1 .podium-step__block { height: 110px; background: linear-gradient(#ffe27a, #d9a400); }
+.podium-step--2 .podium-step__block { height: 80px; background: linear-gradient(#eef1f6, #a9b2c2); }
+.podium-step--3 .podium-step__block { height: 56px; background: linear-gradient(#f2b27c, #b9672c); }
+
 @media (max-width: 640px) {
   .game-link { margin-top: 18px; padding: 10px 14px; font-size: 8px; }
   .weekly-game { margin-top: 40px; }

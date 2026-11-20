@@ -34,7 +34,7 @@
 const WEEKS = [
   { ...SNAKE_CARTRIDGE, week: 1, endsAt: WEEK_1_ENDS },
   { ...DOOM_CARTRIDGE, week: 2, endsAt: WEEK_2_ENDS },
-  { ...DEFRAG_CARTRIDGE, week: 3 },
+  { ...DEFRAG_CARTRIDGE, week: 3, endsAt: WEEK_3_ENDS },
 ];
 
 const gameConsole = $('#console');
@@ -873,6 +873,50 @@ function renderRecords(rows) {
 }
 
 const PODIUM = { 1: '🥇', 2: '🥈', 3: '🥉' };
+
+
+/* ---------- Podium of every game (#podio), once the last week closes ---------- */
+
+// ?podio shows it before the close, with the tables as they are now
+async function renderGamesPodium() {
+  const section = $('#podio');
+  if (!WEEKS.every((game) => weekOver(game)) && !new URLSearchParams(location.search).has('podio')) return;
+
+  const tables = await Promise.all(WEEKS.map((game) =>
+    supabaseClient.rpc('ranking_juego', { p_juego: game.id, p_limite: RECORDS_LIMIT })));
+
+  $('#games-podium-grid').innerHTML = WEEKS.map((game, i) => {
+    const rows = (tables[i].data || []).filter((row) => !isClown(row.usuario, row.nombre));
+    const places = placesWithTies(rows);
+    // Second on the left, first in the middle, third on the right; tied people share a step
+    const steps = [2, 1, 3].map((place) => {
+      const people = rows.filter((_, j) => places[j] === place);
+      if (!people.length) return '';
+      return `
+        <li class="podium-step podium-step--${place}">
+          ${people.map((row) => `
+            <div class="podium-step__person">
+              <span class="podium-step__avatar" style="border-color: ${monsterColor(row.monstruo || {})}">${drawCustomMonster(row.monstruo || {})}</span>
+              <span class="podium-step__name">${escapeHtml(row.nombre)}</span>
+              <span class="podium-step__points">${scoringOf(game).text(row.mejor_puntaje)}</span>
+            </div>`).join('')}
+          <span class="podium-step__block">${place}</span>
+        </li>`;
+    }).join('');
+    const name = game.id[0].toUpperCase() + game.id.slice(1);
+    return `
+      <article class="podium-card">
+        <h3 class="podium-card__title"><small>Semana ${game.week}</small>${name}</h3>
+        ${steps ? `<ol class="podium">${steps}</ol>` : '<p class="podium-card__empty">Nadie jugó esta semana.</p>'}
+      </article>`;
+  }).join('');
+  section.hidden = false;
+}
+
+renderGamesPodium();
+// A page left open shows it as soon as the last game closes
+const lastClose = Math.max(...WEEKS.map((game) => game.endsAt ?? 0));
+if (lastClose > Date.now() && lastClose - Date.now() < 864e5) setTimeout(renderGamesPodium, lastClose - Date.now() + 1000);
 
 const MEDALS = { 1: 'gold', 2: 'silver', 3: 'bronze' };
 
