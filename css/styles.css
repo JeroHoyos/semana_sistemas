@@ -3656,14 +3656,14 @@ button.bracket__side:hover { background: #e4effa; }
 .tank__body {
   position: relative;
   width: 244px;
-  height: 350px;
+  min-height: 350px;
   background: linear-gradient(90deg, #a87200 0%, #ebb400 15%, #ffde59 45%, #ffd438 60%, #e0a700 85%, #8c5d00 100%);
   box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.28);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-evenly;
-  padding: 10px 8px;
+  gap: 14px;
+  padding: 18px 8px 14px;
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -3708,9 +3708,9 @@ button.bracket__side:hover { background: #e4effa; }
   height: 100%;
 }
 
-/* Three to the left of the gauge and two to the right, all the same size */
+/* Three to the left of the gauge and two to the right, all beside the gauge (never over the screen) */
 .sticker--python {
-  top: 40px;
+  top: 24px;
   left: 12px;
   width: 50px;
   height: 50px;
@@ -3718,7 +3718,7 @@ button.bracket__side:hover { background: #e4effa; }
 }
 
 .sticker--linux {
-  top: 66px;
+  top: 50px;
   right: 12px;
   width: 50px;
   height: 50px;
@@ -3726,7 +3726,7 @@ button.bracket__side:hover { background: #e4effa; }
 }
 
 .sticker--git {
-  top: 114px;
+  top: 94px;
   left: 10px;
   width: 55px;
   height: 55px;
@@ -3734,7 +3734,7 @@ button.bracket__side:hover { background: #e4effa; }
 }
 
 .sticker--terminal {
-  top: 158px;
+  top: 140px;
   right: 9px;
   width: 56px;
   height: 43px;
@@ -3742,7 +3742,7 @@ button.bracket__side:hover { background: #e4effa; }
 }
 
 .sticker--cpp {
-  top: 192px;
+  top: 162px;
   left: 13px;
   width: 48px;
   height: 48px;
@@ -3901,7 +3901,8 @@ button.bracket__side:hover { background: #e4effa; }
   position: relative;
   z-index: 2;
   width: 92%;
-  padding: 9px 12px 10px;
+  margin-block: auto;
+  padding: 9px 10px 10px;
   border-radius: 10px;
   background: #0d1119;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -3961,6 +3962,100 @@ button.bracket__side:hover { background: #e4effa; }
   background: #181b20;
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.8);
 }
+
+/* Burst tank (over 100 points): it shakes, glows red, the glass cracks,
+   liquid leaks from the cracks and sprays out of the valve */
+.tank__spray,
+.gauge__cracks,
+.gauge__leak,
+.hud__burst { display: none; }
+
+.scare-tank--burst {
+  animation: tank-shake 2.4s infinite;
+  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 22px rgba(255, 42, 75, 0.75));
+}
+@keyframes tank-shake {
+  0%, 64%, 100% { transform: none; }
+  68% { transform: translate(-3px, 1px) rotate(-1.5deg); }
+  72% { transform: translate(3px, -1px) rotate(1.5deg); }
+  76% { transform: translate(-2px, 0) rotate(-1deg); }
+  80% { transform: translate(2px, 0) rotate(1deg); }
+  84% { transform: none; }
+}
+
+.scare-tank--burst .gauge__liquid {
+  height: 100% !important;
+  background: linear-gradient(180deg, #ffb3bd 0%, #ff2a4b 25%, #e00b2e 70%, #a6001a 100%);
+}
+
+.scare-tank--burst .gauge__cracks {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.9);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 1px #000);
+}
+
+.scare-tank--burst .gauge__leak {
+  display: block;
+  position: absolute;
+  z-index: 1;
+  width: 5px;
+  border-radius: 3px 3px 5px 5px;
+  background: linear-gradient(#ff2a4b, #c8102e);
+  box-shadow: 0 0 6px rgba(255, 42, 75, 0.8);
+  animation: leak-drip 1.8s ease-in infinite;
+  animation-delay: var(--d, 0s);
+}
+@keyframes leak-drip {
+  0% { height: 0; opacity: 1; }
+  70% { height: 46px; opacity: 1; }
+  100% { height: 54px; opacity: 0; }
+}
+
+.scare-tank--burst .tank__spray {
+  display: block;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+}
+.tank__spray i {
+  position: absolute;
+  left: -4px;
+  top: 0;
+  width: 8px;
+  height: 10px;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: #ff2a4b;
+  box-shadow: 0 0 6px rgba(255, 42, 75, 0.9);
+  opacity: 0;
+  animation: tank-spray 1.1s ease-out infinite;
+  animation-delay: var(--d);
+}
+@keyframes tank-spray {
+  0% { transform: translate(0, 0); opacity: 1; }
+  45% { transform: translate(calc(var(--x) * 0.6), -38px); opacity: 1; }
+  100% { transform: translate(var(--x), 10px); opacity: 0; }
+}
+
+.scare-tank--burst .hud__points { color: #ff4d6a; text-shadow: 0 0 10px rgba(255, 42, 75, 0.8); }
+.scare-tank--burst .hud__burst {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-varsity);
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #ff4d6a;
+  animation: burst-blink 1s ease-in-out infinite;
+}
+@keyframes burst-blink { 50% { opacity: .35; } }
 
 /* ================================================================
    RIGHT COLUMN: TABLE AND SCARER CARDS
@@ -4221,16 +4316,16 @@ button.bracket__side:hover { background: #e4effa; }
 .hud__admin-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 6px;
-  padding: 4px 12px;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 4px 8px;
   border-radius: 999px;
   background: rgba(22, 103, 194, 0.15);
   border: 1px solid rgba(22, 103, 194, 0.35);
   font-family: var(--font-narrow);
   font-weight: 700;
-  font-size: 11px;
-  letter-spacing: .06em;
+  font-size: 10.5px;
+  letter-spacing: .04em;
   text-transform: uppercase;
   color: #1667c2;
   transition: all .15s ease;
@@ -4502,7 +4597,7 @@ button.bracket__side:hover { background: #e4effa; }
 .hud__admin-btn--audit {
   background: rgba(22, 103, 194, 0.08) !important;
   border-color: rgba(22, 103, 194, 0.25) !important;
-  margin-left: 6px;
+  margin-left: 4px;
 }
 .hud__admin-btn--audit:hover {
   background: #1667c2 !important;
@@ -5072,7 +5167,7 @@ button.bracket__side:hover { background: #e4effa; }
   }
   .tank__body {
     width: 220px;
-    height: 320px;
+    min-height: 320px;
   }
   .tank__collar {
     width: 228px;
@@ -5083,11 +5178,11 @@ button.bracket__side:hover { background: #e4effa; }
   .tank__base {
     width: 228px;
   }
-  .sticker--python { width: 44px; height: 44px; left: 9px; top: 30px; }
-  .sticker--linux { width: 44px; height: 44px; right: 9px; top: 56px; }
-  .sticker--git { width: 48px; height: 48px; left: 7px; top: 102px; }
-  .sticker--terminal { width: 48px; height: 37px; right: 7px; top: 142px; }
-  .sticker--cpp { width: 42px; height: 42px; left: 10px; top: 176px; }
+  .sticker--python { width: 44px; height: 44px; left: 9px; top: 24px; }
+  .sticker--linux { width: 44px; height: 44px; right: 9px; top: 50px; }
+  .sticker--git { width: 48px; height: 48px; left: 7px; top: 90px; }
+  .sticker--terminal { width: 48px; height: 37px; right: 7px; top: 136px; }
+  .sticker--cpp { width: 42px; height: 42px; left: 10px; top: 160px; }
 }
 
 

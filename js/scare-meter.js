@@ -24,7 +24,13 @@ function percentOf(points, maxPoints) {
   return Math.min(100, Math.round((points / maxPoints) * 100));
 }
 
-const maxPointsOf = (people) => Math.max(100, ...people.map(scarePoints));
+// Fills the tank; past the 100-point goal it bursts (cracks, spray, shake)
+function fillTank(points) {
+  tankLiquid.style.height = `${percentOf(points, maxGlobalPoints)}%`;
+  $('#scare-tank').classList.toggle('scare-tank--burst', points > 100);
+}
+
+const maxPointsOf =(people) => Math.max(100, ...people.map(scarePoints));
 
 // What the page shows for a person: clowns hiding behind binary names appear under their real identity
 function personView(person) {
@@ -74,7 +80,7 @@ function selectScarer(index) {
   const { clown, points, handle, name } = personView(person);
 
   // Liquid level in the tank (0% with 0 points)
-  tankLiquid.style.height = `${percentOf(points, maxGlobalPoints)}%`;
+  fillTank(points);
 
   // Tank screen: name and points
   hudName.textContent = clown ? `⚠️ ${name} [TRAMPOSO]` : name;
@@ -164,7 +170,7 @@ function renderRanking(people, query = '') {
   }
 
   if (totalGeneral === 0) {
-    tankLiquid.style.height = '0%';
+    fillTank(0);
     hudName.textContent = 'Esperando asustadores';
     hudPoints.innerHTML = '0 <small>pts</small>';
 
@@ -585,7 +591,7 @@ function selectMyRank() {
   const handle = handleOf(currentUser.email);
   const points = myRankInfo.puntos || 0;
 
-  tankLiquid.style.height = `${percentOf(points, maxGlobalPoints)}%`;
+  fillTank(points);
   hudName.textContent = name;
   hudPoints.innerHTML = `${points} <small>pts</small>`;
   const isSup = isCurrentSupervisor();
@@ -601,7 +607,7 @@ function selectMyRank() {
 }
 
 function showScareMeterError(message) {
-  tankLiquid.style.height = '0%';
+  fillTank(0);
   rankingCount.textContent = 'Error de Conexión';
   hudName.textContent = 'Sin conexión';
 

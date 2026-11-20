@@ -95,10 +95,18 @@
           <div class="tank-station">
 
             <!-- THE SCARE TANK -->
-            <div class="scare-tank">
+            <div class="scare-tank" id="scare-tank">
               <!-- TOP HANDLE AND VALVE -->
               <div class="tank__handle-block">
                 <div class="tank__valve">
+                  <!-- Liquid spraying out when the tank bursts (over 100 points) -->
+                  <span class="tank__spray" aria-hidden="true">
+                    <i style="--x: -26px; --d: 0s"></i>
+                    <i style="--x: -12px; --d: -.35s"></i>
+                    <i style="--x: 4px; --d: -.7s"></i>
+                    <i style="--x: 18px; --d: -.2s"></i>
+                    <i style="--x: 30px; --d: -.55s"></i>
+                  </span>
                   <span class="valve__nozzle"></span>
                   <span class="valve__coupling"></span>
                 </div>
@@ -252,13 +260,24 @@
                     </div>
 
                     <div class="gauge__glass-glare" aria-hidden="true"></div>
+
+                    <!-- Cracked glass when the tank bursts -->
+                    <svg class="gauge__cracks" viewBox="0 0 36 180" aria-hidden="true">
+                      <path d="M14 46L2 34M14 46L24 30L36 26M14 46L30 58M14 46L4 62L0 70M24 30L22 18"/>
+                      <path d="M22 124L36 112M22 124L8 116L0 120M22 124L14 140L18 152M22 124L36 136"/>
+                    </svg>
                   </div>
+
+                  <!-- Liquid leaking from the cracks -->
+                  <span class="gauge__leak" style="left: 68px; top: 66px" aria-hidden="true"></span>
+                  <span class="gauge__leak" style="left: 23px; top: 128px; --d: -.9s" aria-hidden="true"></span>
                 </div>
 
                 <!-- SCREEN: name and points of the selected person -->
                 <div class="tank__hud">
                   <span class="hud__name" id="hud-name">Cargando…</span>
                   <span class="hud__points" id="hud-points">0 <small>pts</small></span>
+                  <span class="hud__burst">¡Reventó el sustómetro!</span>
                   <button type="button" class="hud__admin-btn" id="btn-admin-edit-points" hidden title="Modificar puntos (Supervisor)">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     <span>Editar puntos</span>
