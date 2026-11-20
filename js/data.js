@@ -418,6 +418,14 @@ const TITLES = [
 // The .mp4 files show as short silent videos; poster is the image shown while they load.
 // text: what is in the image. Not shown on screen: screen readers read it.
 const GALLERY = [
+  { edition: 2026, day: 'Día 2', file: 'img/gallery/2026-day2-marathon.jpg', text: 'Sala de computadores con globos durante la maratón de programación' },
+  { edition: 2026, day: 'Día 2', file: 'img/gallery/2026-day2-observation-maze.jpg', text: 'Un equipo resuelve un laberinto en el portátil durante la carrera de observación' },
+  { edition: 2026, day: 'Día 2', file: 'img/gallery/2026-day2-group-photo.jpg', text: 'Foto grupal al aire libre bajo la cubierta' },
+  { edition: 2026, day: 'Día 2', file: 'img/gallery/2026-day2-observation-table.jpg', text: 'Un equipo revisa sus pistas en una mesa durante la carrera de observación' },
+  { edition: 2026, day: 'Día 2', file: 'img/gallery/2026-day2-marathon-team.jpg', text: 'Un equipo sonríe a la cámara en la maratón de programación' },
+  { edition: 2026, day: 'Día 2', file: 'img/gallery/2026-day2-observation-floor.jpg', text: 'Un equipo sentado en el piso resolviendo un reto de la carrera de observación' },
+  { edition: 2026, day: 'Día 2', file: 'img/gallery/2026-day2-marathon-green.jpg', text: 'Un equipo de camisetas verdes concentrado en la maratón' },
+  { edition: 2026, day: 'Día 2', file: 'img/gallery/2026-day2-observation-hall.jpg', text: 'Equipos de la carrera de observación en un pasillo con vista a los árboles' },
   { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-talk.jpg', text: 'Charla en el escenario del auditorio, frente al mural' },
   { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-aperture.jpg', text: 'Stand de Aperture en la feria' },
   { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-klima.jpg', text: 'Stand de Klima, con Unergy, Zentrack y Solē, en la feria' },
