@@ -144,6 +144,7 @@ function slotHtml(match) {
 
 function bracketHtml() {
   const { rounds, champion } = buildRounds(bracket);
+  const winner = champion && participants.find((p) => p.name === champion);
   return `
     <div class="bracket__scroll">
       <div class="bracket__rounds">
@@ -156,7 +157,13 @@ function bracketHtml() {
         <div class="bracket__round bracket__round--champion">
           <h3>Campeón</h3>
           <ol><li class="bracket__slot${champion ? ' bracket__slot--reached' : ''}">
-            <div class="bracket__champion ${champion ? '' : 'bracket__champion--empty'}">${ICONS.trophy}<span>${champion ? escapeHtml(champion) : '¿Quién será?'}</span></div>
+            ${champion ? `
+              <div class="bracket__champion">
+                ${winner ? `<span class="bracket__champion-flag">${flagHtml(winner)}</span>` : ''}
+                <span class="bracket__champion-cup">${ICONS.trophy}</span>
+                <span class="bracket__champion-name">${escapeHtml(champion)}</span>
+              </div>`
+            : `<div class="bracket__champion bracket__champion--empty">${ICONS.trophy}<span>¿Quién será?</span></div>`}
           </li></ol>
         </div>
       </div>
