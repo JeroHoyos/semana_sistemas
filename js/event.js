@@ -47,6 +47,7 @@ function renderInfo() {
     standsSection(),
     activity.team || activity.individual ? '<div id="participants"></div>' : '',   // filled by js/brackets.js
     activity.bracket ? '<div id="bracket"></div>' : '',   // filled by js/brackets.js
+    (activity.team || activity.individual) && !activity.bracket ? '<div id="standings"></div>' : '',
     videoSection(activity.video),
     rulesSection(activity.rules),
     speakerSection(findSpeakers(activity)),
@@ -122,6 +123,14 @@ function statBoxes(stats) {
 // Team or individual registration call to action. The button goes before its note and right after
 // the facts: nothing of variable height above it, so it sits in the same place on every competition.
 function registrationSection() {
+  if ((activity.team || activity.individual) && !REGISTRATION_OPEN.includes(activity.id)) {
+    return `
+      <div class="event__signup">
+        <a class="hero__button auth-form__submit" href="inscripciones.html?id=${activity.id}">Ver inscritos ${ICONS.arrow}</a>
+        <p class="event__bio">Las inscripciones para esta competencia ya cerraron.</p>
+      </div>
+    `;
+  }
   if (activity.team) {
     return `
       <div class="event__signup">

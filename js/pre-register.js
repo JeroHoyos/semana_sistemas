@@ -117,6 +117,14 @@
       return;
     }
 
+    if (!REGISTRATION_OPEN.includes(activityId)) {
+      body.innerHTML = `
+        ${capacityBar()}
+        <p class="registration__text">Las inscripciones para esta conferencia ya cerraron.</p>
+      `;
+      return;
+    }
+
     if (noSpotsLeft()) {
       body.innerHTML = `
         ${capacityBar()}

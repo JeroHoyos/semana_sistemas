@@ -195,9 +195,22 @@ function saveSchedule() {
   }
 }
 
+// 'live', 'done' or '' (still to come), by Colombian time (UTC-5) whatever the visitor's time zone.
+// iso is each day's date in DAYS. Good to the minute: the schedule refreshes once a minute.
+function activityStatus(activity) {
+  const iso = findDay(activity.day)?.iso;
+  if (!iso || !activity.start || !activity.end) return '';
+  const now = Date.now();
+  if (now >= Date.parse(`${iso}T${activity.end}:00-05:00`)) return 'done';
+  if (now >= Date.parse(`${iso}T${activity.start}:00-05:00`)) return 'live';
+  return '';
+}
+
+const today = DAYS.find((day) => day.iso === new Date(Date.now() - 5 * 3600e3).toISOString().slice(0, 10));
+
 // What the person has chosen in the schedule
 const schedule = {
-  day: DAYS[0].id,   // selected day
+  day: today?.id || DAYS[0].id,   // selected day: today during the event
   type: 'all',       // tab: 'all' or a key of ACTIVITY_TYPES
   search: '',        // search box text
   weekView: false,   // true = grid with the whole week
@@ -368,10 +381,14 @@ function activityCard(activity) {
     details.push(`<span class="activity__overlap">${ICONS.overlap}A la vez que ${names}</span>`);
   }
 
+  const status = activityStatus(activity);
+  const badge = { live: '<span class="activity__status">● En curso</span>', done: '<span class="activity__status">Terminó</span>' }[status] || '';
+
   // The card uses its type's color (not each competition's own) so the type is recognized.
   // The title link covers the whole card (see .activity__title a::after in the CSS)
   return `
-    <li class="activity" style="--color: ${type.color}; --bg: ${type.bg}">
+    <li class="activity ${status ? `activity--${status}` : ''}" style="--color: ${type.color}; --bg: ${type.bg}">
+      ${badge}
       <span class="activity__type">${ICONS[type.icon]}${type.singular}</span>
       <h4 class="activity__title"><a href="${activityLink(activity.id)}">${activity.title}</a></h4>
       <p class="activity__time">${day}${activity.start} – ${activity.end}</p>
@@ -419,6 +436,7 @@ function renderWeek(visible) {
 function activityBlock(activity, firstHour, isVisible) {
   const type = ACTIVITY_TYPES[activity.type];
   const dimmed = isVisible ? '' : 'block--dimmed';
+  const status = activityStatus(activity) ? `block--${activityStatus(activity)}` : '';
   const narrow = activity.lanes > 1 ? 'block--narrow' : '';   // shares the time with another one
   const position = `
     --from: ${toHours(activity.start) - firstHour};
@@ -427,7 +445,7 @@ function activityBlock(activity, firstHour, isVisible) {
     --lanes: ${activity.lanes};`;
 
   return `
-    <a class="block ${dimmed} ${narrow}" href="${activityLink(activity.id)}" title="${activity.title}"
+    <a class="block ${dimmed} ${narrow} ${status}" href="${activityLink(activity.id)}" title="${activity.title}"
       style="--color: ${type.color}; --bg: ${type.bg}; ${position}">
       <strong>${activity.title}</strong>
       <span class="block__place">${ICONS.pin}${activity.place || 'Por confirmar'}</span>
@@ -703,6 +721,14 @@ renderHero();
 renderSpeakers();
 prepareSchedule();
 renderSchedule();
+
+// Redraws the schedule only when an activity starts or ends, so the cards do not replay their animation every minute
+let statuses = ACTIVITIES.map(activityStatus).join();
+setInterval(() => {
+  const now = ACTIVITIES.map(activityStatus).join();
+  if (now !== statuses) renderSchedule();
+  statuses = now;
+}, 60e3);
 renderCompetitions();
 renderGroups();
 renderGallery();

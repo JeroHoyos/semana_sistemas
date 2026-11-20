@@ -13,6 +13,7 @@ let shownActivity = REGISTRATION_ACTIVITIES.find((activity) => activity.id === n
   || REGISTRATION_ACTIVITIES[0];
 
 const isIndividual = () => Boolean(shownActivity?.individual);
+const isClosed = () => !REGISTRATION_OPEN.includes(shownActivity.id);
 
 let teams = null;                   // every team of every team competition; null until loaded
 let loadFailed = false;
@@ -175,6 +176,8 @@ function renderMyTeam() {
           </button>
         </div>
       `;
+    } else if (isClosed()) {
+      panel.innerHTML = '<p class="registration__text">Las inscripciones para esta competencia ya cerraron.</p>';
     } else if (noSpotsLeft()) {
       panel.innerHTML = `
         <p class="registration__text">Ya se llenaron los ${shownActivity.individual.max} cupos disponibles para esta competencia.</p>
@@ -231,6 +234,8 @@ function renderMyTeam() {
   const team = myTeam();
   if (team) {
     panel.innerHTML = teamCard(team, true);
+  } else if (isClosed()) {
+    panel.innerHTML = '<p class="registration__text">Las inscripciones para esta competencia ya cerraron.</p>';
   } else if (noSpotsLeft()) {
     panel.innerHTML = `
       <p class="registration__text">Ya se llenaron los ${shownActivity.team.maxTeams} cupos. Si un capitán te inscribe en su equipo, aparecerá aquí.</p>
@@ -389,7 +394,7 @@ function teamCard(team, manage = false) {
 
   let actions = '';
   if (captainTools) {
-    const addForm = full ? '' : `
+    const addForm = full || isClosed() ? '' : `
       <form class="team__add" data-team="${team.id}">
         <input type="email" name="correo" placeholder="correo@unal.edu.co" required aria-label="Correo de la persona a inscribir">
         <button class="week-button" type="submit">Inscribir</button>
@@ -797,7 +802,9 @@ function updateFindTeamModalPositions() {
   $('#find-team-positions-box').hidden = !isFutbol;
 }
 
-$('#find-team-activity').innerHTML = TEAM_ACTIVITIES.map((activity) => `
+const FIND_TEAM_ACTIVITIES = TEAM_ACTIVITIES.filter((activity) => REGISTRATION_OPEN.includes(activity.id));
+
+$('#find-team-activity').innerHTML = FIND_TEAM_ACTIVITIES.map((activity) => `
   <option value="${activity.id}">${escapeHtml(activity.team.tab)}</option>
 `).join('');
 
@@ -814,7 +821,7 @@ function openFindTeamModal() {
     return;
   }
 
-  $('#find-team-activity').value = isIndividual() ? TEAM_ACTIVITIES[0].id : shownActivity.id;
+  $('#find-team-activity').value = isIndividual() || isClosed() ? FIND_TEAM_ACTIVITIES[0].id : shownActivity.id;
   updateFindTeamModalPositions();
 
   const existing = freeAgents?.find((agent) => agent.usuario_id === currentUser.id);

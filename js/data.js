@@ -72,9 +72,9 @@ function isArgenisAlias(email, name) {
 
 // date: free text, for example '12 nov'. If empty, the page shows "Día 1", "Día 2"...
 const DAYS = [
-  { id: 'wed', name: 'Miércoles', short: 'Mié', date: '18 nov' },
-  { id: 'thu', name: 'Jueves', short: 'Jue', date: '19 nov' },
-  { id: 'fri', name: 'Viernes', short: 'Vie', date: '20 nov' },
+  { id: 'wed', name: 'Miércoles', short: 'Mié', date: '18 nov', iso: '2026-11-18' },
+  { id: 'thu', name: 'Jueves', short: 'Jue', date: '19 nov', iso: '2026-11-19' },
+  { id: 'fri', name: 'Viernes', short: 'Vie', date: '20 nov', iso: '2026-11-20' },
 ];
 
 // Activity types: name on the tabs, label on the cards, colors
@@ -139,9 +139,6 @@ const GROUPS = [
   { id: 'uneural', name: 'UNeural', type: 'Grupo estudiantil', color: '#4a4fd8', logo: 'img/group-uneural.jpg',
     link: 'https://www.instagram.com/uneuralgroup',
     stand: 'UNeural es un semillero de investigación enfocado en inteligencia artificial, donde el aprendizaje, la exploración y la innovación son protagonistas. Es un espacio para acercarse a nuevas tecnologías, conocer sus aplicaciones y descubrir cómo pueden transformar diferentes áreas del conocimiento.' },
-  { id: 'unvesting', name: 'Unvesting', type: 'Grupo estudiantil', color: '#1e7d4a', logo: 'img/group-unvesting.jpg',
-    link: 'https://www.instagram.com/unvesting_unalmed',
-    stand: 'Unvesting es un grupo estudiantil de la Universidad Nacional de Colombia dedicado al estudio, la investigación y el análisis de los mercados financieros. A través de espacios de formación, debates, simulaciones de inversión y proyectos académicos, sus integrantes fortalecen sus conocimientos en economía, finanzas y mercados de capitales, promoviendo el pensamiento crítico, el trabajo colaborativo y la aplicación práctica de lo aprendido.' },
   { id: 'ieee', name: 'IEEE', type: 'Grupo estudiantil', color: '#00629b', logo: 'img/group-ieee.jpg',
     link: 'https://www.instagram.com/ieeeudeastudentbranch',
     stand: 'IEEE (Instituto de Ingenieros Eléctricos y Electrónicos) es la organización técnica profesional más grande del mundo dedicada al avance de la tecnología en beneficio de la humanidad. Con presencia en más de 160 países y cientos de miles de miembros, conecta a estudiantes, investigadores y profesionales de áreas como ciencias de la computación, ingeniería de sistemas, analítica de datos, telecomunicaciones, inteligencia artificial y gestión tecnológica para impulsar la innovación, la estandarización técnica y el desarrollo profesional.' },
@@ -229,6 +226,10 @@ const COMPANIES = [
 // stands: true (its page draws a stand for every group and company with a stand text: js/event.js),
 // unconfirmed: true (shows an "Información por confirmar" notice on its page)
 // and decorations (three pixel art drawings from js/pixel-art.js for its page header; the middle one sits higher).
+// The only activities that still take sign-ups; every other one is closed. Supervisors can still add people.
+// Supabase enforces it with supabase/cerrar-inscripciones.sql: change both together.
+const REGISTRATION_OPEN = ['futbol'];
+
 const ACTIVITIES = [
   // Wednesday
   { id: 'inaugural', day: 'wed', start: '09:00', end: '10:00', type: 'talk', title: 'Conversatorio: Empresas de base tecnológica', speakers: ['eduardo'], place: 'Aula Máxima',
@@ -418,6 +419,14 @@ const TITLES = [
 // The .mp4 files show as short silent videos; poster is the image shown while they load.
 // text: what is in the image. Not shown on screen: screen readers read it.
 const GALLERY = [
+  { edition: 2026, day: 'Día 2', file: 'img/gallery/2026-day2-marathon.jpg', text: 'Sala de computadores con globos durante la maratón de programación' },
+  { edition: 2026, day: 'Día 2', file: 'img/gallery/2026-day2-observation-maze.jpg', text: 'Un equipo resuelve un laberinto en el portátil durante la carrera de observación' },
+  { edition: 2026, day: 'Día 2', file: 'img/gallery/2026-day2-group-photo.jpg', text: 'Foto grupal al aire libre bajo la cubierta' },
+  { edition: 2026, day: 'Día 2', file: 'img/gallery/2026-day2-observation-table.jpg', text: 'Un equipo revisa sus pistas en una mesa durante la carrera de observación' },
+  { edition: 2026, day: 'Día 2', file: 'img/gallery/2026-day2-marathon-team.jpg', text: 'Un equipo sonríe a la cámara en la maratón de programación' },
+  { edition: 2026, day: 'Día 2', file: 'img/gallery/2026-day2-observation-floor.jpg', text: 'Un equipo sentado en el piso resolviendo un reto de la carrera de observación' },
+  { edition: 2026, day: 'Día 2', file: 'img/gallery/2026-day2-marathon-green.jpg', text: 'Un equipo de camisetas verdes concentrado en la maratón' },
+  { edition: 2026, day: 'Día 2', file: 'img/gallery/2026-day2-observation-hall.jpg', text: 'Equipos de la carrera de observación en un pasillo con vista a los árboles' },
   { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-talk.jpg', text: 'Charla en el escenario del auditorio, frente al mural' },
   { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-aperture.jpg', text: 'Stand de Aperture en la feria' },
   { edition: 2026, day: 'Día 1', file: 'img/gallery/2026-day1-klima.jpg', text: 'Stand de Klima, con Unergy, Zentrack y Solē, en la feria' },
