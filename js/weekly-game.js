@@ -865,7 +865,7 @@ function renderRecords(rows) {
 
   // The top 3 on the screen of a finished week (with ties there can be more)
   $('#finished-podium').innerHTML = visible.map((row, i) => (places[i] > 3 ? '' : `
-    <li>
+    <li class="overlay__podium-place--${places[i]}">
       <span>${PODIUM[places[i]]}</span>
       <span class="overlay__podium-name">${escapeHtml(row.nombre)}</span>
       <strong>${scoring.table(row.mejor_puntaje)}</strong>
