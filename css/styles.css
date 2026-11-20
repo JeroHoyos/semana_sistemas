@@ -6169,28 +6169,32 @@ a.pennant:focus-visible { outline: 3px solid #a9d1ff; outline-offset: 6px; borde
   line-height: 1.5;
   text-transform: none;
 }
-/* Each place has its color (--place): a tinted row with a bar on its side */
+/* Arcade high-score rows: flat colors and hard shadows. Each place has its color (--place) and a darker edge (--edge) */
 .overlay__podium li {
   --place: #ffd23f;
+  --edge: #b58a00;
   display: flex;
-  align-items: center;
-  gap: .6em;
-  margin-bottom: .45em;
-  padding: .3em .8em;
-  border-left: 4px solid var(--place);
-  border-radius: 6px;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--place) 22%, transparent), color-mix(in srgb, var(--place) 6%, transparent));
+  align-items: stretch;
+  margin-bottom: .7em;
+  border: 2px solid var(--place);
+  background: #120926;
+  box-shadow: 4px 4px 0 var(--edge);
 }
-.overlay__podium .overlay__podium-place--2 { --place: #c9d3e6; }
-.overlay__podium .overlay__podium-place--3 { --place: #e08a4a; }
-.overlay__podium .overlay__podium-place--1 {
-  padding-block: .5em;
-  font-size: 1.15em;
-  box-shadow: 0 0 18px color-mix(in srgb, var(--place) 35%, transparent);
+.overlay__podium .overlay__podium-place--2 { --place: #c9d3e6; --edge: #6f7a91; }
+.overlay__podium .overlay__podium-place--3 { --place: #e08a4a; --edge: #8a4a1c; }
+.overlay__podium .overlay__podium-place--1 { font-size: 1.15em; }
+/* The place number: a solid block in the place's color */
+.overlay__podium-rank {
+  display: grid;
+  place-items: center;
+  min-width: 2.6em;
+  background: var(--place);
+  color: #120926;
+  font-family: 'Press Start 2P', monospace;
+  font-size: .7em;
 }
-.overlay__podium-place--1 .overlay__podium-name { color: var(--place); }
-.overlay__podium-name { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: left; }
-.overlay__podium strong { font-weight: 400; color: var(--place); }
+.overlay__podium-name { flex: 1; min-width: 0; padding: .35em .7em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: left; color: #fff; }
+.overlay__podium strong { padding: .35em .7em; border-left: 2px dashed var(--edge); font-weight: 400; color: var(--place); }
 .overlay__button:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 
 /* With a keyboard it says "Espacio"; on phones, "A" */
