@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # =============================================
 # BUILDS DOOM FOR THE SCARE METER CONSOLE
-# Generates games/doom/doom.wasm from:
-#   - doomgeneric (GPL-2.0) with the web patch in games/doom/source: only E1M1 on Ultra-Violence,
+# Generates public/games/doom/doom.wasm from:
+#   - doomgeneric (GPL-2.0) with the web patch in doom/: only E1M1 on Ultra-Violence,
 #     minimal menu (New Game only), no cheats, a notification on finishing the level
 #   - Chocolate Doom's music (GPL-2.0): the OPL player (i_oplmusic.c, midifile.c)
 #     and the Nuked OPL3 chip emulator (opl3.c, LGPL-2.1)
@@ -20,8 +20,8 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SOURCE="$ROOT/games/doom/source"
-OUTPUT="$ROOT/games/doom/doom.wasm"
+SOURCE="$ROOT/doom"
+OUTPUT="$ROOT/public/games/doom/doom.wasm"
 WORK="${TMPDIR:-/tmp}/doomgeneric-web"
 
 # The exact versions everything was tested with
@@ -109,4 +109,4 @@ cd "$FOLDER"
   "${FILES[@]}"
 
 cp doom.wasm "$OUTPUT"
-echo "[Doom] Done: games/doom/doom.wasm ($(wc -c < "$OUTPUT") bytes)"
+echo "[Doom] Done: public/games/doom/doom.wasm ($(wc -c < "$OUTPUT") bytes)"

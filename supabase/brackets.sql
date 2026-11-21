@@ -1,5 +1,5 @@
 -- =============================================
--- BRACKETS (the "Llaves" section of evento.html?id=<competition>, js/brackets.js)
+-- BRACKETS (the "Llaves" section of evento.html?id=<competition>, src/scripts/brackets.ts)
 -- Run in Supabase → SQL Editor after weekly-game.sql (it uses es_supervisor()). Safe to run again.
 --
 -- One row per competition:
@@ -10,7 +10,7 @@
 -- =============================================
 
 create table if not exists public.llaves (
-  actividad      text        primary key,                   -- activity id in js/data.js
+  actividad      text        primary key,                   -- activity id in src/data/content.ts
   participantes  jsonb       not null,
   ganadores      jsonb       not null default '{}'::jsonb,
   actualizado_en timestamptz not null default now()

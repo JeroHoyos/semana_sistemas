@@ -1,0 +1,45 @@
+{
+  "name": "semana-sistemas",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "check": "astro check",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "hash-code": "node tools/hash-code.js",
+    "bump-version": "node tools/bump-version.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.118.0",
+    "astro": "7.1.6",
+    "html-to-image": "1.11.11",
+    "three": "0.128.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@eslint/js": "10.0.1",
+    "@tailwindcss/vite": "4.3.3",
+    "@types/three": "0.128.0",
+    "eslint": "10.8.0",
+    "eslint-plugin-astro": "3.1.0",
+    "globals": "17.9.0",
+    "prettier": "3.9.6",
+    "prettier-plugin-astro": "0.14.1",
+    "prettier-plugin-tailwindcss": "0.8.1",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.66.0",
+    "vitest": "4.1.12"
+  }
+}

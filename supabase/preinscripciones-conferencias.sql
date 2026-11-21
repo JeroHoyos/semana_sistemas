@@ -2,8 +2,8 @@
 -- PRE-INSCRIPCIONES A CONFERENCIAS (evento.html?id=<conferencia>)
 -- Se pega una vez en Supabase → SQL Editor → Run. Es idempotente: se puede volver a correr.
 --
--- Cada conferencia (type: 'talk' en js/data.js) abre una pre-inscripción con cupos limitados
--- según la modalidad del espacio. El mismo cupo aparece en preRegister.max en js/data.js: cambia los dos.
+-- Cada conferencia (type: 'talk' en src/data/content.ts) abre una pre-inscripción con cupos limitados
+-- según la modalidad del espacio. El mismo cupo aparece en preRegister.max en src/data/content.ts: cambia los dos.
 --   'aula-maxima' → 100 cupos   (conferencias en el Aula Máxima)
 --   'aula'        →  40 cupos   (conferencias en aulas/salones)
 --   'virtual'     →  70 cupos   (conferencias virtuales)
@@ -23,7 +23,7 @@
 -- =============================================
 
 -- ---------- Cupos por modalidad del espacio ----------
--- Cambia aquí y en preRegister.max de js/data.js si ajustas un cupo.
+-- Cambia aquí y en preRegister.max de src/data/content.ts si ajustas un cupo.
 create or replace function public.cupos_conferencia(p_modalidad text)
 returns integer
 language sql
@@ -40,7 +40,7 @@ $$;
 
 create table if not exists public.preinscripciones_conferencia (
   id         uuid        primary key default gen_random_uuid(),
-  actividad  text        not null,                 -- id de la conferencia en js/data.js
+  actividad  text        not null,                 -- id de la conferencia en src/data/content.ts
   modalidad  text        not null check (modalidad in ('aula-maxima', 'aula', 'virtual')),
   usuario_id uuid        not null references auth.users (id) on delete cascade,
   asistio    boolean     not null default false,   -- lo marca un supervisor el día del evento
@@ -57,7 +57,7 @@ revoke all on public.preinscripciones_conferencia from anon, authenticated;
 
 
 -- ---------- Pre-inscribirse a una conferencia ----------
--- p_modalidad llega desde js/data.js (preRegister.modalidad) y debe coincidir con una modalidad válida.
+-- p_modalidad llega desde src/data/content.ts (preRegister.modalidad) y debe coincidir con una modalidad válida.
 create or replace function public.preinscribirse_conferencia(
   p_actividad text,
   p_modalidad text

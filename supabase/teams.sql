@@ -2,11 +2,11 @@
 -- TEAM REGISTRATION (inscripciones.html)
 -- Run once in Supabase → SQL Editor. It is safe to run again.
 --
--- Competitions that take teams, with the limits the page also shows (team in ACTIVITIES, js/data.js):
+-- Competitions that take teams, with the limits the page also shows (team in ACTIVITIES, src/data/content.ts):
 --   'observacion': up to 4 people per team, at most 10 teams
 --   'maraton':     up to 3 people per team, at most 20 teams
 --   'futbol':      up to 5 people per team, at most 8 teams
--- To change a limit, change it here (guardar_equipo / agregar_miembro) and in js/data.js.
+-- To change a limit, change it here (guardar_equipo / agregar_miembro) and in src/data/content.ts.
 --
 -- Whoever creates a team is its captain and leaves a phone number. The captain signs up the other
 -- members by the email of their account. A person is in at most one team per competition
@@ -19,11 +19,11 @@
 
 create table if not exists public.equipos (
   id         uuid        primary key default gen_random_uuid(),
-  actividad  text        not null,                -- activity id in js/data.js
+  actividad  text        not null,                -- activity id in src/data/content.ts
   nombre     text        not null,
   capitan_id uuid        not null references auth.users (id) on delete cascade,
   celular    text        not null,
-  bandera    jsonb       not null,                -- { letras, fondo, tinta, forma, estampado, borde, contorno, fuente, adorno }: see drawBanner in js/icons.js
+  bandera    jsonb       not null,                -- { letras, fondo, tinta, forma, estampado, borde, contorno, fuente, adorno }: see drawBanner in src/lib/icons.ts
   creado_en  timestamptz not null default now()
 );
 
@@ -115,7 +115,7 @@ begin
   if char_length(v_bandera ->> 'letras') not between 1 and 4
      or v_bandera ->> 'fondo' !~ '^#[0-9a-fA-F]{6}$'
      or v_bandera ->> 'tinta' !~ '^#[0-9a-fA-F]{6}$'
-     -- The options of BANNER_OPTIONS in js/icons.js
+     -- The options of BANNER_OPTIONS in src/lib/icons.ts
      or v_bandera ->> 'forma' not in ('golondrina', 'punta', 'recta', 'ondas')
      or v_bandera ->> 'estampado' not in ('liso', 'rayas', 'franja', 'manchas', 'cuadros')
      or v_bandera ->> 'borde' not in ('ninguno', 'ribete', 'costura')

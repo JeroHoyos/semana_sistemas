@@ -1,0 +1,36 @@
+---
+// The <head> every page shares. Each page imports its own styles and scripts.
+import NightRedirect from '@/components/NightRedirect.astro';
+
+interface Props {
+	title: string;
+	description: string;
+	fonts: string; // Google Fonts stylesheet with the families the page uses
+	nightRedirect?: boolean; // closes the page from 1 to 7 a.m. (descanso.html)
+	bodyClass?: string;
+	bodyAttrs?: Record<string, string>;
+	htmlAttrs?: Record<string, string>;
+}
+
+const { title, description, fonts, nightRedirect = false, bodyClass, bodyAttrs, htmlAttrs } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es" {...htmlAttrs}>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		{nightRedirect && <NightRedirect />}
+		<slot name="head" />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="icon" href="img/favicon.svg" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link rel="stylesheet" href={fonts} crossorigin />
+		<link rel="stylesheet" href="https://fonts.cdnfonts.com/css/pricedown" />
+	</head>
+	<body class={bodyClass} {...bodyAttrs}>
+		<slot />
+	</body>
+</html>

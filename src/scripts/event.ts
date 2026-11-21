@@ -1,0 +1,414 @@
+/* =============================================
+   ACTIVITY PAGE
+   Reads the id from the address (evento.html?id=maraton) and builds the page from its data.
+   ============================================= */
+
+
+import { ACTIVITY_TYPES, COMPANIES, GROUPS, REGISTRATION_OPEN } from '@/data/content';
+import { $, activityLink, findActivity, findDay, findGroup, findOverlapping, findSpeakers, speakerPortrait } from '@/lib/common';
+import { ICONS, drawCrest } from '@/lib/icons';
+import { MASCOT_PALETTE, PIXEL_ART, drawPixelArt } from '@/lib/pixel-art';
+
+export const activity = findActivity(new URLSearchParams(location.search).get('id'));
+
+// 'Miércoles, 18 nov' (or just 'Miércoles' if the day has no date)
+function dayText(day) {
+  if (!day) return 'Por definir';
+  return `${day.name}${day.date ? `, ${day.date}` : ''}`;
+}
+
+
+/* ---------- Header ---------- */
+
+function renderHero() {
+  const type = ACTIVITY_TYPES[activity.type];
+
+  document.title = `${activity.title} | Semana de Sistemas`;
+
+  // Pixel art drawings above the type, if the activity has any (see pixel-art.js)
+  const decorations = activity.decorations
+    ? `<div class="event-hero__decorations">${activity.decorations.map((name) => drawPixelArt(PIXEL_ART[name])).join('')}</div>`
+    : '';
+
+  $('#event-hero').innerHTML = `
+    ${decorations}
+    <span class="event-hero__type" style="--color: ${type.color}; --bg: ${type.bg}">${ICONS[type.icon]}${type.singular}</span>
+    <h1 class="event-hero__title">${activity.title}</h1>
+  `;
+}
+
+
+/* ---------- Information ---------- */
+
+// The card is built from sections, in this order. Each section returns its HTML,
+// or '' if the activity lacks that data, so only the relevant ones show.
+function renderInfo() {
+  $('#event-info').innerHTML = [
+    noticeSection(),
+    factsSection(),
+    registrationSection(),
+    preRegisterSection(),
+    descriptionSection(),
+    routeMapSection(),
+    standsSection(),
+    activity.team || activity.individual ? '<div id="participants"></div>' : '',   // filled by src/scripts/brackets.ts
+    activity.bracket ? '<div id="bracket"></div>' : '',   // filled by src/scripts/brackets.ts
+    (activity.team || activity.individual) && !activity.bracket ? '<div id="standings"></div>' : '',
+    videoSection(activity.video),
+    rulesSection(activity.rules),
+    speakerSection(findSpeakers(activity)),
+    groupSection(findGroup(activity.organizer)),
+    overlapsSection(findOverlapping(activity)),
+  ].join('');
+  $('#event-info').style.setProperty('--color', activity.color || ACTIVITY_TYPES[activity.type].color);
+
+  fitImage();
+}
+
+// Notice if the activity or one of its speakers is unconfirmed (unconfirmed field in data.js)
+function noticeSection() {
+  const unconfirmed = (item: object) => 'unconfirmed' in item && Boolean(item.unconfirmed);
+  if (!unconfirmed(activity) && !findSpeakers(activity).some(unconfirmed)) return '';
+
+  return `<p class="event__notice">${ICONS.clock}Información por confirmar: puede cambiar antes del evento.</p>`;
+}
+
+// Day, time and place
+function factsSection() {
+  const timeText = (activity.start && activity.end) ? `${activity.start} – ${activity.end}` : 'Por definir';
+  const facts = [
+    { icon: ICONS.calendar, name: 'Día', value: dayText(findDay(activity.day)) },
+    { icon: ICONS.clock, name: 'Hora', value: timeText },
+    { icon: ICONS.pin, name: 'Lugar', value: activity.place || 'Facultad de Minas (salón por confirmar)' },
+  ];
+
+  return `
+    <dl class="event__facts">
+      ${facts.map((fact) => `
+        <div>
+          <dt>${fact.icon}${fact.name}</dt>
+          <dd>${fact.value}</dd>
+        </div>
+      `).join('')}
+    </dl>
+  `;
+}
+
+// The activity's text (each \n is a paragraph), with its stats below if it has any.
+// If there is an image, it goes next to the text (on phones, above it).
+// After a pre-registration it gets its own title, so the two read as separate sections.
+function descriptionSection() {
+  const description = activity.description || activity.summary || 'Pronto publicaremos más detalles de esta actividad.';
+  const title = activity.preRegister ? '<h2 class="event__subtitle">Información</h2>' : '';
+  const text = `
+    <div class="event__description">
+      ${description.split('\n').map((paragraph) => `<p>${paragraph}</p>`).join('')}
+    </div>
+    ${activity.stats ? statBoxes(activity.stats) : ''}
+  `;
+
+  if (!activity.image) return title + text;
+
+  return `
+    ${title}
+    <div class="event__intro">
+      <img class="event__image" src="${activity.image}" alt="Imagen de ${activity.title}">
+      <div>${text}</div>
+    </div>
+  `;
+}
+
+// Boxes with a big value and its label below, for example "16 / jugadores" (stats field)
+function statBoxes(stats) {
+  return `
+    <ul class="event__stats">
+      ${stats.map((stat) => `<li><strong>${stat.value}</strong>${stat.label}</li>`).join('')}
+    </ul>
+  `;
+}
+
+// Team or individual registration call to action. The button goes before its note and right after
+// the facts: nothing of variable height above it, so it sits in the same place on every competition.
+function registrationSection() {
+  if ((activity.team || activity.individual) && !REGISTRATION_OPEN.includes(activity.id)) {
+    return `
+      <div class="event__signup">
+        <a class="hero__button auth-form__submit" href="inscripciones.html?id=${activity.id}">Ver inscritos ${ICONS.arrow}</a>
+        <p class="event__bio">Las inscripciones para esta competencia ya cerraron.</p>
+      </div>
+    `;
+  }
+  if (activity.team) {
+    return `
+      <div class="event__signup">
+        <a class="hero__button auth-form__submit" href="inscripciones.html?id=${activity.id}">Inscribir equipo ${ICONS.arrow}</a>
+        <p class="event__bio">
+          Equipos de hasta ${activity.team.size} personas${activity.team.maxTeams ? `, con cupo para ${activity.team.maxTeams} equipos` : ''}.
+          Quien crea el equipo queda de capitán e inscribe a los demás con el correo de su carnet.
+        </p>
+      </div>
+    `;
+  }
+  if (activity.individual) {
+    return `
+      <div class="event__signup">
+        <a class="hero__button auth-form__submit" href="inscripciones.html?id=${activity.id}">Inscribirme ${ICONS.arrow}</a>
+        <p class="event__bio">
+          Inscripción individual con cupo para ${activity.individual.max} participantes.
+          Solo necesitas tener tu carnet e ingresar tu número de celular.
+        </p>
+      </div>
+    `;
+  }
+  return '';
+}
+
+// Pre-registration (inscripción) for conferences with limited spots.
+// The interactive part (session, capacity, sign-up, supervisor tools) lives in src/scripts/pre-register.ts,
+// which fills #pre-register once the page knows who is logged in. Here we only place the container
+// and the fixed marketing copy that explains the reward.
+function preRegisterSection() {
+  if (!activity.preRegister) return '';
+
+  const { max, modalidad } = activity.preRegister;
+
+  return `
+    <section class="pre-register" id="pre-register"
+      data-actividad="${activity.id}" data-modalidad="${modalidad}" data-max="${max}">
+      <h2 class="event__subtitle">Inscripción</h2>
+
+      <div class="pre-register__card">
+        <img class="pre-register__plush" src="img/nacho-plush.webp" width="440" height="435" alt="">
+        <h3 class="pre-register__title">Asegura tu cupo</h3>
+        <p class="pre-register__prize">Quienes más puntos acumulen en el Sustómetro se llevan a <strong>Nacho</strong>.</p>
+        <ul class="prereg-points">
+          <li class="prereg-point prereg-point--top"><strong>+10</strong> Te inscribes y asistes</li>
+          <li class="prereg-point"><strong>+8</strong> Asistes sin inscribirte</li>
+          <li class="prereg-point prereg-point--zero"><strong>+0</strong> Te inscribes y no asistes</li>
+        </ul>
+
+        <div class="pre-register__body" id="pre-register-body">
+          <p class="registration__text">Cargando inscripción…</p>
+        </div>
+        <p class="auth-message" id="pre-register-message" hidden></p>
+      </div>
+
+      <!-- Supervisor tools: list of pre-registered people and attendance -->
+      <div class="pre-register__admin" id="pre-register-admin" hidden></div>
+    </section>
+  `;
+}
+
+// YouTube video (video field). youtube-nocookie leaves no cookies until someone presses play.
+// enablejsapi lets the page know when it plays and when it ends (src/scripts/secrets.ts).
+// Empty box that src/scripts/race-map.ts fills with the 3D route
+function routeMapSection() {
+  if (!activity.routeMap) return '';
+
+  return `
+    <h2 class="event__subtitle">El recorrido</h2>
+    <div class="race-map" id="race-map" role="img"
+      aria-label="Mapa 3D del recorrido por el campus Robledo: sale y llega al Hall del M10, sube entre las canchas, cruza el M3 por su portal, pasa frente al M5, sigue hacia el oeste por el M4 hasta el parqueadero del M7, cruza el puente del riachuelo, baja por el lado oeste del bosque y del M9 y vuelve por el borde de la Carrera 80."></div>
+    <p class="race-map__hint">
+      <span class="race-map__hint--mouse">Arrastra el mapa para girarlo y usa la rueda del mouse para acercarte.</span>
+      <span class="race-map__hint--touch">Gira el mapa con un dedo y pellizca para acercarte.</span>
+    </p>
+  `;
+}
+
+function videoSection(video) {
+  if (!video) return '';
+
+  return `
+    <h2 class="event__subtitle">Para entrar en calor</h2>
+    <iframe class="event__video" src="https://www.youtube-nocookie.com/embed/${video.id}?enablejsapi=1"
+      title="${video.title}" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"></iframe>
+  `;
+}
+
+function rulesSection(rules) {
+  if (!rules) return '';
+
+  return `
+    <h2 class="event__subtitle">Formato y reglas</h2>
+    <dl class="event__rules">
+      ${rules.map((rule) => `
+        <div>
+          <dt>${rule.title}</dt>
+          <dd>${rule.text}</dd>
+        </div>
+      `).join('')}
+    </dl>
+  `;
+}
+
+function speakerSection(speakers) {
+  if (speakers.length === 0) return '';
+
+  return `
+    <h2 class="event__subtitle">${speakers.length > 1 ? 'Ponentes' : 'Ponente'}</h2>
+    ${speakers.map(speakerProfile).join('')}
+  `;
+}
+
+function speakerProfile(speaker) {
+  const bio = speaker.bio
+    ? speaker.bio.split('\n').map((paragraph) => `<p class="event__bio">${paragraph}</p>`).join('')
+    : '';
+
+  return `
+    <div class="event__profile">
+      <span class="event__avatar ${speaker.photo ? 'event__avatar--photo' : ''}">${speakerPortrait(speaker)}</span>
+      <div>
+        <strong>${speaker.name || 'Por anunciar'}</strong>
+        <span>${speaker.role}</span>
+        ${bio}
+        ${moreLink(speaker.link, speaker.name)}
+      </div>
+    </div>
+  `;
+}
+
+function groupSection(group) {
+  if (!group) return '';
+
+  return `
+    <h2 class="event__subtitle">Organiza</h2>
+    <div class="event__profile">
+      ${group.logo ? `<span class="event__avatar"><img src="${group.logo}" alt="Logo de ${group.name}"></span>` : ''}
+      <div>
+        <strong>${group.name}</strong>
+        <span>${group.type}</span>
+        ${group.description ? `<p class="event__bio">${group.description}</p>` : ''}
+        ${moreLink(group.link, group.name)}
+      </div>
+    </div>
+  `;
+}
+
+// Stands fair (stands field): every company and group with a stand text gets its stand drawn
+// in its color, someone minding it and its logo big on the counter. Companies go first.
+// Each one has an id (stand-<id>) so the pennants on the home page can link straight to it.
+function standsSection() {
+  if (!activity.stands) return '';
+
+  const list = (items) => `<ul class="stands">${items.filter((item) => item.stand).map(standCard).join('')}</ul>`;
+
+  return `
+    <h2 class="event__subtitle">Empresas aliadas</h2>
+    ${list(COMPANIES)}
+    <h2 class="event__subtitle">Grupos estudiantiles</h2>
+    ${list(GROUPS)}
+  `;
+}
+
+// i (its place in the list) offsets its animations so the stands do not move together
+function standCard(group, i) {
+  const booth = { ...PIXEL_ART.stand, palette: { ...PIXEL_ART.stand.palette, c: group.color } };
+
+  return `
+    <li class="stand" id="stand-${group.id}" style="--color: ${group.color}; --i: ${i}">
+      <div class="stand__booth">
+        ${drawPixelArt(booth)}
+        ${group.logo ? `<img class="stand__logo" src="${group.logo}" alt="Logo de ${group.name}">` : ''}
+        ${standMascot(group)}
+      </div>
+      <div class="stand__text">
+        <strong>${group.name}</strong>
+        <span>${group.type}</span>
+        <p class="event__bio">${group.stand}</p>
+        ${moreLink(group.link, group.name)}
+      </div>
+    </li>
+  `;
+}
+
+// Whoever minds the stand peeks over the counter: it hops, blinks, looks around and waves.
+// A one-eyed monster in the stand's color. x and y are in stand drawing pixels.
+function standMascot(group) {
+  const palette = { ...MASCOT_PALETTE, c: group.color, C: group.color };
+  const body = (name) => drawPixelArt({ rows: PIXEL_ART[name].rows, palette });
+  const piece = (svg, x, y, kind) => `<span class="stand__piece stand__${kind}" style="--x: ${x}; --y: ${y}">${svg}</span>`;
+
+  return `
+    <span class="stand__piece stand__window" style="--x: 5; --y: 5">
+      <span class="stand__piece stand__mascot" style="--x: 3; --y: 1">
+        ${body('mascot')}
+        ${piece(drawPixelArt(PIXEL_ART.mascotIris), 6, 5, 'iris')}
+        ${piece(body('mascotBlink'), 0, 0, 'blink')}
+      </span>
+    </span>
+    ${piece(body('mascotPaw'), 7, 15, 'paw')}
+    ${piece(body('mascotPaw'), 24, 10, 'wave')}
+  `;
+}
+
+// "Saber más →" below a speaker or group; opens their LinkedIn, social network or page in another tab
+function moreLink(link, name) {
+  if (!link) return '';
+
+  return `
+    <a class="event__more" href="${link}" target="_blank" rel="noopener" aria-label="Saber más sobre ${name}">
+      Saber más ${ICONS.arrow}
+    </a>
+  `;
+}
+
+// The other activities at the same time, with a link to each one
+function overlapsSection(overlapping) {
+  if (overlapping.length === 0) return '';
+
+  return `
+    <h2 class="event__subtitle">A la misma hora</h2>
+    <ul class="event__overlaps">
+      ${overlapping.map((other) => `
+        <li>
+          <a href="${activityLink(other.id)}" style="--color: ${ACTIVITY_TYPES[other.type].color}">
+            <strong>${other.title}</strong>
+            <span>${other.start} – ${other.end}</span>
+            ${ICONS.arrow}
+          </a>
+        </li>
+      `).join('')}
+    </ul>
+  `;
+}
+
+// A wide image (like Just Dance's) takes half the card; a square or tall one (a flyer) gets the bigger flyer column.
+// Its size is only known once it finishes loading.
+function fitImage() {
+  const image = $<HTMLImageElement>('.event__image');
+  if (!image) return;
+
+  const measure = () => {
+    const { classList } = image.parentElement;
+    classList.toggle('event__intro--wide', image.naturalWidth > image.naturalHeight * 1.2);
+    classList.toggle('event__intro--tall', image.naturalHeight >= image.naturalWidth * 0.95);
+  };
+
+  if (image.complete) measure();
+  else image.addEventListener('load', measure);
+}
+
+
+/* ---------- Activity that does not exist ---------- */
+
+// If the id in the address matches no activity
+function renderNotFound() {
+  $('#event-hero').innerHTML = `<h1 class="event-hero__title">Actividad no encontrada</h1>`;
+  $('#event-info').innerHTML = `
+    <p class="schedule__empty">${ICONS.eye} Ningún monstruo por aquí. Vuelve al horario y elige otra actividad.</p>
+  `;
+}
+
+
+/* ---------- Startup ---------- */
+
+if (activity) {
+  renderHero();
+  renderInfo();
+} else {
+  renderNotFound();
+}
+$('#footer-crest').innerHTML = drawCrest();
