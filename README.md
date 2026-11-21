@@ -73,7 +73,7 @@
     <td width="45%" valign="middle">
       <h3>Juego de la semana</h3>
       <ul>
-        <li>Una consola retro con un cartucho por semana: <b>Snake</b>, <b>Doom</b> y <b>Defrag</b>.</li>
+        <li>Una consola retro con un cartucho por semana: <b>Snake</b>, <b>Doom</b> y <b>Tetris</b>.</li>
         <li>Doom corre en el navegador: el motor original en C, compilado a <b>WebAssembly</b>.</li>
         <li><b>Récords en tiempo real</b> y partidas diarias limitadas, validadas en Supabase.</li>
         <li>Los 50 mejores de cada semana ganaron puntos en el Sustómetro.</li>
