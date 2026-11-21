@@ -28,8 +28,8 @@
 
 </div>
 
-- Conferencias con profesionales de la industria tech: **Eduardo Ospina Serrano**, **Mariano Andrés Sosa Soto**, **Carlos Martinez** y **Daniel Arango Sohm**.
-- Empresas invitadas: **Zentrack**, **Lovelytics LATAM**, **Tata Consultancy Services**, **Globant** y **Unergy**.
+- Conferencias con profesionales de la industria tech: **Eduardo Ospina Serrano**, **Mariano Andrés Sosa Soto**, **Carlos Martínez** y **Daniel Arango Sohm**.
+- Empresas aliadas: **Lovelytics**, **Solē**, **TCS**, **Globant**, **Unergy** y **M.IA**.
 - Talleres de IA, una maratón de programación y torneos que unieron a los diferentes pregrados.
 - Una web propia, de cero, con cuentas, ranking en vivo, juegos y torneos.
 
