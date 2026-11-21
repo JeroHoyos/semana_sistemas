@@ -8,10 +8,6 @@
 <br />
 18, 19 y 20 de noviembre de 2026
 
-Una web hecha desde cero para darle a cada estudiante de Ingeniería de Sistemas<br />una experiencia a la altura de lo que sueña: antes, durante y después del evento.
-
-[**Ver la web**](https://semanasistemas.vercel.app) &nbsp;|&nbsp; [Instagram](https://www.instagram.com/sistemasunalmed/)
-
 [![Astro][astro-badge]][astro-url]
 [![TypeScript][typescript-badge]][typescript-url]
 [![Tailwind CSS][tailwind-badge]][tailwind-url]
