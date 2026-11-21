@@ -3,13 +3,14 @@
 Thumbs.db
 desktop.ini
 
-# Editor settings
-.vscode/
+# Editor settings (the shared .vscode/ recommendations are committed)
 .idea/
 *.swp
 
-# Dependencies and logs (in case tools are added later)
+# Dependencies, build output and logs
 node_modules/
+dist/
+.astro/
 *.log
 
 # Personal Claude Code settings (the shared skills in .claude/skills are committed)
@@ -20,3 +21,6 @@ node_modules/
 
 # Week 1 prize SQL (winners and points): run it by hand in Supabase, not public
 supabase/week-1-prizes.sql
+
+# Reference projects downloaded as zip
+*.zip

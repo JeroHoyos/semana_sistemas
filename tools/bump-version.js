@@ -1,14 +1,13 @@
 #!/usr/bin/env node
 /* =============================================
    AUTOMATIC VERSION BUMP
-   Sets the PROJECT_VERSION constant in js/data.js to the current timestamp,
+   Sets the PROJECT_VERSION constant in src/data/content.ts to the current timestamp,
    which closes old sessions in users' browsers.
    ============================================= */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
 
-const dataFile = path.join(__dirname, '..', 'js', 'data.js');
+const dataFile = new URL('../src/data/content.ts', import.meta.url);
 const content = fs.readFileSync(dataFile, 'utf8');
 
 const now = new Date();

@@ -1,5 +1,5 @@
 -- =============================================
--- SECRET CODES (js/secrets.js)
+-- SECRET CODES (src/scripts/secrets.ts)
 -- Run once in Supabase → SQL Editor. It is safe to run again.
 --
 -- Hidden challenges on the site. Only the first few people who complete each one win (the page gives
@@ -15,11 +15,11 @@
 -- segundos: the least time between starting the challenge and claiming it. The video lasts 4:13 (253 s);
 -- 240 leaves room for the page's own checks. 0 = no minimum time.
 -- How many people can win each secret: v_cupos in reclamar_secreto (5 for 'konami', 3 for 'video-futbol'),
--- the same as limit in the secret's title (TITLES, js/data.js). Change both together.
+-- the same as limit in the secret's title (TITLES, src/data/content.ts). Change both together.
 -- To see who won:  select * from public.secretos_ganadores order by secreto, encontrado_en;
 -- To start a secret over (after testing it yourself):
 --   delete from public.secretos_ganadores where secreto = 'konami';
--- The winners also get the title with the secret's id on their ID card (js/secrets.js).
+-- The winners also get the title with the secret's id on their ID card (src/scripts/secrets.ts).
 --
 -- Table and function names stay in Spanish, like the rest of the database.
 -- =============================================
@@ -97,7 +97,7 @@ as $$
 declare
   v_usuario uuid := auth.uid();
   v_secreto secretos%rowtype;
-  -- How many people can win it: the same as limit in its title (TITLES, js/data.js)
+  -- How many people can win it: the same as limit in its title (TITLES, src/data/content.ts)
   v_cupos   integer := case p_secreto when 'konami' then 5 when 'video-futbol' then 3 else 1 end;
 begin
   if v_usuario is null then
@@ -135,7 +135,7 @@ grant execute on function public.empezar_secreto(text) to authenticated;
 grant execute on function public.reclamar_secreto(text) to authenticated;
 
 
--- ---------- The tank sticker easter egg (js/scare-meter.js) ----------
+-- ---------- The tank sticker easter egg (src/scripts/scare-meter.ts) ----------
 -- Its function, reclamar_easter_egg, lives only in Supabase (it keeps the order and the code).
 -- Like the secrets above, only people with a session can claim it.
 revoke all on function public.reclamar_easter_egg(text) from public, anon;

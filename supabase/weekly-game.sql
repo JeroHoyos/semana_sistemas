@@ -52,9 +52,9 @@ revoke insert, update, delete on public.puntajes_juego from anon, authenticated;
 -- ---------- Locked weeks ----------
 -- The game of a week that is not open yet can only be saved by supervisors (to test it).
 -- To open a week: remove its game from this list, run the script again and remove locked
--- in WEEKS (js/weekly-game.js). To delete the supervisors' test results:
+-- in WEEKS (src/games/weekly-game.ts). To delete the supervisors' test results:
 --   delete from public.puntajes_juego where juego = 'doom';   -- or 'defrag'
--- Doom opens by itself at 7 a.m. on 2026-11-09: the same time is in WEEKS (js/weekly-game.js).
+-- Doom opens by itself at 7 a.m. on 2026-11-09: the same time is in WEEKS (src/games/weekly-game.ts).
 create or replace function public.juego_bloqueado(p_juego text)
 returns boolean
 language sql
@@ -66,7 +66,7 @@ $$;
 -- ---------- Finished weeks ----------
 -- After its closing time a game saves no more results, not even supervisors', so the final table
 -- (and its prizes, supabase/week-1-prizes.sql) does not move. The same time is endsAt in WEEKS
--- (js/weekly-game.js). The time is checked here, so this script can run before it.
+-- (src/games/weekly-game.ts). The time is checked here, so this script can run before it.
 create or replace function public.juego_terminado(p_juego text)
 returns boolean
 language sql
@@ -79,7 +79,7 @@ $$;
 
 -- Supervisor (admin): marked by hand in app_metadata, which only the database can change.
 -- The 'supervisor' title lives in user_metadata, which anyone can edit from the browser console:
--- it only shows the buttons on the page (isCurrentSupervisor in js/scare-meter.js).
+-- it only shows the buttons on the page (isCurrentSupervisor in src/scripts/scare-meter.ts).
 -- modificar_puntos (Scare Meter) asks this function too. To make someone a supervisor:
 --   update auth.users set raw_app_meta_data = raw_app_meta_data || '{"supervisor": true}'
 --   where lower(email) = 'correo@unal.edu.co';
@@ -132,7 +132,7 @@ begin
       v_maximo := 3000;
       v_multiplo := 10;
       v_limite_dia := 30;
-    -- Doom E1M1: 400 enemies + 200 items + 200 secrets + 200 time (doomScore in js/doom.js)
+    -- Doom E1M1: 400 enemies + 200 items + 200 secrets + 200 time (doomScore in src/games/doom.ts)
     when 'doom' then
       v_minimo := 1;
       v_maximo := 1000;

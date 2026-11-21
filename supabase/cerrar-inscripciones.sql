@@ -1,9 +1,9 @@
--- Cierra todas las inscripciones menos la del torneo de fútbol (19 nov).
+-- Cierra todas las inscripciones: el evento terminó el 20 nov.
 -- Equipos, integrantes, inscripciones individuales, pre-inscripciones a conferencias y la lista
 -- de "buscando equipo" dejan de aceptar filas nuevas. Un supervisor (es_supervisor()) sí puede
 -- seguir agregando gente, por ejemplo asistentes de una conferencia.
 -- Va en un trigger para no reescribir las funciones que ya están en producción.
--- La misma lista vive en REGISTRATION_OPEN (js/data.js): cambia las dos juntas.
+-- La misma lista vive en REGISTRATION_OPEN (src/data/content.ts): cambia las dos juntas.
 -- Para reabrir todo: drop function public.inscripcion_cerrada() cascade;
 
 create or replace function public.inscripcion_cerrada()
@@ -13,7 +13,7 @@ security definer
 set search_path = public
 as $$
 begin
-  if new.actividad not in ('futbol') and not public.es_supervisor() then
+  if not public.es_supervisor() then
     raise exception 'Las inscripciones para esta actividad ya cerraron';
   end if;
   return new;

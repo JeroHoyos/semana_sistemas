@@ -1,0 +1,28 @@
+<!-- Night suspension mode (1:00 AM - 7:00 AM COT): sends the page to descanso.html. It runs before the page paints. -->
+<script is:inline>
+  /* eslint-disable no-useless-assignment -- plain ES5 that runs inline, before the page paints */
+  (function() {
+    const p = new URLSearchParams(window.location.search);
+    if (p.get("modo") === "dia" || p.get("test") === "day") return;
+    let isNight = false;
+    if (p.get("modo") === "noche" || p.get("test") === "night") {
+      isNight = true;
+    } else {
+      try {
+        const f = new Intl.DateTimeFormat("en-US", { timeZone: "America/Bogota", hourCycle: "h23", hour: "numeric", minute: "numeric" }).formatToParts(new Date());
+        const h = Number(f.find(function(x) { return x.type === "hour"; }).value || 0);
+        const m = Number(f.find(function(x) { return x.type === "minute"; }).value || 0);
+        const mins = h * 60 + m;
+        isNight = mins >= 60 && mins < 420;
+      } catch (e) {
+        const now = new Date();
+        const utcMins = now.getUTCHours() * 60 + now.getUTCMinutes();
+        const bogotaMins = (utcMins - 300 + 1440) % 1440;
+        isNight = bogotaMins >= 60 && bogotaMins < 420;
+      }
+    }
+    if (isNight) {
+      window.location.replace("descanso.html" + (window.location.search || ""));
+    }
+  })();
+</script>

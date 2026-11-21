@@ -1,0 +1,857 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import '@/styles/global.css';
+---
+
+<Layout
+	title="Sustómetro | Semana de Sistemas"
+	description="Tabla de clasificación oficial en tiempo real de la Semana de Sistemas en la Facultad de Minas."
+	fonts="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Cinzel:wght@600;700&family=Graduate&family=Press+Start+2P&family=Share+Tech+Mono&display=swap"
+	nightRedirect
+	bodyClass="scare-meter-page"
+>
+  <!-- HEADER -->
+  <header class="scare-meter-hero photo-bg photo-bg--auditorium">
+    <div class="page-width scare-meter-nav">
+      <a class="back-link" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        Volver al inicio
+      </a>
+
+      <!-- Session bar, top right -->
+      <div class="session-bar-nav">
+        <button class="hero__button hero__button--session" id="btn-open-auth" type="button">
+          <span id="session-text">Iniciar sesión</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Same style as an activity header: pixel art drawings and title.
+         scare-meter.js adds the drawings. -->
+    <div class="page-width scare-meter-hero__content">
+      <div class="event-hero__decorations" id="scare-meter-decorations"></div>
+      <h1 class="event-hero__title">Sustómetro</h1>
+      <p class="scare-meter-hero__intro">
+        Aquí no hay puestos, hay sustos. Quien va de líder deja el tanque lleno hasta arriba y, a medida que bajas en la tabla, el nivel desciende. Toca a una persona para ver sus puntos en el tanque, o el botón del carnet para ver su carnet.
+      </p>
+      <a class="game-link" href="#juego-semana" data-needs-login hidden>
+        <span class="game-link__arrow" aria-hidden="true">▶</span>
+        Conoce el juego de la semana
+      </a>
+    </div>
+  </header>
+
+  <!-- Without a session the page only shows this gate: src/scripts/auth.ts swaps it for what has data-needs-login -->
+  <section class="login-gate" id="login-gate" hidden>
+    <h2 class="login-gate__title">Solo para asustadores con carnet</h2>
+    <p class="login-gate__text">Inicia sesión o crea tu carnet con tu correo UNAL para entrar al Sustómetro.</p>
+    <div class="login-gate__actions">
+      <button class="hero__button auth-form__submit" id="gate-login" type="button">Iniciar sesión</button>
+      <button class="hero__button auth-form__submit" id="gate-signup" type="button">Crear carnet</button>
+    </div>
+  </section>
+
+  <!-- MAIN BODY, 2 COLUMNS -->
+  <main class="scare-meter-main" data-needs-login hidden>
+    <div class="page-width scare-meter-layout">
+
+      <!-- LEFT COLUMN: THE SCARE TANK -->
+      <section class="scare-meter-col-tank" aria-label="Visualizador del Tanque de Sustos">
+        <div class="tank-sticky-wrapper">
+          <div class="tank-station">
+
+            <!-- THE SCARE TANK -->
+            <div class="scare-tank" id="scare-tank">
+              <!-- TOP HANDLE AND VALVE -->
+              <div class="tank__handle-block">
+                <div class="tank__valve">
+                  <!-- Liquid spraying out when the tank bursts (over 100 points) -->
+                  <span class="tank__spray" aria-hidden="true">
+                    <i style="--x: -26px; --d: 0s"></i>
+                    <i style="--x: -12px; --d: -.35s"></i>
+                    <i style="--x: 4px; --d: -.7s"></i>
+                    <i style="--x: 18px; --d: -.2s"></i>
+                    <i style="--x: 30px; --d: -.55s"></i>
+                  </span>
+                  <span class="valve__nozzle"></span>
+                  <span class="valve__coupling"></span>
+                </div>
+                <div class="tank__handle">
+                  <div class="tank__handle-hole"></div>
+                </div>
+              </div>
+
+              <!-- YELLOW DOME -->
+              <div class="tank__dome"></div>
+
+              <!-- UPPER BLACK COLLAR -->
+              <div class="tank__collar tank__collar--upper">
+                <span class="collar__slot"></span>
+                <span class="collar__slot"></span>
+                <span class="collar__slot"></span>
+              </div>
+
+              <!-- INDUSTRIAL YELLOW BODY -->
+              <div class="tank__body">
+                <!-- CIRCUIT TRACES -->
+                <svg class="tank__circuits" viewBox="0 0 260 260" preserveAspectRatio="none" aria-hidden="true">
+                  <path d="M 25 25 H 70 L 90 45 V 90 L 70 110 H 15" stroke="rgba(0,0,0,0.22)" stroke-width="2.5" fill="none"/>
+                  <circle cx="25" cy="25" r="3.5" fill="rgba(0,0,0,0.35)"/>
+                  <circle cx="15" cy="110" r="3.5" fill="rgba(0,0,0,0.35)"/>
+
+                  <path d="M 235 25 H 190 L 170 45 V 85 L 190 105 H 245" stroke="rgba(0,0,0,0.22)" stroke-width="2.5" fill="none"/>
+                  <circle cx="235" cy="25" r="3.5" fill="rgba(0,0,0,0.35)"/>
+                  <circle cx="245" cy="105" r="3.5" fill="rgba(0,0,0,0.35)"/>
+
+                  <path d="M 25 235 H 75 L 95 215 V 170 L 75 150 H 15" stroke="rgba(0,0,0,0.22)" stroke-width="2.5" fill="none"/>
+                  <circle cx="25" cy="235" r="3.5" fill="rgba(0,0,0,0.35)"/>
+                  <circle cx="15" cy="150" r="3.5" fill="rgba(0,0,0,0.35)"/>
+
+                  <path d="M 235 235 H 185 L 165 215 V 175 L 185 155 H 245" stroke="rgba(0,0,0,0.22)" stroke-width="2.5" fill="none"/>
+                  <circle cx="235" cy="235" r="3.5" fill="rgba(0,0,0,0.35)"/>
+                  <circle cx="245" cy="155" r="3.5" fill="rgba(0,0,0,0.35)"/>
+                </svg>
+
+                <!-- SYSTEMS ENGINEERING STICKERS: each one has a white die-cut border -->
+                <div class="tank__stickers" aria-hidden="true">
+                  <!-- Sticker 1: Python (two snakes, one rotated 180°) -->
+                  <div class="sticker sticker--python" data-sticker="python" title="Python">
+                    <svg viewBox="0 0 100 100" class="sticker__svg">
+                      <rect x="4" y="4" width="92" height="92" rx="24" fill="#ffffff" stroke="#dfe3e8" stroke-width="2"/>
+                      <g transform="translate(50 50) scale(.82) translate(-50 -50)">
+                        <path d="M40 10H56A10 10 0 0 1 66 20V40A8 8 0 0 1 58 48H38A10 10 0 0 0 28 58V66H20A10 10 0 0 1 10 56V42A10 10 0 0 1 20 32H30V20A10 10 0 0 1 40 10Z" fill="#3776ab"/>
+                        <circle cx="39" cy="20" r="4.5" fill="#ffffff"/>
+                        <g transform="rotate(180 50 50)">
+                          <path d="M40 10H56A10 10 0 0 1 66 20V40A8 8 0 0 1 58 48H38A10 10 0 0 0 28 58V66H20A10 10 0 0 1 10 56V42A10 10 0 0 1 20 32H30V20A10 10 0 0 1 40 10Z" fill="#ffd43b"/>
+                          <circle cx="39" cy="20" r="4.5" fill="#ffffff"/>
+                        </g>
+                      </g>
+                    </svg>
+                  </div>
+
+                  <!-- Sticker 2: Linux (Tux) -->
+                  <div class="sticker sticker--linux" data-sticker="linux" title="Linux">
+                    <svg viewBox="0 0 100 100" class="sticker__svg">
+                      <circle cx="50" cy="50" r="46" fill="#ffffff" stroke="#dfe3e8" stroke-width="2"/>
+                      <ellipse cx="50" cy="58" rx="23" ry="27" fill="#1f2328"/>
+                      <circle cx="50" cy="35" r="16" fill="#1f2328"/>
+                      <ellipse cx="50" cy="64" rx="14" ry="18" fill="#ffffff"/>
+                      <ellipse cx="44" cy="31" rx="4.5" ry="5.5" fill="#ffffff"/>
+                      <ellipse cx="56" cy="31" rx="4.5" ry="5.5" fill="#ffffff"/>
+                      <circle cx="45" cy="32" r="2.3" fill="#1f2328"/>
+                      <circle cx="55" cy="32" r="2.3" fill="#1f2328"/>
+                      <path d="M42 40Q50 35 58 40Q50 47 42 40Z" fill="#f5a524"/>
+                      <ellipse cx="38" cy="84" rx="11" ry="5.5" fill="#f5a524"/>
+                      <ellipse cx="62" cy="84" rx="11" ry="5.5" fill="#f5a524"/>
+                    </svg>
+                  </div>
+
+                  <!-- Sticker 3: Git (diamond with a branch) -->
+                  <div class="sticker sticker--git" data-sticker="git" title="Git">
+                    <svg viewBox="0 0 100 100" class="sticker__svg">
+                      <rect x="17" y="17" width="66" height="66" rx="14" transform="rotate(45 50 50)" fill="#ffffff" stroke="#dfe3e8" stroke-width="2"/>
+                      <rect x="23" y="23" width="54" height="54" rx="10" transform="rotate(45 50 50)" fill="#f05133"/>
+                      <g stroke="#ffffff" stroke-width="6" stroke-linecap="round" fill="none">
+                        <path d="M44 32V68"/>
+                        <path d="M62 44Q62 58 44 60"/>
+                      </g>
+                      <circle cx="44" cy="32" r="6" fill="#ffffff"/>
+                      <circle cx="44" cy="68" r="6" fill="#ffffff"/>
+                      <circle cx="62" cy="44" r="6" fill="#ffffff"/>
+                    </svg>
+                  </div>
+
+                  <!-- Sticker 4: Terminal window -->
+                  <div class="sticker sticker--terminal" data-sticker="terminal" title="Terminal">
+                    <svg viewBox="0 0 110 84" class="sticker__svg">
+                      <rect x="4" y="4" width="102" height="76" rx="14" fill="#ffffff" stroke="#dfe3e8" stroke-width="2"/>
+                      <rect x="10" y="10" width="90" height="64" rx="9" fill="#1e2430"/>
+                      <circle cx="21" cy="20" r="3.5" fill="#ff5f57"/>
+                      <circle cx="31" cy="20" r="3.5" fill="#febc2e"/>
+                      <circle cx="41" cy="20" r="3.5" fill="#28c840"/>
+                      <path d="M24 38L34 46L24 54" stroke="#4ade80" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                      <rect x="40" y="51" width="18" height="5" rx="1" fill="#4ade80">
+                        <animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/>
+                      </rect>
+                    </svg>
+                  </div>
+
+                  <!-- Sticker 5: C++ -->
+                  <div class="sticker sticker--cpp" data-sticker="cpp" title="C++">
+                    <svg viewBox="0 0 100 100" class="sticker__svg">
+                      <polygon points="50,4 92,28 92,72 50,96 8,72 8,28" fill="#ffffff" stroke="#dfe3e8" stroke-width="2" stroke-linejoin="round"/>
+                      <polygon points="50,12 85,32 85,68 50,88 15,68 15,32" fill="#00599c"/>
+                      <polygon points="50,50 85,68 50,88" fill="#004482"/>
+                      <text x="50" y="61" font-family="'Barlow Condensed', sans-serif" font-weight="700" font-size="32" fill="#ffffff" text-anchor="middle">C++</text>
+                    </svg>
+                  </div>
+                </div>
+
+                <!-- CENTRAL METAL GAUGE WITH SCALE AND LIQUID -->
+                <div class="tank__gauge">
+                  <!-- Screws in the frame corners -->
+                  <span class="gauge__screw gauge__screw--tl"></span>
+                  <span class="gauge__screw gauge__screw--tr"></span>
+                  <span class="gauge__screw gauge__screw--bl"></span>
+                  <span class="gauge__screw gauge__screw--br"></span>
+
+                  <!-- Side scale -->
+                  <div class="gauge__scale" aria-hidden="true">
+                    <span class="scale__sign scale__sign--plus">+</span>
+                    <span class="scale__mark" style="--p: 100%"></span>
+                    <span class="scale__mark" style="--p: 75%"></span>
+                    <span class="scale__mark" style="--p: 50%"></span>
+                    <span class="scale__mark" style="--p: 25%"></span>
+                    <span class="scale__mark" style="--p: 0%"></span>
+                    <span class="scale__sign scale__sign--minus">-</span>
+                  </div>
+
+                  <!-- Glass tube and red/amber scare liquid -->
+                  <div class="gauge__tube">
+                    <div class="gauge__liquid" id="tank-liquid" style="height: 0%;">
+                      <div class="gauge__wave"></div>
+                      <div class="gauge__light"></div>
+                      <span class="gauge__bubble"></span>
+                      <span class="gauge__bubble"></span>
+                      <span class="gauge__bubble"></span>
+                    </div>
+
+                    <!-- Measuring chambers -->
+                    <div class="gauge__chambers" aria-hidden="true">
+                      <span class="chamber__segment"></span>
+                      <span class="chamber__segment"></span>
+                      <span class="chamber__segment"></span>
+                      <span class="chamber__segment"></span>
+                      <span class="chamber__segment"></span>
+                    </div>
+
+                    <div class="gauge__glass-glare" aria-hidden="true"></div>
+
+                    <!-- Cracked glass when the tank bursts -->
+                    <svg class="gauge__cracks" viewBox="0 0 36 180" aria-hidden="true">
+                      <path d="M14 46L2 34M14 46L24 30L36 26M14 46L30 58M14 46L4 62L0 70M24 30L22 18"/>
+                      <path d="M22 124L36 112M22 124L8 116L0 120M22 124L14 140L18 152M22 124L36 136"/>
+                    </svg>
+                  </div>
+
+                  <!-- Liquid leaking from the cracks -->
+                  <span class="gauge__leak" style="left: 68px; top: 66px" aria-hidden="true"></span>
+                  <span class="gauge__leak" style="left: 23px; top: 128px; --d: -.9s" aria-hidden="true"></span>
+                </div>
+
+                <!-- SCREEN: name and points of the selected person -->
+                <div class="tank__hud">
+                  <span class="hud__name" id="hud-name">Cargando…</span>
+                  <span class="hud__points" id="hud-points">0 <small>pts</small></span>
+                  <span class="hud__burst">¡Reventó el sustómetro!</span>
+                  <button type="button" class="hud__admin-btn" id="btn-admin-edit-points" hidden title="Modificar puntos (Supervisor)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    <span>Editar puntos</span>
+                  </button>
+                  <button type="button" class="hud__admin-btn hud__admin-btn--audit" id="btn-admin-audit-log" hidden title="Historial de cambios de puntos (Supervisores)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span>Historial</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- LOWER BLACK COLLAR -->
+              <div class="tank__collar tank__collar--lower">
+                <span class="collar__slot"></span>
+                <span class="collar__slot"></span>
+                <span class="collar__slot"></span>
+              </div>
+
+              <!-- BEVELED YELLOW BASE -->
+              <div class="tank__base">
+                <div class="tank__base-foot"></div>
+              </div>
+            </div>
+
+            <!-- ACCESSIBLE TEXT READOUT -->
+            <p class="tank-reading" id="scare-meter-reading" aria-live="polite">
+              Consultando la red de asustadores de la facultad…
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: LIST OF SCARERS -->
+      <section class="scare-meter-col-ranking" aria-label="Lista de Asustadores">
+        <div class="ranking-card">
+          <div class="ranking-card__header">
+            <h2 class="ranking-card__title">Asustadores Registrados</h2>
+            <span class="ranking-card__badge" id="ranking-count">Cargando…</span>
+          </div>
+
+          <div class="ranking-search">
+            <span class="ranking-search__icon" aria-hidden="true">🔍</span>
+            <input type="search" id="ranking-search-input" class="ranking-search__input"
+              placeholder="Buscar asustador por nombre o @usuario…" autocomplete="off" spellcheck="false"
+              aria-label="Buscar asustador en la tabla">
+            <button type="button" class="ranking-search__clear" id="btn-clear-search" aria-label="Limpiar búsqueda" hidden>✕</button>
+          </div>
+
+          <div class="my-rank-banner" id="my-rank-banner" hidden></div>
+
+          <ol class="ranking-list" id="scare-meter-list">
+            <li class="ranking-empty">
+              <span class="ranking-spinner"></span>
+              <p>Conectando con Supabase…</p>
+            </li>
+          </ol>
+          <div class="ranking-more" id="ranking-more-box" hidden>
+            <button type="button" class="hero__button hero__button--outline ranking-more__btn" id="btn-load-more">
+              Ver más
+            </button>
+          </div>
+        </div>
+
+        <!-- TABLA DE LOS TRAMPOSOS (SHADOWBAN) -->
+        <details class="ranking-card ranking-card--tramposos ranking-card--clowns" id="clowns-card" hidden>
+          <summary class="ranking-card__header ranking-card__header--tramposos ranking-card__header--clowns">
+            <h2 class="ranking-card__title">Tabla de Tramposos</h2>
+            <span class="ranking-card__badge ranking-card__badge--tramposos ranking-card__badge--clowns">Shadowban</span>
+          </summary>
+          <p class="tramposos-desc clowns-desc">Cuentas sancionadas permanentemente por intento de inyección de código y manipulación indebida de datos. Sus puntos están congelados en 0.</p>
+          <div class="clowns-warning tramposos-warning">
+            <div class="clowns-warning__text">
+              <strong>ADVERTENCIA LEGAL Y DE CIBERSEGURIDAD:</strong> Todo intento de vulneración, manipulación no autorizada, acceso abusivo o alteración informática de este sistema es auditado y registrado en tiempo real, y podria sancionarse penalmente conforme a la <strong>Ley 1273 de 2009 (Delitos Informáticos)</strong>, con penas de prisión de 48 a 96 meses y multas de hasta 1.000 SMMLV, además del reporte ante las autoridades disciplinarias de la Universidad Nacional de Colombia. Bajo el Reglamento Estudiantil (Acuerdo 044 de 2009 del Consejo Superior Universitario), la utilización indebida de los bienes de la Universidad (incluyendo las plataformas digitales y correos @unal.edu.co) constituye una falta disciplinaria. La conducta se califica como leve, grave o gravísima
+            </div>
+          </div>
+          <ul class="ranking-list ranking-list--tramposos ranking-list--clowns" id="clowns-list"></ul>
+        </details>
+      </section>
+
+    </div>
+
+    <!-- WEEKLY GAME: retro console and its leaderboard.
+         src/games/weekly-game.ts runs the console and each game has its own file (src/games/snake.ts, src/games/doom.ts, src/games/defrag.ts).
+         The overlay texts come from the current game's cartridge. -->
+    <section class="page-width weekly-game" id="juego-semana" aria-labelledby="weekly-game-title">
+      <div class="console" id="console" data-state="ready">
+
+        <!-- Top sign with arcade lights and the buttons to change week
+             (added by weekly-game.js; only supervisors can open locked weeks) -->
+        <div class="console__marquee">
+          <h2 class="console__title" id="weekly-game-title">Juego de la semana</h2>
+          <div class="console__weeks" id="console-weeks" role="group" aria-label="Semana"></div>
+          <p class="console__week-notice" id="week-notice" role="status" aria-live="polite" hidden></p>
+        </div>
+
+        <!-- Black frame around the screen -->
+        <div class="console__bezel">
+          <div class="console__screen" id="console-screen" tabindex="0"
+            aria-label="Pantalla del juego. Espacio para empezar, P para pausar.">
+            <div class="console__hud" aria-hidden="true">
+              <span><span id="hud-label">PTS</span> <strong id="console-score">0000</strong></span>
+              <span class="console__hud-sound" id="console-sound">♪ ON</span>
+              <span>REC <strong id="console-record">0000</strong></span>
+            </div>
+
+            <div class="console__board">
+              <canvas class="console__canvas" id="console-canvas" width="160" height="120" role="img"
+                aria-label="Pantalla del juego"></canvas>
+
+              <!-- Overlays on top of the board: the console's data-state decides which one shows -->
+              <div class="overlay overlay--start">
+                <p class="overlay__title">¡A jugar!</p>
+                <p class="overlay__text" id="start-text"></p>
+                <div class="overlay__items" id="start-items"></div>
+                <p class="overlay__status overlay__status--notice" id="start-notice" role="alert" hidden></p>
+                <p class="overlay__games"></p>
+                <p class="overlay__blink"><span class="keyboard-only">Clic o Espacio</span><span class="touch-only">Presiona A</span></p>
+                <p class="overlay__help"><span class="keyboard-only" id="keyboard-help"></span><span class="touch-only" id="touch-help"></span></p>
+              </div>
+
+              <div class="overlay overlay--loading" role="status">
+                <p class="overlay__title overlay__title--loading">Cargando</p>
+                <div class="overlay__bar" aria-hidden="true"><span id="load-bar"></span></div>
+                <p class="overlay__text" id="load-text">0%</p>
+              </div>
+
+              <div class="overlay overlay--paused">
+                <p class="overlay__title">Pausa</p>
+                <!-- The game's controls (controls in its cartridge): keyboard ones on computers, touch ones on phones -->
+                <dl class="overlay__controls keyboard-only" id="pause-keyboard"></dl>
+                <dl class="overlay__controls touch-only" id="pause-touch"></dl>
+                <p class="overlay__blink"><span class="keyboard-only">Espacio para seguir</span><span class="touch-only">A para seguir</span></p>
+              </div>
+
+              <div class="overlay overlay--over">
+                <p class="overlay__title overlay__title--over" id="end-title">Fin del juego</p>
+                <p class="overlay__score"><span id="end-label">Puntaje</span> <strong id="end-score">0000</strong></p>
+                <p class="overlay__detail" id="end-detail" hidden></p>
+                <p class="overlay__status" id="end-status" role="status" aria-live="polite"></p>
+                <button class="overlay__button" id="end-login" type="button" hidden>Ingresar</button>
+                <p class="overlay__games"></p>
+                <p class="overlay__blink"><span class="keyboard-only">Espacio para otra</span><span class="touch-only">A para otra</span></p>
+              </div>
+
+              <!-- The week's game closed (endsAt in src/games/weekly-game.ts): its final top 3 -->
+              <div class="overlay overlay--finished">
+                <p class="overlay__title overlay__title--over">Juego terminado</p>
+                <p class="overlay__text">Top 3 de la semana</p>
+                <ol class="overlay__podium" id="finished-podium"></ol>
+                <p class="overlay__status">Los 50 mejores de la tabla ganaron puntos en el Sustómetro.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controls: d-pad, speaker, A / B buttons and, below them, Start -->
+        <div class="console__controls">
+          <div class="dpad" role="group" aria-label="Cruceta">
+            <button class="dpad__button dpad__button--up" type="button" data-direction="up" aria-label="Arriba"></button>
+            <button class="dpad__button dpad__button--left" type="button" data-direction="left" aria-label="Izquierda"></button>
+            <span class="dpad__center" aria-hidden="true"></span>
+            <button class="dpad__button dpad__button--right" type="button" data-direction="right" aria-label="Derecha"></button>
+            <button class="dpad__button dpad__button--down" type="button" data-direction="down" aria-label="Abajo"></button>
+          </div>
+
+          <div class="console__speaker" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+
+          <div class="console__buttons">
+            <div class="console__button-group console__button-group--b">
+              <button class="console__button console__button--b" id="button-b" type="button" aria-label="B">B</button>
+              <span class="console__button-label" id="button-b-label" aria-hidden="true"></span>
+            </div>
+            <div class="console__button-group console__button-group--a">
+              <button class="console__button console__button--a" id="button-a" type="button" aria-label="A: jugar o pausar">A</button>
+              <span class="console__button-label" id="button-a-label" aria-hidden="true">Jugar</span>
+            </div>
+          </div>
+
+          <!-- Start, as on handheld consoles: play or pause in every game -->
+          <div class="console__menu">
+            <div class="console__menu-group">
+              <button class="console__pill" id="button-start" type="button" aria-label="Start: jugar o pausar"></button>
+              <span class="console__button-label" aria-hidden="true">Start</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leaderboard of the weekly game (each person's best score) -->
+      <aside class="ranking-card records" aria-labelledby="records-title">
+        <div class="ranking-card__header">
+          <h3 class="ranking-card__title" id="records-title">Récords</h3>        </div>
+        <ol class="records__list" id="records-list">
+          <li class="ranking-empty"><span class="ranking-spinner"></span></li>
+        </ol>
+        <div class="records__mine" id="records-mine"></div>
+      </aside>
+    </section>
+
+    <!-- PODIUM: the top 3 of every weekly game, once the last one closes (renderGamesPodium in src/games/weekly-game.ts) -->
+    <section class="page-width games-podium" id="podio" aria-labelledby="games-podium-title" hidden>
+      <p class="section-title__eyebrow">Juegos de la semana</p>
+      <h2 class="games-podium__title" id="games-podium-title">Podio de campeones</h2>
+      <div class="games-podium__grid" id="games-podium-grid"></div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <!-- CODES: redeemed for ID card titles (src/scripts/codes.ts) -->
+    <div class="codes" id="codigos" data-needs-login hidden>
+      <p class="section-title__eyebrow">Easter eggs y premios</p>
+      <h2 class="codes__title">¿Tienes un código?</h2>
+      <p class="codes__intro">Cada vez que ganes un código (por encontrar un easter egg, por una competencia…) escríbelo aquí para desbloquear un título nuevo. Luego lo eliges en <strong>Editar carnet</strong>.</p>
+
+      <form class="codes__form" id="codes-form" autocomplete="off">
+        <label class="codes__field">
+          <span class="codes__label">Código</span>
+          <input type="text" id="codes-input" placeholder="Escribe tu código" maxlength="40"
+            autocomplete="off" autocapitalize="characters" spellcheck="false">
+        </label>
+        <button class="codes__button" id="codes-button" type="submit">
+          <span>Canjear</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </form>
+
+      <div class="codes__message" id="codes-message" role="status" aria-live="polite" hidden>
+        <span id="codes-message-text"></span>
+        <button class="codes__action" id="codes-action" type="button" hidden></button>
+      </div>
+
+      <details class="codes__collection-box">
+        <summary>
+          <span class="codes__count" id="codes-count"></span>
+          <span class="codes__progress" id="codes-progress" hidden><span></span></span>
+        </summary>
+        <ul class="codes__collection" id="codes-collection"></ul>
+      </details>
+    </div>
+
+    <a class="site-footer__instagram" href="https://www.instagram.com/sistemasunalmed/" target="_blank" rel="noopener"
+      title="Instagram de la representación de Ingeniería de Sistemas">
+      <span class="site-footer__crest" id="footer-crest"></span>
+      <span class="site-footer__handle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg>
+        @sistemasunalmed
+      </span>
+    </a>
+    <p>Semana de Sistemas, Facultad de Minas, Medellín</p>
+    <p class="site-footer__authors">Web hecha por <strong>Santiago Escobar Arias</strong> y <strong>Jerónimo Hoyos Botero</strong></p>
+    <p class="site-footer__disclaimer">Proyecto estudiantil sin ánimo de lucro. Iniciativa académica e informativa para la comunidad universitaria de la Universidad Nacional de Colombia — Sede Medellín.</p>
+    <p class="site-footer__legal"><strong>Aviso de Propiedad Intelectual y Seguridad:</strong> El diseño, arquitectura de software, código fuente, experiencia de usuario (UX/UI), herramientas interactivas e imágenes de vista previa están protegidos por la Ley 23 de 1982, Decisión Andina 351 y Arts. 270 y 271 del Código Penal Colombiano. Queda prohibida la reproducción parcial o total, plagio, copia de funcionalidades o ingeniería inversa sin autorización previa y por escrito del autor. Los logotipos e identidad visual son obra de la representación estudiantil y su uso requiere autorización expresa de la misma. Cualquier intento de vulneración o alteración informática será sancionado conforme a la Ley 1273 de 2009 (Delitos Informáticos).</p>
+    <p class="site-footer__copyright">© 2026. Todos los derechos reservados. <a href="politica-datos.html" class="site-footer__link">Política de Tratamiento de Datos Personales</a></p>
+  </footer>
+
+  <!-- LOGIN MODAL / SCARER ID CARD -->
+  <dialog class="auth-modal" id="auth-modal">
+    <div class="auth-modal__box">
+      <button class="auth-modal__close" id="btn-close-auth" type="button" aria-label="Cerrar ventana">✕</button>
+
+      <div class="auth-modal__header">
+        <div class="auth-modal__eye" id="auth-eye-icon"></div>
+        <p class="section-title__eyebrow">Facultad de Minas, UNAL</p>
+        <h2 class="auth-modal__title" id="auth-title">Acceso</h2>
+      </div>
+
+      <!-- View when NOT logged in -->
+      <div id="auth-form-view">
+        <div class="schedule__days auth-modal__tabs">
+          <button class="day" id="tab-login" type="button" aria-pressed="true">
+            <strong>Ingresar</strong>
+          </button>
+          <button class="day" id="tab-signup" type="button" aria-pressed="false">
+            <strong>Crear Carnet</strong>
+          </button>
+        </div>
+
+        <!-- Live builder for the Scarer ID card (video game style) -->
+        <div class="idcard-builder" id="idcard-builder" hidden>
+          <div class="speakers__idcard idcard-builder__preview" id="signup-idcard-preview"></div>
+          <button class="week-button download-button" data-idcard="#signup-idcard-preview" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+            <span>Descargar carnet</span>
+          </button>
+
+          <div class="idcard-builder__controls">
+            <div class="idcard-builder__top-bar">
+              <span class="idcard-builder__subtitle">Personaliza tu monstruo</span>
+              <button type="button" class="random-button" id="btn-random-monster">
+                Aleatorio
+              </button>
+            </div>
+
+            <div class="arcade-selector" data-prop="estilo">
+              <span class="arcade-selector__label">Estilo</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-estilo">Asustador</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+
+            <div class="arcade-selector" data-prop="cuerpo">
+              <span class="arcade-selector__label">Cuerpo</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-cuerpo">Peludo Manchas</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+
+            <div class="arcade-selector" data-prop="color">
+              <span class="arcade-selector__label">Color</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value">
+                  <span class="arcade-selector__dot" id="dot-color"></span>
+                  <span id="val-color">Azul Sulley</span>
+                </span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+
+            <div class="arcade-selector" data-prop="ojos">
+              <span class="arcade-selector__label">Ojos</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-ojos">1 Ojo Cíclope</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+
+            <div class="arcade-selector" data-prop="cuernos">
+              <span class="arcade-selector__label">Cabeza</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-cuernos">Cuernos Toro</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+
+            <div class="arcade-selector" data-prop="boca">
+              <span class="arcade-selector__label">Boca</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-boca">Colmillos</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+
+            <div class="arcade-selector" data-prop="accesorio">
+              <span class="arcade-selector__label">Detalle</span>
+              <div class="arcade-selector__control">
+                <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Anterior">‹</button>
+                <span class="arcade-selector__value" id="val-accesorio">Al Natural</span>
+                <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Siguiente">›</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <form class="auth-form" id="auth-form">
+          <p class="auth-smartkey-desc" id="auth-info-login">Inicia sesión de forma rápida y segura con tu cuenta institucional @unal.edu.co.</p>
+
+          <label class="auth-field" id="name-field" hidden>
+            <span>Nombre en tu carnet (opcional)</span>
+            <input type="text" id="auth-name" placeholder="Ej. Santiago Escobar" maxlength="28" autocomplete="name">
+          </label>
+
+          <p class="auth-message" id="auth-message" hidden></p>
+
+          <button class="hero__button auth-google-btn" id="auth-submit" type="submit">
+            <svg class="auth-google-btn__icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <span id="auth-submit-text">Iniciar sesión con correo UNAL</span>
+          </button>
+          <p class="auth-smartkey-badge">🔐 SmartKey / Google Workspace</p>
+        </form>
+      </div>
+
+      <!-- View when logged in -->
+      <div class="auth-profile" id="auth-profile-view" hidden>
+        <div class="speakers__idcard idcard-builder__preview" id="profile-idcard"></div>
+        <div class="auth-profile__actions">
+          <button class="week-button download-button" data-idcard="#profile-idcard" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+            <span>Descargar carnet</span>
+          </button>
+          <button class="week-button edit-button" id="btn-edit-idcard" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+            Editar carnet
+          </button>
+        </div>
+        <p class="auth-profile__email" id="profile-email"></p>
+        <button class="week-button auth-profile__logout" id="btn-logout" type="button">
+          Cerrar sesión
+        </button>
+      </div>
+
+      <!-- View to EDIT the ID card: name, title (one of the unlocked ones) and monster.
+           The monster selector (#idcard-builder) moves here from the form while editing. -->
+      <div class="auth-edit" id="auth-edit-view" hidden>
+        <div class="auth-form">
+          <label class="auth-field">
+            <span>Nombre en tu carnet</span>
+            <input type="text" id="edit-name" maxlength="28" autocomplete="name">
+          </label>
+
+          <div class="arcade-selector" id="title-selector">
+            <span class="arcade-selector__label">Título</span>
+            <div class="arcade-selector__control">
+              <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Título anterior">‹</button>
+              <span class="arcade-selector__value" id="val-title" aria-live="polite"></span>
+              <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Título siguiente">›</button>
+            </div>
+          </div>
+          <p class="auth-edit__note" id="edit-titles-note"></p>
+          <div class="arcade-selector" id="card-style-selector" hidden>
+            <span class="arcade-selector__label">Estilo de carnet</span>
+            <div class="arcade-selector__control">
+              <button type="button" class="arcade-selector__arrow" data-dir="-1" aria-label="Estilo anterior">‹</button>
+              <span class="arcade-selector__value" id="val-card-style" aria-live="polite">Clásico</span>
+              <button type="button" class="arcade-selector__arrow" data-dir="1" aria-label="Estilo siguiente">›</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="edit-builder-mount"></div>
+
+        <p class="auth-message" id="edit-message" hidden></p>
+        <div class="auth-edit__buttons">
+          <button class="week-button auth-edit__cancel" id="btn-cancel-edit" type="button">Cancelar</button>
+          <button class="hero__button auth-form__submit auth-edit__save" id="btn-save-edit" type="button">Guardar cambios</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- REWARD MODAL: VETERAN REWARD -->
+  <dialog class="auth-modal reward-modal" id="reward-modal" aria-labelledby="reward-modal-title">
+    <div class="auth-modal__box reward-modal__box">
+      <button class="auth-modal__close" id="btn-close-reward" type="button" aria-label="Cerrar ventana">✕</button>
+
+      <!-- Stage 1: Closed gift -->
+      <div id="reward-stage-closed" class="reward-stage">
+        <div class="reward-icon-box">🎁</div>
+        <p class="section-title__eyebrow">¡Recompensa Exclusiva!</p>
+        <h2 class="auth-modal__title reward-modal__title" id="reward-modal-title">Recompensa Recibida</h2>
+        <p class="reward-desc">Por haberte registrado en la plataforma, has recibido un artículo exclusivo para tu carnet de asustador.</p>
+        <button class="hero__button reward-btn" id="btn-open-reward" type="button">
+          <span>Abrir Recompensa</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+
+      <!-- Stage 2: Unlocked item -->
+      <div id="reward-stage-opened" class="reward-stage" hidden>
+        <div class="reward-unlocked-preview" id="reward-item-preview"></div>
+        <div class="reward-badge">👕 ITEM EXCLUSIVO DESBLOQUEADO</div>
+        <h3 class="reward-item-name">Camiseta UNAL</h3>
+        <p class="reward-desc">¡Se ha añadido a tu inventario! Ya puedes equipársela a tu monstruo en cualquier momento desde <strong>Editar carnet</strong>.</p>
+        <button class="hero__button reward-btn" id="btn-claim-reward" type="button">
+          <span>¡Equipar en mi carnet!</span>
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- DIALOG WITH THE ID CARD OF A PERSON FROM THE TABLE (filled by scare-meter.js) -->
+  <dialog class="auth-modal auth-modal--signup" id="idcard-modal" aria-labelledby="idcard-modal-title">
+    <div class="auth-modal__box">
+      <button class="auth-modal__close" id="btn-close-idcard" type="button" aria-label="Cerrar ventana">✕</button>
+
+      <div class="auth-modal__header">
+        <h2 class="auth-modal__title" id="idcard-modal-title">Carnet</h2>
+      </div>
+
+      <div class="auth-profile">
+        <div class="clown-notice" id="idcard-modal-clown-notice" hidden>
+          <span class="clown-notice__icon">⚠️</span>
+          <div class="clown-notice__body">
+            <strong>CUENTA SANCIONADA POR JUEGO SUCIO</strong>
+            <p>Este usuario fue descubierto intentando inyectar privilegios o manipular puntos. Su carnet ha sido degradado públicamente a Licencia de Tramposo y está sancionado con Shadowban permanente.</p>
+          </div>
+        </div>
+        <div class="speakers__idcard idcard-builder__preview" id="idcard-modal-idcard"></div>
+        <button class="week-button download-button" data-idcard="#idcard-modal-idcard" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+          <span>Descargar carnet</span>
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- STICKER EASTER EGG DIALOG (scare-meter.js fills it and adds the stickers) -->
+  <dialog class="auth-modal easter-egg" id="easter-egg-modal" aria-labelledby="easter-egg-title">
+    <div class="auth-modal__box easter-egg__box">
+      <button class="auth-modal__close" id="btn-close-easter-egg" type="button" aria-label="Cerrar ventana">✕</button>
+      <!-- The cat GIF with stickers in the corners. The GIF loads when the dialog opens. -->
+      <div class="easter-egg__photo">
+        <img class="easter-egg__gif" id="easter-egg-gif" alt="">
+        <div class="easter-egg__stickers" id="easter-egg-stickers" aria-hidden="true"></div>
+      </div>
+      <h2 class="auth-modal__title easter-egg__title" id="easter-egg-title"></h2>
+      <div id="easter-egg-prize">
+        <p class="easter-egg__text">Fuiste la primera persona en encontrar el easter egg. Escríbele al representante y mándale este código:</p>
+        <strong class="easter-egg__code" id="easter-egg-code"></strong>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- DIALOG TO EDIT POINTS (SUPERVISOR) -->
+  <dialog class="auth-modal admin-points-modal" id="points-modal" aria-labelledby="points-modal-title">
+    <div class="auth-modal__box">
+      <button class="auth-modal__close" id="btn-close-points" type="button" aria-label="Cerrar ventana">✕</button>
+
+      <div class="auth-modal__header">
+        <span class="points-modal__badge">Supervisor de Sustos</span>
+        <h2 class="auth-modal__title" id="points-modal-title">Ajustar Puntos</h2>
+      </div>
+
+      <div class="points-modal__body">
+        <div class="points-modal__user">
+          <div class="points-modal__avatar" id="points-modal-avatar"></div>
+          <div class="points-modal__info">
+            <strong class="points-modal__name" id="points-modal-name"></strong>
+            <span class="points-modal__email" id="points-modal-email"></span>
+          </div>
+        </div>
+
+        <div class="points-modal__editor">
+          <label for="points-modal-input" class="points-modal__label">Puntos de susto acumulados</label>
+          <div class="points-modal__input-row">
+            <input type="number" id="points-modal-input" min="0" max="99999" step="1" class="points-modal__input" placeholder="0">
+            <span class="points-modal__unit">PTS</span>
+          </div>
+
+          <div class="points-modal__shortcuts" aria-label="Ajuste rápido">
+            <button type="button" class="points-modal__shortcut" data-add="10">+10</button>
+            <button type="button" class="points-modal__shortcut" data-add="50">+50</button>
+            <button type="button" class="points-modal__shortcut" data-add="100">+100</button>
+            <button type="button" class="points-modal__shortcut" data-add="-10">-10</button>
+            <button type="button" class="points-modal__shortcut" data-add="-50">-50</button>
+          </div>
+        </div>
+
+                <div class="points-modal__reason-field">
+          <label for="points-modal-reason" class="points-modal__label">Motivo del ajuste (registro para supervisores)</label>
+          <input type="text" id="points-modal-reason" class="points-modal__reason-input" placeholder="Ej: Corrección por reto, participación..." maxlength="120">
+        </div>
+
+        <p class="auth-message" id="points-modal-message" hidden></p>
+
+        <div class="points-modal__actions">
+          <button type="button" class="week-button" id="btn-cancel-points">Cancelar</button>
+          <button type="button" class="hero__button auth-form__submit" id="btn-save-points">
+            <span>Guardar puntos</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- AUDIT LOG MODAL (supervisores) -->
+  <dialog id="audit-modal" class="auth-modal modal-audit-log">
+    <div class="auth-modal__box auth-modal__box--wide">
+      <div class="auth-modal__header">
+        <div>
+          <h2 class="auth-modal__title">Historial de Cambios de Puntos</h2>
+          <p class="audit-modal__intro">Registro exclusivo de supervisores: qué admin modificó puntos, a quién y por qué.</p>
+        </div>
+        <button type="button" class="auth-modal__close" id="btn-close-audit" aria-label="Cerrar">&times;</button>
+      </div>
+
+      <div class="audit-modal__table-wrap">
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Admin</th>
+              <th>Estudiante</th>
+              <th>Puntos</th>
+              <th>Motivo</th>
+            </tr>
+          </thead>
+          <tbody id="audit-table-body">
+            <tr><td colspan="5" class="audit-table__empty">Cargando registros…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </dialog>
+
+	<script>
+		import '@/scripts/auth';
+		import '@/scripts/codes';
+		import '@/scripts/scare-meter';
+		import '@/games/weekly-game';
+		import '@/scripts/secrets';
+	</script>
+</Layout>
