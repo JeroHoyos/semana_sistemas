@@ -22,9 +22,9 @@
 
 <div align="center">
 
-| **+600** | **+375** | **16** | **3** |
-| :---: | :---: | :---: | :---: |
-| inscritos a través de la web | participaciones, presenciales y virtuales | actividades | días de evento |
+| **+600** | **+375** | **16** |
+| :---: | :---: | :---: |
+| inscritos a través de la web | participaciones, presenciales y virtuales | actividades |
 
 </div>
 
@@ -148,21 +148,7 @@ cd semana_sistemas
 pnpm install
 pnpm dev
 ```
-
-Abre `http://localhost:4321` y listo.
-
-> La web local usa el mismo Supabase de producción: lo que hagas ahí queda guardado de verdad.
-
-<details>
-<summary>Más comandos y estructura</summary>
-
-| Comando | Acción |
-| :------ | :----- |
-| `pnpm build` | Build de producción en `./dist/` |
-| `pnpm preview` | Previsualiza el build |
-| `pnpm check` | Revisa los tipos |
-| `pnpm test` | Corre las pruebas (Vitest) |
-| `pnpm lint` | Revisa el código con ESLint |
+## Estructura
 
 ```text
 src/
