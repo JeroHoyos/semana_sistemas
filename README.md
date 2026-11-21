@@ -177,8 +177,6 @@ Gracias al decano **Santiago Arango-Aramburo** por su compromiso con el desarrol
 <div align="center">
   <br />
   <img width="760" src="./public/img/gallery/2026-day3-group-photo.jpg" alt="Foto grupal en las escaleras de la entrada de la Facultad de Minas" />
-  <br /><br />
-  <sub>En la Facultad de Minas seguimos construyendo.</sub>
 </div>
 
 [astro-url]: https://astro.build/
