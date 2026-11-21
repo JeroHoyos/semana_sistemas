@@ -2845,6 +2845,24 @@ button.bracket__side:hover { background: #e4effa; }
   color: #8a6200;
 }
 .bracket__champion--empty::before { content: none; }
+
+/* Third place, under the bracket: bronze */
+.bracket__third {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 14px 0 0;
+  padding: 10px 16px;
+  border: 2px solid #c07a3e;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #fdf1e6 0%, #f3d2b3 50%, #e7b88e 100%);
+  color: #5a2e0c;
+}
+.bracket__third-label { font: 600 13px/1.2 var(--font-narrow); letter-spacing: .1em; text-transform: uppercase; }
+.bracket__third-name { font: 400 17px/1.2 var(--font-title); }
+.bracket__third .bracket__flag { margin-right: 0; }
 .bracket__champion--empty svg { width: 44px; height: 44px; color: #c99a12; }
 
 /* A person's pennant: the cloth in their monster's color, their monster on a cream patch.
