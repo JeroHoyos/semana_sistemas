@@ -327,7 +327,7 @@ const ACTIVITIES = [
     description: 'Pon a prueba tu velocidad y resistencia en un circuito a lo largo de todo el campus. Prepárate para enfrentar los cambios de inclinación del terreno, superar cada nivel y retarte a ti mismo en una carrera con pura alma de videojuego retro.',
     image: 'img/flyers/athletics.jpg', routeMap: true,
     decorations: ['medal10', 'medal01', 'medal11'] },
-  { id: 'futbol', day: 'fri', start: '09:00', end: '11:00', type: 'competition', title: 'Torneo de fútbol', team: { tab: 'Fútbol', size: 5, maxTeams: 8 }, bracket: true,
+  { id: 'futbol', day: 'fri', start: '09:00', end: '11:00', type: 'competition', title: 'Torneo de fútbol', team: { tab: 'Fútbol', size: 5, maxTeams: 8 }, bracket: true, thirdPlace: 'Los Primos',
     icon: 'ball', color: '#1667c2', summary: 'Arma tu equipo y sal a la cancha.', place: 'Placa polideportiva',
     description: 'Reúne a tu equipo y demuestra tu nivel en la cancha en un torneo de eliminación directa por brackets. Avanza llave a llave, supera a tus rivales en cada partido y compite hasta alcanzar la gran final.\n' +
       'Se prestan los petos y el balón.',
@@ -419,6 +419,12 @@ const TITLES = [
 // The .mp4 files show as short silent videos; poster is the image shown while they load.
 // text: what is in the image. Not shown on screen: screen readers read it.
 const GALLERY = [
+  { edition: 2026, day: 'Día 3', file: 'img/gallery/2026-day3-soccer.jpg', text: 'Foto grupal de los equipos del torneo de fútbol en la cancha, frente a la Facultad de Minas' },
+  { edition: 2026, day: 'Día 3', file: 'img/gallery/2026-day3-group-photo.jpg', text: 'Foto grupal en las escaleras de la entrada de la Facultad de Minas, bajo los banderines' },
+  { edition: 2026, day: 'Día 3', file: 'img/gallery/2026-day3-medals.jpg', text: 'Tres jugadores con sus medallas en las escaleras de la entrada' },
+  { edition: 2026, day: 'Día 3', file: 'img/gallery/2026-day3-videogames.jpg', text: 'Estudiantes jugando un videojuego en la pantalla de un salón' },
+  { edition: 2026, day: 'Día 3', file: 'img/gallery/2026-day3-activity.jpg', text: 'Dos estudiantes al frente de un salón durante una actividad en grupo' },
+  { edition: 2026, day: 'Día 3', file: 'img/gallery/2026-day3-mural.jpg', text: 'Mural con dos retratos y circuitos en la fachada de un edificio del campus' },
   { edition: 2026, day: 'Día 2', file: 'img/gallery/2026-day2-marathon.jpg', text: 'Sala de computadores con globos durante la maratón de programación' },
   { edition: 2026, day: 'Día 2', file: 'img/gallery/2026-day2-observation-maze.jpg', text: 'Un equipo resuelve un laberinto en el portátil durante la carrera de observación' },
   { edition: 2026, day: 'Día 2', file: 'img/gallery/2026-day2-group-photo.jpg', text: 'Foto grupal al aire libre bajo la cubierta' },

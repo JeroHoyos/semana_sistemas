@@ -145,6 +145,8 @@ function slotHtml(match) {
 function bracketHtml() {
   const { rounds, champion } = buildRounds(bracket);
   const winner = champion && participants.find((p) => p.name === champion);
+  // There is no third-place match in the bracket: activity.thirdPlace (js/data.js) names it by hand
+  const third = activity.thirdPlace && participants.find((p) => p.name === activity.thirdPlace);
   return `
     <div class="bracket__scroll">
       <div class="bracket__rounds">
@@ -168,6 +170,12 @@ function bracketHtml() {
         </div>
       </div>
     </div>
+    ${activity.thirdPlace ? `
+      <p class="bracket__third">
+        <span class="bracket__third-label">🥉 Tercer puesto</span>
+        ${third ? `<span class="bracket__flag">${flagHtml(third)}</span>` : ''}
+        <span class="bracket__third-name">${escapeHtml(activity.thirdPlace)}</span>
+      </p>` : ''}
     ${bracketAdmin ? '<p class="event__bio">Toca un nombre para marcarlo como ganador; tócalo otra vez para quitarlo.</p>' : ''}
   `;
 }
