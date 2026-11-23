@@ -170,7 +170,7 @@ doom/          # el motor de Doom para la web
 
 Web hecha por **Santiago Escobar Arias** y **Jerónimo Hoyos Botero**.
 
-Organización: Jerónimo Hoyos Botero, Catalina Arango Sierra, Libardo Jose Navarro Pedrozo, Luzarait Canas Quintero y Juan David Pérez López.
+Organización: Santiago Escobar Arias, Jerónimo Hoyos Botero, Catalina Arango Sierra, Libardo Jose Navarro Pedrozo, Luzarait Canas Quintero y Juan David Pérez López.
 
 Gracias al decano **Santiago Arango-Aramburo** por su compromiso con el desarrollo integral y profesional de los estudiantes de la Facultad de Minas, y a cada persona que se inscribió, se retó, aprendió y se quedó hasta el final.
 
