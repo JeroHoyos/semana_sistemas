@@ -32,7 +32,10 @@ function showWrapped(w: Wrapped) {
 			${stat(number(w.actividades), w.actividades === 1 ? 'competencia' : 'competencias')}
 			${stat(number(w.secretos), w.secretos === 1 ? 'secreto encontrado' : 'secretos encontrados')}
 			${best ? stat(number(best.puntaje), `tu récord en ${GAME_NAMES[best.juego]}`) : ''}
-		</ul>`;
+		</ul>
+		<button class="hero__button wrapped__play" type="button" id="wrapped-play">▶ Ver mi wrapped</button>`;
+	// The story (and its music) is a separate chunk: it only downloads when someone opens it
+	$('#wrapped-play').addEventListener('click', async () => (await import('@/scripts/wrapped-story')).openStory(w));
 }
 
 function showLoggedOut() {

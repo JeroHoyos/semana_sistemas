@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { ACTIVITIES, isArgenisAlias, isClown, isLargoAlias, isSupervisorAccount } from '@/data/content';
 import { doomScore } from '@/games/doom';
 import { BYE, buildRounds, firstRound, sortStandings } from '@/lib/brackets';
-import { parseWrapped, wrappedKey } from '@/lib/wrapped';
+import { parseWrapped, storyData, wrappedKey } from '@/lib/wrapped';
 import {
 	colombiaDay,
 	escapeHtml,
@@ -195,7 +195,10 @@ describe('brackets', () => {
 });
 
 describe('wrapped cache', () => {
-const sample = { puntos: 5, puesto: 2, participantes: 10, juegos: [{ juego: 'snake', puntaje: 40, partidas: 3 }], actividades: 1, secretos: 0 };
+const sample = {
+puntos: 5, puesto: 2, participantes: 10, juegos: [{ juego: 'snake', puntaje: 40, partidas: 3 }], actividades: 1, secretos: 0,
+nombre: 'Ana', monstruo: {}, vecinos: [], monstruos: 20, sustos: 300, asistencias: [], individuales: [], equipos: [], clasificaciones: [], llaves: [],
+};
 it('keys the cache by person', () => {
 expect(wrappedKey('a')).not.toBe(wrappedKey('b'));
 });
@@ -205,5 +208,29 @@ expect(parseWrapped(null)).toBeNull();
 expect(parseWrapped('{oops')).toBeNull();
 expect(parseWrapped(JSON.stringify({ ...sample, puntos: '<img>' }))).toBeNull();
 expect(parseWrapped(JSON.stringify({ ...sample, juegos: [{ juego: 1 }] }))).toBeNull();
+expect(parseWrapped(JSON.stringify({ ...sample, vecinos: [{ nombre: 1 }] }))).toBeNull();
+});
+});
+
+describe('wrapped story', () => {
+const base = parseWrapped(JSON.stringify({
+puntos: 87, puesto: 7, participantes: 140, juegos: [], actividades: 2, secretos: 0,
+nombre: 'Ana Pérez', monstruo: { titulos: ['debugger', 'supervisor'] }, vecinos: [{ nombre: 'B', monstruo: {}, puntos: 91 }],
+monstruos: 150, sustos: 9000, asistencias: ['datos'], individuales: ['clash-royale'],
+equipos: [{ actividad: 'maraton', nombre: 'Los Bits', companeros: [{ id: 'x', nombre: 'Sara', monstruo: {} }] }],
+clasificaciones: [{ actividad: 'maraton', resultados: [{ nombre: 'los bits', puesto: 4 }] }],
+llaves: [{ actividad: 'clash-royale', participantes: ['Ana Pérez', 'Leo', 'Max', 'Sol'], ganadores: { '0-0': 0, '0-1': 1, '1-0': 1 } }],
+}))!;
+it('finds places in standings and brackets, best first', () => {
+const s = storyData(base);
+expect(s.places.map((p) => [p.id, p.place])).toEqual([['clash-royale', 2], ['maraton', 4]]);
+expect(s.best?.place).toBe(2);
+});
+it('picks the teammate, the titles and the guess bucket', () => {
+const s = storyData(base);
+expect(s.mate?.nombre).toBe('Sara');
+expect(s.titles.map((t) => t.id)).toEqual(['asustador', 'debugger']);   // admin-only titles never show
+expect(s.bucket).toBe('top10');
+expect(s.gap).toBe(4);
 });
 });
