@@ -49,6 +49,15 @@ import '@/styles/global.css';
     </div>
   </header>
 
+  <!-- WRAPPED: the logged-in person's own summary (src/scripts/wrapped.ts) -->
+  <section class="wrapped" id="wrapped" aria-labelledby="wrapped-title" hidden>
+    <div class="page-width">
+      <p class="wrapped__eyebrow">Semana de Sistemas 2026</p>
+      <h2 class="wrapped__title" id="wrapped-title">Tu wrapped</h2>
+      <div id="wrapped-body" aria-live="polite"></div>
+    </div>
+  </section>
+
   <main>
 
     <!-- SPEAKERS: title, photos to pick a speaker, and the chosen speaker's ID card -->
@@ -415,5 +424,6 @@ import '@/styles/global.css';
 	<script>
 		import '@/scripts/main';
 		import '@/scripts/auth';
+		import '@/scripts/wrapped';
 	</script>
 </Layout>

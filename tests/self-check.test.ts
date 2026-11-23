@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { ACTIVITIES, isArgenisAlias, isClown, isLargoAlias, isSupervisorAccount } from '@/data/content';
 import { doomScore } from '@/games/doom';
 import { BYE, buildRounds, firstRound, sortStandings } from '@/lib/brackets';
+import { parseWrapped, wrappedKey } from '@/lib/wrapped';
 import {
 	colombiaDay,
 	escapeHtml,
@@ -191,4 +192,18 @@ describe('brackets', () => {
 		]).map((r) => `${r.puesto}:${r.nombre}`);
 		expect(sorted).toEqual(['1:Equipo Alfa', '2:Equipo Beta', '3:Equipo Delta', 'DNF:Equipo Epsilon', 'DNF:Equipo Gamma']);
 	});
+});
+
+describe('wrapped cache', () => {
+const sample = { puntos: 5, puesto: 2, participantes: 10, juegos: [{ juego: 'snake', puntaje: 40, partidas: 3 }], actividades: 1, secretos: 0 };
+it('keys the cache by person', () => {
+expect(wrappedKey('a')).not.toBe(wrappedKey('b'));
+});
+it('accepts a valid copy and rejects broken or edited ones', () => {
+expect(parseWrapped(JSON.stringify(sample))).toEqual(sample);
+expect(parseWrapped(null)).toBeNull();
+expect(parseWrapped('{oops')).toBeNull();
+expect(parseWrapped(JSON.stringify({ ...sample, puntos: '<img>' }))).toBeNull();
+expect(parseWrapped(JSON.stringify({ ...sample, juegos: [{ juego: 1 }] }))).toBeNull();
+});
 });
